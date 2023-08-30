@@ -1,0 +1,1 @@
+export const isNullOrEmpty = (str: String) => str == null || str.length === 0;

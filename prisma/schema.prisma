@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Platform {
+  WEB
+  ANDROID
+  IOS
+  STEAM
+}
+
+// represents a client device
+// we can authenticate JWT which will contain this id
+model Client {
+  id        String   @id @default(cuid())
+  userId    String?
+  platform  Platform @default(WEB)
+  createdAt DateTime @default(now())
+
+  user        User?         @relation(fields: [userId], references: [id]) // a client can be registered or not
+  gameSession GameSession[]
+  player      Player[]
+}
+
+model User {
+  id              String   @id @default(cuid())
+  displayName     String
+  email           String   @unique
+  profileImageUrl String?
+  passwordHash    String? // let's keep the possibility open to have oauth, so pw is not required if they sign in with oauth
+  createdAt       DateTime @default(now())
+
+  client Client[] // user could potentially have multiple clients
+}
+
+model GameSession {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  hostClientId String // the client that created the session
+
+  hostClient       Client             @relation(fields: [hostClientId], references: [id])
+  player           Player[]
+  gameSessionState GameSessionState[]
+}
+
+model Player {
+  id            String   @id @default(cuid())
+  clientId      String
+  gameSessionId String
+  lastSeen      DateTime @default(now())
+
+  client          Client            @relation(fields: [clientId], references: [id])
+  gameSession     GameSession       @relation(fields: [gameSessionId], references: [id])
+  playerGameState PlayerGameState[]
+}
+
+model PlayerGameState {
+  id       String @id @default(cuid())
+  playerId String
+
+  player Player @relation(fields: [playerId], references: [id])
+
+  // some stuff representing state of the player in the game
+  energy Int
+  health Int
+
+  // we could also have a player inventory or something
+}
+
+model GameSessionState {
+  id            String      @id @default(cuid())
+  gameSessionId String
+  gameSession   GameSession @relation(fields: [gameSessionId], references: [id])
+
+  // some stuff representing global game state
+}

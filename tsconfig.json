@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext", "esnext.asynciterable"],
+    "typeRoots": ["node_modules/#types"],
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "pretty": true,
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "out",
+    "allowJs": true,
+    "noEmit": false,
+    "esModuleInterop": false,
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "rootDir": "src/",
+    "baseUrl": "src/",
+    "paths": {
+      "#*": ["*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.json", ".env"]
+}
