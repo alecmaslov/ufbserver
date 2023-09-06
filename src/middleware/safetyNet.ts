@@ -5,7 +5,8 @@ export const safetyNet = (handler: Handler) => {
         try {
             await handler(req, res, next);
         } catch (error) {
-            res.send(500).send("Internal Server Error");
+            console.error(error);
+            res.set(500).send("Internal Server Error");
         }
     }
 }

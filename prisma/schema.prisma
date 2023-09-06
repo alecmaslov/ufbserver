@@ -15,6 +15,7 @@ enum Platform {
   ANDROID
   IOS
   STEAM
+  UNITY_EDITOR
 }
 
 // represents a client device

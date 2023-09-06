@@ -13,6 +13,23 @@ type UbfClient = {
     connection: any;
 };
 
+type CellState = {
+  id: string;
+};
+
+type EdgeState = {
+  id: string;
+  keepGoing: boolean;
+}
+
+type GameState = {
+  id: string;
+  mapId: string;
+  cells: Map<string, CellState>;
+  edges: Map<string, EdgeState>;
+}
+
+// @kyle - Could we change the name to something like WebsocketServer?
 export class UfbServer {
     public static shared: UfbServer ;
     private wss: WebSocketServer;
@@ -29,6 +46,7 @@ export class UfbServer {
     private createWss(server: Server) {
       this.wss = new WebSocketServer({ server });
       this.wss.on('connection', async (conn, req) => {
+        console.log("websocket connection initiating...");
         // token provided via query string
         let decodedToken: JwtPayload;
         try {
@@ -37,6 +55,7 @@ export class UfbServer {
           if (isNullOrEmpty(token)) throw new Error();
           decodedToken = Jwt.verify(token) as JwtPayload;
         } catch (err) {
+          console.error(err);
           conn.close();
         }
 
@@ -54,6 +73,7 @@ export class UfbServer {
         });
 
         conn.on('close', (connection) => {
+          console.log(`websocket connection closed for client: ${clientId}`)
           this.clients = this.clients.filter(entry => entry.clientId !== clientId);
         });
 
@@ -66,11 +86,18 @@ export class UfbServer {
 
     private handleMessage(clientId: string, message: string) {
       try {
+        console.log("message received: ", message);
         const client = this.clients.find(entry => entry.clientId === clientId);
         if (client === undefined) return;
         const parsedMessage = JSON.parse(message) as BaseMessage;
         if (parsedMessage.type === "hello") {
             client.connection.send(JSON.stringify({ type: "hello", message: "hello!" }));
+        }
+        else {
+            client.connection.send(JSON.stringify({
+              type: "error",
+              message: "unknown message type"
+            }));
         }
       } catch (err) {
         console.error(err);
