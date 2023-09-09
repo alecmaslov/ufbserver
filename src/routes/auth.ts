@@ -55,6 +55,20 @@ const tokenRequestHandler: Handler = async (req, res) => {
     res.send(result);
 };
 
+const validateTokenHandler: Handler = async (req, res) => {
+    const {
+        token
+    } = req.body as { token: string };
+    const result = Jwt.verify(token);
+
+    if (!result) {
+        res.status(401).send({ message: "Invalid token" });
+        return;
+    }
+
+    res.send({clientId: result.sub});
+}
+
 const router: Router = Router();
 export default router;
 
@@ -69,3 +83,12 @@ router.post("/token",
     validate,
     safetyNet(tokenRequestHandler)
 );
+
+// @kyle: Adding an endpoint to validate token, so if a client has a token
+// already stored in local storage, it can be checked for validity. This also sends back the clientId
+// if its not needed/redundant, let me know
+router.post("/validate-token",
+    body("token").isString().withMessage("Invalid token"),
+    validate,
+    safetyNet(validateTokenHandler)
+)

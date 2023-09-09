@@ -1,14 +1,26 @@
+import { join as pathJoin } from "path";
+import { readFile } from "fs/promises";
 import { Room, Client } from "@colyseus/core";
 import { UfbRoomState } from "./schema/UfbRoomState";
 import { PlayerState } from "./schema/PlayerState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
+import { DEV_MODE } from "#config";
+import { loadMap } from "#colyseus/schema/MapState";
 
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
 
   onCreate(options: any) {
     this.setState(new UfbRoomState());
+
+    console.log("onCreate options", options);
+    loadMap(this, "kraken").then(() => {
+      // debug print the map tiles / adjacency
+      console.log(this.state.map.tiles);
+      console.log(this.state.map._adjacencyList);
+      console.log(this.state.map.adjacencyList);
+    });
 
     this.onMessage("whoami", (client, message) => {
       console.log("whoami", message);
@@ -64,6 +76,9 @@ export class UfbRoom extends Room<UfbRoomState> {
   }
 
   onAuth(client: Client, options: Record<string, any>) {
+    if (DEV_MODE) {
+      return true;
+    }
     const token = options.token as string;
     if (isNullOrEmpty(token)) {
       console.log("auth failed: no token");

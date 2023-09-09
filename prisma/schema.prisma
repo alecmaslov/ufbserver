@@ -83,3 +83,21 @@ model GameSessionState {
 
   // some stuff representing global game state
 }
+
+// an s3 bucket asset
+model Asset {
+  objectKey  String @id // the s3 object key
+  bucketName String
+  region     String
+
+  BundleAsset BundleAsset[]
+}
+
+// represents the assets needed for a certain unity build bundle
+// necessary for starting the game
+model BundleAsset {
+  id      String @id @default(cuid())
+  version String
+  assetId String
+  asset   Asset  @relation(fields: [assetId], references: [objectKey])
+}

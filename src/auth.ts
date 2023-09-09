@@ -29,6 +29,8 @@ export class Jwt {
     static defaultExp() {
         return Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7;
     }
+
+    // @kyle: I'm curious about this payload & JWT spec you have time to explain it
     static generate(options: GenerateJwtOptions): GenerateJwtResult {
         const payload = {
             iss: JWT_ISSUER_SELF,

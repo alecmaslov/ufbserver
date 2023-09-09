@@ -1,5 +1,6 @@
-import { Schema, MapSchema, Context, type } from "@colyseus/schema";
+import { Schema, MapSchema, type } from "@colyseus/schema";
 import { PlayerState } from "./PlayerState";
+import { MapState } from "./MapState";
 
 export class UfbRoomState extends Schema {
   @type("string") mapName: string = "Kraken!";
@@ -7,4 +8,5 @@ export class UfbRoomState extends Schema {
   @type("number") boardHeight: number = 10;
   @type("number") turn: number = 0;
   @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
+  @type(MapState) map = new MapState();
 }

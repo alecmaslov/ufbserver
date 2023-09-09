@@ -6,7 +6,8 @@ export const safetyNet = (handler: Handler) => {
             await handler(req, res, next);
         } catch (error) {
             console.error(error);
-            res.set(500).send("Internal Server Error");
+            // @kyle: ISSUE - The response somehow still sends back a 200, but with the message "Internal Server Error"
+            return res.set(500).send("Internal Server Error");
         }
     }
 }
