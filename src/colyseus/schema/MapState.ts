@@ -1,8 +1,13 @@
 import { join as pathJoin } from "path";
 import { readFile } from "fs/promises";
-import { Room, Client } from "@colyseus/core";
+import { Room } from "@colyseus/core";
 import { Schema, type, ArraySchema, MapSchema } from "@colyseus/schema";
 import { UfbRoomState } from "#colyseus/schema/UfbRoomState";
+import createGraph, { Graph } from "ngraph.graph";
+
+type NavGraphLinkData = {
+    energyCost: number;
+}
 
 export interface UFBMap {
     name : string;
@@ -10,7 +15,7 @@ export interface UFBMap {
     gridHeight : number;
     defaultCards: string[];
     tiles : Partial<GameTile>[];
-    adjacencyList : Map<string, TileEdge[]>;
+    adjacencyList : Record<string, TileEdge[]>;
 }
 
 export enum TileType {
@@ -64,17 +69,18 @@ export interface GameTile {
 }
 
 export const loadMap = async (room: Room<UfbRoomState>, mapKey: string) => {
-    const path = pathJoin(__dirname, "data", "maps", mapKey, "map.json");
+    const path = pathJoin("data", "maps", mapKey, "map.json");
     const data = await readFile(path);
     const parsed = JSON.parse(data.toString());
     const ufbMap = parsed as UFBMap;
     room.state.map.id = mapKey;
+    room.state.map.name = mapKey;
     room.state.map.gridWidth = ufbMap.gridWidth;
     room.state.map.gridHeight = ufbMap.gridHeight;
-    room.state.map._adjacencyList = ufbMap.adjacencyList;
+    room.state.map._map = ufbMap;
     room.state.map.adjacencyList = new MapSchema<AdjacencyListItem>();
-    for (const key of ufbMap.adjacencyList.keys()) {
-        const edges = ufbMap.adjacencyList.get(key)!;
+    for (const key in ufbMap.adjacencyList) {
+        const edges = ufbMap.adjacencyList[key]!;
         const item = new AdjacencyListItem();
         item.edges = new ArraySchema<TileEdgeSchema>();
         for (const edge of edges) {
@@ -87,6 +93,18 @@ export const loadMap = async (room: Room<UfbRoomState>, mapKey: string) => {
         }
         room.state.map.adjacencyList.set(key, item);
     }
+
+    // build nav graph
+    const graph = createGraph<any, NavGraphLinkData>();
+    for (const key in ufbMap.adjacencyList) {
+        const edges = ufbMap.adjacencyList[key]!;
+        for (const edge of edges) {
+            graph.addLink(edge.from, edge.to, {
+                energyCost: edge.energyCost,
+            });
+        }
+    }
+    room.state.map._navGraph = graph;
 }
 
 export class TileState extends Schema {
@@ -112,10 +130,13 @@ export class AdjacencyListItem extends Schema {
 
 export class MapState extends Schema {
     @type("string") id: string;
+    @type("string") name: string;
     @type("number") gridWidth: number = 0;
     @type("number") gridHeight: number = 0;
     @type({ map: TileState }) tiles: MapSchema<TileState> = new MapSchema<TileState>();
-    /** representation for internal use */
-    _adjacencyList: Map<string, TileEdge[]> = new Map();
     @type({ map: AdjacencyListItem }) adjacencyList = new MapSchema<AdjacencyListItem>();
+    /** raw representation for internal use */
+    _map: UFBMap | null = null;
+    /** nav graph for pathfinding */
+    _navGraph: Graph<any, NavGraphLinkData> = null;
 }

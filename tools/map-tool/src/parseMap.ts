@@ -1,3 +1,4 @@
+import { ok } from "assert";
 import { UFBMap, GameTile, TileType, SpawnEntity, TileEdge, TileColorCodes, TileColor, Coordinates, TileSide } from "./types/map";
 import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from "fs";
 
@@ -7,7 +8,16 @@ const TILE_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"
   "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 
 const coordToTileId = (coordinates: Coordinates): string => {
-  return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x}`;
+  return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
+};
+
+const tileIdToCoord = (tileId: string): Coordinates => {
+  const parts = tileId.split("_");
+  const y = TILE_LETTERS.indexOf(parts[1]);
+  const x = parseInt(parts[2]) - 1;
+  const c = { x, y };
+  ok(coordToTileId(c) === tileId);
+  return c;
 };
 
 const tileTypes = new Map<string, TileType>([
@@ -45,7 +55,7 @@ function iterateTiles(layer: any, callback: (tile: any, coordinates: Coordinates
         x: columnIndex,
         y: rowIndex
       };
-      const id = `tile_${TILE_LETTERS[rowIndex]}_${columnIndex}`;
+      const id = coordToTileId(coordinates);
       callback(tileCode, coordinates, id);
     });
   });
@@ -69,11 +79,23 @@ function initializeTiles(dimensions: number): Map<string, Partial<GameTile>> {
   return allTiles;
 }
 
-function parseBackgroundLayer(layer: any, allTiles: Map<string, Partial<GameTile>>, adjacencyList: Map<string, TileEdge[]>) {
+function parseBackgroundLayer(map: any, layer: any, allTiles: Map<string, Partial<GameTile>>, adjacencyList: Map<string, TileEdge[]>) {
+  const bridgeTiles: string[] = [];
   iterateTiles(layer, (tileCode: string, coordinates: Coordinates, id: string) => {
     const sides = parseTileSides(tileCode);
     const tile = allTiles.get(id);
+    if (tile === undefined) throw new Error(`Failed to find tile ${id}.`);
+    tile.type = parseTileType(tileCode);
     // top, right, bottom, left
+    if (tile.type === TileType.Bridge) {
+      bridgeTiles.push(id);
+    }
+    const sideToIndex = {
+      "top": 0,
+      "right": 1,
+      "bottom": 2,
+      "left": 3
+    };
     const neighborCoords = [
       { x: coordinates.x, y: coordinates.y - 1 },
       { x: coordinates.x + 1, y: coordinates.y },
@@ -82,8 +104,16 @@ function parseBackgroundLayer(layer: any, allTiles: Map<string, Partial<GameTile
     ];
     const edgeCost = [1, 1, 1, 1];
     for (let i = 0; i < sides.length; i++) {
-      if (sides[i].edgeProperty === "wall") edgeCost[i] = NaN;
+      const { side, edgeProperty } = sides[i];
+      const edgeIndex = sideToIndex[side];
+      if (edgeProperty === "wall") edgeCost[edgeIndex] = NaN;
     }
+    // if (map.name === "kraken" && tile!.id === "tile_I_10") {
+    //   console.log(tile);
+    //   console.log(edgeCost);
+    //   console.log(sides);
+    //   console.log();
+    // }
     for (let i = 0; i < 4; i++) {
       if (isNaN(edgeCost[i])) continue;
       const neighborId = coordToTileId(neighborCoords[i]);
@@ -101,8 +131,6 @@ function parseBackgroundLayer(layer: any, allTiles: Map<string, Partial<GameTile
       adjacencyList.get(id)!.push(edge);
     }
 
-    if (tile === undefined) throw new Error("Failed to find tile.");
-    tile.type = parseTileType(tileCode);
     tile.spawnItems = [];
 
     var color = parseTileColor(tileCode);
@@ -112,15 +140,71 @@ function parseBackgroundLayer(layer: any, allTiles: Map<string, Partial<GameTile
     tile.sides = sides;
     tile.legacyCode = tileCode;
   });
+
+
+  // fix edges for bridge tiles
+  // edges from the left to a bridge tile should be modified to point to the right of the bridge
+  // (and vice versa, same for top/bottom)
+  for (const bridgeTileId of bridgeTiles) {
+    const bridgeCoord = tileIdToCoord(bridgeTileId);
+    adjacencyList.forEach((edges) => {
+      edges.forEach(edge => {
+        const fromCoord = tileIdToCoord(edge.from);
+        const toCoord = tileIdToCoord(edge.to);
+        if (bridgeTileId === edge.to) {
+          edge.energyCost = 2;
+          // Left of bridge pointing to the right
+          if (fromCoord.x < bridgeCoord.x && fromCoord.y === bridgeCoord.y) {
+            edge.to = coordToTileId({ x: toCoord.x + 1, y: toCoord.y });
+          }
+          // Right of bridge pointing to the left
+          else if (fromCoord.x > bridgeCoord.x && fromCoord.y === bridgeCoord.y) {
+            edge.to = coordToTileId({ x: toCoord.x - 1, y: toCoord.y });
+          }
+          // Above bridge pointing to the bottom
+          else if (fromCoord.x === bridgeCoord.x && fromCoord.y < bridgeCoord.y) {
+            const c = { x: toCoord.x, y: toCoord.y + 1 };
+            edge.to = coordToTileId(c);
+          }
+          // Below bridge pointing to the top
+          else if (fromCoord.x === bridgeCoord.x && fromCoord.y > bridgeCoord.y) {
+            const c = { x: toCoord.x, y: toCoord.y - 1 };
+            edge.to = coordToTileId(c);
+          }
+        }
+      });
+    });
+  }
+
+  //   for (const bridgeTileId of bridgeTiles) {
+  //     const edges = adjacencyList.get(bridgeTileId);
+  //     if (edges) {
+  //       edges.forEach(edge => {
+  //         const fromCoord = tileIdToCoord(edge.from);
+  //         const toCoord = tileIdToCoord(edge.to);
+
+  //         // Left to right bridge
+  //         if (fromCoord.x < toCoord.x && fromCoord.y === toCoord.y) {
+  //           edge.to = coordToTileId({ x: toCoord.x + 1, y: toCoord.y });
+  //         }
+  //         // Right to left bridge
+  //         else if (fromCoord.x > toCoord.x && fromCoord.y === toCoord.y) {
+  //           edge.to = coordToTileId({ x: toCoord.x - 1, y: toCoord.y });
+  //         }
+  //         // Top to bottom bridge
+  //         else if (fromCoord.x === toCoord.x && fromCoord.y < toCoord.y) {
+  //           edge.to = coordToTileId({ x: toCoord.x, y: toCoord.y + 1 });
+  //         }
+  //         // Bottom to top bridge
+  //         else if (fromCoord.x === toCoord.x && fromCoord.y > toCoord.y) {
+  //           edge.to = coordToTileId({ x: toCoord.x, y: toCoord.y - 1 });
+  //         }
+  //         console.log("bridge", bridgeTileId, "to", edge.to);
+  //       });
+  //     }
+  //   }
+  // }
 }
-//   {
-//     "c" : "chest[id], store[id], portal[id]",
-//     "m" : "monster?[id]"
-// }
-
-// const spawnCodes = Map<string, SpawnEntity>([
-//   ["c", SpawnEntity.Chest],
-
 
 function parseSpawnLayer(layer: any, allTiles: Map<string, Partial<GameTile>>) {
   iterateTiles(layer, (tileCode: string, coordinates: Coordinates, id: string) => {
@@ -138,7 +222,7 @@ export function parseUFBMap(map: any): UFBMap {
   const backgroundLayer = map.layers.find((layer: any) => layer.name === "Background");
   if (backgroundLayer === undefined) throw new Error("Failed to find background layer.");
   const adjacencyList: Map<string, TileEdge[]> = new Map();
-  parseBackgroundLayer(backgroundLayer, tiles, adjacencyList);
+  parseBackgroundLayer(map, backgroundLayer, tiles, adjacencyList);
 
   // for(const key of adjacencyList.keys()) {
   //   console.log(key, adjacencyList.get(key));
@@ -147,8 +231,6 @@ export function parseUFBMap(map: any): UFBMap {
   const spawnLayer = map.layers.find((layer: any) => layer.name === "Spawnzones");
   if (spawnLayer === undefined) throw new Error("Failed to find spawn layer.");
   parseSpawnLayer(spawnLayer, tiles);
-
-  
 
   const ufbMap: UFBMap = {
     name: map.name,
@@ -163,19 +245,19 @@ export function parseUFBMap(map: any): UFBMap {
   return ufbMap;
 }
 
-function parseAllMaps(allMapsFile : string, outputRoot : string = "../Assets/Resources/Maps") {
+function parseAllMaps(allMapsFile: string, outputRoot: string = "../Assets/Resources/Maps") {
   const inputFile = allMapsFile;
   console.log(`Parsing ${inputFile}`);
   const data = readFileSync(inputFile);
   const allMaps = JSON.parse(data.toString());
- 
+
   for (const map of allMaps) {
     const parsed = parseUFBMap(map);
     console.log(`Writing ${parsed.name} to ${outputRoot}/${parsed.name}/map.json`)
     if (!existsSync(`${outputRoot}/${parsed.name}`)) mkdirSync(`${outputRoot}/${parsed.name}`, { recursive: true });
     const outputFile = `${outputRoot}/${parsed.name}/map.json`;
     (parsed as any).adjacencyList = Object.fromEntries(parsed.adjacencyList);
-    writeFileSync(outputFile, JSON.stringify(parsed, null, 2)); 
+    writeFileSync(outputFile, JSON.stringify(parsed, null, 2));
   }
 
   const mapNames = allMaps.map((map: any) => map.name);
@@ -190,7 +272,7 @@ function parseAllMaps(allMapsFile : string, outputRoot : string = "../Assets/Res
 
 }
 
-function parseDirectory(mapDir : string) {
+function parseDirectory(mapDir: string) {
   const allFiles = readdirSync(mapDir);
   allFiles.forEach((file: string) => {
     if (!file.endsWith(".json")) return;

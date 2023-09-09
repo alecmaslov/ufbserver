@@ -7,21 +7,26 @@ import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
 import { loadMap } from "#colyseus/schema/MapState";
+import { aStar } from "ngraph.path";
+
+interface FindPathMessageBody {
+  from: string;
+  to: string;
+}
 
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
 
-  onCreate(options: any) {
+  async onCreate(options: any) {
     this.setState(new UfbRoomState());
 
     console.log("onCreate options", options);
-    loadMap(this, "kraken").then(() => {
-      // debug print the map tiles / adjacency
-      console.log(this.state.map.tiles);
-      console.log(this.state.map._adjacencyList);
-      console.log(this.state.map.adjacencyList);
-    });
-
+    try {
+      await loadMap(this, "kraken");
+    }
+    catch (err) {
+      console.error(err);
+    }
     this.onMessage("whoami", (client, message) => {
       console.log("whoami", message);
       client.send("whoami", {
@@ -41,7 +46,22 @@ export class UfbRoom extends Room<UfbRoomState> {
         y: player.y
       });
     });
+
+    this.onMessage("findPath", (client, message: FindPathMessageBody) => {
+      console.log("findPath", message);
+      const pathFinder = aStar(this.state.map._navGraph, {
+        distance(fromNode, toNode, link) {
+          return link.data.energyCost;
+        }
+      });
+      const path = pathFinder.find(message.from, message.to);
+      console.log("path", JSON.stringify(path, null, 2));
+      client.send("pathFound", {
+        path: path
+      });
+    });
   }
+
 
   onJoin(client: Client, options: any) {
     console.log(client.sessionId, "joined!");

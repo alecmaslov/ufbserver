@@ -1,15 +1,19 @@
-import express, { json } from "express";
 import https from "https";
 import { readFileSync } from "fs";
-import { API_PORT, DEV_MODE, SSL_CERT_PATH, SSL_KEY_PATH, VERBOSE_INCOMING_REQUESTS } from "#config";
-import auth from "#routes/auth";
-import assets from "#routes/assets";
-import requestLogger from "#middleware/requestLogger";
+import express, { json } from "express";
+import cors from "cors";
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport"
 import { UfbRoom } from "#colyseus/UfbRoom";
+import requestLogger from "#middleware/requestLogger";
+import auth from "#routes/auth";
 import dev from "#routes/dev";
-import cors from "cors";
+import assets from "#routes/assets";
+import {
+    API_PORT, DEV_MODE,
+    SSL_CERT_PATH, SSL_KEY_PATH,
+    VERBOSE_INCOMING_REQUESTS
+} from "#config";
 
 const app = express();
 

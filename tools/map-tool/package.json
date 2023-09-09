@@ -4,14 +4,14 @@
     "description": "",
     "main": "out/parseMap.js",
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "parse-map": "node ./out/parseMap.js",
-      "tsc-watch": "npx tsc-watch"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "parse-map": "node ./out/parseMap.js",
+        "tsc-watch": "npx tsc-watch"
     },
     "author": "Carl Moore",
     "license": "ISC",
     "dependencies": {
-      "@types/node": "^20.3.1",
-      "tsc-watch": "^6.0.4"
+        "@types/node": "^20.3.1",
+        "tsc-watch": "^6.0.4"
     }
-  }
+}
