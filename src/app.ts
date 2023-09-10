@@ -14,6 +14,7 @@ import {
     SSL_CERT_PATH, SSL_KEY_PATH,
     VERBOSE_INCOMING_REQUESTS
 } from "#config";
+import { Room } from "colyseus";
 
 const app = express();
 
@@ -48,3 +49,6 @@ colyseusServer.listen(API_PORT, undefined, undefined, () => {
     console.log(`Listening on ${API_PORT}`);
     colyseusServer.define("ufbRoom", UfbRoom);
 });
+
+export const gameServer = colyseusServer;
+export const ROOMS: Record<string, Room> = {};

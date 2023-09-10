@@ -6,18 +6,75 @@ import { PlayerState } from "./schema/PlayerState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
-import { loadMap } from "#colyseus/schema/MapState";
+import { AdjacencyListItem, coordToTileId, loadMap, tileIdToCoord } from "#colyseus/schema/MapState";
 import { aStar } from "ngraph.path";
+import { RoomCache } from "./RoomCache";
+import { Node } from "ngraph.graph";
+import { MapSchema } from "@colyseus/schema";
+
+interface Coordinates {
+  x: number;
+  y: number;
+}
+
+interface PathStep {
+  tileId: string;
+  coord: {
+    x: number;
+    y: number;
+  };
+}
 
 interface FindPathMessageBody {
-  from: string;
-  to: string;
+  from: Coordinates;
+  to: Coordinates;
 }
+
+interface FoundPathMessageBody {
+  from: Coordinates;
+  to: Coordinates;
+  path: PathStep[];
+  cost: number;
+}
+
+interface PlayerMovedMessageBody {
+  playerId: string;
+  path: PathStep[];
+}
+
+interface MoveMessageBody {
+  toCoord: Coordinates;
+}
+
+const getPathCost = (p: Node<any>[], adjacencyList: MapSchema<AdjacencyListItem, string>) => {
+  let cost = 0;
+  for (let i = 1; i < p.length; i++) {
+    const from = p[i - 1].id as string;
+    const to = p[i].id as string;
+    const edgeCollection = adjacencyList.get(from);
+    if (!edgeCollection) {
+      throw new Error(`no adjacency list for ${from}`);
+    }
+    let edge: { energyCost: number } | undefined;
+    for (const e of edgeCollection.edges) {
+      if (e.to === to) {
+        edge = e;
+        break;
+      }
+    }
+    if (!edge) {
+      throw new Error(`no edge from ${from} to ${to}`);
+    }
+    cost += edge.energyCost;
+  }
+  return cost;
+};
 
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
 
   async onCreate(options: any) {
+    RoomCache.set(this.roomId, this);
     this.setState(new UfbRoomState());
 
     console.log("onCreate options", options);
@@ -34,34 +91,116 @@ export class UfbRoom extends Room<UfbRoomState> {
       });
     });
 
-    this.onMessage("move", (client, message) => {
-      console.log("move", message);
-      const player = this.state.players.get(client.id);
-      // TODO validation logic
-      player.x = message.x;
-      player.y = message.y;
-      this.broadcast("playerMoved", {
-        playerId: client.id,
-        x: player.x,
-        y: player.y
+    this.onMessage("move", (client, message: MoveMessageBody) => {
+      console.log("move", {
+        clientId: client.id,
+        message
       });
-    });
 
-    this.onMessage("findPath", (client, message: FindPathMessageBody) => {
-      console.log("findPath", message);
+      const player = this.state.players.get(client.id);
+
+      if (!player) {
+        this.notify(client, "You are not in this game!", "error");
+      }
+
+      const playerTileId = coordToTileId(player);
+      const toTileId = coordToTileId(message.toCoord);
+
       const pathFinder = aStar(this.state.map._navGraph, {
         distance(fromNode, toNode, link) {
           return link.data.energyCost;
         }
       });
-      const path = pathFinder.find(message.from, message.to);
+      const adjacencyList = this.state.map.adjacencyList;
+
+      const path = pathFinder.find(playerTileId, toTileId);
+      const p: any[] = [];
+      for(const node of path) {
+        console.log("node", node.id);
+        p.push({
+          id: node.id,
+        });
+      }
+
+      const cost = getPathCost(path, adjacencyList);
+      // player must have enough energy to move along the path
+      if (player.stats.energy < cost) {
+        this.notify(client, "You don't have enough energy to move there!", "error");
+        return;
+      }
+
       console.log("path", JSON.stringify(path, null, 2));
-      client.send("pathFound", {
-        path: path
+      this.broadcast("playerMoved", {
+        playerId: client.id,
+        path: p
       });
+
+      player.stats.energy -= cost;
+      if (player.stats.energy == 0) {
+        this.notify(client, "You are too tired to continue.");
+        this.incrementTurn();
+      }
+    });
+
+    this.onMessage("findPath", (client, message: FindPathMessageBody) => {
+      const fromTileId = coordToTileId(message.from);
+      const toTileId = coordToTileId(message.to);
+
+      const pathFinder = aStar(this.state.map._navGraph, {
+        distance(fromNode, toNode, link) {
+          return link.data.energyCost;
+        }
+      });
+      const adjacencyList = this.state.map.adjacencyList;
+
+      const path = pathFinder.find(fromTileId, toTileId);
+      if (!path || path.length === 0) {
+        this.notify(client, "No path found", "error");
+        return;
+      }
+
+      const pathSteps: PathStep[] = path.map(node => {
+        return {
+          tileId: node.id as string,
+          coord: tileIdToCoord(node.id as string)
+        };
+      });
+
+      const cost = getPathCost(path, adjacencyList);
+
+      client.send("foundPath", {
+        from: message.from,
+        to: message.to,
+        path: pathSteps,
+        cost: cost
+      });
+    });
+
+    this.onMessage("endTurn", (client, message) => {
+      console.log("endTurn", message);
+      const player = this.state.players.get(client.id);
+      if (player.id !== this.state.currentPlayerId) {
+        this.notify(client, "It's not your turn!", "error");
+        return;
+      }
+      this.incrementTurn();
     });
   }
 
+  incrementTurn() {
+    const n = this.state.turnOrder.length;
+    const nextPlayerIndex = (this.state.turnOrder.indexOf(this.state.currentPlayerId) + 1) % n;
+    // could compute nextPlayerIndex from turn instead, but this works if turnOrder length changes
+    this.state.currentPlayerId = this.state.turnOrder[nextPlayerIndex];
+    this.state.turn++;
+  }
+
+  notify(client: Client, message: string, notificationType: string = "info") {
+    client.send("notification", {
+      type: notificationType,
+      message
+    });
+  }
 
   onJoin(client: Client, options: any) {
     console.log(client.sessionId, "joined!");
@@ -70,21 +209,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     player.id = client.id;
     player.x = Math.floor(Math.random() * 28);
     player.y = Math.floor(Math.random() * 28);
-
-    client.send("playerJoined", {
-      clientId: client.id,
-      isMe: true,
-      x: player.x,
-      y: player.y
-    });
-
-    // send to all other clients
-    this.broadcast("playerJoined", {
-      clientId: client.id,
-      isMe: false,
-      x: player.x,
-      y: player.y
-    }, { except: client });
+    this.notify(client, "Welcome to the game, " + client.id + "!");
   }
 
   onLeave(client: Client, consented: boolean) {

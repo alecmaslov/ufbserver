@@ -7,7 +7,8 @@
   "scripts": {
     "start": "tsx watch src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "generate-schema": "npx schema-codegen src/colyseus/schema/* --output data/schema/ --csharp --namespace UFB.StateSchema"
   },
   "keywords": [],
   "author": "",
