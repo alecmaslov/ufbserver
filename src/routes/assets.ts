@@ -7,6 +7,7 @@ import db from "#db";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { getMap } from "#assets/maps";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,3 +35,12 @@ const getAssetsForBundleHandler: Handler = async (req, res) => {
     }
     res.send(assets);
 };
+
+// const getAllMapsHandler: Handler = async (req, res) => {
+
+//     const allMaps = ALL_MAPS.map(m => getMap(m));
+//     res.send(ALL_MAPS.map(m => m.name));
+// }
+
+
+// router.get("/maps", safetyNet(getAllMapsHandler));

@@ -8,7 +8,7 @@
 using Colyseus.Schema;
 using Action = System.Action;
 
-namespace UFB.Schema {
+namespace UFB.StateSchema {
 	public partial class PlayerStats : Schema {
 		[Type(0, "number")]
 		public float health = default(float);

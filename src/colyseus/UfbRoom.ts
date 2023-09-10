@@ -96,11 +96,16 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     console.log("onCreate options", options);
     try {
-      await loadMap(this, options.mapName);
+      await loadMap(this, options.mapName ?? "kraken");
     }
     catch (err) {
       console.error(err);
     }
+
+    setTimeout(() => {
+      // load a diff map 5 sec later
+      loadMap(this, "camelot");
+    }, 5000);
 
     this.onMessage("whoami", (client, message) => {
       console.log("whoami", message);

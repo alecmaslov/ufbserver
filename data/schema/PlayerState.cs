@@ -8,7 +8,7 @@
 using Colyseus.Schema;
 using Action = System.Action;
 
-namespace UFB.Schema {
+namespace UFB.StateSchema {
 	public partial class PlayerState : Schema {
 		[Type(0, "string")]
 		public string id = default(string);

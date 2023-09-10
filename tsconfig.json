@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noImplicitAny": true,
     "target": "ESNext",
     "lib": ["ESNext", "esnext.asynciterable"],
     "typeRoots": ["node_modules/#types"],
@@ -7,6 +8,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false,
     "moduleResolution": "node",
     "module": "ESNext",
     "pretty": true,

@@ -8,7 +8,7 @@
 using Colyseus.Schema;
 using Action = System.Action;
 
-namespace UFB.Schema {
+namespace UFB.StateSchema {
 	public partial class AdjacencyListItem : Schema {
 		[Type(0, "array", typeof(ArraySchema<TileEdgeSchema>))]
 		public ArraySchema<TileEdgeSchema> edges = new ArraySchema<TileEdgeSchema>();

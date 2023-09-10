@@ -9,6 +9,7 @@ import requestLogger from "#middleware/requestLogger";
 import auth from "#routes/auth";
 import dev from "#routes/dev";
 import assets from "#routes/assets";
+import maps from "#routes/maps";
 import {
     API_PORT, DEV_MODE,
     SSL_CERT_PATH, SSL_KEY_PATH,
@@ -29,6 +30,7 @@ if (VERBOSE_INCOMING_REQUESTS) {
 
 app.use("/auth", auth);
 app.use("/assets", assets);
+app.use("/maps", maps);
 
 if (DEV_MODE) {
     app.use("/dev", dev);

@@ -15931,7 +15931,7 @@
         "type": "basic",
         "energyCost": 1
       },
-      {
+      { 
         "from": "tile_A_2",
         "to": "tile_A_1",
         "type": "basic",

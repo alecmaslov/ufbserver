@@ -8,7 +8,7 @@
 using Colyseus.Schema;
 using Action = System.Action;
 
-namespace UFB.Schema {
+namespace UFB.StateSchema {
 	public partial class TileEdgeSchema : Schema {
 		[Type(0, "string")]
 		public string from = default(string);

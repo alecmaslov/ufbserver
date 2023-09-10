@@ -101,3 +101,57 @@ model BundleAsset {
   assetId String
   asset   Asset  @relation(fields: [assetId], references: [objectKey])
 }
+
+// what if we have the same map name, but different sizes? Maybe id should
+// be cuid
+model UfbMap {
+  id           String  @id @default(cuid())
+  name         String
+  thumbnailUrl String?
+  description  String?
+  gridWidth    Int
+  gridHeight   Int
+  publisher    String? // could also be tied to a userId
+  Tile         Tile[]
+}
+
+model Tile {
+  id         String  @id @default(cuid())
+  tileCode   String // previously the id, looks like "tile_A_1"
+  mapId      String
+  x          Int
+  y          Int
+  legacyCode String? // for backwards compatibility
+  textureUrl String?
+
+  map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  fromTileAdjacencies TileAdjacency[] @relation("FromAdjacency")
+  toTileAdjacencies   TileAdjacency[] @relation("ToAdjacency")
+  tileAdjacency       TileAdjacency[]
+
+  @@unique([tileCode, mapId])
+  @@unique([x, y, mapId])
+}
+
+enum AdjacencyType {
+  BASIC
+  BRIDGE
+  PORTAL
+}
+
+model TileAdjacency {
+  id         String        @id @default(cuid()) // can there be multiple adjacencies between 2 tiles? 
+  // Maybe we can make id a compund between to and from instead
+  fromId     String
+  toId       String
+  type       AdjacencyType
+  energyCost Int
+
+  from   Tile    @relation("FromAdjacency", fields: [fromId], references: [id], onDelete: Cascade)
+  to     Tile    @relation("ToAdjacency", fields: [toId], references: [id], onDelete: Cascade)
+  tile   Tile?   @relation(fields: [tileId], references: [id], onDelete: Cascade)
+  tileId String?
+}
+
+// if we normalize tiles and adjacency list, we can track in-game actions to 
+// those tiles, query them, do more stuff with them

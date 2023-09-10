@@ -5,7 +5,7 @@
 // GENERATED USING @colyseus/schema 2.0.15
 // 
 
-namespace UFB.Schema {
+namespace UFB.StateSchema {
 	public struct TileType {
 
 		public const string Bridge = "Bridge";
@@ -15,4 +15,3 @@ namespace UFB.Schema {
 		public const string Enemy = "Enemy";
 		public const string Portal = "Portal";
 	}
-}

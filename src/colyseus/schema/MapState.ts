@@ -6,20 +6,22 @@ import { UfbRoomState } from "#colyseus/schema/UfbRoomState";
 import createGraph, { Graph } from "ngraph.graph";
 import { ok } from "assert";
 
-const TILE_LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+const TILE_LETTERS = [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+    "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+];
 
 export const coordToTileId = (coordinates: Coordinates): string => {
-  return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
+    return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
 };
 
 export const tileIdToCoord = (tileId: string): Coordinates => {
-  const parts = tileId.split("_");
-  const y = TILE_LETTERS.indexOf(parts[1]);
-  const x = parseInt(parts[2]) - 1;
-  const c = { x, y };
-  ok(coordToTileId(c) === tileId);
-  return c;
+    const parts = tileId.split("_");
+    const y = TILE_LETTERS.indexOf(parts[1]);
+    const x = parseInt(parts[2]) - 1;
+    const c = { x, y };
+    ok(coordToTileId(c) === tileId);
+    return c;
 };
 
 type NavGraphLinkData = {
@@ -27,12 +29,12 @@ type NavGraphLinkData = {
 }
 
 export interface UFBMap {
-    name : string;
-    gridWidth : number;
-    gridHeight : number;
+    name: string;
+    gridWidth: number;
+    gridHeight: number;
     defaultCards: string[];
-    tiles : Partial<GameTile>[];
-    adjacencyList : Record<string, TileEdge[]>;
+    tiles: Partial<GameTile>[];
+    adjacencyList: Record<string, TileEdge[]>;
 }
 
 export enum TileType {
@@ -50,9 +52,9 @@ export interface TileColor {
 }
 
 export interface SpawnEntity {
-    name : string;
+    name: string;
     // type : TileType;
-    properties : any;
+    properties: any;
 }
 
 type EdgeType = "basic" | "portal" | "bridge";
@@ -76,13 +78,18 @@ export interface Coordinates {
 
 export interface GameTile {
     id: string;
-    type : TileType;
-    spawnItems : SpawnEntity[];
-    coordinates : Coordinates;
+    type: TileType;
+    spawnItems: SpawnEntity[];
+    coordinates: Coordinates;
     color: TileColor | null;
-    layerName : string;
-    sides : TileSide[];
+    layerName: string;
+    sides: TileSide[];
     legacyCode: string; // code for the original UFB map parser in Swift
+}
+
+export class TileColor extends Schema {
+    @type("string") name: string = "";
+    @type("string") color: string = "";
 }
 
 export class TileState extends Schema {
@@ -90,7 +97,7 @@ export class TileState extends Schema {
     @type("string") type: TileType;
     @type("string") layerName: string;
     @type("string") legacyCode: string;
-    @type("string") color: TileColor | null;
+    @type(TileColor) color: TileColor;
     @type("number") x: number;
     @type("number") y: number;
 }
@@ -107,8 +114,8 @@ export class AdjacencyListItem extends Schema {
 }
 
 export class MapState extends Schema {
-    @type("string") id: string;
-    @type("string") name: string;
+    @type("string") id: string = "";
+    @type("string") name: string = "";
     @type("number") gridWidth: number = 0;
     @type("number") gridHeight: number = 0;
     @type({ map: TileState }) tiles: MapSchema<TileState> = new MapSchema<TileState>();
@@ -136,7 +143,9 @@ export const loadMap = async (room: Room<UfbRoomState>, mapKey: string) => {
         tileSchema.type = tile.type;
         tileSchema.layerName = tile.layerName;
         tileSchema.legacyCode = tile.legacyCode;
-        tileSchema.color = tile.color;
+        tileSchema.color = new TileColor();
+        tileSchema.color.name = tile.color!.name;
+        tileSchema.color.color = tile.color!.color;
         tileSchema.x = tile.coordinates.x;
         tileSchema.y = tile.coordinates.y;
         room.state.map.tiles.set(tile.id, tileSchema);
@@ -169,5 +178,5 @@ export const loadMap = async (room: Room<UfbRoomState>, mapKey: string) => {
         }
     }
     room.state.map._navGraph = graph;
-    room.broadcast("mapChanged", {});
+    room.broadcast("mapChanged", {}, { afterNextPatch: true });
 }
