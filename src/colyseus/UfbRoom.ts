@@ -12,6 +12,19 @@ import { RoomCache } from "./RoomCache";
 import { Node } from "ngraph.graph";
 import { MapSchema } from "@colyseus/schema";
 
+interface UfbRoomRules {
+  maxPlayers: number;
+  initHealth: number;
+  initEnergy: number;
+  turnTime: number;
+}
+
+interface UfbRoomOptions {
+  mapName: string;
+  rules: UfbRoomRules;
+  token: string;
+}
+
 interface Coordinates {
   x: number;
   y: number;
@@ -46,6 +59,10 @@ interface MoveMessageBody {
   toCoord: Coordinates;
 }
 
+interface ChangeMapMessageBody {
+  mapName: string;
+}
+
 const getPathCost = (p: Node<any>[], adjacencyList: MapSchema<AdjacencyListItem, string>) => {
   let cost = 0;
   for (let i = 1; i < p.length; i++) {
@@ -73,17 +90,18 @@ const getPathCost = (p: Node<any>[], adjacencyList: MapSchema<AdjacencyListItem,
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
 
-  async onCreate(options: any) {
+  async onCreate(options: UfbRoomOptions) {
     RoomCache.set(this.roomId, this);
     this.setState(new UfbRoomState());
 
     console.log("onCreate options", options);
     try {
-      await loadMap(this, "kraken");
+      await loadMap(this, options.mapName);
     }
     catch (err) {
       console.error(err);
     }
+
     this.onMessage("whoami", (client, message) => {
       console.log("whoami", message);
       client.send("whoami", {
@@ -184,6 +202,11 @@ export class UfbRoom extends Room<UfbRoomState> {
         return;
       }
       this.incrementTurn();
+    });
+
+    this.onMessage("changeMap", async (client, message: ChangeMapMessageBody) => {
+      console.log("changeMap", message);
+      await loadMap(this, message.mapName);
     });
   }
 

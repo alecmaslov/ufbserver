@@ -51,4 +51,3 @@ colyseusServer.listen(API_PORT, undefined, undefined, () => {
 });
 
 export const gameServer = colyseusServer;
-export const ROOMS: Record<string, Room> = {};

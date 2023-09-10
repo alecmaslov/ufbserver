@@ -169,4 +169,5 @@ export const loadMap = async (room: Room<UfbRoomState>, mapKey: string) => {
         }
     }
     room.state.map._navGraph = graph;
+    room.broadcast("mapChanged", {});
 }
