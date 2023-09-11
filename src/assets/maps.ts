@@ -1,6 +1,6 @@
 import { readFileSync, statSync, readdirSync } from "fs";
 import { basename, join as pathJoin } from "path";
-import { UFBMap } from "#colyseus/schema/MapState";
+import { UFBMap } from "#game/schema/MapState";
 
 const MAPS_ROOT = pathJoin("data", "maps");
 

@@ -2,7 +2,7 @@ import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
 import { matchMaker } from "@colyseus/core";
 import { Router } from "express";
-import { RoomCache } from "#colyseus/RoomCache";
+import { RoomCache } from "#game/RoomCache";
 
 const router = Router();
 

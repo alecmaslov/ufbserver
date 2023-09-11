@@ -4,7 +4,7 @@ import express, { json } from "express";
 import cors from "cors";
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport"
-import { UfbRoom } from "#colyseus/UfbRoom";
+import { UfbRoom } from "#game/UfbRoom";
 import requestLogger from "#middleware/requestLogger";
 import auth from "#routes/auth";
 import dev from "#routes/dev";

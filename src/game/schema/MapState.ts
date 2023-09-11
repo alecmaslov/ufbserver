@@ -1,3 +1,4 @@
+import { Coordinates } from "#shared-types";
 import { Schema, type, ArraySchema, MapSchema } from "@colyseus/schema";
 import { Graph } from "ngraph.graph";
 
@@ -23,11 +24,6 @@ export enum TileType {
     Portal = "Portal",
 }
 
-export interface TileColor {
-    name: string;
-    color: string;
-}
-
 export interface SpawnEntity {
     name: string;
     // type : TileType;
@@ -46,11 +42,6 @@ export interface TileEdge {
 export interface TileSide {
     side: "top" | "right" | "bottom" | "left";
     edgeProperty: "wall" | "door" | "portal" | "bridge";
-}
-
-export interface Coordinates {
-    x: number;
-    y: number;
 }
 
 export interface GameTile {

@@ -6,14 +6,16 @@ import { PlayerState } from "./schema/PlayerState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
-import { AdjacencyListItem, Coordinates, NavGraphLinkData, TileColor, TileEdgeSchema, TileState, UFBMap } from "#colyseus/schema/MapState";
+import { AdjacencyListItem, NavGraphLinkData, TileEdgeSchema, TileState, UFBMap } from "#game/schema/MapState";
 import { aStar } from "ngraph.path";
 import { RoomCache } from "./RoomCache";
 import createGraph, { Node } from "ngraph.graph";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
-import { ok } from "assert";
-import { MoveMessageBody, FindPathMessageBody, PathStep, ChangeMapMessageBody, PlayerMovedMessageBody } from "./message-types";
+import { MoveMessage, FindPathMessage, ChangeMapMessage, PlayerMovedMessage } from "./message-types";
 import { createId } from "@paralleldrive/cuid2";
+import { PathStep } from "#shared-types";
+import { coordToTileId, tileIdToCoord, getPathCost } from "./map-helpers";
+import { registerMessageHandlers } from "./message-handlers";
 
 interface UfbRoomRules {
   maxPlayers: number;
@@ -39,48 +41,6 @@ interface UfbRoomOptions {
   joinOptions: UfbRoomJoinOptions;
 }
 
-const TILE_LETTERS = [
-  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
-];
-
-export const coordToTileId = (coordinates: Coordinates): string => {
-  return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
-};
-
-export const tileIdToCoord = (tileId: string): Coordinates => {
-  const parts = tileId.split("_");
-  const y = TILE_LETTERS.indexOf(parts[1]);
-  const x = parseInt(parts[2]) - 1;
-  const c = { x, y };
-  ok(coordToTileId(c) === tileId);
-  return c;
-};
-
-const getPathCost = (p: Node<any>[], adjacencyList: MapSchema<AdjacencyListItem, string>) => {
-  let cost = 0;
-  for (let i = 1; i < p.length; i++) {
-    const from = p[i - 1].id as string;
-    const to = p[i].id as string;
-    const edgeCollection = adjacencyList.get(from);
-    if (!edgeCollection) {
-      throw new Error(`no adjacency list for ${from}`);
-    }
-    let edge: { energyCost: number } | undefined;
-    for (const e of edgeCollection.edges) {
-      if (e.to === to) {
-        edge = e;
-        break;
-      }
-    }
-    if (!edge) {
-      throw new Error(`no edge from ${from} to ${to}`);
-    }
-    cost += edge.energyCost;
-  }
-  return cost;
-};
-
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
   sessionIdToPlayerId = new Map<string, string>();
@@ -90,134 +50,13 @@ export class UfbRoom extends Room<UfbRoomState> {
     this.setState(new UfbRoomState());
 
     console.log("onCreate options", options.createOptions);
-
     try {
       await this.initMap(options.createOptions?.mapName ?? "kraken");
     }
     catch (err) {
       console.error(err);
     }
-
-    this.onMessage("whoami", (client, message) => {
-      console.log("whoami", message);
-      client.send("whoami", {
-        clientId: client.sessionId
-      });
-    });
-
-    this.onMessage("move", (client, message: MoveMessageBody) => {
-      const playerId = this.sessionIdToPlayerId.get(client.sessionId);
-
-      console.log("move", {
-        playerId,
-        message
-      });
-
-      const player = this.state.players.get(playerId);
-
-      if (!player) {
-        this.notify(client, "You are not in this game!", "error");
-      }
-
-      if (player.id !== this.state.currentPlayerId) {
-        this.notify(client, "It's not your turn!", "error");
-        return;
-      }
-
-      const playerTileId = coordToTileId(player);
-      const toTileId = coordToTileId(message.destination);
-
-      const pathFinder = aStar(this.state.map._navGraph, {
-        distance(fromNode, toNode, link) {
-          return link.data.energyCost;
-        }
-      });
-      const adjacencyList = this.state.map.adjacencyList;
-
-      const path = pathFinder.find(playerTileId, toTileId);
-      const p: PathStep[] = [];
-      for (const node of path) {
-        console.log("node", node.id);
-        p.push({
-          tileId: node.id as string,
-          coord: tileIdToCoord(node.id as string)
-        });
-      }
-
-      const cost = getPathCost(path, adjacencyList);
-      // player must have enough energy to move along the path
-      if (player.stats.energy < cost) {
-        this.notify(client, "You don't have enough energy to move there!", "error");
-        return;
-      }
-
-      player.x = message.destination.x;
-      player.y = message.destination.y;
-      player.stats.energy -= cost;
-
-      console.log("path", JSON.stringify(path, null, 2));
-      const playerMovedMessage: PlayerMovedMessageBody = {
-        playerId,
-        path: p
-      };
-      this.broadcast("playerMoved", playerMovedMessage);
-
-      if (player.stats.energy == 0) {
-        this.notify(client, "You are too tired to continue.");
-        this.incrementTurn();
-      }
-    });
-
-    this.onMessage("findPath", (client, message: FindPathMessageBody) => {
-      const fromTileId = coordToTileId(message.from);
-      const toTileId = coordToTileId(message.to);
-
-      const pathFinder = aStar(this.state.map._navGraph, {
-        distance(fromNode, toNode, link) {
-          return link.data.energyCost;
-        }
-      });
-      const adjacencyList = this.state.map.adjacencyList;
-
-      const path = pathFinder.find(fromTileId, toTileId);
-      if (!path || path.length === 0) {
-        this.notify(client, "No path found", "error");
-        return;
-      }
-
-      const pathSteps: PathStep[] = path.map(node => {
-        return {
-          tileId: node.id as string,
-          coord: tileIdToCoord(node.id as string)
-        };
-      });
-
-      const cost = getPathCost(path, adjacencyList);
-
-      client.send("foundPath", {
-        from: message.from,
-        to: message.to,
-        path: pathSteps,
-        cost: cost
-      });
-    });
-
-    this.onMessage("endTurn", (client, message) => {
-      console.log("endTurn", message);
-      const playerId = this.sessionIdToPlayerId.get(client.sessionId);
-      const player = this.state.players.get(playerId);
-      if (player.id !== this.state.currentPlayerId) {
-        this.notify(client, "It's not your turn!", "error");
-        return;
-      }
-      this.incrementTurn();
-    });
-
-    this.onMessage("changeMap", async (client, message: ChangeMapMessageBody) => {
-      console.log("changeMap", message);
-      await this.initMap(message.mapName);
-    });
-
+    registerMessageHandlers(this);
     console.log(`created room ${this.roomId}`);
   }
 

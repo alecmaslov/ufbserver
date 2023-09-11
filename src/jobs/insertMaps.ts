@@ -3,7 +3,7 @@ import db from "#db";
 import { JsonArray } from "@prisma/client/runtime/library";
 import { getAllMapFiles, getMap } from "#assets/maps";
 import { createId } from "@paralleldrive/cuid2";
-import { UFBMap, GameTile } from "#types";
+import { GameTile, UFBMap } from "#game/schema/MapState";
 
 const DEFAULT_MAP_PUBLISHER = "ufb";
 
