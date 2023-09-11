@@ -1,10 +1,5 @@
 import { Coordinates } from "#shared-types";
 import { Schema, type, ArraySchema, MapSchema } from "@colyseus/schema";
-import { Graph } from "ngraph.graph";
-
-export type NavGraphLinkData = {
-    energyCost: number;
-}
 
 export interface UFBMap {
     name: string;
@@ -83,10 +78,10 @@ export class MapState extends Schema {
     @type("string") name: string = "";
     @type("number") gridWidth: number = 0;
     @type("number") gridHeight: number = 0;
-    @type({ map: TileState }) tiles: MapSchema<TileState> = new MapSchema<TileState>();
-    @type({ map: AdjacencyListItem }) adjacencyList = new MapSchema<AdjacencyListItem>();
+    @type({ map: TileState }) tiles: MapSchema<TileState> 
+        = new MapSchema<TileState>();
+    @type({ map: AdjacencyListItem }) adjacencyList: MapSchema<AdjacencyListItem> 
+        = new MapSchema<AdjacencyListItem>();
     /** raw representation for internal use */
     _map: UFBMap | null = null;
-    /** nav graph for pathfinding */
-    _navGraph: Graph<any, NavGraphLinkData> = null;
 }

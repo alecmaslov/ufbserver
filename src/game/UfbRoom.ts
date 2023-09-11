@@ -6,12 +6,12 @@ import { PlayerState } from "./schema/PlayerState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
-import { AdjacencyListItem, NavGraphLinkData, TileEdgeSchema, TileState, UFBMap } from "#game/schema/MapState";
+import { AdjacencyListItem, TileEdgeSchema, TileState, UFBMap } from "#game/schema/MapState";
 import { RoomCache } from "./RoomCache";
-import createGraph from "ngraph.graph";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { registerMessageHandlers } from "./message-handlers";
+import { Pathfinder } from "./Pathfinder";
 
 interface UfbRoomRules {
   maxPlayers: number;
@@ -40,6 +40,7 @@ interface UfbRoomOptions {
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
   sessionIdToPlayerId = new Map<string, string>();
+  pathfinder: Pathfinder = new Pathfinder();
 
   async onCreate(options: UfbRoomOptions) {
     RoomCache.set(this.roomId, this);
@@ -168,17 +169,8 @@ export class UfbRoom extends Room<UfbRoomState> {
       this.state.map.adjacencyList.set(key, item);
     }
 
-    // build nav graph
-    const graph = createGraph<any, NavGraphLinkData>();
-    for (const key in ufbMap.adjacencyList) {
-      const edges = ufbMap.adjacencyList[key]!;
-      for (const edge of edges) {
-        graph.addLink(edge.from, edge.to, {
-          energyCost: edge.energyCost,
-        });
-      }
-    }
-    this.state.map._navGraph = graph;
+    this.pathfinder = Pathfinder.fromMapState(this.state.map);
+
     this.broadcast("mapChanged", {}, { afterNextPatch: true });
     this.resetTurn();
   }

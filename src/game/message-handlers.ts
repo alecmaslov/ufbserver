@@ -34,24 +34,11 @@ export const messageHandlers: MessageHandlers = {
         const playerTileId = coordToTileId(player);
         const toTileId = coordToTileId(message.destination);
 
-        const pathFinder = aStar(room.state.map._navGraph, {
-            distance(fromNode, toNode, link) {
-                return link.data.energyCost;
-            }
-        });
-        const adjacencyList = room.state.map.adjacencyList;
+        const {
+            path,
+            cost
+        } = room.pathfinder.find(playerTileId, toTileId);
 
-        const path = pathFinder.find(playerTileId, toTileId);
-        const p: PathStep[] = [];
-        for (const node of path) {
-            console.log("node", node.id);
-            p.push({
-                tileId: node.id as string,
-                coord: tileIdToCoord(node.id as string)
-            });
-        }
-
-        const cost = getPathCost(path, adjacencyList);
         // player must have enough energy to move along the path
         if (player.stats.energy < cost) {
             room.notify(client, "You don't have enough energy to move there!", "error");
@@ -65,7 +52,7 @@ export const messageHandlers: MessageHandlers = {
         console.log("path", JSON.stringify(path, null, 2));
         const playerMovedMessage: PlayerMovedMessage = {
             playerId,
-            path: p
+            path
         };
         room.broadcast("playerMoved", playerMovedMessage);
 
@@ -77,36 +64,24 @@ export const messageHandlers: MessageHandlers = {
 
     "findPath": (room, client, message) => {
         const fromTileId = coordToTileId(message.from);
-      const toTileId = coordToTileId(message.to);
+        const toTileId = coordToTileId(message.to);
 
-      const pathFinder = aStar(room.state.map._navGraph, {
-        distance(fromNode, toNode, link) {
-          return link.data.energyCost;
+        const {
+            path,
+            cost
+         } = room.pathfinder.find(fromTileId, toTileId);
+
+        if (!path || path.length === 0) {
+            room.notify(client, "No path found", "error");
+            return;
         }
-      });
-      const adjacencyList = room.state.map.adjacencyList;
 
-      const path = pathFinder.find(fromTileId, toTileId);
-      if (!path || path.length === 0) {
-        room.notify(client, "No path found", "error");
-        return;
-      }
-
-      const pathSteps: PathStep[] = path.map(node => {
-        return {
-          tileId: node.id as string,
-          coord: tileIdToCoord(node.id as string)
-        };
-      });
-
-      const cost = getPathCost(path, adjacencyList);
-
-      client.send("foundPath", {
-        from: message.from,
-        to: message.to,
-        path: pathSteps,
-        cost: cost
-      });
+        client.send("foundPath", {
+            from: message.from,
+            to: message.to,
+            path,
+            cost
+        });
     },
 
     "endTurn": (room, client, message) => {
@@ -115,7 +90,7 @@ export const messageHandlers: MessageHandlers = {
         const player = room.state.players.get(playerId);
         if (player.id !== room.state.currentPlayerId) {
             room.notify(client, "It's not your turn!", "error");
-          return;
+            return;
         }
         room.incrementTurn();
     },
@@ -128,6 +103,6 @@ export const messageHandlers: MessageHandlers = {
 
 export function registerMessageHandlers(room: UfbRoom) {
     for (const [key, handler] of Object.entries(messageHandlers)) {
-        room.onMessage<any>(key, handler.bind(room));
+        room.onMessage<any>(key, handler.bind(undefined, room));
     }
 }
