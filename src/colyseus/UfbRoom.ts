@@ -12,7 +12,8 @@ import { RoomCache } from "./RoomCache";
 import createGraph, { Node } from "ngraph.graph";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { ok } from "assert";
-import { MoveMessageBody, FindPathMessageBody, PathStep, ChangeMapMessageBody } from "./message-types";
+import { MoveMessageBody, FindPathMessageBody, PathStep, ChangeMapMessageBody, PlayerMovedMessageBody } from "./message-types";
+import { createId } from "@paralleldrive/cuid2";
 
 interface UfbRoomRules {
   maxPlayers: number;
@@ -104,6 +105,11 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.notify(client, "You are not in this game!", "error");
       }
 
+      if (player.id !== this.state.currentPlayerId) {
+        this.notify(client, "It's not your turn!", "error");
+        return;
+      }
+
       const playerTileId = coordToTileId(player);
       const toTileId = coordToTileId(message.destination);
 
@@ -115,11 +121,12 @@ export class UfbRoom extends Room<UfbRoomState> {
       const adjacencyList = this.state.map.adjacencyList;
 
       const path = pathFinder.find(playerTileId, toTileId);
-      const p: any[] = [];
+      const p: PathStep[] = [];
       for(const node of path) {
         console.log("node", node.id);
         p.push({
-          id: node.id,
+          tileId: node.id as string,
+          coord: tileIdToCoord(node.id as string)
         });
       }
 
@@ -135,10 +142,11 @@ export class UfbRoom extends Room<UfbRoomState> {
       player.stats.energy -= cost;
 
       console.log("path", JSON.stringify(path, null, 2));
-      this.broadcast("playerMoved", {
+      const playerMovedMessage: PlayerMovedMessageBody = {
         playerId: client.id,
         path: p
-      });
+      };
+      this.broadcast("playerMoved", playerMovedMessage);
 
       if (player.stats.energy == 0) {
         this.notify(client, "You are too tired to continue.");
@@ -206,10 +214,20 @@ export class UfbRoom extends Room<UfbRoomState> {
   }
 
   onJoin(client: Client, options: any) {
+    let playerId = options.playerId ?? "";
+    console.log("onJoin options", options);
+    if (isNullOrEmpty(playerId)) {
+      playerId = createId();
+      client.send("generatedPlayerId", {
+        playerId
+      });
+    }
     console.log(client.sessionId, "joined!");
-    this.state.players.set(client.id, new PlayerState());
-    const player = this.state.players.get(client.id);
-    player.id = client.id;
+    this.state.players.set(playerId, new PlayerState());
+    const player = this.state.players.get(playerId);
+    player.id = playerId;
+    player.clientId = client.id;
+    player.name = options.name ?? [ "Player", playerId ].join(" ");
     player.x = Math.floor(Math.random() * 28);
     player.y = Math.floor(Math.random() * 28);
     this.state.turnOrder.push(client.id);

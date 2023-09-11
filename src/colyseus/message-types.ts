@@ -24,15 +24,20 @@ export interface FoundPathMessageBody {
     cost: number;
 }
 
+export interface MoveMessageBody {
+    destination: Coordinates;
+}
+
 export interface PlayerMovedMessageBody {
     playerId: string;
     path: PathStep[];
 }
 
-export interface MoveMessageBody {
-    destination: Coordinates;
-}
 
 export interface ChangeMapMessageBody {
     mapName: string;
+}
+
+export interface GeneratedPlayerIdMessageBody {
+    playerId: string;
 }

@@ -10,6 +10,8 @@ export class PlayerStats extends Schema {
 
 export class PlayerState extends Schema {
     @type("string") id: string = "";
+    @type("string") clientId: string = "";
+    @type("string") name: string = "";
     @type("number") x: number = 0;
     @type("number") y: number = 0;
     @type(PlayerStats) stats: PlayerStats = new PlayerStats();
