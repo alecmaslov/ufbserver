@@ -72,9 +72,6 @@ export class TileColor extends Schema {
 export class TileState extends Schema {
     @type("string") id: string;
     @type("string") type: TileType;
-    @type("string") layerName: string;
-    @type("string") legacyCode: string;
-    @type(TileColor) color: TileColor;
     @type("number") x: number;
     @type("number") y: number;
 }

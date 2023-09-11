@@ -22,13 +22,21 @@ interface UfbRoomRules {
   turnTime: number;
 }
 
-interface UfbRoomOptions {
+interface UfbRoomCreateOptions {
   mapName: string;
+  rules: UfbRoomRules;
+}
+
+interface UfbRoomJoinOptions {
+  token: string;
   playerId: string;
   displayName: string;
   characterId: string;
-  rules: UfbRoomRules;
-  token: string;
+}
+
+interface UfbRoomOptions {
+  createOptions: UfbRoomCreateOptions;
+  joinOptions: UfbRoomJoinOptions;
 }
 
 const TILE_LETTERS = [
@@ -80,10 +88,10 @@ export class UfbRoom extends Room<UfbRoomState> {
     RoomCache.set(this.roomId, this);
     this.setState(new UfbRoomState());
 
-    console.log("onCreate options", options);
+    console.log("onCreate options", options.createOptions);
 
     try {
-      await this.initMap(options.mapName ?? "kraken");
+      await this.initMap(options.createOptions?.mapName ?? "kraken");
     }
     catch (err) {
       console.error(err);
@@ -125,7 +133,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
       const path = pathFinder.find(playerTileId, toTileId);
       const p: PathStep[] = [];
-      for(const node of path) {
+      for (const node of path) {
         console.log("node", node.id);
         p.push({
           tileId: node.id as string,
@@ -217,7 +225,7 @@ export class UfbRoom extends Room<UfbRoomState> {
   }
 
   onJoin(client: Client, options: UfbRoomOptions) {
-    let playerId = options.playerId ?? "";
+    let playerId = options.joinOptions.playerId ?? "";
     console.log("onJoin options", options);
     if (isNullOrEmpty(playerId)) {
       playerId = createId();
@@ -230,8 +238,8 @@ export class UfbRoom extends Room<UfbRoomState> {
     const player = this.state.players.get(playerId);
     player.id = playerId;
     player.sessionId = client.sessionId;
-    player.characterId = options.characterId ?? "kirin";
-    player.displayName = options.displayName ?? [player.characterId, playerId].join(" ");
+    player.characterId = options.joinOptions?.characterId ?? "kirin";
+    player.displayName = options.joinOptions?.displayName ?? [player.characterId, playerId].join(" ");
     player.x = Math.floor(Math.random() * 28);
     player.y = Math.floor(Math.random() * 28);
     this.state.turnOrder.push(client.id);
@@ -296,44 +304,39 @@ export class UfbRoom extends Room<UfbRoomState> {
     this.state.map._map = ufbMap;
 
     for (const tile of ufbMap.tiles) {
-        const tileSchema = new TileState();
-        tileSchema.id = tile.id;
-        tileSchema.type = tile.type;
-        tileSchema.layerName = tile.layerName;
-        tileSchema.legacyCode = tile.legacyCode;
-        tileSchema.color = new TileColor();
-        tileSchema.color.name = tile.color!.name;
-        tileSchema.color.color = tile.color!.color;
-        tileSchema.x = tile.coordinates.x;
-        tileSchema.y = tile.coordinates.y;
-        this.state.map.tiles.set(tile.id, tileSchema);
+      const tileSchema = new TileState();
+      tileSchema.id = tile.id;
+      tileSchema.type = tile.type;
+      tileSchema.x = tile.coordinates.x;
+      tileSchema.y = tile.coordinates.y;
+      this.state.map.tiles.set(tile.id, tileSchema);
     }
 
     this.state.map.adjacencyList = new MapSchema<AdjacencyListItem>();
     for (const key in ufbMap.adjacencyList) {
-        const edges = ufbMap.adjacencyList[key]!;
-        const item = new AdjacencyListItem();
-        item.edges = new ArraySchema<TileEdgeSchema>();
-        for (const edge of edges) {
-            const edgeSchema = new TileEdgeSchema();
-            edgeSchema.from = edge.from;
-            edgeSchema.to = edge.to;
-            edgeSchema.type = edge.type;
-            edgeSchema.energyCost = edge.energyCost;
-            item.edges.push(edgeSchema);
-        }
-        this.state.map.adjacencyList.set(key, item);
+      const edges = ufbMap.adjacencyList[key]!;
+      const item = new AdjacencyListItem();
+      item.edges = new ArraySchema<TileEdgeSchema>();
+      for (const edge of edges) {
+        const edgeSchema = new TileEdgeSchema();
+        edgeSchema.from = edge.from;
+        edgeSchema.to = edge.to;
+        edgeSchema.type = edge.type;
+        edgeSchema.energyCost = edge.energyCost;
+        item.edges.push(edgeSchema);
+      }
+      this.state.map.adjacencyList.set(key, item);
     }
 
     // build nav graph
     const graph = createGraph<any, NavGraphLinkData>();
     for (const key in ufbMap.adjacencyList) {
-        const edges = ufbMap.adjacencyList[key]!;
-        for (const edge of edges) {
-            graph.addLink(edge.from, edge.to, {
-                energyCost: edge.energyCost,
-            });
-        }
+      const edges = ufbMap.adjacencyList[key]!;
+      for (const edge of edges) {
+        graph.addLink(edge.from, edge.to, {
+          energyCost: edge.energyCost,
+        });
+      }
     }
     this.state.map._navGraph = graph;
     this.broadcast("mapChanged", {}, { afterNextPatch: true });

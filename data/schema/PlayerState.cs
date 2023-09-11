@@ -13,13 +13,25 @@ namespace UFB.StateSchema {
 		[Type(0, "string")]
 		public string id = default(string);
 
-		[Type(1, "number")]
+		[Type(1, "string")]
+		public string displayName = default(string);
+
+		[Type(2, "string")]
+		public string sessionId = default(string);
+
+		[Type(3, "string")]
+		public string characterId = default(string);
+
+		[Type(4, "string")]
+		public string mapName = default(string);
+
+		[Type(5, "number")]
 		public float x = default(float);
 
-		[Type(2, "number")]
+		[Type(6, "number")]
 		public float y = default(float);
 
-		[Type(3, "ref", typeof(PlayerStats))]
+		[Type(7, "ref", typeof(PlayerStats))]
 		public PlayerStats stats = new PlayerStats();
 
 		/*
@@ -35,6 +47,54 @@ namespace UFB.StateSchema {
 			return () => {
 				__callbacks.RemovePropertyCallback(nameof(id));
 				__idChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<string> __displayNameChange;
+		public Action OnDisplayNameChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.displayName));
+			__displayNameChange += __handler;
+			if (__immediate && this.displayName != default(string)) { __handler(this.displayName, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(displayName));
+				__displayNameChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<string> __sessionIdChange;
+		public Action OnSessionIdChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.sessionId));
+			__sessionIdChange += __handler;
+			if (__immediate && this.sessionId != default(string)) { __handler(this.sessionId, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(sessionId));
+				__sessionIdChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<string> __characterIdChange;
+		public Action OnCharacterIdChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.characterId));
+			__characterIdChange += __handler;
+			if (__immediate && this.characterId != default(string)) { __handler(this.characterId, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(characterId));
+				__characterIdChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<string> __mapNameChange;
+		public Action OnMapNameChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.mapName));
+			__mapNameChange += __handler;
+			if (__immediate && this.mapName != default(string)) { __handler(this.mapName, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(mapName));
+				__mapNameChange -= __handler;
 			};
 		}
 
@@ -77,6 +137,10 @@ namespace UFB.StateSchema {
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
 				case nameof(id): __idChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(displayName): __displayNameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(sessionId): __sessionIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(characterId): __characterIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(mapName): __mapNameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(x): __xChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(y): __yChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(stats): __statsChange?.Invoke((PlayerStats) change.Value, (PlayerStats) change.PreviousValue); break;
