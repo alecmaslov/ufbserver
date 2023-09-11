@@ -10,8 +10,10 @@ export class PlayerStats extends Schema {
 
 export class PlayerState extends Schema {
     @type("string") id: string = "";
+    @type("string") displayName: string = "";
     @type("string") sessionId: string = "";
-    @type("string") name: string = "";
+    @type("string") characterId: string = "";
+    @type("string") mapName: string = "";
     @type("number") x: number = 0;
     @type("number") y: number = 0;
     @type(PlayerStats) stats: PlayerStats = new PlayerStats();

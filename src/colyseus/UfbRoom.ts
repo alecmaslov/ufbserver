@@ -24,6 +24,9 @@ interface UfbRoomRules {
 
 interface UfbRoomOptions {
   mapName: string;
+  playerId: string;
+  displayName: string;
+  characterId: string;
   rules: UfbRoomRules;
   token: string;
 }
@@ -213,7 +216,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     });
   }
 
-  onJoin(client: Client, options: any) {
+  onJoin(client: Client, options: UfbRoomOptions) {
     let playerId = options.playerId ?? "";
     console.log("onJoin options", options);
     if (isNullOrEmpty(playerId)) {
@@ -226,8 +229,9 @@ export class UfbRoom extends Room<UfbRoomState> {
     this.state.players.set(playerId, new PlayerState());
     const player = this.state.players.get(playerId);
     player.id = playerId;
-    player.clientId = client.id;
-    player.name = options.name ?? [ "Player", playerId ].join(" ");
+    player.sessionId = client.sessionId;
+    player.characterId = options.characterId ?? "kirin";
+    player.displayName = options.displayName ?? [player.characterId, playerId].join(" ");
     player.x = Math.floor(Math.random() * 28);
     player.y = Math.floor(Math.random() * 28);
     this.state.turnOrder.push(client.id);
