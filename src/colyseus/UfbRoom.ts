@@ -83,6 +83,7 @@ const getPathCost = (p: Node<any>[], adjacencyList: MapSchema<AdjacencyListItem,
 
 export class UfbRoom extends Room<UfbRoomState> {
   maxClients = 10;
+  sessionIdToPlayerId = new Map<string, string>();
 
   async onCreate(options: UfbRoomOptions) {
     RoomCache.set(this.roomId, this);
@@ -100,17 +101,19 @@ export class UfbRoom extends Room<UfbRoomState> {
     this.onMessage("whoami", (client, message) => {
       console.log("whoami", message);
       client.send("whoami", {
-        clientId: client.id
+        clientId: client.sessionId
       });
     });
 
     this.onMessage("move", (client, message: MoveMessageBody) => {
+      const playerId = this.sessionIdToPlayerId.get(client.sessionId);
+
       console.log("move", {
-        clientId: client.id,
+        playerId,
         message
       });
 
-      const player = this.state.players.get(client.id);
+      const player = this.state.players.get(playerId);
 
       if (!player) {
         this.notify(client, "You are not in this game!", "error");
@@ -154,7 +157,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
       console.log("path", JSON.stringify(path, null, 2));
       const playerMovedMessage: PlayerMovedMessageBody = {
-        playerId: client.id,
+        playerId,
         path: p
       };
       this.broadcast("playerMoved", playerMovedMessage);
@@ -201,7 +204,8 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     this.onMessage("endTurn", (client, message) => {
       console.log("endTurn", message);
-      const player = this.state.players.get(client.id);
+      const playerId = this.sessionIdToPlayerId.get(client.sessionId);
+      const player = this.state.players.get(playerId);
       if (player.id !== this.state.currentPlayerId) {
         this.notify(client, "It's not your turn!", "error");
         return;
@@ -233,6 +237,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         playerId
       });
     }
+    this.sessionIdToPlayerId.set(client.sessionId, playerId);
     console.log(client.sessionId, "joined!");
     this.state.players.set(playerId, new PlayerState());
     const player = this.state.players.get(playerId);
@@ -242,12 +247,12 @@ export class UfbRoom extends Room<UfbRoomState> {
     player.displayName = options.joinOptions?.displayName ?? [player.characterId, playerId].join(" ");
     player.x = Math.floor(Math.random() * 28);
     player.y = Math.floor(Math.random() * 28);
-    this.state.turnOrder.push(client.id);
+    this.state.turnOrder.push(client.sessionId);
     if (this.state.turnOrder.length === 1) {
-      this.state.currentPlayerId = client.id;
-      console.log("first player, setting current player id to", client.id);
+      this.state.currentPlayerId = playerId;
+      console.log("first player, setting current player id to", playerId);
     }
-    this.notify(client, "Welcome to the game, " + client.id + "!");
+    this.notify(client, "Welcome to the game, " + playerId + "!");
   }
 
   onLeave(client: Client, consented: boolean) {

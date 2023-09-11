@@ -1,7 +1,7 @@
 import { Schema, type } from "@colyseus/schema";
 
 const DEFAULT_HEALTH = 23;
-const DEFAULT_ENERGY = 20;
+const DEFAULT_ENERGY = 999;
 
 export class PlayerStats extends Schema {
     @type("number") health: number = DEFAULT_HEALTH;

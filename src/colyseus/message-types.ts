@@ -1,5 +1,5 @@
 
-interface Coordinates {
+export interface Coordinates {
     x: number;
     y: number;
 }
@@ -32,7 +32,6 @@ export interface PlayerMovedMessageBody {
     playerId: string;
     path: PathStep[];
 }
-
 
 export interface ChangeMapMessageBody {
     mapName: string;
