@@ -15,7 +15,6 @@ import {
     SSL_CERT_PATH, SSL_KEY_PATH,
     VERBOSE_INCOMING_REQUESTS
 } from "#config";
-import { Room } from "colyseus";
 
 const app = express();
 
@@ -33,6 +32,7 @@ app.use("/assets", assets);
 app.use("/maps", maps);
 
 if (DEV_MODE) {
+    console.log("🚧🚧 Warning: DEV_MODE is enabled! 🚧🚧");
     app.use("/dev", dev);
 }
 
@@ -42,13 +42,14 @@ const httpsServer = https.createServer({
 }, app);
 
 const colyseusServer = new Server({
+    greet: false,
     transport: new WebSocketTransport({
         server: httpsServer
     }),
 });
 
 colyseusServer.listen(API_PORT, undefined, undefined, () => {
-    console.log(`Listening on ${API_PORT}`);
+    console.log(`✨ UFB Server listening on port ${API_PORT} ✨`);
     colyseusServer.define("ufbRoom", UfbRoom);
 });
 

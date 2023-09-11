@@ -22,8 +22,8 @@ namespace UFB.StateSchema {
 		[Type(3, "string")]
 		public string legacyCode = default(string);
 
-		[Type(4, "string")]
-		public string color = default(string);
+		[Type(4, "ref", typeof(TileColor))]
+		public TileColor color = new TileColor();
 
 		[Type(5, "number")]
 		public float x = default(float);
@@ -83,12 +83,12 @@ namespace UFB.StateSchema {
 			};
 		}
 
-		protected event PropertyChangeHandler<string> __colorChange;
-		public Action OnColorChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<TileColor> __colorChange;
+		public Action OnColorChange(PropertyChangeHandler<TileColor> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
 			__callbacks.AddPropertyCallback(nameof(this.color));
 			__colorChange += __handler;
-			if (__immediate && this.color != default(string)) { __handler(this.color, default(string)); }
+			if (__immediate && this.color != null) { __handler(this.color, null); }
 			return () => {
 				__callbacks.RemovePropertyCallback(nameof(color));
 				__colorChange -= __handler;
@@ -125,7 +125,7 @@ namespace UFB.StateSchema {
 				case nameof(type): __typeChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(layerName): __layerNameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(legacyCode): __legacyCodeChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
-				case nameof(color): __colorChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(color): __colorChange?.Invoke((TileColor) change.Value, (TileColor) change.PreviousValue); break;
 				case nameof(x): __xChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(y): __yChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				default: break;

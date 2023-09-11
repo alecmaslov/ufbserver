@@ -9,6 +9,7 @@ export const {
 } = process.env;
 
 const _port = parseInt(process.env.API_PORT);
+
 export const API_PORT = isNaN(_port) ? 8080 : _port;
 
 export const DEV_MODE = process.env.DEV_MODE === "true";

@@ -6,11 +6,13 @@ import { PlayerState } from "./schema/PlayerState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
-import { AdjacencyListItem, coordToTileId, loadMap, tileIdToCoord } from "#colyseus/schema/MapState";
+import { AdjacencyListItem, Coordinates, NavGraphLinkData, TileColor, TileEdgeSchema, TileState, UFBMap } from "#colyseus/schema/MapState";
 import { aStar } from "ngraph.path";
 import { RoomCache } from "./RoomCache";
-import { Node } from "ngraph.graph";
-import { MapSchema } from "@colyseus/schema";
+import createGraph, { Node } from "ngraph.graph";
+import { ArraySchema, MapSchema } from "@colyseus/schema";
+import { ok } from "assert";
+import { MoveMessageBody, FindPathMessageBody, PathStep, ChangeMapMessageBody } from "./message-types";
 
 interface UfbRoomRules {
   maxPlayers: number;
@@ -25,43 +27,23 @@ interface UfbRoomOptions {
   token: string;
 }
 
-interface Coordinates {
-  x: number;
-  y: number;
-}
+const TILE_LETTERS = [
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+];
 
-interface PathStep {
-  tileId: string;
-  coord: {
-    x: number;
-    y: number;
-  };
-}
+export const coordToTileId = (coordinates: Coordinates): string => {
+  return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
+};
 
-interface FindPathMessageBody {
-  from: Coordinates;
-  to: Coordinates;
-}
-
-interface FoundPathMessageBody {
-  from: Coordinates;
-  to: Coordinates;
-  path: PathStep[];
-  cost: number;
-}
-
-interface PlayerMovedMessageBody {
-  playerId: string;
-  path: PathStep[];
-}
-
-interface MoveMessageBody {
-  toCoord: Coordinates;
-}
-
-interface ChangeMapMessageBody {
-  mapName: string;
-}
+export const tileIdToCoord = (tileId: string): Coordinates => {
+  const parts = tileId.split("_");
+  const y = TILE_LETTERS.indexOf(parts[1]);
+  const x = parseInt(parts[2]) - 1;
+  const c = { x, y };
+  ok(coordToTileId(c) === tileId);
+  return c;
+};
 
 const getPathCost = (p: Node<any>[], adjacencyList: MapSchema<AdjacencyListItem, string>) => {
   let cost = 0;
@@ -95,17 +77,13 @@ export class UfbRoom extends Room<UfbRoomState> {
     this.setState(new UfbRoomState());
 
     console.log("onCreate options", options);
+
     try {
-      await loadMap(this, options.mapName ?? "kraken");
+      await this.initMap(options.mapName ?? "kraken");
     }
     catch (err) {
       console.error(err);
     }
-
-    setTimeout(() => {
-      // load a diff map 5 sec later
-      loadMap(this, "camelot");
-    }, 5000);
 
     this.onMessage("whoami", (client, message) => {
       console.log("whoami", message);
@@ -127,7 +105,7 @@ export class UfbRoom extends Room<UfbRoomState> {
       }
 
       const playerTileId = coordToTileId(player);
-      const toTileId = coordToTileId(message.toCoord);
+      const toTileId = coordToTileId(message.destination);
 
       const pathFinder = aStar(this.state.map._navGraph, {
         distance(fromNode, toNode, link) {
@@ -152,13 +130,16 @@ export class UfbRoom extends Room<UfbRoomState> {
         return;
       }
 
+      player.x = message.destination.x;
+      player.y = message.destination.y;
+      player.stats.energy -= cost;
+
       console.log("path", JSON.stringify(path, null, 2));
       this.broadcast("playerMoved", {
         playerId: client.id,
         path: p
       });
 
-      player.stats.energy -= cost;
       if (player.stats.energy == 0) {
         this.notify(client, "You are too tired to continue.");
         this.incrementTurn();
@@ -211,16 +192,10 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     this.onMessage("changeMap", async (client, message: ChangeMapMessageBody) => {
       console.log("changeMap", message);
-      await loadMap(this, message.mapName);
+      await this.initMap(message.mapName);
     });
-  }
 
-  incrementTurn() {
-    const n = this.state.turnOrder.length;
-    const nextPlayerIndex = (this.state.turnOrder.indexOf(this.state.currentPlayerId) + 1) % n;
-    // could compute nextPlayerIndex from turn instead, but this works if turnOrder length changes
-    this.state.currentPlayerId = this.state.turnOrder[nextPlayerIndex];
-    this.state.turn++;
+    console.log(`created room ${this.roomId}`);
   }
 
   notify(client: Client, message: string, notificationType: string = "info") {
@@ -237,6 +212,11 @@ export class UfbRoom extends Room<UfbRoomState> {
     player.id = client.id;
     player.x = Math.floor(Math.random() * 28);
     player.y = Math.floor(Math.random() * 28);
+    this.state.turnOrder.push(client.id);
+    if (this.state.turnOrder.length === 1) {
+      this.state.currentPlayerId = client.id;
+      console.log("first player, setting current player id to", client.id);
+    }
     this.notify(client, "Welcome to the game, " + client.id + "!");
   }
 
@@ -265,5 +245,76 @@ export class UfbRoom extends Room<UfbRoomState> {
       console.log("auth failed: invalid token");
       return false;
     }
+  }
+
+  // custom state change actions
+
+  incrementTurn() {
+    const n = this.state.turnOrder.length;
+    const nextPlayerIndex = (this.state.turnOrder.indexOf(this.state.currentPlayerId) + 1) % n;
+    // could compute nextPlayerIndex from turn instead, but this works if turnOrder length changes
+    this.state.currentPlayerId = this.state.turnOrder[nextPlayerIndex];
+    this.state.turn++;
+  }
+
+  resetTurn() {
+    this.state.turn = 0;
+    this.state.currentPlayerId = this.state.turnOrder[0] ?? "";
+  }
+
+  async initMap(mapKey: string) {
+    const path = pathJoin("data", "maps", mapKey, "map.json");
+    const data = await readFile(path);
+    const parsed = JSON.parse(data.toString());
+    const ufbMap = parsed as UFBMap;
+    this.state.map.id = mapKey;
+    this.state.map.name = mapKey;
+    this.state.map.gridWidth = ufbMap.gridWidth;
+    this.state.map.gridHeight = ufbMap.gridHeight;
+    this.state.map._map = ufbMap;
+
+    for (const tile of ufbMap.tiles) {
+        const tileSchema = new TileState();
+        tileSchema.id = tile.id;
+        tileSchema.type = tile.type;
+        tileSchema.layerName = tile.layerName;
+        tileSchema.legacyCode = tile.legacyCode;
+        tileSchema.color = new TileColor();
+        tileSchema.color.name = tile.color!.name;
+        tileSchema.color.color = tile.color!.color;
+        tileSchema.x = tile.coordinates.x;
+        tileSchema.y = tile.coordinates.y;
+        this.state.map.tiles.set(tile.id, tileSchema);
+    }
+
+    this.state.map.adjacencyList = new MapSchema<AdjacencyListItem>();
+    for (const key in ufbMap.adjacencyList) {
+        const edges = ufbMap.adjacencyList[key]!;
+        const item = new AdjacencyListItem();
+        item.edges = new ArraySchema<TileEdgeSchema>();
+        for (const edge of edges) {
+            const edgeSchema = new TileEdgeSchema();
+            edgeSchema.from = edge.from;
+            edgeSchema.to = edge.to;
+            edgeSchema.type = edge.type;
+            edgeSchema.energyCost = edge.energyCost;
+            item.edges.push(edgeSchema);
+        }
+        this.state.map.adjacencyList.set(key, item);
+    }
+
+    // build nav graph
+    const graph = createGraph<any, NavGraphLinkData>();
+    for (const key in ufbMap.adjacencyList) {
+        const edges = ufbMap.adjacencyList[key]!;
+        for (const edge of edges) {
+            graph.addLink(edge.from, edge.to, {
+                energyCost: edge.energyCost,
+            });
+        }
+    }
+    this.state.map._navGraph = graph;
+    this.broadcast("mapChanged", {}, { afterNextPatch: true });
+    this.resetTurn();
   }
 }
