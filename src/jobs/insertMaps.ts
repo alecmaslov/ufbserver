@@ -41,7 +41,6 @@ async function upsertTile(mapId: string, tile: Partial<GameTile>) {
             tileCode: tile.id,
             x: tile.coordinates.x,
             y: tile.coordinates.y,
-            legacyCode: tile.legacyCode,
             // ... other fields
         },
     });
@@ -74,7 +73,6 @@ async function uspertMapTransaction(map: UFBMap) {
             x: tile.coordinates.x,
             y: tile.coordinates.y,
             mapId: mapId,
-            legacyCode: tile.legacyCode,
         };
     });
 

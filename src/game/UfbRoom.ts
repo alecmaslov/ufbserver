@@ -6,7 +6,7 @@ import { CharacterState } from "./schema/CharacterState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
-import { AdjacencyListItem, TileEdgeSchema, TileState, UFBMap } from "#game/schema/MapState";
+import { AdjacencyListItemState, TileEdgeState, TileState, UFBMap } from "#game/schema/MapState";
 import { RoomCache } from "./RoomCache";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
@@ -29,7 +29,10 @@ interface UfbRoomJoinOptions {
   token: string;
   playerId: string;
   displayName: string;
-  characterId: string;
+  /** unique id of a specific instance of a character (optional) */
+  characterId?: string;
+  /** e.g. "kirin" (optional) */
+  characterClass?: string;
 }
 
 interface UfbRoomOptions {
@@ -153,13 +156,13 @@ export class UfbRoom extends Room<UfbRoomState> {
       this.state.map.tiles.set(tile.id, tileSchema);
     }
 
-    this.state.map.adjacencyList = new MapSchema<AdjacencyListItem>();
+    this.state.map.adjacencyList = new MapSchema<AdjacencyListItemState>();
     for (const key in ufbMap.adjacencyList) {
       const edges = ufbMap.adjacencyList[key]!;
-      const item = new AdjacencyListItem();
-      item.edges = new ArraySchema<TileEdgeSchema>();
+      const item = new AdjacencyListItemState();
+      item.edges = new ArraySchema<TileEdgeState>();
       for (const edge of edges) {
-        const edgeSchema = new TileEdgeSchema();
+        const edgeSchema = new TileEdgeState();
         edgeSchema.from = edge.from;
         edgeSchema.to = edge.to;
         edgeSchema.type = edge.type;

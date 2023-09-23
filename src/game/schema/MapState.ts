@@ -37,15 +37,7 @@ export interface GameTile {
     type: TileType;
     spawnItems: SpawnEntity[];
     coordinates: Coordinates;
-    color: TileColor | null;
-    layerName: string;
     sides: TileSide[];
-    legacyCode: string; // code for the original UFB map parser in Swift
-}
-
-export class TileColor extends Schema {
-    @type("string") name: string = "";
-    @type("string") color: string = "";
 }
 
 export class TileState extends Schema {
@@ -55,15 +47,15 @@ export class TileState extends Schema {
     @type("number") y: number;
 }
 
-export class TileEdgeSchema extends Schema {
+export class TileEdgeState extends Schema {
     @type("string") from: string;
     @type("string") to: string;
     @type("string") type: EdgeType;
     @type("number") energyCost: number;
 }
 
-export class AdjacencyListItem extends Schema {
-    @type([TileEdgeSchema]) edges = new ArraySchema<TileEdgeSchema>();
+export class AdjacencyListItemState extends Schema {
+    @type([TileEdgeState]) edges = new ArraySchema<TileEdgeState>();
 }
 
 export class MapState extends Schema {
@@ -73,8 +65,8 @@ export class MapState extends Schema {
     @type("number") gridHeight: number = 0;
     @type({ map: TileState }) tiles: MapSchema<TileState> 
         = new MapSchema<TileState>();
-    @type({ map: AdjacencyListItem }) adjacencyList: MapSchema<AdjacencyListItem> 
-        = new MapSchema<AdjacencyListItem>();
+    @type({ map: AdjacencyListItemState }) adjacencyList: MapSchema<AdjacencyListItemState> 
+        = new MapSchema<AdjacencyListItemState>();
     /** raw representation for internal use */
     _map: UFBMap | null = null;
 }
