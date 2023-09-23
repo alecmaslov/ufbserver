@@ -3,21 +3,22 @@ import { ok } from "assert";
 import { Node } from "ngraph.graph";
 import { MapSchema } from "@colyseus/schema";
 import { AdjacencyListItem } from "./schema/MapState";
+import { CoordinatesSchema } from "./schema/CharacterState";
 
 const TILE_LETTERS = [
     "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
     "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
 ];
 
-export const coordToTileId = (coordinates: Coordinates): string => {
+export const coordToTileId = (coordinates: CoordinatesSchema): string => {
     return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
 };
 
-export const tileIdToCoord = (tileId: string): Coordinates => {
+export const tileIdToCoord = (tileId: string): CoordinatesSchema => {
     const parts = tileId.split("_");
     const y = TILE_LETTERS.indexOf(parts[1]);
     const x = parseInt(parts[2]) - 1;
-    const c = { x, y };
+    const c = { x, y } as CoordinatesSchema;
     ok(coordToTileId(c) === tileId);
     return c;
 };

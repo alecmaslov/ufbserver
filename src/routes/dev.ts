@@ -1,5 +1,11 @@
 import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
+
+// ufb-playground is a fork of @colyseus/playground cloned locally
+// but it's not working...
+// import { playground } from "ufb-playground";
+// import { playground } from "ufb-playground/build/index";
+
 import { matchMaker } from "@colyseus/core";
 import { Router } from "express";
 import { RoomCache } from "#game/RoomCache";

@@ -29,9 +29,10 @@ const tileTypes = new Map<string, TileType>([
   ["P", TileType.Portal],
 ]);
 
-
-const parseTileType = (tileCode: string): TileType => {
-  return tileTypes.get(tileCode[0]) || TileType.Void;
+// @kyle - type void error originates here
+const parseTileType = (tileCode: string): TileType | null => {
+  console.log(`tileCode: ${tileCode}`);
+  return tileTypes.get(tileCode[0]) || null;
 }
 
 const parseTileColor = (tileCode: string): TileColor | null => {
@@ -41,10 +42,10 @@ const parseTileColor = (tileCode: string): TileColor | null => {
 
 function parseTileSides(tileCode: string): TileSide[] {
   const sides: TileSide[] = [];
-  if (tileCode[1] === '1') sides.push({ side: "top", edgeProperty: "wall" });
-  if (tileCode[2] === '1') sides.push({ side: "right", edgeProperty: "wall" });
-  if (tileCode[3] === '1') sides.push({ side: "bottom", edgeProperty: "wall" });
-  if (tileCode[4] === '1') sides.push({ side: "left", edgeProperty: "wall" });
+  if (tileCode[1] === "1") sides.push({ side: "top", edgeProperty: "wall" });
+  if (tileCode[2] === "1") sides.push({ side: "right", edgeProperty: "wall" });
+  if (tileCode[3] === "1") sides.push({ side: "bottom", edgeProperty: "wall" });
+  if (tileCode[4] === "1") sides.push({ side: "left", edgeProperty: "wall" });
   return sides;
 }
 
@@ -85,10 +86,13 @@ function parseBackgroundLayer(map: any, layer: any, allTiles: Map<string, Partia
     const sides = parseTileSides(tileCode);
     const tile = allTiles.get(id);
     if (tile === undefined) throw new Error(`Failed to find tile ${id}.`);
-    tile.type = parseTileType(tileCode);
-    // top, right, bottom, left
-    if (tile.type === TileType.Bridge) {
-      bridgeTiles.push(id);
+    const tileType = parseTileType(tileCode);
+    if (tileType !== null) {
+      tile.type = tileType;
+      // top, right, bottom, left
+      if (tile.type === TileType.Bridge) {
+        bridgeTiles.push(id);
+      }
     }
     const sideToIndex = {
       "top": 0,
@@ -257,6 +261,7 @@ function parseAllMaps(allMapsFile: string, outputRoot: string = "../Assets/Resou
     if (!existsSync(`${outputRoot}/${parsed.name}`)) mkdirSync(`${outputRoot}/${parsed.name}`, { recursive: true });
     const outputFile = `${outputRoot}/${parsed.name}/map.json`;
     (parsed as any).adjacencyList = Object.fromEntries(parsed.adjacencyList);
+    console.log(`Writing ${parsed}`);
     writeFileSync(outputFile, JSON.stringify(parsed, null, 2));
   }
 
@@ -294,4 +299,4 @@ function parseDirectory(mapDir: string) {
 }
 
 // parseDirectory("./data/maps/input");
-parseAllMaps("./data/maps/input/all-maps.json", "../Assets/Resources/Maps");
+parseAllMaps("./data/maps/input/all-maps.json", "./data/output2");

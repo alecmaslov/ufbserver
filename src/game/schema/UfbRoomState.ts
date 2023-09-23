@@ -1,9 +1,9 @@
 import { Schema, ArraySchema, MapSchema, type } from "@colyseus/schema";
-import { PlayerState } from "./PlayerState";
+import { CharacterState } from "./CharacterState";
 import { MapState } from "./MapState";
 
 export class UfbRoomState extends Schema {
-  @type({ map: PlayerState }) players: MapSchema<PlayerState> = new MapSchema<PlayerState>();
+  @type({ map: CharacterState }) players: MapSchema<CharacterState> = new MapSchema<CharacterState>();
   /** array of player ids */
   @type(MapState) map: MapState = new MapState();
   @type("number") turn: number = 0;

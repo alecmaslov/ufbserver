@@ -1,25 +1,19 @@
 import { Client } from "@colyseus/core";
 import { UfbRoom } from "./UfbRoom";
-import { coordToTileId, getPathCost, tileIdToCoord } from "./map-helpers";
-import { aStar } from "ngraph.path";
-import { PathStep } from "#shared-types";
+import { coordToTileId } from "./map-helpers";
 import { PlayerMovedMessage } from "./message-types";
 
-type MessageHandler<TMessage> = (room: UfbRoom, client: Client, message: TMessage) => void;
+type MessageHandler<TMessage> = (room: UfbRoom, client: Client, message: TMessage) => void | Promise<void>;
 
 export interface MessageHandlers {
     [key: string]: MessageHandler<any>;
 };
 
+// @kyle - we should put some sort of safety net, so that when it can't pathfind,
+// it doesn't crash the server and close the socket
 export const messageHandlers: MessageHandlers = {
-    "move": (room, client, message) => {
+    move: (room, client, message) => {
         const playerId = room.sessionIdToPlayerId.get(client.sessionId);
-
-        console.log("move", {
-            playerId,
-            message
-        });
-
         const player = room.state.players.get(playerId);
 
         if (!player) {
@@ -31,7 +25,7 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        const playerTileId = coordToTileId(player);
+        const playerTileId = coordToTileId(player.coordinates);
         const toTileId = coordToTileId(message.destination);
 
         const {
@@ -45,15 +39,17 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        player.x = message.destination.x;
-        player.y = message.destination.y;
+        player.coordinates.x = message.destination.x;
+        player.coordinates.y = message.destination.y;
         player.stats.energy -= cost;
 
-        console.log("path", JSON.stringify(path, null, 2));
         const playerMovedMessage: PlayerMovedMessage = {
             playerId,
             path
         };
+
+
+        console.log(`Sending playerMoved message ${JSON.stringify(playerMovedMessage, null, 2)}`);
         room.broadcast("playerMoved", playerMovedMessage);
 
         if (player.stats.energy == 0) {
@@ -62,7 +58,13 @@ export const messageHandlers: MessageHandlers = {
         }
     },
 
-    "findPath": (room, client, message) => {
+    useItem: (room, client, message) => {
+    },
+
+    useAbility: (room, client, message) => {
+    },
+
+    findPath: (room, client, message) => {
         const fromTileId = coordToTileId(message.from);
         const toTileId = coordToTileId(message.to);
 
@@ -84,8 +86,7 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    "endTurn": (room, client, message) => {
-        console.log("endTurn", message);
+    endTurn: (room, client, message) => {
         const playerId = room.sessionIdToPlayerId.get(client.sessionId);
         const player = room.state.players.get(playerId);
         if (player.id !== room.state.currentPlayerId) {
@@ -95,14 +96,17 @@ export const messageHandlers: MessageHandlers = {
         room.incrementTurn();
     },
 
-    "changeMap": async (room, client, message) => {
-        console.log("changeMap", message);
+    changeMap: async (room, client, message) => {
         await room.initMap(message.mapName);
     },
 };
 
 export function registerMessageHandlers(room: UfbRoom) {
-    for (const [key, handler] of Object.entries(messageHandlers)) {
-        room.onMessage<any>(key, handler.bind(undefined, room));
+    for (const messageType in messageHandlers) {
+        const handler = messageHandlers[messageType];
+        room.onMessage<any>(messageType, (client, message) => {
+            console.log(`Handling message '${messageType}' from client ${client.sessionId}\n${JSON.stringify(message, null, 2)}`);
+            handler(room, client, message);
+        });
     }
 }

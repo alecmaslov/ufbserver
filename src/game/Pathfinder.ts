@@ -8,6 +8,12 @@ export type NavGraphLinkData = {
     energyCost: number;
 }
 
+export interface FindPathResult {
+    foundPath: boolean;
+    cost: number;
+    path: PathStep[];
+}
+
 export class Pathfinder {
     private _mapState: MapState = null;
     private _navGraph: Graph<any, NavGraphLinkData> = null;
@@ -34,18 +40,29 @@ export class Pathfinder {
         return p;
     }
 
-    find(from: string, to: string) {
+    find(from: string, to: string): FindPathResult {
         const _path = this._pathFinder.find(from, to);
-        const cost = getPathCost(_path, this._mapState.adjacencyList);
-        const path: PathStep[] = _path.map(node => {
+        try {
+            const cost = getPathCost(_path, this._mapState.adjacencyList);
+            const path: PathStep[] = _path.map(node => {
+                return {
+                    tileId: node.id as string,
+                    coord: tileIdToCoord(node.id as string)
+                };
+            });
             return {
-                tileId: node.id as string,
-                coord: tileIdToCoord(node.id as string)
+                foundPath: true,
+                cost,
+                path
             };
-        });
-        return {
-            cost,
-            path
-        };
+        }
+        catch (e) {
+            console.error("Error finding path", e);
+            return {
+                foundPath: false,
+                cost: 0,
+                path: []
+            };
+        }
     }
 }

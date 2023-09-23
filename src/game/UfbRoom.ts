@@ -2,7 +2,7 @@ import { join as pathJoin } from "path";
 import { readFile } from "fs/promises";
 import { Room, Client } from "@colyseus/core";
 import { UfbRoomState } from "./schema/UfbRoomState";
-import { PlayerState } from "./schema/PlayerState";
+import { CharacterState } from "./schema/CharacterState";
 import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
@@ -75,14 +75,14 @@ export class UfbRoom extends Room<UfbRoomState> {
     }
     this.sessionIdToPlayerId.set(client.sessionId, playerId);
     console.log(client.sessionId, "joined!");
-    this.state.players.set(playerId, new PlayerState());
+    this.state.players.set(playerId, new CharacterState());
     const player = this.state.players.get(playerId);
     player.id = playerId;
     player.sessionId = client.sessionId;
     player.characterId = options.joinOptions?.characterId ?? "kirin";
     player.displayName = options.joinOptions?.displayName ?? [player.characterId, playerId].join(" ");
-    player.x = Math.floor(Math.random() * 28);
-    player.y = Math.floor(Math.random() * 28);
+    player.coordinates.x = Math.floor(Math.random() * 28);
+    player.coordinates.y = Math.floor(Math.random() * 28);
     this.state.turnOrder.push(client.sessionId);
     if (this.state.turnOrder.length === 1) {
       this.state.currentPlayerId = playerId;
