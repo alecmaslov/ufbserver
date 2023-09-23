@@ -1,4 +1,3 @@
-import { Coordinates } from "#shared-types";
 import { ok } from "assert";
 import { Node } from "ngraph.graph";
 import { MapSchema } from "@colyseus/schema";

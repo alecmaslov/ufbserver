@@ -119,7 +119,6 @@ function parseBackgroundLayer(map: any, layer: any, allTiles: Map<string, Partia
     //   console.log();
     // }
     for (let i = 0; i < 4; i++) {
-      if (isNaN(edgeCost[i])) continue;
       const neighborId = coordToTileId(neighborCoords[i]);
       const neighborTile = allTiles.get(neighborId);
       if (neighborTile === undefined) {
@@ -131,6 +130,7 @@ function parseBackgroundLayer(map: any, layer: any, allTiles: Map<string, Partia
         to: neighborId,
         type: "basic",
         energyCost: edgeCost[i],
+        
       };
       adjacencyList.get(id)!.push(edge);
     }
@@ -149,64 +149,35 @@ function parseBackgroundLayer(map: any, layer: any, allTiles: Map<string, Partia
   // fix edges for bridge tiles
   // edges from the left to a bridge tile should be modified to point to the right of the bridge
   // (and vice versa, same for top/bottom)
-  for (const bridgeTileId of bridgeTiles) {
-    const bridgeCoord = tileIdToCoord(bridgeTileId);
-    adjacencyList.forEach((edges) => {
-      edges.forEach(edge => {
-        const fromCoord = tileIdToCoord(edge.from);
-        const toCoord = tileIdToCoord(edge.to);
-        if (bridgeTileId === edge.to) {
-          edge.energyCost = 2;
-          // Left of bridge pointing to the right
-          if (fromCoord.x < bridgeCoord.x && fromCoord.y === bridgeCoord.y) {
-            edge.to = coordToTileId({ x: toCoord.x + 1, y: toCoord.y });
-          }
-          // Right of bridge pointing to the left
-          else if (fromCoord.x > bridgeCoord.x && fromCoord.y === bridgeCoord.y) {
-            edge.to = coordToTileId({ x: toCoord.x - 1, y: toCoord.y });
-          }
-          // Above bridge pointing to the bottom
-          else if (fromCoord.x === bridgeCoord.x && fromCoord.y < bridgeCoord.y) {
-            const c = { x: toCoord.x, y: toCoord.y + 1 };
-            edge.to = coordToTileId(c);
-          }
-          // Below bridge pointing to the top
-          else if (fromCoord.x === bridgeCoord.x && fromCoord.y > bridgeCoord.y) {
-            const c = { x: toCoord.x, y: toCoord.y - 1 };
-            edge.to = coordToTileId(c);
-          }
-        }
-      });
-    });
-  }
-
-  //   for (const bridgeTileId of bridgeTiles) {
-  //     const edges = adjacencyList.get(bridgeTileId);
-  //     if (edges) {
-  //       edges.forEach(edge => {
-  //         const fromCoord = tileIdToCoord(edge.from);
-  //         const toCoord = tileIdToCoord(edge.to);
-
-  //         // Left to right bridge
-  //         if (fromCoord.x < toCoord.x && fromCoord.y === toCoord.y) {
+  // for (const bridgeTileId of bridgeTiles) {
+  //   const bridgeCoord = tileIdToCoord(bridgeTileId);
+  //   adjacencyList.forEach((edges) => {
+  //     edges.forEach(edge => {
+  //       const fromCoord = tileIdToCoord(edge.from);
+  //       const toCoord = tileIdToCoord(edge.to);
+  //       if (bridgeTileId === edge.to) {
+  //         edge.energyCost = 2;
+  //         // Left of bridge pointing to the right
+  //         if (fromCoord.x < bridgeCoord.x && fromCoord.y === bridgeCoord.y) {
   //           edge.to = coordToTileId({ x: toCoord.x + 1, y: toCoord.y });
   //         }
-  //         // Right to left bridge
-  //         else if (fromCoord.x > toCoord.x && fromCoord.y === toCoord.y) {
+  //         // Right of bridge pointing to the left
+  //         else if (fromCoord.x > bridgeCoord.x && fromCoord.y === bridgeCoord.y) {
   //           edge.to = coordToTileId({ x: toCoord.x - 1, y: toCoord.y });
   //         }
-  //         // Top to bottom bridge
-  //         else if (fromCoord.x === toCoord.x && fromCoord.y < toCoord.y) {
-  //           edge.to = coordToTileId({ x: toCoord.x, y: toCoord.y + 1 });
+  //         // Above bridge pointing to the bottom
+  //         else if (fromCoord.x === bridgeCoord.x && fromCoord.y < bridgeCoord.y) {
+  //           const c = { x: toCoord.x, y: toCoord.y + 1 };
+  //           edge.to = coordToTileId(c);
   //         }
-  //         // Bottom to top bridge
-  //         else if (fromCoord.x === toCoord.x && fromCoord.y > toCoord.y) {
-  //           edge.to = coordToTileId({ x: toCoord.x, y: toCoord.y - 1 });
+  //         // Below bridge pointing to the top
+  //         else if (fromCoord.x === bridgeCoord.x && fromCoord.y > bridgeCoord.y) {
+  //           const c = { x: toCoord.x, y: toCoord.y - 1 };
+  //           edge.to = coordToTileId(c);
   //         }
-  //         console.log("bridge", bridgeTileId, "to", edge.to);
-  //       });
-  //     }
-  //   }
+  //       }
+  //     });
+  //   });
   // }
 }
 

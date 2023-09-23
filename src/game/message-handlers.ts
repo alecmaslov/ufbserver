@@ -1,7 +1,7 @@
 import { Client } from "@colyseus/core";
 import { UfbRoom } from "./UfbRoom";
 import { coordToTileId } from "./map-helpers";
-import { PlayerMovedMessage } from "./message-types";
+import { CharacterMovedMessage } from "./message-types";
 
 type MessageHandler<TMessage> = (room: UfbRoom, client: Client, message: TMessage) => void | Promise<void>;
 
@@ -14,18 +14,19 @@ export interface MessageHandlers {
 export const messageHandlers: MessageHandlers = {
     move: (room, client, message) => {
         const playerId = room.sessionIdToPlayerId.get(client.sessionId);
-        const player = room.state.players.get(playerId);
+        const characterId = room.state.playerCharacters.get(playerId);
+        const character = room.state.characters.get(playerId);
 
-        if (!player) {
+        if (!character) {
             room.notify(client, "You are not in room game!", "error");
         }
 
-        if (player.id !== room.state.currentPlayerId) {
+        if (characterId !== room.state.currentCharacterId) {
             room.notify(client, "It's not your turn!", "error");
             return;
         }
 
-        const playerTileId = coordToTileId(player.coordinates);
+        const playerTileId = coordToTileId(character.coordinates);
         const toTileId = coordToTileId(message.destination);
 
         const {
@@ -34,25 +35,24 @@ export const messageHandlers: MessageHandlers = {
         } = room.pathfinder.find(playerTileId, toTileId);
 
         // player must have enough energy to move along the path
-        if (player.stats.energy < cost) {
+        if (character.stats.energy < cost) {
             room.notify(client, "You don't have enough energy to move there!", "error");
             return;
         }
 
-        player.coordinates.x = message.destination.x;
-        player.coordinates.y = message.destination.y;
-        player.stats.energy -= cost;
+        character.coordinates.x = message.destination.x;
+        character.coordinates.y = message.destination.y;
+        character.stats.energy -= cost;
 
-        const playerMovedMessage: PlayerMovedMessage = {
-            playerId,
+        const characterMovedMessage: CharacterMovedMessage = {
+            characterId,
             path
         };
 
+        console.log(`Sending playerMoved message ${JSON.stringify(characterMovedMessage, null, 2)}`);
+        room.broadcast("characterMoved", characterMovedMessage);
 
-        console.log(`Sending playerMoved message ${JSON.stringify(playerMovedMessage, null, 2)}`);
-        room.broadcast("playerMoved", playerMovedMessage);
-
-        if (player.stats.energy == 0) {
+        if (character.stats.energy == 0) {
             room.notify(client, "You are too tired to continue.");
             room.incrementTurn();
         }
@@ -88,8 +88,8 @@ export const messageHandlers: MessageHandlers = {
 
     endTurn: (room, client, message) => {
         const playerId = room.sessionIdToPlayerId.get(client.sessionId);
-        const player = room.state.players.get(playerId);
-        if (player.id !== room.state.currentPlayerId) {
+        const player = room.state.characters.get(playerId);
+        if (player.id !== room.state.currentCharacterId) {
             room.notify(client, "It's not your turn!", "error");
             return;
         }

@@ -10,14 +10,7 @@ export interface UFBMap {
     adjacencyList: Record<string, TileEdge[]>;
 }
 
-export enum TileType {
-    Bridge = "Bridge",
-    Floor = "Floor",
-    Void = "Void",
-    Chest = "Chest",
-    Enemy = "Enemy",
-    Portal = "Portal",
-}
+type TileType = "bridge" | "floor" | "void" | "chest" | "enemy" | "portal";
 
 export interface SpawnEntity {
     name: string;

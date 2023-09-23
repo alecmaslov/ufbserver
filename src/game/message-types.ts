@@ -24,8 +24,8 @@ export interface MoveMessage {
     destination: Coordinates;
 }
 
-export interface PlayerMovedMessage {
-    playerId: string;
+export interface CharacterMovedMessage {
+    characterId: string;
     path: PathStep[];
 }
 

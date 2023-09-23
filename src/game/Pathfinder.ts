@@ -50,6 +50,7 @@ export class Pathfinder {
                     coord: tileIdToCoord(node.id as string)
                 };
             });
+            path.reverse();
             return {
                 foundPath: true,
                 cost,

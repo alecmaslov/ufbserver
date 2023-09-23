@@ -10,8 +10,8 @@ using Action = System.Action;
 
 namespace UFB.StateSchema {
 	public partial class UfbRoomState : Schema {
-		[Type(0, "map", typeof(MapSchema<PlayerState>))]
-		public MapSchema<PlayerState> players = new MapSchema<PlayerState>();
+		[Type(0, "map", typeof(MapSchema<CharacterState>))]
+		public MapSchema<CharacterState> players = new MapSchema<CharacterState>();
 
 		[Type(1, "ref", typeof(MapState))]
 		public MapState map = new MapState();
@@ -29,8 +29,8 @@ namespace UFB.StateSchema {
 		 * Support for individual property change callbacks below...
 		 */
 
-		protected event PropertyChangeHandler<MapSchema<PlayerState>> __playersChange;
-		public Action OnPlayersChange(PropertyChangeHandler<MapSchema<PlayerState>> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<MapSchema<CharacterState>> __playersChange;
+		public Action OnPlayersChange(PropertyChangeHandler<MapSchema<CharacterState>> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
 			__callbacks.AddPropertyCallback(nameof(this.players));
 			__playersChange += __handler;
@@ -91,7 +91,7 @@ namespace UFB.StateSchema {
 
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
-				case nameof(players): __playersChange?.Invoke((MapSchema<PlayerState>) change.Value, (MapSchema<PlayerState>) change.PreviousValue); break;
+				case nameof(players): __playersChange?.Invoke((MapSchema<CharacterState>) change.Value, (MapSchema<CharacterState>) change.PreviousValue); break;
 				case nameof(map): __mapChange?.Invoke((MapState) change.Value, (MapState) change.PreviousValue); break;
 				case nameof(turn): __turnChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(turnOrder): __turnOrderChange?.Invoke((ArraySchema<string>) change.Value, (ArraySchema<string>) change.PreviousValue); break;

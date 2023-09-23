@@ -75,8 +75,8 @@ export class UfbRoom extends Room<UfbRoomState> {
     }
     this.sessionIdToPlayerId.set(client.sessionId, playerId);
     console.log(client.sessionId, "joined!");
-    this.state.players.set(playerId, new CharacterState());
-    const player = this.state.players.get(playerId);
+    this.state.characters.set(playerId, new CharacterState());
+    const player = this.state.characters.get(playerId);
     player.id = playerId;
     player.sessionId = client.sessionId;
     player.characterId = options.joinOptions?.characterId ?? "kirin";
@@ -85,7 +85,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     player.coordinates.y = Math.floor(Math.random() * 28);
     this.state.turnOrder.push(client.sessionId);
     if (this.state.turnOrder.length === 1) {
-      this.state.currentPlayerId = playerId;
+      this.state.currentCharacterId = playerId;
       console.log("first player, setting current player id to", playerId);
     }
     this.notify(client, "Welcome to the game, " + playerId + "!");
@@ -122,15 +122,15 @@ export class UfbRoom extends Room<UfbRoomState> {
 
   incrementTurn() {
     const n = this.state.turnOrder.length;
-    const nextPlayerIndex = (this.state.turnOrder.indexOf(this.state.currentPlayerId) + 1) % n;
+    const nextPlayerIndex = (this.state.turnOrder.indexOf(this.state.currentCharacterId) + 1) % n;
     // could compute nextPlayerIndex from turn instead, but this works if turnOrder length changes
-    this.state.currentPlayerId = this.state.turnOrder[nextPlayerIndex];
+    this.state.currentCharacterId = this.state.turnOrder[nextPlayerIndex];
     this.state.turn++;
   }
 
   resetTurn() {
     this.state.turn = 0;
-    this.state.currentPlayerId = this.state.turnOrder[0] ?? "";
+    this.state.currentCharacterId = this.state.turnOrder[0] ?? "";
   }
 
   async initMap(mapKey: string) {

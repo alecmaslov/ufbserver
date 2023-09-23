@@ -3,10 +3,14 @@ import { CharacterState } from "./CharacterState";
 import { MapState } from "./MapState";
 
 export class UfbRoomState extends Schema {
-  @type({ map: CharacterState }) players: MapSchema<CharacterState> = new MapSchema<CharacterState>();
+  // maps characterId to CharacterState
+  @type({ map: CharacterState }) characters: MapSchema<CharacterState> = new MapSchema<CharacterState>();
+  // maps playerId to characterId
+  @type({ map: "string" }) playerCharacters: MapSchema<string> = new MapSchema<string>();
   /** array of player ids */
   @type(MapState) map: MapState = new MapState();
   @type("number") turn: number = 0;
+  /** turnOrder contains character ids */
   @type(["string"]) turnOrder: ArraySchema<string> = new ArraySchema<string>();
-  @type("string") currentPlayerId: string = "";
+  @type("string") currentCharacterId: string = "";
 }
