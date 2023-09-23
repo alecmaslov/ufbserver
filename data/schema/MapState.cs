@@ -25,8 +25,8 @@ namespace UFB.StateSchema {
 		[Type(4, "map", typeof(MapSchema<TileState>))]
 		public MapSchema<TileState> tiles = new MapSchema<TileState>();
 
-		[Type(5, "map", typeof(MapSchema<AdjacencyListItem>))]
-		public MapSchema<AdjacencyListItem> adjacencyList = new MapSchema<AdjacencyListItem>();
+		[Type(5, "map", typeof(MapSchema<AdjacencyListItemState>))]
+		public MapSchema<AdjacencyListItemState> adjacencyList = new MapSchema<AdjacencyListItemState>();
 
 		/*
 		 * Support for individual property change callbacks below...
@@ -92,8 +92,8 @@ namespace UFB.StateSchema {
 			};
 		}
 
-		protected event PropertyChangeHandler<MapSchema<AdjacencyListItem>> __adjacencyListChange;
-		public Action OnAdjacencyListChange(PropertyChangeHandler<MapSchema<AdjacencyListItem>> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<MapSchema<AdjacencyListItemState>> __adjacencyListChange;
+		public Action OnAdjacencyListChange(PropertyChangeHandler<MapSchema<AdjacencyListItemState>> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
 			__callbacks.AddPropertyCallback(nameof(this.adjacencyList));
 			__adjacencyListChange += __handler;
@@ -111,7 +111,7 @@ namespace UFB.StateSchema {
 				case nameof(gridWidth): __gridWidthChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(gridHeight): __gridHeightChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(tiles): __tilesChange?.Invoke((MapSchema<TileState>) change.Value, (MapSchema<TileState>) change.PreviousValue); break;
-				case nameof(adjacencyList): __adjacencyListChange?.Invoke((MapSchema<AdjacencyListItem>) change.Value, (MapSchema<AdjacencyListItem>) change.PreviousValue); break;
+				case nameof(adjacencyList): __adjacencyListChange?.Invoke((MapSchema<AdjacencyListItemState>) change.Value, (MapSchema<AdjacencyListItemState>) change.PreviousValue); break;
 				default: break;
 			}
 		}

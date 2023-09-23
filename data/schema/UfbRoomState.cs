@@ -11,33 +11,48 @@ using Action = System.Action;
 namespace UFB.StateSchema {
 	public partial class UfbRoomState : Schema {
 		[Type(0, "map", typeof(MapSchema<CharacterState>))]
-		public MapSchema<CharacterState> players = new MapSchema<CharacterState>();
+		public MapSchema<CharacterState> characters = new MapSchema<CharacterState>();
 
-		[Type(1, "ref", typeof(MapState))]
+		[Type(1, "map", typeof(MapSchema<string>), "string")]
+		public MapSchema<string> playerCharacters = new MapSchema<string>();
+
+		[Type(2, "ref", typeof(MapState))]
 		public MapState map = new MapState();
 
-		[Type(2, "number")]
+		[Type(3, "number")]
 		public float turn = default(float);
 
-		[Type(3, "array", typeof(ArraySchema<string>), "string")]
+		[Type(4, "array", typeof(ArraySchema<string>), "string")]
 		public ArraySchema<string> turnOrder = new ArraySchema<string>();
 
-		[Type(4, "string")]
-		public string currentPlayerId = default(string);
+		[Type(5, "string")]
+		public string currentCharacterId = default(string);
 
 		/*
 		 * Support for individual property change callbacks below...
 		 */
 
-		protected event PropertyChangeHandler<MapSchema<CharacterState>> __playersChange;
-		public Action OnPlayersChange(PropertyChangeHandler<MapSchema<CharacterState>> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<MapSchema<CharacterState>> __charactersChange;
+		public Action OnCharactersChange(PropertyChangeHandler<MapSchema<CharacterState>> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
-			__callbacks.AddPropertyCallback(nameof(this.players));
-			__playersChange += __handler;
-			if (__immediate && this.players != null) { __handler(this.players, null); }
+			__callbacks.AddPropertyCallback(nameof(this.characters));
+			__charactersChange += __handler;
+			if (__immediate && this.characters != null) { __handler(this.characters, null); }
 			return () => {
-				__callbacks.RemovePropertyCallback(nameof(players));
-				__playersChange -= __handler;
+				__callbacks.RemovePropertyCallback(nameof(characters));
+				__charactersChange -= __handler;
+			};
+		}
+
+		protected event PropertyChangeHandler<MapSchema<string>> __playerCharactersChange;
+		public Action OnPlayerCharactersChange(PropertyChangeHandler<MapSchema<string>> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.playerCharacters));
+			__playerCharactersChange += __handler;
+			if (__immediate && this.playerCharacters != null) { __handler(this.playerCharacters, null); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(playerCharacters));
+				__playerCharactersChange -= __handler;
 			};
 		}
 
@@ -77,25 +92,26 @@ namespace UFB.StateSchema {
 			};
 		}
 
-		protected event PropertyChangeHandler<string> __currentPlayerIdChange;
-		public Action OnCurrentPlayerIdChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<string> __currentCharacterIdChange;
+		public Action OnCurrentCharacterIdChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
-			__callbacks.AddPropertyCallback(nameof(this.currentPlayerId));
-			__currentPlayerIdChange += __handler;
-			if (__immediate && this.currentPlayerId != default(string)) { __handler(this.currentPlayerId, default(string)); }
+			__callbacks.AddPropertyCallback(nameof(this.currentCharacterId));
+			__currentCharacterIdChange += __handler;
+			if (__immediate && this.currentCharacterId != default(string)) { __handler(this.currentCharacterId, default(string)); }
 			return () => {
-				__callbacks.RemovePropertyCallback(nameof(currentPlayerId));
-				__currentPlayerIdChange -= __handler;
+				__callbacks.RemovePropertyCallback(nameof(currentCharacterId));
+				__currentCharacterIdChange -= __handler;
 			};
 		}
 
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
-				case nameof(players): __playersChange?.Invoke((MapSchema<CharacterState>) change.Value, (MapSchema<CharacterState>) change.PreviousValue); break;
+				case nameof(characters): __charactersChange?.Invoke((MapSchema<CharacterState>) change.Value, (MapSchema<CharacterState>) change.PreviousValue); break;
+				case nameof(playerCharacters): __playerCharactersChange?.Invoke((MapSchema<string>) change.Value, (MapSchema<string>) change.PreviousValue); break;
 				case nameof(map): __mapChange?.Invoke((MapState) change.Value, (MapState) change.PreviousValue); break;
 				case nameof(turn): __turnChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
 				case nameof(turnOrder): __turnOrderChange?.Invoke((ArraySchema<string>) change.Value, (ArraySchema<string>) change.PreviousValue); break;
-				case nameof(currentPlayerId): __currentPlayerIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(currentCharacterId): __currentCharacterIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				default: break;
 			}
 		}

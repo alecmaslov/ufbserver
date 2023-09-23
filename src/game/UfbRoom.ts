@@ -82,7 +82,9 @@ export class UfbRoom extends Room<UfbRoomState> {
     const player = this.state.characters.get(playerId);
     player.id = playerId;
     player.sessionId = client.sessionId;
-    player.characterId = options.joinOptions?.characterId ?? "kirin";
+    player.characterId = options.joinOptions?.characterId ?? createId();
+    // TODO: in the future, characterClass determined from DB if characterId is used
+    player.characterClass = options.joinOptions?.characterClass ?? "kirin";
     player.displayName = options.joinOptions?.displayName ?? [player.characterId, playerId].join(" ");
     player.coordinates.x = Math.floor(Math.random() * 28);
     player.coordinates.y = Math.floor(Math.random() * 28);
@@ -151,8 +153,8 @@ export class UfbRoom extends Room<UfbRoomState> {
       const tileSchema = new TileState();
       tileSchema.id = tile.id;
       tileSchema.type = tile.type;
-      tileSchema.x = tile.coordinates.x;
-      tileSchema.y = tile.coordinates.y;
+      tileSchema.coordinates.x = tile.coordinates.x;
+      tileSchema.coordinates.y = tile.coordinates.y;
       this.state.map.tiles.set(tile.id, tileSchema);
     }
 

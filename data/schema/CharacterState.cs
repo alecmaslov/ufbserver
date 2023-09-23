@@ -23,13 +23,16 @@ namespace UFB.StateSchema {
 		public string characterId = default(string);
 
 		[Type(4, "string")]
+		public string characterClass = default(string);
+
+		[Type(5, "string")]
 		public string mapName = default(string);
 
-		[Type(5, "ref", typeof(CoordinatesSchema))]
-		public CoordinatesSchema coordinates = new CoordinatesSchema();
+		[Type(6, "ref", typeof(CoordinatesState))]
+		public CoordinatesState coordinates = new CoordinatesState();
 
-		[Type(6, "ref", typeof(CharacterStats))]
-		public CharacterStats stats = new CharacterStats();
+		[Type(7, "ref", typeof(CharacterStatsState))]
+		public CharacterStatsState stats = new CharacterStatsState();
 
 		/*
 		 * Support for individual property change callbacks below...
@@ -83,6 +86,18 @@ namespace UFB.StateSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<string> __characterClassChange;
+		public Action OnCharacterClassChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.characterClass));
+			__characterClassChange += __handler;
+			if (__immediate && this.characterClass != default(string)) { __handler(this.characterClass, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(characterClass));
+				__characterClassChange -= __handler;
+			};
+		}
+
 		protected event PropertyChangeHandler<string> __mapNameChange;
 		public Action OnMapNameChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
@@ -95,8 +110,8 @@ namespace UFB.StateSchema {
 			};
 		}
 
-		protected event PropertyChangeHandler<CoordinatesSchema> __coordinatesChange;
-		public Action OnCoordinatesChange(PropertyChangeHandler<CoordinatesSchema> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<CoordinatesState> __coordinatesChange;
+		public Action OnCoordinatesChange(PropertyChangeHandler<CoordinatesState> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
 			__callbacks.AddPropertyCallback(nameof(this.coordinates));
 			__coordinatesChange += __handler;
@@ -107,8 +122,8 @@ namespace UFB.StateSchema {
 			};
 		}
 
-		protected event PropertyChangeHandler<CharacterStats> __statsChange;
-		public Action OnStatsChange(PropertyChangeHandler<CharacterStats> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<CharacterStatsState> __statsChange;
+		public Action OnStatsChange(PropertyChangeHandler<CharacterStatsState> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
 			__callbacks.AddPropertyCallback(nameof(this.stats));
 			__statsChange += __handler;
@@ -125,9 +140,10 @@ namespace UFB.StateSchema {
 				case nameof(displayName): __displayNameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(sessionId): __sessionIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(characterId): __characterIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(characterClass): __characterClassChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(mapName): __mapNameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
-				case nameof(coordinates): __coordinatesChange?.Invoke((CoordinatesSchema) change.Value, (CoordinatesSchema) change.PreviousValue); break;
-				case nameof(stats): __statsChange?.Invoke((CharacterStats) change.Value, (CharacterStats) change.PreviousValue); break;
+				case nameof(coordinates): __coordinatesChange?.Invoke((CoordinatesState) change.Value, (CoordinatesState) change.PreviousValue); break;
+				case nameof(stats): __statsChange?.Invoke((CharacterStatsState) change.Value, (CharacterStatsState) change.PreviousValue); break;
 				default: break;
 			}
 		}

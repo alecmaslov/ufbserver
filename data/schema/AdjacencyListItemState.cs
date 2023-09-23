@@ -9,16 +9,16 @@ using Colyseus.Schema;
 using Action = System.Action;
 
 namespace UFB.StateSchema {
-	public partial class AdjacencyListItem : Schema {
-		[Type(0, "array", typeof(ArraySchema<TileEdgeSchema>))]
-		public ArraySchema<TileEdgeSchema> edges = new ArraySchema<TileEdgeSchema>();
+	public partial class AdjacencyListItemState : Schema {
+		[Type(0, "array", typeof(ArraySchema<TileEdgeState>))]
+		public ArraySchema<TileEdgeState> edges = new ArraySchema<TileEdgeState>();
 
 		/*
 		 * Support for individual property change callbacks below...
 		 */
 
-		protected event PropertyChangeHandler<ArraySchema<TileEdgeSchema>> __edgesChange;
-		public Action OnEdgesChange(PropertyChangeHandler<ArraySchema<TileEdgeSchema>> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<ArraySchema<TileEdgeState>> __edgesChange;
+		public Action OnEdgesChange(PropertyChangeHandler<ArraySchema<TileEdgeState>> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
 			__callbacks.AddPropertyCallback(nameof(this.edges));
 			__edgesChange += __handler;
@@ -31,7 +31,7 @@ namespace UFB.StateSchema {
 
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
-				case nameof(edges): __edgesChange?.Invoke((ArraySchema<TileEdgeSchema>) change.Value, (ArraySchema<TileEdgeSchema>) change.PreviousValue); break;
+				case nameof(edges): __edgesChange?.Invoke((ArraySchema<TileEdgeState>) change.Value, (ArraySchema<TileEdgeState>) change.PreviousValue); break;
 				default: break;
 			}
 		}

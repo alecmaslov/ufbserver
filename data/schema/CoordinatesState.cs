@@ -9,7 +9,7 @@ using Colyseus.Schema;
 using Action = System.Action;
 
 namespace UFB.StateSchema {
-	public partial class CoordinatesSchema : Schema {
+	public partial class CoordinatesState : Schema {
 		[Type(0, "number")]
 		public float x = default(float);
 

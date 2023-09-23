@@ -1,5 +1,6 @@
 import { Coordinates } from "#shared-types";
 import { Schema, type, ArraySchema, MapSchema } from "@colyseus/schema";
+import { CoordinatesState } from "./CharacterState";
 
 export interface UFBMap {
     name: string;
@@ -41,17 +42,16 @@ export interface GameTile {
 }
 
 export class TileState extends Schema {
-    @type("string") id: string;
-    @type("string") type: TileType;
-    @type("number") x: number;
-    @type("number") y: number;
+    @type("string") id: string = "";
+    @type("string") type: TileType = "floor";
+    @type(CoordinatesState) coordinates: CoordinatesState = new CoordinatesState();
 }
 
 export class TileEdgeState extends Schema {
-    @type("string") from: string;
-    @type("string") to: string;
-    @type("string") type: EdgeType;
-    @type("number") energyCost: number;
+    @type("string") from: string = "";
+    @type("string") to: string = "";
+    @type("string") type: EdgeType = "basic";
+    @type("number") energyCost: number = 1;
 }
 
 export class AdjacencyListItemState extends Schema {

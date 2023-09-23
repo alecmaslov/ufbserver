@@ -9,7 +9,7 @@ using Colyseus.Schema;
 using Action = System.Action;
 
 namespace UFB.StateSchema {
-	public partial class CharacterStats : Schema {
+	public partial class CharacterStatsState : Schema {
 		[Type(0, "number")]
 		public float health = default(float);
 
