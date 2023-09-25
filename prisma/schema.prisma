@@ -90,7 +90,7 @@ model Asset {
   bucketName String
   region     String
 
-  BundleAsset BundleAsset[]
+  bundleAsset BundleAsset[]
 }
 
 // represents the assets needed for a certain unity build bundle
@@ -105,24 +105,35 @@ model BundleAsset {
 // what if we have the same map name, but different sizes? Maybe id should
 // be cuid
 model UfbMap {
-  id           String  @id @default(cuid())
-  name         String
-  thumbnailUrl String?
-  description  String?
-  gridWidth    Int
-  gridHeight   Int
-  publisher    String? // could also be tied to a userId
-  Tile         Tile[]
+  id              String  @id @default(cuid())
+  name            String
+  resourceAddress String?
+  thumbnailUrl    String?
+  description     String?
+  gridWidth       Int
+  gridHeight      Int
+  publisher       String? // could also be tied to a userId
+
+  tiles Tile[]
+}
+
+enum TileType {
+  Bridge
+  Floor
+  Void
+  Chest
+  Enemy
+  Portal
 }
 
 model Tile {
-  id         String  @id @default(cuid())
+  id         String   @id @default(cuid())
   tileCode   String // previously the id, looks like "tile_A_1"
   mapId      String
   x          Int
   y          Int
+  type       TileType
   legacyCode String? // for backwards compatibility
-  textureUrl String?
 
   map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
   fromTileAdjacencies TileAdjacency[] @relation("FromAdjacency")
@@ -142,7 +153,7 @@ enum AdjacencyType {
 model TileAdjacency {
   id         String        @id @default(cuid()) // can there be multiple adjacencies between 2 tiles? 
   // Maybe we can make id a compund between to and from instead
-  fromId     String
+  fromId     String // FROM IS ALWAYS THE OWNER OF THE ADJACENCY
   toId       String
   type       AdjacencyType
   energyCost Int

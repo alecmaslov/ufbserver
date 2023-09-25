@@ -4,6 +4,7 @@ import { CoordinatesState } from "./CharacterState";
 
 export interface UFBMap {
     name: string;
+    resourceAddress?: string;
     gridWidth: number;
     gridHeight: number;
     defaultCards: string[];
@@ -61,6 +62,8 @@ export class AdjacencyListItemState extends Schema {
 export class MapState extends Schema {
     @type("string") id: string = "";
     @type("string") name: string = "";
+    @type("string") resourceAddress: string = "";
+    // @type("string") 
     @type("number") gridWidth: number = 0;
     @type("number") gridHeight: number = 0;
     @type({ map: TileState }) tiles: MapSchema<TileState> 

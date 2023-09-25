@@ -10,7 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc -w",
     "generate-schema": "npx schema-codegen src/game/schema/* --output data/schema --csharp --namespace UFB.StateSchema",
-    "generate-schema-client": "npx schema-codegen src/game/schema/* --output ../Assets/Scripts/Network/Schema --csharp --namespace UFB.StateSchema"
+    "generate-schema-client": "npx schema-codegen src/game/schema/* --output ../Assets/Scripts/Network/Schema --csharp --namespace UFB.StateSchema",
+    "job:insert-maps": "node out/jobs/insert-maps.js"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,8 @@
+{
+    "joinOptions": {
+        "token": "foobar",
+        "playerId": "colyseusPlayground",
+        "displayName": "ColyseusPlayground",
+        "characterClass": "ophaia"
+    }
+}

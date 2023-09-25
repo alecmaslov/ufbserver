@@ -1,4 +1,4 @@
-import { UfbMap, AdjacencyType } from "@prisma/client";
+import { UfbMap, AdjacencyType, TileType } from "@prisma/client";
 import db from "#db";
 import { JsonArray } from "@prisma/client/runtime/library";
 import { getAllMapFiles, getMap } from "#assets/maps";
@@ -21,6 +21,7 @@ async function upsertMap(mapData: UFBMap): Promise<string> {
     const newMap = await db.ufbMap.create({
         data: {
             name: mapData.name,
+            resourceAddress: `maps/${mapData.name}`,
             gridWidth: mapData.gridWidth,
             gridHeight: mapData.gridHeight,
             publisher: DEFAULT_MAP_PUBLISHER
@@ -28,39 +29,6 @@ async function upsertMap(mapData: UFBMap): Promise<string> {
     });
 
     return newMap.id;
-}
-
-async function upsertTile(mapId: string, tile: Partial<GameTile>) {
-    await db.tile.upsert({
-        where: { tileCode_mapId: { tileCode: tile.id, mapId } },
-        update: {
-            /* any fields you want to update */
-        },
-        create: {
-            mapId,
-            tileCode: tile.id,
-            x: tile.coordinates.x,
-            y: tile.coordinates.y,
-            // ... other fields
-        },
-    });
-}
-
-async function upsertAdjacency(
-    fromId: string,
-    toId: string,
-    type: AdjacencyType,
-    energyCost: number
-) {
-    await db.tileAdjacency.create({
-        data: {
-            fromId,
-            toId,
-            type,
-            energyCost,
-            // ... other fields
-        },
-    });
 }
 
 async function uspertMapTransaction(map: UFBMap) {
@@ -72,6 +40,7 @@ async function uspertMapTransaction(map: UFBMap) {
             tileCode: tile.id,
             x: tile.coordinates.x,
             y: tile.coordinates.y,
+            type: tile.type as TileType,
             mapId: mapId,
         };
     });
