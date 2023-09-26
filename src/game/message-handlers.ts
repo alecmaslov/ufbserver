@@ -14,8 +14,11 @@ export interface MessageHandlers {
 export const messageHandlers: MessageHandlers = {
     move: (room, client, message) => {
         const playerId = room.sessionIdToPlayerId.get(client.sessionId);
-        const characterId = room.state.playerCharacters.get(playerId);
+        // const characterId = room.state.playerCharacters.get(playerId);
         const character = room.state.characters.get(playerId);
+        const characterId = character.id;
+
+        console.log(`Player ${playerId} is moving character ${character.id} to ${JSON.stringify(message.destination, null, 2)}`);
 
         if (!character) {
             room.notify(client, "You are not in room game!", "error");
@@ -26,13 +29,13 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        const playerTileId = coordToTileId(character.coordinates);
-        const toTileId = coordToTileId(message.destination);
+        // const playerTileId = coordToTileId(character.coordinates);
+        // const toTileId = coordToTileId(message.destination);
 
         const {
             path,
             cost
-        } = room.pathfinder.find(playerTileId, toTileId);
+        } = room.pathfinder.find(character.currentTileId, message.tileId);
 
         // player must have enough energy to move along the path
         if (character.stats.energy < cost) {
@@ -42,6 +45,7 @@ export const messageHandlers: MessageHandlers = {
 
         character.coordinates.x = message.destination.x;
         character.coordinates.y = message.destination.y;
+        character.currentTileId = message.tileId;
         character.stats.energy -= cost;
 
         const characterMovedMessage: CharacterMovedMessage = {

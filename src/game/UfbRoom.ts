@@ -72,7 +72,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         });
     }
 
-    onJoin(client: Client, options: UfbRoomOptions) {
+    async onJoin(client: Client, options: UfbRoomOptions) {
         let playerId = options.joinOptions.playerId ?? "";
         console.log("onJoin options", options);
         if (isNullOrEmpty(playerId)) {
@@ -93,8 +93,25 @@ export class UfbRoom extends Room<UfbRoomState> {
         player.displayName =
             options.joinOptions?.displayName ??
             [player.characterId, playerId].join(" ");
-        player.coordinates.x = Math.floor(Math.random() * 28);
-        player.coordinates.y = Math.floor(Math.random() * 28);
+
+        const x = Math.floor(Math.random() * this.state.map.gridWidth);
+        const y = Math.floor(Math.random() * this.state.map.gridHeight);
+
+        player.coordinates.x = x;
+        player.coordinates.y = y;
+
+        const tile = await db.tile.findUnique({
+            where: {
+                x_y_mapId: {
+                    x,
+                    y,
+                    mapId: this.state.map.id,
+                },
+            },
+        });
+
+        player.currentTileId = tile.id;
+
         this.state.turnOrder.push(client.sessionId);
         if (this.state.turnOrder.length === 1) {
             this.state.currentCharacterId = playerId;
@@ -183,12 +200,12 @@ export class UfbRoom extends Room<UfbRoomState> {
             adjacencyListItem.edges = new ArraySchema<TileEdgeState>();
 
             for (const edge of tile.fromTileAdjacencies) {
-              const edgeState = new TileEdgeState();
-              edgeState.from = edge.fromId;
-              edgeState.to = edge.toId;
-              edgeState.type = edge.type as any;
-              edgeState.energyCost = edge.energyCost;
-              adjacencyListItem.edges.push(edgeState);
+                const edgeState = new TileEdgeState();
+                edgeState.from = edge.fromId;
+                edgeState.to = edge.toId;
+                edgeState.type = edge.type as any;
+                edgeState.energyCost = edge.energyCost;
+                adjacencyListItem.edges.push(edgeState);
             }
 
             this.state.map.adjacencyList.set(tile.id, adjacencyListItem);

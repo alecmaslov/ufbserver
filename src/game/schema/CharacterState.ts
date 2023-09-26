@@ -20,6 +20,8 @@ export class CharacterState extends Schema {
     @type("string") characterId: string = "";
     @type("string") characterClass: string = "";
     @type("string") mapName: string = "";
+    // @kyle - What if instead of sending CoordinatesState, we send tileId?
+    @type("string") currentTileId: string = "";
     @type(CoordinatesState) coordinates: CoordinatesState = new CoordinatesState();
     @type(CharacterStatsState) stats: CharacterStatsState = new CharacterStatsState();
 }
