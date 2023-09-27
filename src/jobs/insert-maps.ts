@@ -3,7 +3,7 @@ import db from "#db";
 import { JsonArray } from "@prisma/client/runtime/library";
 import { getAllMapFiles, getMap } from "#assets/maps";
 import { createId } from "@paralleldrive/cuid2";
-import { GameTile, UFBMap } from "#game/schema/MapState";
+import { GameTile, TileSide, UFBMap } from "#game/schema/MapState";
 
 const DEFAULT_MAP_PUBLISHER = "ufb";
 
@@ -24,12 +24,38 @@ async function upsertMap(mapData: UFBMap): Promise<string> {
             resourceAddress: `maps/${mapData.name}`,
             gridWidth: mapData.gridWidth,
             gridHeight: mapData.gridHeight,
-            publisher: DEFAULT_MAP_PUBLISHER
+            publisher: DEFAULT_MAP_PUBLISHER,
         },
     });
 
     return newMap.id;
 }
+
+function sidesToWallArray(sides: TileSide[]) {
+    const wallArray = [0, 0, 0, 0];
+    for (const side of sides) {
+        switch (side.side) {
+            case "top":
+                wallArray[0] = 1;
+                break;
+            case "right":
+                wallArray[1] = 1;
+                break;
+            case "bottom":
+                wallArray[2] = 1;
+                break;
+            case "left":
+                wallArray[3] = 1;
+                break;
+        }
+    }
+    return wallArray;
+}
+
+const capitalizeWord = (word: string) => {
+    word = word.toLowerCase();
+    return word.charAt(0).toUpperCase() + word.slice(1);
+};
 
 async function uspertMapTransaction(map: UFBMap) {
     const mapId = await upsertMap(map);
@@ -40,8 +66,13 @@ async function uspertMapTransaction(map: UFBMap) {
             tileCode: tile.id,
             x: tile.coordinates.x,
             y: tile.coordinates.y,
-            type: tile.type as TileType,
-            mapId: mapId,
+            walls:
+                tile.sides === undefined ? null : sidesToWallArray(tile.sides),
+            type:
+                tile.type === undefined
+                    ? TileType.Default
+                    : (tile.type as TileType),
+            // mapId: mapId,
         };
     });
 
@@ -59,7 +90,7 @@ async function uspertMapTransaction(map: UFBMap) {
             adjacencies.push({
                 fromId: tileIdMap[adjacency.from],
                 toId: tileIdMap[adjacency.to],
-                type: adjacency.type.toUpperCase() as AdjacencyType,
+                type: capitalizeWord(adjacency.type) as AdjacencyType,
                 energyCost: adjacency.energyCost,
             });
         }
@@ -71,7 +102,14 @@ async function uspertMapTransaction(map: UFBMap) {
     for (const tile of tiles) {
         operations.push(
             db.tile.create({
-                data: tile,
+                data: {
+                    ...tile,
+                    map: {
+                        connect: {
+                            id: mapId,
+                        },
+                    },
+                },
             })
         );
     }
@@ -95,7 +133,7 @@ async function insertMaps() {
         const map = getMap(name);
         try {
             await uspertMapTransaction(map);
-            console.log(`Inserted map: ${name}`)
+            console.log(`Inserted map: ${name}`);
         } catch (e) {
             console.error(e);
         }

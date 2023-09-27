@@ -18,6 +18,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { registerMessageHandlers } from "./message-handlers";
 import { Pathfinder } from "./Pathfinder";
 import db from "#db";
+import { TileType } from "@prisma/client";
 
 interface UfbRoomRules {
     maxPlayers: number;
@@ -191,9 +192,21 @@ export class UfbRoom extends Room<UfbRoomState> {
         for (const tile of map.tiles) {
             const tileState = new TileState();
             tileState.id = tile.id;
-            tileState.type = tile.type as any;
+            tileState.type = tile.type as TileType;
             tileState.coordinates.x = tile.x;
             tileState.coordinates.y = tile.y;
+            tileState.tileCode = tile.tileCode;
+            
+            // walls can be null
+            const walls = new ArraySchema<number>();
+            if (tileState.walls) {
+                for (const wall of tileState.walls) {
+                    walls.push(wall);
+                }
+            }
+
+            tileState.walls = walls;
+
             this.state.map.tiles.set(tile.id, tileState);
 
             const adjacencyListItem = new AdjacencyListItemState();

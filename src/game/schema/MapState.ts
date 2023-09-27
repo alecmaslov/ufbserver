@@ -1,6 +1,7 @@
 import { Coordinates } from "#shared-types";
 import { Schema, type, ArraySchema, MapSchema } from "@colyseus/schema";
 import { CoordinatesState } from "./CharacterState";
+import { TileType, AdjacencyType } from "@prisma/client";
 
 export interface UFBMap {
     name: string;
@@ -12,7 +13,7 @@ export interface UFBMap {
     adjacencyList: Record<string, TileEdge[]>;
 }
 
-type TileType = "bridge" | "floor" | "void" | "chest" | "enemy" | "portal";
+// type TileType = "Default" | "Bridge" | "Floor" | "Void" | "Chest" | "Enemy" | "Portal";
 
 export interface SpawnEntity {
     name: string;
@@ -20,12 +21,12 @@ export interface SpawnEntity {
     properties: any;
 }
 
-type EdgeType = "basic" | "portal" | "bridge";
+// type EdgeType = "BASIC" | "PORTAL" | "BRIDGE";
 
 export interface TileEdge {
     from: string;
     to: string;
-    type: EdgeType;
+    type: AdjacencyType;
     energyCost: number;
 }
 
@@ -44,14 +45,16 @@ export interface GameTile {
 
 export class TileState extends Schema {
     @type("string") id: string = "";
-    @type("string") type: TileType = "floor";
+    @type("string") tileCode: string = ""; // e.g. "tile_A_1"
+    @type("string") type: TileType = "Default";
+    @type(["number"]) walls: ArraySchema<number> = new ArraySchema<number>(); // @kyle - Added walls
     @type(CoordinatesState) coordinates: CoordinatesState = new CoordinatesState();
 }
 
 export class TileEdgeState extends Schema {
     @type("string") from: string = "";
     @type("string") to: string = "";
-    @type("string") type: EdgeType = "basic";
+    @type("string") type: AdjacencyType = "Basic";
     @type("number") energyCost: number = 1;
 }
 
@@ -62,8 +65,7 @@ export class AdjacencyListItemState extends Schema {
 export class MapState extends Schema {
     @type("string") id: string = "";
     @type("string") name: string = "";
-    @type("string") resourceAddress: string = "";
-    // @type("string") 
+    @type("string") resourceAddress: string = ""; // address of the map image file
     @type("number") gridWidth: number = 0;
     @type("number") gridHeight: number = 0;
     @type({ map: TileState }) tiles: MapSchema<TileState> 

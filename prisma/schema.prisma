@@ -118,6 +118,7 @@ model UfbMap {
 }
 
 enum TileType {
+  Default
   Bridge
   Floor
   Void
@@ -132,7 +133,8 @@ model Tile {
   mapId      String
   x          Int
   y          Int
-  type       TileType
+  type       TileType @default(Default)
+  walls      Json?
   legacyCode String? // for backwards compatibility
 
   map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
@@ -145,9 +147,9 @@ model Tile {
 }
 
 enum AdjacencyType {
-  BASIC
-  BRIDGE
-  PORTAL
+  Basic
+  Bridge
+  Portal
 }
 
 model TileAdjacency {
@@ -156,7 +158,7 @@ model TileAdjacency {
   fromId     String // FROM IS ALWAYS THE OWNER OF THE ADJACENCY
   toId       String
   type       AdjacencyType
-  energyCost Int
+  energyCost Int?
 
   from   Tile    @relation("FromAdjacency", fields: [fromId], references: [id], onDelete: Cascade)
   to     Tile    @relation("ToAdjacency", fields: [toId], references: [id], onDelete: Cascade)
