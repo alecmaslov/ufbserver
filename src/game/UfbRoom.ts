@@ -199,11 +199,13 @@ export class UfbRoom extends Room<UfbRoomState> {
             
             // walls can be null
             const walls = new ArraySchema<number>();
-            if (tileState.walls) {
-                for (const wall of tileState.walls) {
+            if (tile.walls) {
+                for (const wall of tile.walls as number[]) {
                     walls.push(wall);
                 }
             }
+
+            console.log(`WALLS ${walls} | ${tile.walls}`)
 
             tileState.walls = walls;
 

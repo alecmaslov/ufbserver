@@ -47,7 +47,7 @@ export class Pathfinder {
             const path: PathStep[] = _path.map(node => {
                 return {
                     tileId: node.id as string,
-                    coord: { x: -69, y: -69 } 
+                    // coord: { x: -69, y: -69 } 
                     // tileIdToCoord(node.id as string)
                 };
             });

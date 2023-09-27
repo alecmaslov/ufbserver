@@ -47,7 +47,7 @@ export class TileState extends Schema {
     @type("string") id: string = "";
     @type("string") tileCode: string = ""; // e.g. "tile_A_1"
     @type("string") type: TileType = "Default";
-    @type(["number"]) walls: ArraySchema<number> = new ArraySchema<number>(); // @kyle - Added walls
+    @type(["uint8"]) walls: ArraySchema<number> = new ArraySchema<number>(); // @kyle - Added walls
     @type(CoordinatesState) coordinates: CoordinatesState = new CoordinatesState();
 }
 
