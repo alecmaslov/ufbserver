@@ -84,22 +84,24 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
         this.sessionIdToPlayerId.set(client.sessionId, playerId);
         console.log(client.sessionId, "joined!");
+
         this.state.characters.set(playerId, new CharacterState());
-        const player = this.state.characters.get(playerId);
-        player.id = playerId;
-        player.sessionId = client.sessionId;
-        player.characterId = options.joinOptions?.characterId ?? createId();
+        
+        const character = this.state.characters.get(playerId);
+        character.id = playerId;
+        character.sessionId = client.sessionId;
+        character.characterId = options.joinOptions?.characterId ?? createId();
         // TODO: in the future, characterClass determined from DB if characterId is used
-        player.characterClass = options.joinOptions?.characterClass ?? "kirin";
-        player.displayName =
+        character.characterClass = options.joinOptions?.characterClass ?? "kirin";
+        character.displayName =
             options.joinOptions?.displayName ??
-            [player.characterId, playerId].join(" ");
+            [character.characterId, playerId].join(" ");
 
         const x = Math.floor(Math.random() * this.state.map.gridWidth);
         const y = Math.floor(Math.random() * this.state.map.gridHeight);
 
-        player.coordinates.x = x;
-        player.coordinates.y = y;
+        character.coordinates.x = x;
+        character.coordinates.y = y;
 
         const tile = await db.tile.findUnique({
             where: {
@@ -111,7 +113,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             },
         });
 
-        player.currentTileId = tile.id;
+        character.currentTileId = tile.id;
 
         this.state.turnOrder.push(client.sessionId);
         if (this.state.turnOrder.length === 1) {
@@ -204,8 +206,6 @@ export class UfbRoom extends Room<UfbRoomState> {
                     walls.push(wall);
                 }
             }
-
-            console.log(`WALLS ${walls} | ${tile.walls}`)
 
             tileState.walls = walls;
 

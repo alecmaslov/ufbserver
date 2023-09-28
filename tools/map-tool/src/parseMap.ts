@@ -65,13 +65,13 @@ const TILE_LETTERS = [
 ];
 
 const coordToTileId = (coordinates: Coordinates): string => {
-    return `tile_${TILE_LETTERS[coordinates.y]}_${coordinates.x + 1}`;
+    return `tile_${TILE_LETTERS[coordinates.x]}_${coordinates.y + 1}`;
 };
 
 const tileIdToCoord = (tileId: string): Coordinates => {
     const parts = tileId.split("_");
-    const y = TILE_LETTERS.indexOf(parts[1]);
-    const x = parseInt(parts[2]) - 1;
+    const x = TILE_LETTERS.indexOf(parts[1]);
+    const y = parseInt(parts[2]) - 1;
     const c = { x, y };
     ok(coordToTileId(c) === tileId);
     return c;
@@ -195,7 +195,7 @@ function parseBackgroundLayer(
                     to: neighborId,
                     type: "basic",
                     energyCost: edgeCost[i],
-                };
+                }; 
                 adjacencyList.get(id)!.push(edge);
             }
 

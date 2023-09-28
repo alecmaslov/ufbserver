@@ -2,11 +2,11 @@ import createGraph, { Graph } from "ngraph.graph";
 import { MapState } from "./schema/MapState";
 import { aStar, PathFinder as NGraphPathFinder } from "ngraph.path";
 import { PathStep } from "#shared-types";
-import { getPathCost, tileIdToCoord } from "./map-helpers";
+import { getPathCost, gameIdToCoord } from "./map-helpers";
 
 export type NavGraphLinkData = {
     energyCost: number;
-}
+};
 
 export interface FindPathResult {
     foundPath: boolean;
@@ -24,9 +24,17 @@ export class Pathfinder {
         const graph = createGraph<any, NavGraphLinkData>();
         for (const [key, item] of mapState.adjacencyList.entries()) {
             for (const edge of item.edges) {
-                graph.addLink(edge.from, edge.to, {
-                    energyCost: edge.energyCost,
-                });
+                console.log(
+                    `Adding edge from ${edge.from} to ${edge.to} | ${edge.energyCost}`
+                );
+                // @kyle - I had to add this check, otherwise the pathfinder wasn't working
+                // correctly after moving to the database. Maybe its because the energyCost
+                // now always exists, but will be null? Im not sure.
+                if (edge.energyCost) {
+                    graph.addLink(edge.from, edge.to, {
+                        energyCost: edge.energyCost,
+                    });
+                }
             }
         }
         const p = new Pathfinder();
@@ -35,7 +43,7 @@ export class Pathfinder {
         p._pathFinder = aStar(p._navGraph, {
             distance(fromNode, toNode, link) {
                 return link.data.energyCost;
-            }
+            },
         });
         return p;
     }
@@ -44,26 +52,24 @@ export class Pathfinder {
         const _path = this._pathFinder.find(from, to);
         try {
             const cost = getPathCost(_path, this._mapState.adjacencyList);
-            const path: PathStep[] = _path.map(node => {
+            const path: PathStep[] = _path.map((node) => {
                 return {
                     tileId: node.id as string,
-                    // coord: { x: -69, y: -69 } 
-                    // tileIdToCoord(node.id as string)
+                    // coord: { x: -69, y: -69 }
                 };
             });
             path.reverse();
             return {
                 foundPath: true,
                 cost,
-                path
+                path,
             };
-        }
-        catch (e) {
+        } catch (e) {
             console.error("Error finding path", e);
             return {
                 foundPath: false,
                 cost: 0,
-                path: []
+                path: [],
             };
         }
     }
