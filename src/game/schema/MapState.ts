@@ -8,6 +8,7 @@ import { UFBMap, SpawnEntityType, Spawnable } from "#game/types/map-types";
 export class SpawnEntity extends Schema {
     @type("string") id: string = "";
     @type("string") gameId: string = ""; // e.g. "chest_12"
+    @type("string") prefabAddress: string = ""; // e.g. "prefabs/chest"
     @type("string") type: SpawnZoneType = "Chest"; // tells the client what to load
     @type("string") tileId: string = ""; // where to spawn
     @type("string") parameters: string = ""; // e.g. "seedId=1234"
