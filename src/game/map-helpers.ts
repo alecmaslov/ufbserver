@@ -141,6 +141,7 @@ export function initializeSpawnEntities(
         const chestEntity = new SpawnEntity();
         chestEntity.id = chestZone.id;
         chestEntity.gameId = `chest_${i}`;
+        chestEntity.prefabAddress = "prefabs/chest";
         chestEntity.tileId = chestZone.tileId;
         chestEntity.type = "Chest";
         chestEntity.parameters = `{"seedId" : "${chestZone.seedId}"}`;
@@ -169,6 +170,7 @@ export function initializeSpawnEntities(
             const portalEntity = new SpawnEntity();
             portalEntity.id = zone.id;
             portalEntity.gameId = `portal_${i}`;
+            portalEntity.prefabAddress = "prefabs/portal";
             portalEntity.tileId = zone.tileId;
             portalEntity.type = "Portal";
             portalEntity.parameters = `{"seedId" : "${zone.seedId}", "portalGroup" : "${i}", "portalIndex" : "${j}"}`;
@@ -181,6 +183,7 @@ export function initializeSpawnEntities(
         const merchantEntity = new SpawnEntity();
         merchantEntity.id = zone.id;
         merchantEntity.gameId = `merchant_${i}`;
+        merchantEntity.prefabAddress = "prefabs/merchant";
         merchantEntity.tileId = zone.tileId;
         merchantEntity.type = "Merchant";
         merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
