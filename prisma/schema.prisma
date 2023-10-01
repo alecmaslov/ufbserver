@@ -140,7 +140,7 @@ model Tile {
   map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
   fromTileAdjacencies TileAdjacency[] @relation("FromAdjacency")
   toTileAdjacencies   TileAdjacency[] @relation("ToAdjacency")
-  tileAdjacency       TileAdjacency[]
+  tileAdjacencies     TileAdjacency[]
   spawnZone           SpawnZone[]
 
   @@unique([tileCode, mapId])

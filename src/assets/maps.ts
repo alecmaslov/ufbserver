@@ -1,6 +1,6 @@
 import { readFileSync, statSync, readdirSync } from "fs";
 import { basename, join as pathJoin } from "path";
-import { UFBMap } from "#game/schema/MapState";
+import { UFBMap } from "#game/types/map-types";
 
 const MAPS_ROOT = pathJoin("data", "maps");
 
