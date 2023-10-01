@@ -141,15 +141,33 @@ model Tile {
   fromTileAdjacencies TileAdjacency[] @relation("FromAdjacency")
   toTileAdjacencies   TileAdjacency[] @relation("ToAdjacency")
   tileAdjacency       TileAdjacency[]
+  spawnZone           SpawnZone[]
 
   @@unique([tileCode, mapId])
   @@unique([x, y, mapId])
 }
 
+enum SpawnZoneType {
+  Merchant
+  Portal
+  Monster
+  Chest
+}
+
+model SpawnZone {
+  id     String        @id @default(cuid())
+  type   SpawnZoneType
+  seedId Int
+  tileId String        @unique
+  tile   Tile          @relation(fields: [tileId], references: [id], onDelete: Cascade)
+}
+
 enum AdjacencyType {
   Basic
-  Bridge
-  Portal
+  OverBridge
+  UnderBridge
+  Wall
+  Void
 }
 
 model TileAdjacency {
@@ -164,6 +182,8 @@ model TileAdjacency {
   to     Tile    @relation("ToAdjacency", fields: [toId], references: [id], onDelete: Cascade)
   tile   Tile?   @relation(fields: [tileId], references: [id], onDelete: Cascade)
   tileId String?
+
+  @@unique([fromId, toId])
 }
 
 // if we normalize tiles and adjacency list, we can track in-game actions to 

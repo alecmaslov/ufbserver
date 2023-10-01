@@ -86,16 +86,23 @@ export class UfbRoom extends Room<UfbRoomState> {
         console.log(client.sessionId, "joined!");
 
         this.state.characters.set(playerId, new CharacterState());
-        
+
         const character = this.state.characters.get(playerId);
         character.id = playerId;
         character.sessionId = client.sessionId;
         character.characterId = options.joinOptions?.characterId ?? createId();
         // TODO: in the future, characterClass determined from DB if characterId is used
-        character.characterClass = options.joinOptions?.characterClass ?? "kirin";
+        character.characterClass =
+            options.joinOptions?.characterClass ?? "kirin";
+
+        // change this eventually when NPCs
+        const defaultScreenName =
+            "Player " +
+            this.state.characters.size +
+            ` (${character.characterClass})`;
+
         character.displayName =
-            options.joinOptions?.displayName ??
-            [character.characterId, playerId].join(" ");
+            options.joinOptions?.displayName ?? defaultScreenName;
 
         const x = Math.floor(Math.random() * this.state.map.gridWidth);
         const y = Math.floor(Math.random() * this.state.map.gridHeight);
@@ -198,7 +205,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             tileState.coordinates.x = tile.x;
             tileState.coordinates.y = tile.y;
             tileState.tileCode = tile.tileCode;
-            
+
             // walls can be null
             const walls = new ArraySchema<number>();
             if (tile.walls) {

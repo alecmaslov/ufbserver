@@ -1,4 +1,3 @@
-
 export enum TileType {
     Bridge = "Bridge",
     Floor = "Floor",
@@ -13,13 +12,12 @@ export interface TileColor {
     color: string;
 }
 
-export interface SpawnEntity {
-    name : string;
-    // type : TileType;
-    properties : any;
+export interface SpawnZone {
+    type: "Monster" | "Chest";
+    seedId: number;
 }
 
-type EdgeType = "basic" | "portal" | "bridge";
+export type EdgeType = "Basic" | "OverBridge" | "UnderBridge" | "Wall" | "Void";
 
 export interface TileEdge {
     from: string;
@@ -28,9 +26,26 @@ export interface TileEdge {
     energyCost: number;
 }
 
+export type TileSideOrientation = "Top" | "Right" | "Bottom" | "Left";
+
+export const tileSideToIndex = new Map<TileSideOrientation, number>([
+    ["Top", 0],
+    ["Right", 1],
+    ["Bottom", 2],
+    ["Left", 3],
+]);
+
+export const tileIndexToSide = new Map<number, TileSideOrientation>([
+    [0, "Top"],
+    [1, "Right"],
+    [2, "Bottom"],
+    [3, "Left"],
+]);
+
 export interface TileSide {
-    side: "top" | "right" | "bottom" | "left";
-    edgeProperty: "wall" | "door" | "portal" | "bridge";
+    side: TileSideOrientation;
+    edgeProperty: EdgeType;
+    // edgeProperty: "Wall" | "Door" | "Portal" | "Bridge" | "None";
 }
 
 export interface Coordinates {
@@ -40,22 +55,22 @@ export interface Coordinates {
 
 export interface GameTile {
     id: string;
-    type : TileType;
-    spawnItems : SpawnEntity[];
-    coordinates : Coordinates;
+    type: TileType;
+    spawnZone?: SpawnZone;
+    coordinates: Coordinates;
     color: TileColor | null;
-    layerName : string;
-    sides : TileSide[];
+    layerName: string;
+    sides: TileSide[];
     legacyCode: string; // code for the original UFB map parser in Swift
 }
 
 export interface UFBMap {
-    name : string;
-    gridWidth : number;
-    gridHeight : number;
+    name: string;
+    gridWidth: number;
+    gridHeight: number;
     defaultCards: string[];
-    tiles : Partial<GameTile>[];
-    adjacencyList : Map<string, TileEdge[]>;
+    tiles: Partial<GameTile>[];
+    adjacencyList: Map<string, TileEdge[]>;
 }
 
 export const TileColorCodes = new Map<string, TileColor>([

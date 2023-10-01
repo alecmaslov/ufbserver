@@ -24,9 +24,6 @@ export class Pathfinder {
         const graph = createGraph<any, NavGraphLinkData>();
         for (const [key, item] of mapState.adjacencyList.entries()) {
             for (const edge of item.edges) {
-                console.log(
-                    `Adding edge from ${edge.from} to ${edge.to} | ${edge.energyCost}`
-                );
                 // @kyle - I had to add this check, otherwise the pathfinder wasn't working
                 // correctly after moving to the database. Maybe its because the energyCost
                 // now always exists, but will be null? Im not sure.

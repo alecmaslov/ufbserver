@@ -3,12 +3,16 @@ import {
     UFBMap,
     GameTile,
     TileType,
-    SpawnEntity,
+    SpawnZone,
     TileEdge,
     TileColorCodes,
     TileColor,
     Coordinates,
     TileSide,
+    EdgeType,
+    TileSideOrientation,
+    tileSideToIndex,
+    tileIndexToSide,
 } from "./types/map";
 import {
     readFileSync,
@@ -17,6 +21,7 @@ import {
     existsSync,
     mkdirSync,
 } from "fs";
+import e from "cors";
 
 const COLOR_CODES = [
     "E",
@@ -88,7 +93,6 @@ const tileTypes = new Map<string, TileType>([
 
 // @kyle - type void error originates here
 const parseTileType = (tileCode: string): TileType | null => {
-    console.log(`tileCode: ${tileCode}`);
     return tileTypes.get(tileCode[0]) || null;
 };
 
@@ -98,13 +102,15 @@ const parseTileColor = (tileCode: string): TileColor | null => {
 };
 
 function parseTileSides(tileCode: string): TileSide[] {
-    const sides: TileSide[] = [];
-    if (tileCode[1] === "1") sides.push({ side: "top", edgeProperty: "wall" });
-    if (tileCode[2] === "1")
-        sides.push({ side: "right", edgeProperty: "wall" });
-    if (tileCode[3] === "1")
-        sides.push({ side: "bottom", edgeProperty: "wall" });
-    if (tileCode[4] === "1") sides.push({ side: "left", edgeProperty: "wall" });
+    const sides: TileSide[] = [
+        { side: "Top", edgeProperty: tileCode[1] === "1" ? "Wall" : "Basic" },
+        { side: "Right", edgeProperty: tileCode[2] === "1" ? "Wall" : "Basic" },
+        {
+            side: "Bottom",
+            edgeProperty: tileCode[3] === "1" ? "Wall" : "Basic",
+        },
+        { side: "Left", edgeProperty: tileCode[4] === "1" ? "Wall" : "Basic" },
+    ];
     return sides;
 }
 
@@ -142,71 +148,214 @@ function initializeTiles(dimensions: number): Map<string, Partial<GameTile>> {
     return allTiles;
 }
 
+// const sideToIndex = {
+//     Top: 0,
+//     Right: 1,
+//     Bottom: 2,
+//     Left: 3,
+// };
+
+// 27x27 grid
+interface Wall {
+    coordinates: Coordinates;
+}
+
 function parseBackgroundLayer(
     map: any,
     layer: any,
     allTiles: Map<string, Partial<GameTile>>,
     adjacencyList: Map<string, TileEdge[]>
 ) {
+    const walls = new Map<string, Coordinates>();
+
+    function getNeighbor(coordinates: Coordinates, side: TileSideOrientation) {
+        switch (side) {
+            case "Top":
+                return allTiles.get(
+                    coordToTileId({
+                        x: coordinates.x,
+                        y: coordinates.y - 1,
+                    })
+                );
+            case "Right":
+                return allTiles.get(
+                    coordToTileId({
+                        x: coordinates.x + 1,
+                        y: coordinates.y,
+                    })
+                );
+            case "Bottom":
+                return allTiles.get(
+                    coordToTileId({
+                        x: coordinates.x,
+                        y: coordinates.y + 1,
+                    })
+                );
+            case "Left":
+                return allTiles.get(
+                    coordToTileId({
+                        x: coordinates.x - 1,
+                        y: coordinates.y,
+                    })
+                );
+            default:
+                throw new Error(`Unknown side: ${side}`);
+        }
+    }
+
     const bridgeTiles: string[] = [];
     iterateTiles(
         layer,
         (tileCode: string, coordinates: Coordinates, id: string) => {
-            const sides = parseTileSides(tileCode);
-            const tile = allTiles.get(id);
-            if (tile === undefined)
+            const currentTile = allTiles.get(id);
+            if (currentTile === undefined)
                 throw new Error(`Failed to find tile ${id}.`);
             const tileType = parseTileType(tileCode);
             if (tileType !== null) {
-                tile.type = tileType;
+                currentTile.type = tileType;
                 // top, right, bottom, left
-                if (tile.type === TileType.Bridge) {
+                if (currentTile.type === TileType.Bridge) {
                     bridgeTiles.push(id);
                 }
             }
-            const sideToIndex = {
-                top: 0,
-                right: 1,
-                bottom: 2,
-                left: 3,
-            };
-            const neighborCoords = [
-                { x: coordinates.x, y: coordinates.y - 1 },
-                { x: coordinates.x + 1, y: coordinates.y },
-                { x: coordinates.x, y: coordinates.y + 1 },
-                { x: coordinates.x - 1, y: coordinates.y },
-            ];
-            const edgeCost = [1, 1, 1, 1];
-            for (let i = 0; i < sides.length; i++) {
-                const { side, edgeProperty } = sides[i];
-                const edgeIndex = sideToIndex[side];
-                if (edgeProperty === "wall") edgeCost[edgeIndex] = NaN;
-            }
-            for (let i = 0; i < 4; i++) {
-                const neighborId = coordToTileId(neighborCoords[i]);
-                const neighborTile = allTiles.get(neighborId);
-                if (neighborTile === undefined) {
-                    continue;
-                }
-                if (adjacencyList.get(id) === undefined)
-                    adjacencyList.set(id, []);
-                const edge: TileEdge = {
-                    from: id,
-                    to: neighborId,
-                    type: "basic",
-                    energyCost: edgeCost[i],
-                }; 
-                adjacencyList.get(id)!.push(edge);
-            }
+            const sides = parseTileSides(tileCode);
 
-            tile.spawnItems = [];
+            for (const side of sides) {
+                if (side.edgeProperty !== "Wall") continue;
+                const neighborTile = getNeighbor(coordinates, side.side);
+                const wallId = [id, neighborTile?.id].sort().join("-");
+                if (walls.has(wallId)) continue;
+                walls.set(wallId, coordinates);
+            }
 
             var color = parseTileColor(tileCode);
             if (color === null) color = TileColorCodes.get("E")!;
-            tile.color = color;
-            tile.layerName = layer.name;
-            tile.sides = sides;
-            tile.legacyCode = tileCode;
+            currentTile.color = color;
+            currentTile.layerName = layer.name;
+            currentTile.sides = sides;
+            currentTile.legacyCode = tileCode;
+        }
+    );
+
+    // now that all tiles have info, go back and get the edges
+    iterateTiles(
+        layer,
+        (tileCode: string, coordinates: Coordinates, id: string) => {
+            const currentTile = allTiles.get(id) as GameTile;
+            if (currentTile === undefined)
+                throw new Error(`Failed to find tile ${id}.`);
+
+            if (currentTile.type === TileType.Bridge) {
+                // find the 2 sides with walls, then make an edge between them
+                const wallSides = currentTile.sides.filter(
+                    (side) => side.edgeProperty === "Wall"
+                );
+                if (wallSides.length !== 2) {
+                    throw new Error(
+                        `Bridge tile ${id} has ${wallSides.length} walls.`
+                    );
+                }
+
+                if (adjacencyList.get(id) === undefined)
+                    adjacencyList.set(id, []);
+
+                const overEdge: TileEdge = {
+                    from: getNeighbor(coordinates, wallSides[0].side)!.id!,
+                    to: getNeighbor(coordinates, wallSides[1].side)!.id!,
+                    type: "OverBridge",
+                    energyCost: 1,
+                };
+                adjacencyList.get(id)!.push(overEdge);
+
+                const underneathSides = currentTile.sides.filter(
+                    (side) => side.edgeProperty !== "Wall"
+                );
+
+                if (underneathSides.length !== 2) {
+                    throw new Error(
+                        `Bridge tile ${id} has ${underneathSides.length} underneath sides.`
+                    );
+                }
+
+                let toTile1 = getNeighbor(coordinates, underneathSides[0].side);
+                let toTile2 = getNeighbor(coordinates, underneathSides[1].side);
+
+                if (toTile1 !== undefined) {
+                    adjacencyList.get(id)!.push({
+                        from: currentTile.id!,
+                        to: getNeighbor(coordinates, underneathSides[0].side)!
+                            .id!,
+                        type: "UnderBridge",
+                        energyCost: 1,
+                    });
+                }
+
+                if (toTile2 !== undefined) {
+                    adjacencyList.get(id)!.push({
+                        from: currentTile.id!,
+                        to: getNeighbor(coordinates, underneathSides[1].side)!
+                            .id!,
+                        type: "UnderBridge",
+                        energyCost: 1,
+                    });
+                }
+            } else {
+                for (const side of currentTile.sides) {
+                    const neighborTile = getNeighbor(coordinates, side.side);
+                    if (neighborTile === undefined) continue;
+                    if (adjacencyList.get(id) === undefined)
+                        adjacencyList.set(id, []);
+
+                    let edgeType: EdgeType = "Basic";
+                    let energyCost = 1;
+
+                    if (side.edgeProperty === "Wall") {
+                        edgeType = "Wall";
+                        energyCost = NaN;
+                    } else {
+                        // make sure it isn't actually an over bridge
+                        const id = [currentTile.id, neighborTile.id]
+                            .sort()
+                            .join("-");
+                        if (walls.has(id)) {
+                            // in this case, this is an over bridge, so we want to ignore it
+                            // since it has already been added to the node list
+                            const neighborBridge =
+                                neighborTile.type === TileType.Bridge;
+                            console.log(
+                                `Wall between ${currentTile.id} and ${neighborTile.id} | neighborBridge: ${neighborBridge}`
+                            );
+                            edgeType = "Wall";
+                            energyCost = NaN;
+                            continue;
+                        }
+                        switch (neighborTile.type) {
+                            case TileType.Bridge:
+                                // now we need to figure out
+                                // how the walls are positioned
+                                edgeType = "UnderBridge";
+                                energyCost = 1;
+                                break;
+                            case TileType.Void:
+                                edgeType = "Void";
+                                energyCost = NaN;
+                                break;
+                            default:
+                                edgeType = "Basic";
+                                energyCost = 1;
+                                break;
+                        }
+                    }
+
+                    const edge: TileEdge = {
+                        from: id,
+                        to: coordToTileId(neighborTile.coordinates!),
+                        type: edgeType, //@change
+                        energyCost: energyCost,
+                    };
+                    adjacencyList.get(id)!.push(edge);
+                }
+            }
         }
     );
 
@@ -251,7 +400,34 @@ function parseSpawnLayer(layer: any, allTiles: Map<string, Partial<GameTile>>) {
         (tileCode: string, coordinates: Coordinates, id: string) => {
             const tile = allTiles.get(id);
             if (tile === undefined) throw new Error("Failed to find tile.");
-            tile.spawnItems = [];
+            // tile.spawnZone = [];
+            if (tileCode === "0") {
+                return;
+            }
+
+            const letterCode = tileCode[0];
+            const seedId = parseInt(tileCode.slice(1));
+            if (isNaN(seedId)) {
+                console.log(`Failed to parse seedId from ${tileCode}`);
+                return;
+            }
+
+            let type = null;
+            switch (letterCode) {
+                case "M":
+                    type = "Monster";
+                    break;
+                case "C":
+                    type = "Chest";
+                    break;
+                default:
+                    throw new Error(`Unknown spawn zone type: ${letterCode}`);
+            }
+
+            tile.spawnZone = {
+                type: type as any,
+                seedId,
+            };
         }
     );
 }
@@ -267,10 +443,6 @@ export function parseUFBMap(map: any): UFBMap {
         throw new Error("Failed to find background layer.");
     const adjacencyList: Map<string, TileEdge[]> = new Map();
     parseBackgroundLayer(map, backgroundLayer, tiles, adjacencyList);
-
-    // for(const key of adjacencyList.keys()) {
-    //   console.log(key, adjacencyList.get(key));
-    // }
 
     const spawnLayer = map.layers.find(
         (layer: any) => layer.name === "Spawnzones"
@@ -299,8 +471,8 @@ function parseAllMaps(
     const inputFile = allMapsFile;
     console.log(`Parsing ${inputFile}`);
     const data = readFileSync(inputFile);
-    const allMaps = JSON.parse(data.toString());
-
+    let allMaps = JSON.parse(data.toString());
+    // allMaps = allMaps.filter((map: any) => map.name == "kraken");
     for (const map of allMaps) {
         const parsed = parseUFBMap(map);
         console.log(
@@ -353,3 +525,4 @@ function parseDirectory(mapDir: string) {
 }
 
 parseAllMaps("./data/maps/input/all-maps.json", "/home/km/ufbserver/data/maps");
+// parseAllMaps("./data/maps/input/all-maps.json", "/home/km/ufbserver/tools/map-tool/data/maps/output");

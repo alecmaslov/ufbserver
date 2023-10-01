@@ -15,11 +15,23 @@ export interface UFBMap {
 
 // type TileType = "Default" | "Bridge" | "Floor" | "Void" | "Chest" | "Enemy" | "Portal";
 
-export interface SpawnEntity {
-    name: string;
-    // type : TileType;
-    properties: any;
+// export interface SpawnEntity {
+//     name: string;
+//     // type : TileType;
+//     properties: any;
+// }
+
+export type SpawnZoneType = "Merchant" | "Portal" | "Monster" | "Chest";
+
+export interface SpawnZone {
+    type: SpawnZoneType;
+    seedId: number;
 }
+
+// export interface SpawnZone {
+//     id: string;
+//     type: 
+// }
 
 // type EdgeType = "BASIC" | "PORTAL" | "BRIDGE";
 
@@ -31,14 +43,14 @@ export interface TileEdge {
 }
 
 export interface TileSide {
-    side: "top" | "right" | "bottom" | "left";
-    edgeProperty: "wall" | "door" | "portal" | "bridge";
+    side: "Top" | "Right" | "Bottom" | "Left";
+    edgeProperty: "Wall" | "Door" | "Portal" | "Bridge";
 }
 
 export interface GameTile {
     id: string;
     type: TileType;
-    spawnItems: SpawnEntity[];
+    spawnZone?: SpawnZone;
     coordinates: Coordinates;
     sides: TileSide[];
 }

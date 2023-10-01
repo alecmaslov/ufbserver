@@ -34,18 +34,19 @@ async function upsertMap(mapData: UFBMap): Promise<string> {
 function sidesToWallArray(sides: TileSide[]) {
     const wallArray = [0, 0, 0, 0];
     for (const side of sides) {
+        const wallValue = side.edgeProperty === "Wall" ? 1 : 0;
         switch (side.side) {
-            case "top":
-                wallArray[0] = 1;
+            case "Top":
+                wallArray[0] = wallValue;
                 break;
-            case "right":
-                wallArray[1] = 1;
+            case "Right":
+                wallArray[1] = wallValue;
                 break;
-            case "bottom":
-                wallArray[2] = 1;
+            case "Bottom":
+                wallArray[2] = wallValue;
                 break;
-            case "left":
-                wallArray[3] = 1;
+            case "Left":
+                wallArray[3] = wallValue;
                 break;
         }
     }
@@ -59,6 +60,14 @@ const capitalizeWord = (word: string) => {
 
 async function uspertMapTransaction(map: UFBMap) {
     const mapId = await upsertMap(map);
+
+    // delete the map if it already exist
+    await db.tile.deleteMany({
+        where: {
+            mapId: mapId,
+        },
+    });
+
     // Prepare tile data
     const tiles = map.tiles.map((tile: Partial<GameTile>) => {
         return {
@@ -72,7 +81,7 @@ async function uspertMapTransaction(map: UFBMap) {
                 tile.type === undefined
                     ? TileType.Default
                     : (tile.type as TileType),
-            // mapId: mapId,
+            mapId: mapId,
         };
     });
 
@@ -80,6 +89,15 @@ async function uspertMapTransaction(map: UFBMap) {
     const tileIdMap: Record<string, string> = {};
     tiles.forEach((tile) => {
         tileIdMap[tile.tileCode] = tile.id;
+    });
+
+    const tilesWithSpawns = map.tiles.filter((tile) => tile.spawnZone);
+    const spawnZones = tilesWithSpawns.map((tile: Partial<GameTile>) => {
+        return {
+            type: tile.spawnZone?.type,
+            seedId: tile.spawnZone?.seedId,
+            tileId: tileIdMap[tile.id],
+        };
     });
 
     // Prepare adjacency data
@@ -90,7 +108,7 @@ async function uspertMapTransaction(map: UFBMap) {
             adjacencies.push({
                 fromId: tileIdMap[adjacency.from],
                 toId: tileIdMap[adjacency.to],
-                type: capitalizeWord(adjacency.type) as AdjacencyType,
+                type: adjacency.type,
                 energyCost: adjacency.energyCost,
             });
         }
@@ -98,27 +116,30 @@ async function uspertMapTransaction(map: UFBMap) {
 
     const operations: any[] = [];
 
-    // Insert tiles
     for (const tile of tiles) {
         operations.push(
             db.tile.create({
                 data: {
                     ...tile,
-                    map: {
-                        connect: {
-                            id: mapId,
-                        },
-                    },
                 },
             })
         );
     }
 
-    // Insert adjacencies
     for (const adjacency of adjacencies) {
         operations.push(
             db.tileAdjacency.create({
                 data: adjacency,
+            })
+        );
+    }
+
+    for (const spawnZone of spawnZones) {
+        operations.push(
+            db.spawnZone.create({
+                data: {
+                    ...spawnZone,
+                },
             })
         );
     }

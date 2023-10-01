@@ -1,0 +1,66 @@
+[
+  {
+    "name": "minotaurLair",
+    "path": "Maps/minotaurLair/map"
+  },
+  {
+    "name": "ruins",
+    "path": "Maps/ruins/map"
+  },
+  {
+    "name": "kaiju",
+    "path": "Maps/kaiju/map"
+  },
+  {
+    "name": "jotunheim",
+    "path": "Maps/jotunheim/map"
+  },
+  {
+    "name": "starbase",
+    "path": "Maps/starbase/map"
+  },
+  {
+    "name": "midgard",
+    "path": "Maps/midgard/map"
+  },
+  {
+    "name": "kraken",
+    "path": "Maps/kraken/map"
+  },
+  {
+    "name": "camelot",
+    "path": "Maps/camelot/map"
+  },
+  {
+    "name": "pyramids",
+    "path": "Maps/pyramids/map"
+  },
+  {
+    "name": "yetiVillage",
+    "path": "Maps/yetiVillage/map"
+  },
+  {
+    "name": "megalodon",
+    "path": "Maps/megalodon/map"
+  },
+  {
+    "name": "sandworm",
+    "path": "Maps/sandworm/map"
+  },
+  {
+    "name": "dragon",
+    "path": "Maps/dragon/map"
+  },
+  {
+    "name": "moonbase",
+    "path": "Maps/moonbase/map"
+  },
+  {
+    "name": "worldTree",
+    "path": "Maps/worldTree/map"
+  },
+  {
+    "name": "mountOlympus",
+    "path": "Maps/mountOlympus/map"
+  }
+]
