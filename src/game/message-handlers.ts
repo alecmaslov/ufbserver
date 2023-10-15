@@ -1,7 +1,7 @@
+import { UfbRoom } from "#game/UfbRoom";
+import { coordToGameId, fillPathWithCoords } from "#game/map-helpers";
+import { CharacterMovedMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
-import { UfbRoom } from "./UfbRoom";
-import { coordToGameId, fillPathWithCoords } from "./map-helpers";
-import { CharacterMovedMessage } from "./message-types";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,

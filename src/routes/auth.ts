@@ -1,11 +1,11 @@
-import { Handler, Router, json } from "express";
-import { body } from "express-validator";
-import { createId } from "@paralleldrive/cuid2";
-import { Platform } from "@prisma/client";
 import { Jwt } from "#auth";
 import db from "#db";
 import { safetyNet } from "#middleware/safetyNet";
 import { validate } from "#middleware/validate";
+import { createId } from "@paralleldrive/cuid2";
+import { Platform } from "@prisma/client";
+import { Handler, Router } from "express";
+import { body } from "express-validator";
 
 interface RegisterClientPayload {
     platform: Platform;

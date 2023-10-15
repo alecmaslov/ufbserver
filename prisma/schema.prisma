@@ -26,9 +26,10 @@ model Client {
   platform  Platform @default(WEB)
   createdAt DateTime @default(now())
 
-  user        User?         @relation(fields: [userId], references: [id]) // a client can be registered or not
-  gameSession GameSession[]
-  player      Player[]
+  user             User?              @relation(fields: [userId], references: [id]) // a client can be registered or not
+  gameSession      GameSession[]
+  player           Player[]
+  ConnectedBrowser ConnectedBrowser[]
 }
 
 model User {
@@ -188,3 +189,12 @@ model TileAdjacency {
 
 // if we normalize tiles and adjacency list, we can track in-game actions to 
 // those tiles, query them, do more stuff with them
+
+model ConnectedBrowser {
+  ipAddress      String    @id
+  clientId       String
+  connectedAt    DateTime  @default(now())
+  disconnectedAt DateTime?
+
+  client Client @relation(fields: [clientId], references: [id])
+}

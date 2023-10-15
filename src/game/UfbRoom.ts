@@ -1,27 +1,24 @@
-import { join as pathJoin } from "path";
-import { readFile } from "fs/promises";
-import { Room, Client } from "@colyseus/core";
-import { UfbRoomState } from "./schema/UfbRoomState";
-import { CharacterState } from "./schema/CharacterState";
-import { isNullOrEmpty } from "#util";
 import { Jwt } from "#auth";
 import { DEV_MODE } from "#config";
+import db from "#db";
+import { Pathfinder } from "#game/Pathfinder";
+import { RoomCache } from "#game/RoomCache";
+import { initializeSpawnEntities, spawnCharacter } from "#game/map-helpers";
+import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
     TileEdgeState,
-    TileState,
-    SpawnEntity,
+    TileState
 } from "#game/schema/MapState";
-import { RoomCache } from "./RoomCache";
+import { UfbRoomState } from "#game/schema/UfbRoomState";
+import { SpawnEntityConfig, UFBMap } from "#game/types/map-types";
+import { isNullOrEmpty } from "#util";
+import { Client, Room } from "@colyseus/core";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
-import { registerMessageHandlers } from "./message-handlers";
-import { Pathfinder } from "./Pathfinder";
-import db from "#db";
 import { TileType } from "@prisma/client";
-import { UFBMap } from "#game/types/map-types";
-import { initializeSpawnEntities, spawnCharacter } from "./map-helpers";
-import { SpawnEntityConfig } from "#game/types/map-types";
+import { readFile } from "fs/promises";
+import { join as pathJoin } from "path";
 
 interface UfbRoomRules {
     maxPlayers: number;
@@ -114,24 +111,6 @@ export class UfbRoom extends Room<UfbRoomState> {
             playerId,
             options.joinOptions.displayName
         );
-
-        // this.state.characters.set(playerId, new CharacterState());
-        // const character = this.state.characters.get(playerId);
-        // character.id = playerId;
-        // character.sessionId = client.sessionId;
-        // character.characterId = options.joinOptions?.characterId ?? createId();
-        // // TODO: in the future, characterClass determined from DB if characterId is used
-        // character.characterClass =
-        //     options.joinOptions?.characterClass ?? "kirin";
-        // // change this eventually when NPCs
-        // const defaultScreenName =
-        //     "Player " +
-        //     this.state.characters.size +
-        //     ` (${character.characterClass})`;
-        // character.displayName =
-        //     options.joinOptions?.displayName ?? defaultScreenName;
-        // character.currentTileId = tile.id;
-
         this.state.turnOrder.push(client.sessionId);
         if (this.state.turnOrder.length === 1) {
             this.state.currentCharacterId = playerId;
@@ -207,19 +186,23 @@ export class UfbRoom extends Room<UfbRoomState> {
             },
         });
 
-        initializeSpawnEntities(
+        this.state.map.spawnEntities = initializeSpawnEntities(
             spawnZones,
             DEFAULT_SPAWN_ENTITY_CONFIG,
             async (spawnZone) => { // Spawn monsters
                 const tile = await db.tile.findUnique({
                     where: { id: spawnZone.tileId },
                 });
-                spawnCharacter(
-                    this.state.characters,
-                    "foobarbaz",
-                    tile,
-                    "kirin"
-                );
+                try {
+                    spawnCharacter(
+                        this.state.characters,
+                        "foobarbaz",
+                        tile,
+                        "kirin"
+                    );
+                } catch {
+                    console.error(`Tried to spawn monster at ${tile.id} but failed. | ${tile.x}, ${tile.y}`);
+                }
             }
         );
 

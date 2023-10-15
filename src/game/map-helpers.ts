@@ -1,15 +1,13 @@
+import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
+import { AdjacencyListItemState, MapState, SpawnEntity } from "#game/schema/MapState";
+import { SpawnEntityConfig } from "#game/types/map-types";
+import { Coordinates, PathStep } from "#shared-types";
+import { shuffleArray } from "#utils/collections";
+import { ArraySchema, MapSchema } from "@colyseus/schema";
+import { createId } from "@paralleldrive/cuid2";
+import { SpawnZone, Tile } from "@prisma/client";
 import { ok } from "assert";
 import { Node } from "ngraph.graph";
-import { MapSchema, ArraySchema } from "@colyseus/schema";
-import { CharacterState, CoordinatesState } from "./schema/CharacterState";
-import { AdjacencyListItemState } from "./schema/MapState";
-import { Coordinates, PathStep } from "#shared-types";
-import { MapState, SpawnEntity } from "./schema/MapState";
-import { SpawnZone, Tile } from "@prisma/client";
-import { shuffleArray } from "#utils/collections";
-import { createId } from "@paralleldrive/cuid2";
-import { SpawnEntityConfig } from "#game/types/map-types";
-import e from "express";
 
 const TILE_LETTERS = [
     "A",
@@ -39,6 +37,8 @@ const TILE_LETTERS = [
     "Y",
     "Z",
 ];
+
+const entitiesRootAddress = "Entities/"
 
 export const coordToGameId = (
     coordinates: CoordinatesState | Coordinates
@@ -95,13 +95,25 @@ export const fillPathWithCoords = (
     });
 };
 
+interface PortalEntityParameters {
+    seedId: number;
+    portalGroup: number;
+    portalIndex: number;
+}
+
+interface MerchantEntityParameters {
+    seedId: number;
+    merchantIndex: number;
+    merchantName: string;
+    inventory: string[];
+}
 
 
 export function initializeSpawnEntities(
     spawnZones: SpawnZone[],
     config: SpawnEntityConfig,
     onMonsterSpawn: (spawnZone: SpawnZone) => void
-) {
+) : ArraySchema<SpawnEntity> {
     const spawnEntities = new ArraySchema<SpawnEntity>();
     const seedIds = new Set(spawnZones.map((zone) => zone.seedId));
     const shuffledSeedIds = shuffleArray(Array.from(seedIds)) as number[];
@@ -125,7 +137,7 @@ export function initializeSpawnEntities(
         const seedId = shuffledSeedIds.pop();
 
         const zones = spawnZones.filter((zone) => zone.seedId === seedId);
-        if (zones.length !== 2) {
+        if (zones.length < 2) {
             throw new Error(
                 `expected 2 chest zones for seed id ${seedId}, got ${zones.length}`
             );
@@ -141,7 +153,7 @@ export function initializeSpawnEntities(
         const chestEntity = new SpawnEntity();
         chestEntity.id = chestZone.id;
         chestEntity.gameId = `chest_${i}`;
-        chestEntity.prefabAddress = "prefabs/chest";
+        chestEntity.prefabAddress = `${entitiesRootAddress}chest`;
         chestEntity.tileId = chestZone.tileId;
         chestEntity.type = "Chest";
         chestEntity.parameters = `{"seedId" : "${chestZone.seedId}"}`;
@@ -167,28 +179,47 @@ export function initializeSpawnEntities(
         // spawn 2 portals for each
         for (let j = 0; j < 2; j++) {
             const zone = shuffledZones.pop();
+
+            const parameters: PortalEntityParameters = {
+                seedId: zone.seedId,
+                portalGroup: i,
+                portalIndex: j,
+            };
+
             const portalEntity = new SpawnEntity();
             portalEntity.id = zone.id;
             portalEntity.gameId = `portal_${i}`;
-            portalEntity.prefabAddress = "prefabs/portal";
+            portalEntity.prefabAddress = `${entitiesRootAddress}portal`;
             portalEntity.tileId = zone.tileId;
             portalEntity.type = "Portal";
-            portalEntity.parameters = `{"seedId" : "${zone.seedId}", "portalGroup" : "${i}", "portalIndex" : "${j}"}`;
+            portalEntity.parameters = JSON.stringify(parameters);
+            // portalEntity.parameters = `{"seedId" : "${zone.seedId}", "portalGroup" : "${i}", "portalIndex" : "${j}"}`;
             spawnEntities.push(portalEntity);
         }
     }
 
     for (let i = 0; i < config.merchants; i++) {
         const zone = shuffledZones.pop();
+
+        const parameters: MerchantEntityParameters = {
+            seedId: zone.seedId,
+            merchantIndex: i,
+            merchantName: `Merchant ${i}`,
+            inventory: [],
+        };
+
         const merchantEntity = new SpawnEntity();
         merchantEntity.id = zone.id;
         merchantEntity.gameId = `merchant_${i}`;
-        merchantEntity.prefabAddress = "prefabs/merchant";
+        merchantEntity.prefabAddress = `${entitiesRootAddress}merchant`;
         merchantEntity.tileId = zone.tileId;
         merchantEntity.type = "Merchant";
-        merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
+        merchantEntity.parameters = JSON.stringify(parameters);
+        // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
         spawnEntities.push(merchantEntity);
     }
+
+    return spawnEntities;
 }
 
 export function spawnCharacter(

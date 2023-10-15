@@ -1,20 +1,20 @@
-import https from "https";
-import { readFileSync } from "fs";
-import express, { json } from "express";
-import cors from "cors";
-import { Server } from "@colyseus/core";
-import { WebSocketTransport } from "@colyseus/ws-transport"
-import { UfbRoom } from "#game/UfbRoom";
-import requestLogger from "#middleware/requestLogger";
-import auth from "#routes/auth";
-import dev from "#routes/dev";
-import assets from "#routes/assets";
-import maps from "#routes/maps";
 import {
     API_PORT, DEV_MODE,
     SSL_CERT_PATH, SSL_KEY_PATH,
     VERBOSE_INCOMING_REQUESTS
 } from "#config";
+import { UfbRoom } from "#game/UfbRoom";
+import requestLogger from "#middleware/requestLogger";
+import assets from "#routes/assets";
+import auth from "#routes/auth";
+import dev from "#routes/dev";
+import maps from "#routes/maps";
+import { Server } from "@colyseus/core";
+import { WebSocketTransport } from "@colyseus/ws-transport";
+import cors from "cors";
+import express, { json } from "express";
+import { readFileSync } from "fs";
+import https from "https";
 
 const app = express();
 

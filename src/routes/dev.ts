@@ -6,9 +6,9 @@ import { playground } from "@colyseus/playground";
 // import { playground } from "ufb-playground";
 // import { playground } from "ufb-playground/build/index";
 
+import { RoomCache } from "#game/RoomCache";
 import { matchMaker } from "@colyseus/core";
 import { Router } from "express";
-import { RoomCache } from "#game/RoomCache";
 
 const router = Router();
 

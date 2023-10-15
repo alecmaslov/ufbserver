@@ -1,6 +1,6 @@
-import { nanoid } from "nanoid";
-import jwt from "jsonwebtoken";
 import { API_URL, JWT_SECRET } from "#config";
+import jwt from "jsonwebtoken";
+import { nanoid } from "nanoid";
 
 const THIS_HOST = API_URL;
 const API_AUD = THIS_HOST;

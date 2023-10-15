@@ -1,13 +1,7 @@
-import express, { Handler, Router, json } from "express";
-import { body, query } from "express-validator";
-import { safetyNet } from "#middleware/safetyNet";
-import { validate } from "#middleware/validate";
-import { readFileSync } from "fs";
 import db from "#db";
-import path from "path";
-import { fileURLToPath } from "url";
+import { Handler, Router } from "express";
 import { dirname } from "path";
-import { getMap } from "#assets/maps";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

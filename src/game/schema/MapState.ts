@@ -1,5 +1,5 @@
 import { Schema, type, ArraySchema, MapSchema } from "@colyseus/schema";
-import { CoordinatesState } from "./CharacterState";
+import { CoordinatesState } from "#game/schema/CharacterState";
 import { TileType, AdjacencyType, SpawnZoneType } from "@prisma/client";
 import { UFBMap, SpawnEntityType, Spawnable } from "#game/types/map-types";
 

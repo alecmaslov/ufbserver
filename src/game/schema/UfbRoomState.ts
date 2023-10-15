@@ -1,6 +1,6 @@
 import { Schema, ArraySchema, MapSchema, type } from "@colyseus/schema";
-import { CharacterState } from "./CharacterState";
-import { MapState } from "./MapState";
+import { CharacterState } from "#game/schema/CharacterState";
+import { MapState } from "#game/schema/MapState";
 
 export class UfbRoomState extends Schema {
   // maps characterId to CharacterState

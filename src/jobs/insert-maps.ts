@@ -1,9 +1,8 @@
-import { UfbMap, AdjacencyType, TileType } from "@prisma/client";
-import db from "#db";
-import { JsonArray } from "@prisma/client/runtime/library";
 import { getAllMapFiles, getMap } from "#assets/maps";
+import db from "#db";
+import { GameTile, TileSide, UFBMap } from "#game/types/map-types";
 import { createId } from "@paralleldrive/cuid2";
-import { GameTile, TileSide, UFBMap } from "#game/types/map-types"
+import { TileType } from "@prisma/client";
 
 const DEFAULT_MAP_PUBLISHER = "ufb";
 

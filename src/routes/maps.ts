@@ -1,8 +1,8 @@
-import express, { Handler, Router, json } from "express";
-import { body, query } from "express-validator";
+import db from "#db";
 import { safetyNet } from "#middleware/safetyNet";
 import { validate } from "#middleware/validate";
-import db from "#db";
+import { Handler, Router } from "express";
+import { query } from "express-validator";
 
 const router: Router = Router();
 export default router;
