@@ -1,4 +1,4 @@
-import { getPathCost } from "#game/map-helpers";
+import { getPathCost } from "#game/helpers/map-helpers";
 import { MapState } from "#game/schema/MapState";
 import { PathStep } from "#shared-types";
 import createGraph, { Graph } from "ngraph.graph";

@@ -19,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@colyseus/command": "^0.2.1",
     "@colyseus/monitor": "^0.15.0",
     "@colyseus/playground": "^0.15.3",
     "@colyseus/tools": "^0.15.0",

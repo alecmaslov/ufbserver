@@ -170,8 +170,10 @@ export function initializeSpawnEntities(
     }
 
     const remainingSpawnZones = spawnZones.filter(
-        (zone) => !takenIds.has(zone.id)
+        (zone) => !takenIds.has(zone.id) && zone.type === "Chest"
     );
+
+    console.log(`Number of remaining spawn zones ${remainingSpawnZones.length}`);
 
     const shuffledZones = shuffleArray(remainingSpawnZones) as SpawnZone[];
 
@@ -230,7 +232,7 @@ export function spawnCharacter(
     characterId?: string,
     playerId?: string,
     displayName?: string
-) {
+) : CharacterState {
     const character = new CharacterState();
     const id = playerId || createId();
     character.id = id;
@@ -257,4 +259,6 @@ export function spawnCharacter(
     character.coordinates = coordinates;
 
     characters.set(id, character);
+
+    return character;
 }

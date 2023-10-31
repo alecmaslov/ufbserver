@@ -524,5 +524,8 @@ function parseDirectory(mapDir: string) {
     console.log("Done.");
 }
 
-parseAllMaps("./data/maps/input/all-maps.json", "/home/km/ufbserver/data/maps");
+parseAllMaps(
+    "/home/km/ufbserver/tools/map-tool/data/mapsOldCombined.json", 
+    "/home/km/ufbserver/data/mapsNew");
+
 // parseAllMaps("./data/maps/input/all-maps.json", "/home/km/ufbserver/tools/map-tool/data/maps/output");

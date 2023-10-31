@@ -1,7 +1,9 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords } from "#game/map-helpers";
+import { coordToGameId, fillPathWithCoords } from "#game/helpers/map-helpers";
+import { getClientCharacter } from "./helpers/room-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
+import { MoveCommand } from "#game/commands/MoveCommand";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -13,102 +15,24 @@ export interface MessageHandlers {
     [key: string]: MessageHandler<any>;
 }
 
-const getClientCharacter = (room: UfbRoom, client: Client) => {
-    const playerId = room.sessionIdToPlayerId.get(client.sessionId);
-    return room.state.characters.get(playerId);
-};
-
 const getTileCoord = (room: UfbRoom, tileId: string) => {};
 
-// @kyle - we should put some sort of safety net, so that when it can't pathfind,
-// it doesn't crash the server and close the socket
 export const messageHandlers: MessageHandlers = {
     move: (room, client, message) => {
-        const character = getClientCharacter(room, client);
-
-        if (!character) {
-            room.notify(client, "You are not in room game!", "error");
-        }
-
-        if (character.id !== room.state.currentCharacterId) {
-            room.notify(client, "It's not your turn!", "error");
-            return;
-        }
-
-        const currentTile = room.state.map.tiles.get(character.currentTileId);
-        const destinationTile = room.state.map.tiles.get(message.tileId);
-        
-        console.log(
-            `Character moving from ${coordToGameId(
-                currentTile.coordinates
-            )} -> ${coordToGameId(destinationTile.coordinates)}`
-        );
-
-        const { path, cost } = room.pathfinder.find(
-            character.currentTileId,
-            message.tileId
-        );
-
-        // player must have enough energy to move along the path
-        if (character.stats.energy.current < cost) {
-            room.notify(
-                client,
-                "You don't have enough energy to move there!",
-                "error"
-            );
-            return;
-        }
-
-        
-        character.coordinates.x = destinationTile.coordinates.x;
-        character.coordinates.y = destinationTile.coordinates.y;
-        character.currentTileId = message.tileId;
-        // character.stats.energy.current -= cost;
-        character.stats.energy.add(-cost);
-
-        // add the readable game coordinates to the path
-        fillPathWithCoords(path, room.state.map);
-
-        const characterMovedMessage: CharacterMovedMessage = {
-            characterId: character.id,
-            path,
-        };
-
-        console.log(
-            `Sending playerMoved message ${JSON.stringify(
-                characterMovedMessage,
-                null,
-                2
-            )}`
-        );
-        room.broadcast("characterMoved", characterMovedMessage);
-
-        if (character.stats.energy.current == 0) {
-            room.notify(client, "You are too tired to continue.");
-            room.incrementTurn();
-        }
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: false,
+        });
     },
 
     // we can add some sort of key to this, so only admins can do this
     forceMove: (room, client, message) => {
-        const character = getClientCharacter(room, client);
-        if (!character) {
-            room.notify(client, "You are not in room game!", "error");
-        }
-        const { path, cost } = room.pathfinder.find(
-            character.currentTileId,
-            message.tileId
-        );
-        character.coordinates.x = message.destination.x;
-        character.coordinates.y = message.destination.y;
-        character.currentTileId = message.tileId;
-
-        const characterMovedMessage: CharacterMovedMessage = {
-            characterId: character.id,
-            path,
-        };
-
-        room.broadcast("characterMoved", characterMovedMessage);
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: true,
+        });
     },
 
     useItem: (room, client, message) => {},

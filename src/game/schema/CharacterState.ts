@@ -13,6 +13,10 @@ export class RangedValueState extends Schema {
         this.current = Math.max(this.min, Math.min(this.current, this.max));
     }
 
+    setToMax() {
+        this.current = this.max;   
+    }
+
     constructor(current: number, max: number, min: number = 0) {
         super();
         this.current = current;
