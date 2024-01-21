@@ -1,0 +1,369 @@
+[
+    {
+        "id": "sword-1",
+        "name": "Sword Level 1",
+        "description": "A versatile melee weapon.",
+        "category": "Weapon",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Equip",
+                "behaviorType": "Equip",
+                "costs": [{ "resource": "Energy", "amount": -1 }],
+                "effects": [
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Counter",
+                        "amount": 1
+                    }
+                ]
+            },
+            {
+                "name": "Sword Strike",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "stat": "Health",
+                        "amount": 1,
+                        "amountModifier": "Roll",
+                        "range": { "type": "Linear", "distance": 1 }
+                    }
+                ]
+            }
+        ],
+        "images": [
+            {
+                "name": "Sword-Full",
+                "source": "path/to/sword.png",
+                "size": { "width": 1024, "height": 1024 }
+            },
+            {
+                "name": "Sword-Thumbnail",
+                "source": "path/to/sword-thumbnail.png",
+                "size": { "width": 32, "height": 32 }
+            }
+        ]
+    },
+    {
+        "id": "sword-2",
+        "name": "Sword Level 2",
+        "prototype": "sword-1",
+        "description": "A better sword.",
+        "behaviors": [
+            {
+                "name": "Fighter Stance",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Counter",
+                        "amount": 2
+                    }
+                ]
+            },
+            {
+                "name": "Charge",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Magic", "amount": -1 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Charge",
+                        "amount": 1
+                    },
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Counter",
+                        "amount": 1
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "sword-3",
+        "name": "Sword Level 3",
+        "prototype": "sword-2",
+        "description": "The best sword.",
+        "behaviors": [
+            {
+                "name": "Holy Sword",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -5 },
+                    { "resource": "Magic", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll"
+                    },
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Burn",
+                        "amount": 1
+                    }
+                ],
+                "range": { "type": "Linear", "distance": 1 }
+            }
+        ]
+    },
+    {
+        "id": "ax-1",
+        "name": "Ax Level 1",
+        "description": "A basic ax offering standard melee capabilities.",
+        "category": "Melee Power",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Equip",
+                "behaviorType": "Equip",
+                "costs": [{ "resource": "Energy", "amount": -1 }]
+            },
+            {
+                "name": "Ax Throw",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll"
+                    },
+                    {
+                        "action": "Bonus",
+                        "target": "Self",
+                        "stat": "Steady",
+                        "amount": 1
+                    }
+                ],
+                "range": { "type": "Linear", "distance": 1 }
+            }
+        ]
+    },
+    {
+        "id": "ax-2",
+        "name": "Ax Level 2",
+        "prototype": "ax-1",
+        "description": "An advanced ax with enhanced Debuff and range.",
+        "category": "Weapon",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Vampire Ax",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -3 },
+                    { "resource": "Magic", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll"
+                    },
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Vampire",
+                        "amount": 1
+                    }
+                ]
+            },
+            {
+                "name": "Harden",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Steady",
+                        "amount": 1
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "ax-3",
+        "name": "Ax Level 3",
+        "prototype": "ax-2",
+        "description": "The ultimate ax with devastating Debuff capabilities.",
+        "category": "Weapon",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Tornado Slice",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -2 },
+                    { "resource": "Energy", "amount": -8 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 3,
+                        "amountModifier": "Roll"
+                    }
+                ],
+                "range": { "type": "Radius", "distance": 1 }
+            }
+        ]
+    },
+    {
+        "id": "spear-1",
+        "name": "Spear Level 1",
+        "description": "A basic spear offering standard melee capabilities.",
+        "category": "Weapon",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Equip",
+                "behaviorType": "Equip",
+                "costs": [{ "resource": "Energy", "amount": -1 }]
+            },
+            {
+                "name": "Lance",
+                "behaviorType": "Use",
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -5 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll"
+                    },
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Push",
+                        "amount": 1
+                    }
+                ],
+                "range": { "type": "Linear", "distance": 1 }
+            }
+        ]
+    },
+    {
+        "id": "spear-2",
+        "name": "Spear Level 2",
+        "prototype": "spear-1",
+        "description": "An advanced spear with enhanced Debuff and range.",
+        "category": "Weapon",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Ice Lance",
+                "behaviorType": "Use",
+                "costs": [
+                    { "resource": "Energy", "amount": -2 },
+                    { "resource": "Magic", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 2
+                    },
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Freeze",
+                        "amount": 1
+                    }
+                ],
+                "range": { "type": "Linear", "distance": 1 }
+            },
+            {
+                "name": "Harpoon",
+                "behaviorType": "Use",
+                "costs": [
+                    { "resource": "Energy", "amount": -4 },
+                    { "resource": "Melee", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 4
+                    },
+                    {
+                        "action": "Buff",
+                        "target": "Self",
+                        "stat": "Freeze",
+                        "amount": 1
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "bow-1",
+        "name": "Bow Level 1",
+        "description": "A simple bow suitable for ranged attacks.",
+        "category": "Weapon",
+        "isEquippable": true,
+        "behaviors": [
+            {
+                "name": "Shoot Arrow",
+                "behaviorType": "Use",
+                "requiredStates": ["PlayerTurn", "Equipped"],
+                "costs": [
+                    { "resource": "Melee", "amount": -2 },
+                    { "resource": "Energy", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Debuff",
+                        "target": "Enemy",
+                        "amount": 3
+                    }
+                ],
+                "range": { "type": "Linear", "distance": 5 }
+            }
+        ]
+    }
+]

@@ -40,7 +40,8 @@ model User {
   passwordHash    String? // let's keep the possibility open to have oauth, so pw is not required if they sign in with oauth
   createdAt       DateTime @default(now())
 
-  client Client[] // user could potentially have multiple clients
+  client    Client[] // user could potentially have multiple clients
+  character Character[]
 }
 
 model GameSession {
@@ -114,6 +115,7 @@ model UfbMap {
   gridWidth       Int
   gridHeight      Int
   publisher       String? // could also be tied to a userId
+  isPublished     Boolean @default(false)
 
   tiles Tile[]
 }
@@ -197,4 +199,128 @@ model ConnectedBrowser {
   disconnectedAt DateTime?
 
   client Client @relation(fields: [clientId], references: [id])
+}
+
+// a base class for a characterm, e.g. "Kirin"
+// each base class will have a base set of abilities that are inherited by characters
+model CharacterClass {
+  name         String  @id
+  description  String?
+  avatarUrl    String?
+  cardUrl      String?
+  sketchfabUrl String?
+  ultimateMove String  @default("None")
+
+  characterToken Character[]
+  godLevelNft    GodLevelNft?
+
+  @@map("character_class")
+}
+
+// an instance of an owned character∂
+model Character {
+  id        String  @id @default(cuid())
+  name      String  @unique // e.g. "Kirin-#005"
+  traits    Json?
+  className String // the class of this character
+  ownerId   String? // the user that owns this character
+  nftId     String? @unique // the nft that represents this character
+
+  characterClass CharacterClass @relation(fields: [className], references: [name])
+  owner          User?          @relation(fields: [ownerId], references: [id])
+  nft            Nft?           @relation(fields: [nftId], references: [id])
+
+  @@map("character_token")
+}
+
+// a single nft token
+model Nft {
+  id                 String  @id @default(cuid())
+  name               String
+  tokenId            String
+  contractAddress    String
+  tokenUri           String // this holds the attributes and other data about the token
+  tokenHolderAddress String
+  tokenHolderName    String?
+  tokenHolderUrl     String?
+
+  character   Character?
+  contract    NftContract  @relation(fields: [contractAddress], references: [address], onDelete: Cascade)
+  godLevelNft GodLevelNft?
+
+  @@unique([contractAddress, tokenId])
+  @@map("nft")
+}
+
+model NftContract {
+  address          String  @id
+  name             String
+  slug             String?
+  symbol           String
+  totalSupply      Int
+  tokenType        String
+  contractDeployer String
+  imageUrl         String?
+  description      String?
+  externalUrl      String?
+  twitterUsername  String?
+  discordUrl       String?
+  bannerImageUrl   String?
+  chainId          String  @default("ethereum")
+  nfts             Nft[]
+
+  @@map("nft_contract")
+}
+
+// ownership of the intellectual property of the characters, different than normal nfts
+model GodLevelNft {
+  characterClassName String  @unique
+  nftId              String  @unique
+  isPublished        Boolean @default(false)
+
+  nft            Nft            @relation(fields: [nftId], references: [id], onDelete: Cascade)
+  characterClass CharacterClass @relation(fields: [characterClassName], references: [name], onDelete: Cascade)
+
+  @@map("god_level_nft")
+}
+
+
+
+
+// ======================== Game Items ========================
+
+enum ResourceType {
+  Health
+  Energy
+  Mana
+  Melee
+  Gold
+  Item
+}
+
+enum ActionType {
+  Damage
+  Heal
+  Buff
+  Debuff
+  SetMax
+  Summon
+  Stack
+  Utility
+}
+
+
+model Item {
+  id          String  @id @default(cuid())
+  name        String
+  category    String
+  description String?
+
+  nftId String? @unique // the nft that represents this item
+}
+
+
+model ItemBehavior {
+  id String @id @default(cuid())
+  
 }
