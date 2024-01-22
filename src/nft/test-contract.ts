@@ -2,7 +2,7 @@ import { EtherscanProvider, Provider, Contract } from "ethers";
 import { readFileSync, write, writeFile, writeFileSync } from "fs";
 import axios from "axios";
 import dotenv from "dotenv";
-import { tryGetCache } from "#utils/cache";
+import { tryGetCacheString } from "#utils/cache";
 import { Network, Alchemy } from "alchemy-sdk";
 dotenv.config();
 

@@ -5,7 +5,7 @@ type _Power = {
     id : string,
     name : string,
     class : string,   // like "Bow", or "Sword"
-    category : PowerCategory,
+    category : _PowerCategory,
 }
 
 
