@@ -34,6 +34,13 @@ export class AdjacencyListItemState extends Schema {
     @type([TileEdgeState]) edges = new ArraySchema<TileEdgeState>();
 }
 
+// export class MapConfigurationState extends Schema {
+//     @type("string") name: string = "";
+//     @type("string") resourceAddress: string = "";
+//     @type("number") gridWidth: number = 0;
+//     @type("number") gridHeight: number = 0;
+// }
+
 export class MapState extends Schema {
     @type("string") id: string = "";
     @type("string") name: string = "";

@@ -4,3 +4,4 @@ out
 tools/map-tool/data/output2
 tools/map-tool/data/output
 cache/
+.ssl/
