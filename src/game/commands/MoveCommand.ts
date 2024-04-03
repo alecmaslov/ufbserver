@@ -56,7 +56,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         character.coordinates.x = destinationTile.coordinates.x;
         character.coordinates.y = destinationTile.coordinates.y;
         character.currentTileId = message.tileId;
-        character.stats.energy.add(-cost);
+        if(!force) character.stats.energy.add(-cost)
         fillPathWithCoords(path, this.room.state.map);
 
         const characterMovedMessage: CharacterMovedMessage = {
