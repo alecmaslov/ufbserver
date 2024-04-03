@@ -64,16 +64,19 @@ export const getTileIdByDirection = (
     coordinates: CoordinatesState | Coordinates,
     direction: string
 ): string => {
+    const coord = new CoordinatesState();
+    coord.x = coordinates.x;
+    coord.y = coordinates.y;
     if(direction == "left") {
-        coordinates.x--;
+        coord.x--;
     } else if(direction == "right") {
-        coordinates.x++;
+        coord.x++;
     } else if(direction == "top") {
-        coordinates.y++;
+        coord.y++;
     } else if(direction == "down") {
-        coordinates.y--;
+        coord.y--;
     }
-    return coordToTileId(tiles, coordinates);
+    return coordToTileId(tiles, coord);
 }
 
 export const gameIdToCoord = (tileId: string): CoordinatesState => {
