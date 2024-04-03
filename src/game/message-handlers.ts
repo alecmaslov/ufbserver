@@ -35,6 +35,14 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
+    cancelMove: (room, client, message) => {
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client, 
+            message, 
+            force: true,
+        });
+    },
+
     useItem: (room, client, message) => {},
 
     useAbility: (room, client, message) => {},
