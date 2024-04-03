@@ -46,6 +46,23 @@ export const coordToGameId = (
     return `tile_${TILE_LETTERS[coordinates.x]}_${coordinates.y + 1}`;
 };
 
+export const getTileIdByDirection = (
+    coordinates: CoordinatesState | Coordinates,
+    direction: string
+): string => {
+    if(direction == "left") {
+        coordinates.x--;
+    } else if(direction == "right") {
+        coordinates.x++;
+    } else if(direction == "top") {
+        coordinates.y++;
+    } else if(direction == "down") {
+        coordinates.y--;
+    }
+    const id = coordToGameId(coordinates);
+    return id;
+}
+
 export const gameIdToCoord = (tileId: string): CoordinatesState => {
     const parts = tileId.split("_");
     const x = TILE_LETTERS.indexOf(parts[1]);
