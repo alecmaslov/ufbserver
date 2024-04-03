@@ -27,6 +27,10 @@ export interface MoveMessage {
 export interface CharacterMovedMessage {
     characterId: string;
     path: PathStep[];
+    left: number,
+    right: number,
+    top: number,
+    down: number,
 }
 
 export interface ChangeMapMessage {
