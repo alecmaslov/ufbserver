@@ -76,30 +76,30 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "top")
 
             if(id == "") {
-                directionData.left = 0;
+                directionData.top = 0;
             } else {
                 const { path, cost } = this.room.pathfinder.find(
                     message.tileId,
                     id
                 );
                 if(cost == 0 || cost > 1) {
-                    directionData.left = 0;
+                    directionData.top = 0;
                 }
             }
         }
         // DOWN
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "left")
+            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "down")
 
             if(id == "") {
-                directionData.left = 0;
+                directionData.down = 0;
             } else {
                 const { path, cost } = this.room.pathfinder.find(
                     message.tileId,
                     id
                 );
                 if(cost == 0 || cost > 1) {
-                    directionData.left = 0;
+                    directionData.down = 0;
                 }
             }
         }
