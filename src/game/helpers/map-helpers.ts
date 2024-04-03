@@ -1,5 +1,5 @@
 import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
-import { AdjacencyListItemState, MapState, SpawnEntity } from "#game/schema/MapState";
+import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
 import { Coordinates, PathStep } from "#shared-types";
 import { shuffleArray } from "#utils/collections";
@@ -46,7 +46,21 @@ export const coordToGameId = (
     return `tile_${TILE_LETTERS[coordinates.x]}_${coordinates.y + 1}`;
 };
 
+export const coordToTileId = (
+    tiles: MapSchema<TileState>, 
+    coordinates: CoordinatesState | Coordinates
+): string => {
+    let id = ""; 
+    tiles.forEach(tile => {
+        if(tile.coordinates.x == coordinates.x && tile.coordinates.y == coordinates.y) {
+            id = tile.id;
+        }
+    })
+    return id;
+}
+
 export const getTileIdByDirection = (
+    tiles: MapSchema<TileState>,
     coordinates: CoordinatesState | Coordinates,
     direction: string
 ): string => {
@@ -59,8 +73,7 @@ export const getTileIdByDirection = (
     } else if(direction == "down") {
         coordinates.y--;
     }
-    const id = coordToGameId(coordinates);
-    return id;
+    return coordToTileId(tiles, coordinates);
 }
 
 export const gameIdToCoord = (tileId: string): CoordinatesState => {

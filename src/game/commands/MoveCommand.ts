@@ -41,42 +41,66 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         }
         // LEFT
         {
-            const { path, cost } = this.room.pathfinder.find(
-                message.tileId,
-                getTileIdByDirection(destinationTile.coordinates, "left")
-            );
-            if(cost == 0 || cost > 1) {
+            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "left")
+
+            if(id == "") {
                 directionData.left = 0;
+            } else {
+                const { path, cost } = this.room.pathfinder.find(
+                    message.tileId,
+                    id
+                );
+                if(cost == 0 || cost > 1) {
+                    directionData.left = 0;
+                }
             }
         }
         // RIGHT
         {
-            const { path, cost } = this.room.pathfinder.find(
-                message.tileId,
-                getTileIdByDirection(destinationTile.coordinates, "right")
-            );
-            if(cost == 0 || cost > 1) {
+            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "right")
+
+            if(id == "") {
                 directionData.right = 0;
+            } else {
+                const { path, cost } = this.room.pathfinder.find(
+                    message.tileId,
+                    id
+                );
+                if(cost == 0 || cost > 1) {
+                    directionData.right = 0;
+                }
             }
         }
         // TOP
         {
-            const { path, cost } = this.room.pathfinder.find(
-                message.tileId,
-                getTileIdByDirection(destinationTile.coordinates, "top")
-            );
-            if(cost == 0 || cost > 1) {
-                directionData.top = 0;
+            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "top")
+
+            if(id == "") {
+                directionData.left = 0;
+            } else {
+                const { path, cost } = this.room.pathfinder.find(
+                    message.tileId,
+                    id
+                );
+                if(cost == 0 || cost > 1) {
+                    directionData.left = 0;
+                }
             }
         }
         // DOWN
         {
-            const { path, cost } = this.room.pathfinder.find(
-                message.tileId,
-                getTileIdByDirection(destinationTile.coordinates, "down")
-            );
-            if(cost == 0 || cost > 1) {
-                directionData.down = 0;
+            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "left")
+
+            if(id == "") {
+                directionData.left = 0;
+            } else {
+                const { path, cost } = this.room.pathfinder.find(
+                    message.tileId,
+                    id
+                );
+                if(cost == 0 || cost > 1) {
+                    directionData.left = 0;
+                }
             }
         }
 
