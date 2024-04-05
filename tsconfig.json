@@ -4,7 +4,6 @@
     "target": "ESNext",
     "lib": ["ESNext", "esnext.asynciterable"],
     "typeRoots": ["node_modules/#types"],
-    "types": ["@prisma/client"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

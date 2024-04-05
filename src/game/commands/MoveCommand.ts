@@ -50,7 +50,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     message.tileId,
                     id
                 );
-                if(cost == 0 || cost > 1) {
+                if(cost == 0 || cost > 2) {
                     directionData.left = 0;
                 }
             }
@@ -66,7 +66,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     message.tileId,
                     id
                 );
-                if(cost == 0 || cost > 1) {
+                if(cost == 0 || cost > 2) {
                     directionData.right = 0;
                 }
             }
@@ -82,7 +82,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     message.tileId,
                     id
                 );
-                if(cost == 0 || cost > 1) {
+                if(cost == 0 || cost > 2) {
                     directionData.top = 0;
                 }
             }
@@ -98,7 +98,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     message.tileId,
                     id
                 );
-                if(cost == 0 || cost > 1) {
+                if(cost == 0 || cost > 2) {
                     directionData.down = 0;
                 }
             }
