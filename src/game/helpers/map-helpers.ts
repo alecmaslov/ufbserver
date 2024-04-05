@@ -79,6 +79,26 @@ export const getTileIdByDirection = (
     return coordToTileId(tiles, coord);
 }
 
+export const getTileIdSeveralDirection = (
+    tiles: MapSchema<TileState>,
+    coordinates: CoordinatesState | Coordinates,
+    direction: string
+): string => {
+    const coord = new CoordinatesState();
+    coord.x = coordinates.x;
+    coord.y = coordinates.y;
+    if(direction == "left") {
+        coord.x++;
+    } else if(direction == "right") {
+        coord.x--;
+    } else if(direction == "top") {
+        coord.y--;
+    } else if(direction == "down") {
+        coord.y++;
+    }
+    return coordToTileId(tiles, coord);
+}
+
 export const gameIdToCoord = (tileId: string): CoordinatesState => {
     const parts = tileId.split("_");
     const x = TILE_LETTERS.indexOf(parts[1]);
@@ -255,6 +275,40 @@ export function initializeSpawnEntities(
     }
 
     return spawnEntities;
+}
+
+export const gameByIdToCoord = (tileId: string): CoordinatesState => {
+    const parts = tileId.split("_");
+    const x = TILE_LETTERS.indexOf(parts[1]);
+    const y = parseInt(parts[2]) - 1;
+    const c = { x, y } as CoordinatesState;
+    ok(coordToGameId(c) === tileId);
+    return c;
+};
+
+export const fillPathWithCoordinates = (
+    pathSteps: PathStep[],
+    mapState: MapState
+) => {
+    const allIdsBy = pathSteps.map((step) => step.tileId);
+    const allCoords = allIdsBy.map((id) => mapState.tiles.get(id).coordinates);
+    allCoords.forEach((coord, i) => {
+        pathSteps[i].gameId = coordToGameId(coord);
+        pathSteps[i].coord = coord;
+    });
+};
+
+interface PortalEntityParameters {
+    seedId: number;
+    portalGroup: number;
+    portalIndex: number;
+}
+
+interface MerchantEntityParameters {
+    seedId: number;
+    merchantIndex: number;
+    merchantName: string;
+    inventory: string[];
 }
 
 export function spawnCharacter(
