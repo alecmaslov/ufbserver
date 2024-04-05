@@ -8,7 +8,7 @@ import { validate } from "#middleware/validate";
 const router: Router = Router();
 export default router;
 
-// const handleGetCharacterNft: Handler = async (req, res) => {
+// const handleGetCharacterNft: Handler = async (req: any, res: any) => {
 //     try {
 //         // const { contractAddress, tokenId } = req.params;
 //         const id = req.params.id as string;
@@ -30,7 +30,7 @@ export default router;
 //     }
 // };
 
-const handleGetCharacter: Handler = async (req, res) => {
+const handleGetCharacter: Handler = async (req: any, res: any) => {
     try {
         const id = req.query.id as string;
         const character = await db.character.findUnique({
@@ -49,7 +49,7 @@ const handleGetCharacter: Handler = async (req, res) => {
     }
 };
 
-const handleGetCharacterClass: Handler = async (req, res) => {
+const handleGetCharacterClass: Handler = async (req: any, res: any) => {
     try {
         const { name } = req.params;
         const characterClass = await db.characterClass.findUnique({

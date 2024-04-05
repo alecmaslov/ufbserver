@@ -15,7 +15,7 @@ interface RegisterClientResponse {
     clientId: string;
 }
 
-const registerClientHandler: Handler = async (req, res) => {
+const registerClientHandler: Handler = async (req:any, res: any) => {
     const {
         platform
     } = req.body as RegisterClientPayload;
@@ -35,7 +35,7 @@ interface TokenRequestPayload {
     clientId: string;
 }
 
-const tokenRequestHandler: Handler = async (req, res) => {
+const tokenRequestHandler: Handler = async (req:any, res:any) => {
     const {
         clientId
     } = req.body as TokenRequestPayload;
@@ -55,7 +55,7 @@ const tokenRequestHandler: Handler = async (req, res) => {
     res.send(result);
 };
 
-const validateTokenHandler: Handler = async (req, res) => {
+const validateTokenHandler: Handler = async (req:any, res:any) => {
     const {
         token
     } = req.body as { token: string };

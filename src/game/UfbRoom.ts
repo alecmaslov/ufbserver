@@ -16,7 +16,7 @@ import { isNullOrEmpty } from "#util";
 import { Client, Room } from "@colyseus/core";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
-import { TileType } from "@prisma/client";
+import TileType from "@prisma/client";
 import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";

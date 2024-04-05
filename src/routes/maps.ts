@@ -7,7 +7,7 @@ import { query } from "express-validator";
 const router: Router = Router();
 export default router;
 
-const handleListMaps: Handler = async (req, res) => {
+const handleListMaps: Handler = async (req: any, res: any) => {
     let { limit, offset, publisher } = req.query;
     let includeUnpublished = req.query.includeUnpublished === "true";
 
@@ -37,7 +37,7 @@ const handleListMaps: Handler = async (req, res) => {
     });
 };
 
-const handleGetMapById: Handler = async (req, res) => {
+const handleGetMapById: Handler = async (req: any, res: any) => {
     const { mapId } = req.params;
     const map = await db.ufbMap.findUnique({
         where: {
@@ -70,7 +70,7 @@ router.get(
     query("mapId").isString(),
     query("adjacencies").optional().isBoolean().toBoolean().default(false),
     validate,
-    async (req, res) => {
+    async (req: any, res: any) => {
         const { mapId, adjacencies } = req.query;
         const map = await db.ufbMap.findUnique({
             where: {
@@ -88,7 +88,7 @@ router.get(
     }
 );
 
-router.post("/foo", (req, res) => {
+router.post("/foo", (req: any, res: any) => {
     res.send("bar");
 });
 
@@ -102,7 +102,7 @@ router.get(
     query("limit").optional().isInt({ min: 1, max: 100 }).toInt().default(100),
     query("offset").optional().isInt({ min: 0 }).toInt().default(0),
     validate,
-    async (req, res) => {
+    async (req: any, res: any) => {
         const filters = {
             name: req.query.name,
             size: req.query.size,

@@ -72,9 +72,9 @@ export const getTileIdByDirection = (
     } else if(direction == "right") {
         coord.x++;
     } else if(direction == "top") {
-        coord.y++;
-    } else if(direction == "down") {
         coord.y--;
+    } else if(direction == "down") {
+        coord.y++;
     }
     return coordToTileId(tiles, coord);
 }
