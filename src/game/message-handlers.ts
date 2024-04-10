@@ -43,9 +43,23 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    useItem: (room, client, message) => {},
+    useItem: (room, client, message) => {
+        ////
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: true,
+        });
+    },
 
-    useAbility: (room, client, message) => {},
+    useAbility: (room, client, message) => {
+        ////
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: false,
+        });
+    },
 
     findPath: (room, client, message) => {
         const fromTileId = coordToGameId(message.from);
@@ -74,6 +88,17 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
         room.incrementTurn();
+
+        ////
+        const fromTileId = coordToGameId(message.from);
+        const toTileId = coordToGameId(message.to);
+        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+        client.send("foundPath", {
+            from: message.from,
+            to: message.to,
+            path,
+            cost,
+        });
     },
 
     changeMap: async (room, client, message) => {
