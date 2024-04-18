@@ -28,7 +28,6 @@ type TileType =
     | "BlockWNE"
     | "BlockNES";
 
-
 const TileTypeRecord: { [key: string]: TileType } = {
     A: "VerticalBridge",
     B: "HorizontalBridge",
@@ -41,6 +40,10 @@ const TileTypeRecord: { [key: string]: TileType } = {
     I: "Upper",
     J: "Lower",
 };
+
+type TileSpecialType = {
+    type: "Bridge" | "Stairs" | "Void" | "Upper" | "Lower";
+}
 
 type BlockPath =
     | "None"
@@ -76,6 +79,35 @@ const BlockPathRecord: { [key: string]: BlockPath } = {
     W: "SouthWestNorth",
     X: "WestNorthEast",
     Y: "NorthEastSouth",
+};
+
+type StairsType = "StairsNS" | "StairsSN" | "StairsEW" | "StairsWE";
+
+const StairsToSides: { [key in StairsType]: TileSide[] } = {
+    StairsNS: [
+        { side: "Top", edgeProperty: "StairBottom" },
+        { side: "Right", edgeProperty: null },
+        { side: "Bottom", edgeProperty: "StairTop" },
+        { side: "Left", edgeProperty: null },
+    ],
+    StairsSN: [
+        { side: "Top", edgeProperty: "StairTop" },
+        { side: "Right", edgeProperty: null },
+        { side: "Bottom", edgeProperty: "StairBottom" },
+        { side: "Left", edgeProperty: null },
+    ],
+    StairsEW: [
+        { side: "Top", edgeProperty: null },
+        { side: "Right", edgeProperty: "StairBottom" },
+        { side: "Bottom", edgeProperty: null },
+        { side: "Left", edgeProperty: "StairTop" },
+    ],
+    StairsWE: [
+        { side: "Top", edgeProperty: null },
+        { side: "Right", edgeProperty: "StairTop" },
+        { side: "Bottom", edgeProperty: null },
+        { side: "Left", edgeProperty: "StairBottom" },
+    ],
 };
 
 const BlockedPathToSides: { [key in BlockPath]: TileSide[] } = {
@@ -213,7 +245,16 @@ function parseTiles(tilesData: string[][]): Tile[] {
                 spawnType = null;
             }
 
-            const sides = BlockedPathToSides[blockPath];
+            let sides = BlockedPathToSides[blockPath];
+
+            if (
+                tileType === "StairsEW" ||
+                tileType === "StairsWE" ||
+                tileType === "StairsNS" ||
+                tileType === "StairsSN"
+            ) {
+                sides = StairsToSides[tileType as StairsType];
+            }
 
             const id = `tile_${coordinate[0]}_${y + 1}`;
 
@@ -232,7 +273,7 @@ const mapData = JSON.parse(
 const parsedTiles = parseTiles(mapData.tiles);
 // console.log(parsedTiles);
 
-writeFileSync("./data/maps/output/map-3d.json", JSON.stringify(parsedTiles));
+writeFileSync("./data/maps/output/map-3d.json", JSON.stringify(parsedTiles, null, 2));
 
 // const TileTypeToSides: { [key in BlockPath]: TileSide[] } = {
 //     VerticalBridge: [
