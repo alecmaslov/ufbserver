@@ -116,6 +116,64 @@ export const getPathCost = (
     return cost;
 };
 
+////
+export const getTileIdBridge = (
+    p: Node<any>[],
+    adjacencyList: MapSchema<AdjacencyListItemState, string>
+) => {
+    let cost = 0;
+    for (let i = 1; i < p.length; i++) {
+        const from = p[i - 1].id as string;
+        const to = p[i].id as string;
+        const edgeCollection = adjacencyList.get(from);
+        if (!edgeCollection) {
+            throw new Error(`no adjacency list for ${from}`);
+        }
+        let edge: { energyCost: number } | undefined;
+        for (const e of edgeCollection.edges) {
+            if (e.to === to) {
+                edge = e;
+                break;
+            }
+        }
+        // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+        if (!edge) {
+            throw new Error(`no edge from ${from} to ${to}`);
+        }
+        cost += edge.energyCost;
+    }
+    return cost;
+};
+
+////
+export const getTileIdStar = (
+    p: Node<any>[],
+    adjacencyList: MapSchema<AdjacencyListItemState, string>
+) => {
+    let cost = 0;
+    for (let i = 1; i < p.length; i++) {
+        const from = p[i - 1].id as string;
+        const to = p[i].id as string;
+        const edgeCollection = adjacencyList.get(from);
+        if (!edgeCollection) {
+            throw new Error(`no adjacency list for ${from}`);
+        }
+        let edge: { energyCost: number } | undefined;
+        for (const e of edgeCollection.edges) {
+            if (e.to === to) {
+                edge = e;
+                break;
+            }
+        }
+        // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+        if (!edge) {
+            throw new Error(`no edge from ${from} to ${to}`);
+        }
+        cost += edge.energyCost;
+    }
+    return cost;
+};
+
 export const fillPathWithCoords = (
     pathSteps: PathStep[],
     mapState: MapState
