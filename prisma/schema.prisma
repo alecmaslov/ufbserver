@@ -185,6 +185,30 @@ model Character {
   @@map("character_token")
 }
 
+////
+model CharacterTest {
+  id             String         @id @default(cuid())
+  name           String         @unique
+  traits         Json?
+  ownerId        String?
+  nftId          String?        @unique
+  className      String
+  maxEnergy      String
+  energy         String
+  maxHealth      String
+  health         String
+  ultimate       String
+  maxUltimate    String
+  gold           String
+  melee          String
+  maxMelee       String
+  mana           String
+  maxMana        String
+
+  @@index([className], map: "character_token_className_fkey")
+  @@index([ownerId], map: "character_token_ownerId_fkey")
+}
+
 model Nft {
   id                 String       @id @default(cuid())
   tokenId            String

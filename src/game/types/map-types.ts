@@ -38,14 +38,6 @@ export interface GameTile {
     sides: TileSide[];
 }
 
-export interface NewGameTile {
-    id: string;
-    type: TileType;
-    spawnZone?: SpawnZone;
-    coordinates: Coordinates;
-    sides: TileSide[];
-}
-
 export interface Spawnable {
     id: string;
     type: SpawnEntityType;
