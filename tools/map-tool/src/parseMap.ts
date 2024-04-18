@@ -21,7 +21,7 @@ import {
     existsSync,
     mkdirSync,
 } from "fs";
-import e from "cors";
+import { parseArgs } from "node:util";
 
 const COLOR_CODES = [
     "E",
@@ -464,7 +464,8 @@ export function parseUFBMap(map: any): UFBMap {
     return ufbMap;
 }
 
-function parseAllMaps(
+/** Parses the map from the old UFB format to the new JSON format */
+export function parseOldFormatMaps(
     allMapsFile: string,
     outputRoot: string = "../Assets/Resources/Maps"
 ) {
@@ -472,6 +473,12 @@ function parseAllMaps(
     console.log(`Parsing ${inputFile}`);
     const data = readFileSync(inputFile);
     let allMaps = JSON.parse(data.toString());
+
+    // check if the type of allMaps is a list
+    if (!Array.isArray(allMaps)) {
+        allMaps = [allMaps];
+    }
+
     // allMaps = allMaps.filter((map: any) => map.name == "kraken");
     for (const map of allMaps) {
         const parsed = parseUFBMap(map);
@@ -524,8 +531,10 @@ function parseDirectory(mapDir: string) {
     console.log("Done.");
 }
 
-parseAllMaps(
-    "/home/km/ufbserver/tools/map-tool/data/mapsOldCombined.json", 
-    "/home/km/ufbserver/data/mapsNew");
+
+
+
+
+
 
 // parseAllMaps("./data/maps/input/all-maps.json", "/home/km/ufbserver/tools/map-tool/data/maps/output");
