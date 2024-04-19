@@ -1,0 +1,147 @@
+import { Command } from "@colyseus/command";
+import { UfbRoomState } from "#game/schema/UfbRoomState";
+import { UfbRoom } from "#game/UfbRoom";
+import { isNullOrEmpty } from "#util";
+import { Client } from "colyseus";
+import { getClientCharacter } from "#game/helpers/room-helpers";
+import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { CharacterMovedMessage } from "#game/message-types";
+
+type OnResourceCommandPayload = {
+  client: Client;
+  message: any;
+  force: boolean;
+};
+
+export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> {
+  validate({ client, message }: OnResourceCommandPayload) {
+      return !isNullOrEmpty(message.tileId);
+  }
+
+  execute({ client, message, force }: OnResourceCommandPayload) {
+      const character = getClientCharacter(this.room, client);
+      if (!character) {
+          this.room.notify(client, "error");
+      }
+
+      if (!force && character.id !== this.state.currentCharacterId) {
+          this.room.notify(client, "error");
+          return;
+      }
+
+      const currentTile = this.state.map.tiles.get(character.currentTileId);
+      const destinationTile = this.room.state.map.tiles.get(message.tileId);
+
+      let directionData = {
+          left: 1,
+          right: 1,
+          top: 1,
+          down: 1
+      }
+      // LEFT
+      {
+          const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "left")
+
+          if(id == "") {
+              directionData.left = 0;
+          } else {
+              const { path, cost } = this.room.pathfinder.find(
+                  message.tileId,
+                  id
+              );
+              if(cost == 0 || cost > 2) {
+                  directionData.left = 0;
+              }
+          }
+      }
+      // RIGHT
+      {
+          const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "right")
+
+          if(id == "") {
+              directionData.right = 0;
+          } else {
+              const { path, cost } = this.room.pathfinder.find(
+                  message.tileId,
+                  id
+              );
+              if(cost == 0 || cost > 2) {
+                  directionData.right = 0;
+              }
+          }
+      }
+      // TOP
+      {
+          const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "top")
+
+          if(id == "") {
+              directionData.top = 0;
+          } else {
+              const { path, cost } = this.room.pathfinder.find(
+                  message.tileId,
+                  id
+              );
+              if(cost == 0 || cost > 2) {
+                  directionData.top = 0;
+              }
+          }
+      }
+      // DOWN
+      {
+          const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "down")
+
+          if(id == "") {
+              directionData.down = 0;
+          } else {
+              const { path, cost } = this.room.pathfinder.find(
+                  message.tileId,
+                  id
+              );
+              if(cost == 0 || cost > 2) {
+                  directionData.down = 0;
+              }
+          }
+      }
+
+      const { path, cost } = this.room.pathfinder.find(
+          character.currentTileId,
+          message.tileId
+      );
+
+      if (!force && character.stats.energy.current < cost) {
+          this.room.notify(
+              client,
+              "error"
+          );
+          return;
+      }
+
+      character.coordinates.x = destinationTile.coordinates.x;
+      character.coordinates.y = destinationTile.coordinates.y;
+      character.currentTileId = message.tileId;
+
+      if(force) {
+          const originEnergy = message.originEnergy;
+          character.stats.energy.add(originEnergy - character.stats.energy.current);
+      } else {
+          character.stats.energy.add(-cost);
+      }
+      fillPathWithCoords(path, this.room.state.map);
+
+      const characterMovedMessage: CharacterMovedMessage = {
+          characterId: character.id,
+          path,
+          left: directionData.left,
+          right: directionData.right,
+          top: directionData.top,
+          down: directionData.down,
+      };
+
+      this.room.broadcast("characterResource", characterMovedMessage);
+
+      if (character.stats.energy.current == 0) {
+          this.room.notify(client, "You can't continue.");
+          this.room.incrementTurn();
+      }
+  }
+}
