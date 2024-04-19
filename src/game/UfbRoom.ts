@@ -246,6 +246,101 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.resetTurn();
     }
 
+    ////
+    async initNewMap(mapName: string) {
+        const map = await db.ufbMap.findFirst({
+            where: {
+                name: mapName,
+            },
+            include: {
+                tiles: {
+                    include: {
+                        fromTileAdjacencies: true,
+                    },
+                },
+            },
+        });
+
+        const spawnZones = await db.spawnZone.findMany({
+            where: {
+                tile: {
+                    mapId: map.id,
+                },
+            },
+        });
+
+        this.state.map.spawnEntities = initializeSpawnEntities(
+            spawnZones,
+            DEFAULT_SPAWN_ENTITY_CONFIG,
+            async (spawnZone) => {
+                // Spawn monsters
+                const tile = await db.tile.findUnique({
+                    where: { id: spawnZone.tileId },
+                });
+                try {
+                    spawnCharacter(
+                        this.state.characters,
+                        "foobarbaz",
+                        tile,
+                        "kirin"
+                    );
+                } catch {
+                    console.error(
+                        `Tried to spawn monster at ${tile.id} but failed. | ${tile.x}, ${tile.y}`
+                    );
+                }
+            }
+        );
+
+        this.state.map.id = map.id;
+        this.state.map.name = map.name;
+        this.state.map.resourceAddress = map.resourceAddress;
+        this.state.map.gridWidth = map.gridWidth;
+        this.state.map.gridHeight = map.gridHeight;
+        this.state.map._map = map as any;
+
+        this.state.map.adjacencyList = new MapSchema<AdjacencyListItemState>();
+
+        for (const tile of map.tiles) {
+            const tileState = new TileState();
+            tileState.id = tile.id;
+            tileState.type = tile.type as TileType;
+            tileState.coordinates.x = tile.x;
+            tileState.coordinates.y = tile.y;
+            tileState.tileCode = tile.tileCode;
+            // walls can be null
+            const walls = new ArraySchema<number>();
+            if (tile.walls) {
+                for (const wall of tile.walls as number[]) {
+                    walls.push(wall);
+                }
+            }
+
+            tileState.walls = walls;
+
+            this.state.map.tiles.set(tile.id, tileState);
+
+            const adjacencyListItem = new AdjacencyListItemState();
+            adjacencyListItem.edges = new ArraySchema<TileEdgeState>();
+
+            for (const edge of tile.fromTileAdjacencies) {
+                const edgeState = new TileEdgeState();
+                edgeState.from = edge.fromId;
+                edgeState.to = edge.toId;
+                edgeState.type = edge.type as any;
+                edgeState.energyCost = edge.energyCost;
+                adjacencyListItem.edges.push(edgeState);
+            }
+
+            this.state.map.adjacencyList.set(tile.id, adjacencyListItem);
+        }
+
+        this.pathfinder = Pathfinder.fromMapState(this.state.map);
+
+        this.broadcast("mapChanged", {}, { afterNextPatch: true });
+        this.resetTurn();
+    }
+
     async _initMap(mapKey: string) {
         const path = pathJoin("data", "maps", mapKey, "map.json");
         const data = await readFile(path);
