@@ -104,6 +104,25 @@ export const messageHandlers: MessageHandlers = {
     changeMap: async (room, client, message) => {
         await room.initMap(message.mapName);
     },
+
+    getEquipList: (room, client, message) => {
+        const fromTileId = coordToGameId(message.from);
+        const toTileId = coordToGameId(message.to);
+
+        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+
+        if (!path || path.length === 0) {
+            room.notify(client, "No path found", "error");
+            return;
+        }
+
+        client.send("foundPath", {
+            from: message.from,
+            to: message.to,
+            path,
+            cost,
+        });
+    }
 };
 
 export function registerMessageHandlers(room: UfbRoom) {
