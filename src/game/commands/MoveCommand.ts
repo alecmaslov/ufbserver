@@ -132,7 +132,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             const originEnergy = message.originEnergy;
             character.stats.energy.add(originEnergy - character.stats.energy.current);
         } else {
-            character.stats.energy.add(-cost);
+            //character.stats.energy.add(-cost);
         }
         fillPathWithCoords(path, this.room.state.map);
 
