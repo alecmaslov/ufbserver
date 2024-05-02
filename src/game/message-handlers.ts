@@ -1,9 +1,10 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { coordToGameId, fillPathWithCoords } from "#game/helpers/map-helpers";
 import { getClientCharacter } from "./helpers/room-helpers";
-import { CharacterMovedMessage } from "#game/message-types";
+import { CharacterMovedMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
+import { Item } from "./schema/CharacterState";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -103,6 +104,47 @@ export const messageHandlers: MessageHandlers = {
 
     changeMap: async (room, client, message) => {
         await room.initMap(message.mapName);
+    },
+
+    spawnMove: (room, client, message) => {
+        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
+
+        let coinCount = 2 + Math.round(4 * (0.5 - Math.random()));
+
+        const spawnMessage : SpawnInitMessage = {
+            characterId: message.playerId,
+            spawnId: "default",
+            item: 0,
+            power: 0,
+            coin: coinCount
+        }
+
+        client.send("spawnInit", spawnMessage);
+
+    },
+
+    getSpawn: (room, client, message) => {
+        console.log(`Get items : `);
+
+        const character = getClientCharacter(room, client);
+
+        const item : Item = character.items.find(item => item.id == message.itemId);
+        if(item == null) {
+            character.items.push(item);
+        } else {
+            item.count++;
+        }
+
+        const power : Item = character.powers.find(p => p.id == message.powerId);
+        if(power == null) {
+            character.items.push(power);
+        } else {
+            power.count++;
+        }
+
+        character.stats.energy.add(-3);
+        character.stats.health.add(-3);
+        character.stats.coin += message.coinCount;
     },
 
     getEquipList: (room, client, message) => {

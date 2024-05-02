@@ -33,6 +33,14 @@ export interface CharacterMovedMessage {
     down: number,
 }
 
+export interface SpawnInitMessage {
+    characterId: string;
+    spawnId: string;
+    item: number;
+    power: number;
+    coin: number;
+}
+
 export interface ChangeMapMessage {
     mapName: string;
 }
