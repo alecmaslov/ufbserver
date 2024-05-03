@@ -111,11 +111,14 @@ export const messageHandlers: MessageHandlers = {
 
         let coinCount = 2 + Math.round(4 * (0.5 - Math.random()));
 
+        let itemId = 0 + Math.round(3 * (0.5 - Math.random()));
+        let powerId = 0 + Math.round(3 * (0.5 - Math.random()));
+
         const spawnMessage : SpawnInitMessage = {
             characterId: message.playerId,
             spawnId: "default",
-            item: 0,
-            power: 0,
+            item: itemId,
+            power: powerId,
             coin: coinCount
         }
 

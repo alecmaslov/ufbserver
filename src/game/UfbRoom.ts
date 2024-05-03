@@ -210,6 +210,11 @@ export class UfbRoom extends Room<UfbRoomState> {
             const tileState = new TileState();
             tileState.id = tile.id;
             tileState.type = tile.type as TileType;
+
+            if(tile.type != TileType.Default) {
+                console.log(`Tile Type: ${tile.type} Tile index: ${tile.id}, TilePosX : ${tile.x}, Tile Y: ${tile.y}`)
+            }
+
             tileState.coordinates.x = tile.x;
             tileState.coordinates.y = tile.y;
             tileState.tileCode = tile.tileCode;
