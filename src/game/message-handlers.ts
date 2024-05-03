@@ -130,20 +130,33 @@ export const messageHandlers: MessageHandlers = {
 
         const item : Item = character.items.find(item => item.id == message.itemId);
         if(item == null) {
-            character.items.push(item);
+            const newItem = new Item();
+            newItem.id = message.itemId;
+            newItem.count = 1;
+            newItem.name = "item0";
+            newItem.description = "description";
+            newItem.level = 1;
+
+            character.items.push(newItem);
         } else {
             item.count++;
         }
 
         const power : Item = character.powers.find(p => p.id == message.powerId);
         if(power == null) {
-            character.items.push(power);
+            const newPower = new Item();
+            newPower.id = message.powerId;
+            newPower.count = 1;
+            newPower.name = "power0";
+            newPower.description = "description";
+            newPower.level = 1;
+            character.items.push(newPower);
         } else {
             power.count++;
         }
 
-        character.stats.energy.add(-3);
-        character.stats.health.add(-3);
+        character.stats.energy.add(3);
+        character.stats.health.add(3);
         character.stats.coin += message.coinCount;
     },
 
