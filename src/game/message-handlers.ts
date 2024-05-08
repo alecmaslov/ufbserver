@@ -119,10 +119,16 @@ export const messageHandlers: MessageHandlers = {
             spawnId: "default",
             item: itemId,
             power: powerId,
-            coin: coinCount
+            coin: coinCount,
+            tileId: message.tileId
         }
 
         client.send("spawnInit", spawnMessage);
+
+        const character = getClientCharacter(room, client);
+        character.coordinates.x = message.coordinates.x;
+        character.coordinates.y = message.coordinates.y;
+        character.currentTileId = message.tileId;
 
     },
 

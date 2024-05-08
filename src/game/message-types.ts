@@ -39,6 +39,7 @@ export interface SpawnInitMessage {
     item: number;
     power: number;
     coin: number;
+    tileId: string;
 }
 
 export interface ChangeMapMessage {
