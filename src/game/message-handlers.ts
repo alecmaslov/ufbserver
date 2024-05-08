@@ -126,8 +126,8 @@ export const messageHandlers: MessageHandlers = {
         client.send("spawnInit", spawnMessage);
 
         const character = getClientCharacter(room, client);
-        character.coordinates.x = message.coordinates.x;
-        character.coordinates.y = message.coordinates.y;
+        character.coordinates.x = message.destination.x;
+        character.coordinates.y = message.destination.y;
         character.currentTileId = message.tileId;
 
     },
