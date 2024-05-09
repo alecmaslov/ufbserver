@@ -111,8 +111,34 @@ export const messageHandlers: MessageHandlers = {
 
         let coinCount = 2 + Math.round(4 * (0.5 - Math.random()));
 
-        let itemId = 0 + Math.round(3 * (0.5 - Math.random()));
-        let powerId = 0 + Math.round(3 * (0.5 - Math.random()));
+        let itemId = 0 + Math.round(5 * (0.5 - Math.random()));
+        let powerId = 0 + Math.round(11 * (0.5 - Math.random()));
+
+        const spawnMessage : SpawnInitMessage = {
+            characterId: message.playerId,
+            spawnId: "default",
+            item: itemId,
+            power: powerId,
+            coin: coinCount,
+            tileId: message.tileId
+        }
+
+        client.send("spawnInit", spawnMessage);
+
+        // const character = getClientCharacter(room, client);
+        // character.coordinates.x = message.destination.x;
+        // character.coordinates.y = message.destination.y;
+        // character.currentTileId = message.tileId;
+
+    },
+
+    initSpawnMove: (room, client, message) => {
+        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
+
+        let coinCount = 2 + Math.round(4 * (0.5 - Math.random()));
+
+        let itemId = 0 + Math.round(5 * (0.5 - Math.random()));
+        let powerId = 0 + Math.round(11 * (0.5 - Math.random()));
 
         const spawnMessage : SpawnInitMessage = {
             characterId: message.playerId,
@@ -167,6 +193,7 @@ export const messageHandlers: MessageHandlers = {
         character.stats.energy.add(3);
         character.stats.health.add(3);
         character.stats.coin += message.coinCount;
+        character.stats.bags++;
     },
 
     getEquipList: (room, client, message) => {

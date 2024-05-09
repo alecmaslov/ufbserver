@@ -35,6 +35,7 @@ export class CharacterStatsState extends Schema {
         DEFAULT_ENERGY
     );
     @type("number") coin: number = 0;
+    @type("number") bags: number = 0;
 }
 
 export class CoordinatesState extends Schema {
@@ -65,6 +66,7 @@ export class CharacterState extends Schema {
         new CharacterStatsState();
     @type([Item]) items : ArraySchema<Item> = new ArraySchema<Item>();
     @type([Item]) powers : ArraySchema<Item> = new ArraySchema<Item>();
+    @type([Item]) stacks : ArraySchema<Item> = new ArraySchema<Item>();
 }
 
 
