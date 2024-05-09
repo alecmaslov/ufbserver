@@ -1,7 +1,7 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { coordToGameId, fillPathWithCoords } from "#game/helpers/map-helpers";
 import { getClientCharacter } from "./helpers/room-helpers";
-import { CharacterMovedMessage, SpawnInitMessage } from "#game/message-types";
+import { CharacterMovedMessage, GetResourceDataMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { Item } from "./schema/CharacterState";
@@ -196,6 +196,16 @@ export const messageHandlers: MessageHandlers = {
         character.stats.health.add(3);
         character.stats.coin += message.coinCount;
         character.stats.bags++;
+    },
+
+    getResourceList: (room, client, message) => {
+        const character = getClientCharacter(room, client);
+
+        const getResourceDataMessage: GetResourceDataMessage = {
+            characterState: character
+        };
+
+        client.send("sendResourceList", getResourceDataMessage)
     },
 
     getEquipList: (room, client, message) => {

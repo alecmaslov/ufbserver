@@ -1,4 +1,5 @@
 import { Coordinates, PathStep } from "#shared-types";
+import { CharacterState } from "./schema/CharacterState";
 
 /**
  * search for a path from one tile to another
@@ -31,6 +32,10 @@ export interface CharacterMovedMessage {
     right: number,
     top: number,
     down: number,
+}
+
+export interface GetResourceDataMessage {
+    characterState: CharacterState
 }
 
 export interface SpawnInitMessage {
