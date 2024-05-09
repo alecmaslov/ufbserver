@@ -109,10 +109,10 @@ export const messageHandlers: MessageHandlers = {
     spawnMove: (room, client, message) => {
         console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
 
-        let coinCount = 2 + Math.round(4 * (0.5 - Math.random()));
+        let coinCount = 2 + Math.round(4 * ( Math.random()));
 
-        let itemId = 0 + Math.round(5 * (0.5 - Math.random()));
-        let powerId = 0 + Math.round(11 * (0.5 - Math.random()));
+        let itemId = 0 + Math.round(5 * (Math.random()));
+        let powerId = 0 + Math.round(11 * (Math.random()));
 
         const spawnMessage : SpawnInitMessage = {
             characterId: message.playerId,
