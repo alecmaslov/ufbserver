@@ -4,7 +4,7 @@ import { getClientCharacter } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
-import { Item } from "./schema/CharacterState";
+import { ResourceCommand } from "./commands/ResourceCommands";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -161,41 +161,14 @@ export const messageHandlers: MessageHandlers = {
     },
 
     getSpawn: (room, client, message) => {
+
+        room.dispatcher.dispatch(new ResourceCommand(), {
+            client,
+            message,
+            force: false,
+        });
         console.log(`Get items : `);
 
-        const character = getClientCharacter(room, client);
-
-        const item : Item = character.items.find(item => item.id == message.itemId);
-        if(item == null) {
-            const newItem = new Item();
-            newItem.id = message.itemId;
-            newItem.count = 1;
-            newItem.name = "item0";
-            newItem.description = "description";
-            newItem.level = 1;
-
-            character.items.push(newItem);
-        } else {
-            item.count++;
-        }
-
-        const power : Item = character.powers.find(p => p.id == message.powerId);
-        if(power == null) {
-            const newPower = new Item();
-            newPower.id = message.powerId;
-            newPower.count = 1;
-            newPower.name = "power0";
-            newPower.description = "description";
-            newPower.level = 1;
-            character.items.push(newPower);
-        } else {
-            power.count++;
-        }
-
-        character.stats.energy.add(3);
-        character.stats.health.add(3);
-        character.stats.coin += message.coinCount;
-        character.stats.bags++;
     },
 
     getResourceList: (room, client, message) => {
