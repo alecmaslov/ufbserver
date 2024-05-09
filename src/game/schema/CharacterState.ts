@@ -34,8 +34,8 @@ export class CharacterStatsState extends Schema {
         DEFAULT_ENERGY,
         DEFAULT_ENERGY
     );
-    @type("number") coin: number = 0;
-    @type("number") bags: number = 0;
+    @type("int32") coin: number = 0;
+    @type("int32") bags: number = 0;
 }
 
 export class CoordinatesState extends Schema {
@@ -44,11 +44,12 @@ export class CoordinatesState extends Schema {
 }
 
 export class Item extends Schema {
-    @type("number") id: number = 0;
+    @type("int32") id: number = 0;
     @type("string") name: string = "";
     @type("string") description: string = "";
-    @type("number") count: number = 0;
-    @type("number") level: number = 1;
+    @type("int16") count: number = 0;
+    @type("int16") level: number = 1;
+    @type("int16") cost: number = 1;
 }
 
 export class CharacterState extends Schema {
