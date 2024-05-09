@@ -149,6 +149,8 @@ export const messageHandlers: MessageHandlers = {
             tileId: message.tileId
         }
 
+        console.log(`itemid: ${itemId}, powerId: ${powerId}, coin: ${coinCount}`);
+
         client.send("spawnInit", spawnMessage);
 
         const character = getClientCharacter(room, client);
