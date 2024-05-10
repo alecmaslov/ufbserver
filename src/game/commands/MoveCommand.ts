@@ -104,11 +104,11 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             }
         }
 
-        console.log(
-            `Character moving from ${coordToGameId(
-                currentTile.coordinates
-            )} -> ${coordToGameId(destinationTile.coordinates)}`
-        );
+        // console.log(
+        //     `Character moving from ${coordToGameId(
+        //         currentTile.coordinates
+        //     )} -> ${coordToGameId(destinationTile.coordinates)}`
+        // );
 
         const { path, cost } = this.room.pathfinder.find(
             character.currentTileId,
@@ -132,7 +132,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             const originEnergy = message.originEnergy;
             character.stats.energy.add(originEnergy - character.stats.energy.current);
         } else {
-            //character.stats.energy.add(-cost);
+            character.stats.energy.add(-cost);
         }
         fillPathWithCoords(path, this.room.state.map);
 
@@ -145,13 +145,13 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             down: directionData.down,
         };
 
-        console.log(
-            `Sending playerMoved message ${JSON.stringify(
-                characterMovedMessage,
-                null,
-                2
-            )}`
-        );
+        // console.log(
+        //     `Sending playerMoved message ${JSON.stringify(
+        //         characterMovedMessage,
+        //         null,
+        //         2
+        //     )}`
+        // );
 
         this.room.broadcast("characterMoved", characterMovedMessage);
 
