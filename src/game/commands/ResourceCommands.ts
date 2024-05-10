@@ -30,6 +30,7 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
           return;
       }
 
+
       const item : Item = character.items.find(item => item.id == message.itemId);
       if(item == null) {
           const newItem = new Item();
@@ -52,7 +53,7 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
           newPower.name = `power${message.powerId}`;
           newPower.description = "description";
           newPower.level = 1;
-          character.items.push(newPower);
+          character.powers.push(newPower);
       } else {
           power.count++;
       }
@@ -61,6 +62,9 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
       character.stats.health.add(3);
       character.stats.coin += message.coinCount;
       character.stats.bags++;
+      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
+
+      client.send("sss", {});
  
     //   character.coordinates.x = destinationTile.coordinates.x;
     //   character.coordinates.y = destinationTile.coordinates.y;
