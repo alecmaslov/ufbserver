@@ -21,14 +21,18 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
 
   execute({ client, message, force }: OnResourceCommandPayload) {
       const character = getClientCharacter(this.room, client);
+      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
+
       if (!character) {
           this.room.notify(client, "error");
       }
+      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
       if (!force && character.id !== this.state.currentCharacterId) {
           this.room.notify(client, "error");
           return;
       }
+      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
 
       const item : Item = character.items.find(item => item.id == message.itemId);
