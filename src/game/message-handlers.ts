@@ -4,7 +4,7 @@ import { getClientCharacter } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
-import { ResourceCommand } from "./commands/ResourceCommands";
+import { ResourceCommand } from "#game/commands/ResourceCommands";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
