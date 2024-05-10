@@ -6,7 +6,6 @@ import { Client } from "colyseus";
 import { getClientCharacter } from "#game/helpers/room-helpers";
 import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
-import { Item } from "#game/schema/CharacterState";
 
 type OnResourceCommandPayload = {
   client: Client;
@@ -21,54 +20,15 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
 
   execute({ client, message, force }: OnResourceCommandPayload) {
       const character = getClientCharacter(this.room, client);
-      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
-
       if (!character) {
           this.room.notify(client, "error");
       }
-      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
       if (!force && character.id !== this.state.currentCharacterId) {
           this.room.notify(client, "error");
           return;
       }
-      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
-
-      const item : Item = character.items.find(item => item.id == message.itemId);
-      if(item == null) {
-          const newItem = new Item();
-          newItem.id = message.itemId;
-          newItem.count = 1;
-          newItem.name = `item${message.itemId}`;
-          newItem.description = "description";
-          newItem.level = 1;
-
-          character.items.push(newItem);
-      } else {
-          item.count++;
-      }
-
-      const power : Item = character.powers.find(p => p.id == message.powerId);
-      if(power == null) {
-          const newPower = new Item();
-          newPower.id = message.powerId;
-          newPower.count = 1;
-          newPower.name = `power${message.powerId}`;
-          newPower.description = "description";
-          newPower.level = 1;
-          character.powers.push(newPower);
-      } else {
-          power.count++;
-      }
-
-      character.stats.energy.add(3);
-      character.stats.health.add(3);
-      character.stats.coin += message.coinCount;
-      character.stats.bags++;
-      console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
-
-      client.send("sss", {});
  
     //   character.coordinates.x = destinationTile.coordinates.x;
     //   character.coordinates.y = destinationTile.coordinates.y;

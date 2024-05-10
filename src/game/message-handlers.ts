@@ -5,6 +5,7 @@ import { CharacterMovedMessage, GetResourceDataMessage, SpawnInitMessage } from 
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { ResourceCommand } from "#game/commands/ResourceCommands";
+import { Item } from "#game/schema/CharacterState";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -162,12 +163,49 @@ export const messageHandlers: MessageHandlers = {
 
     getSpawn: (room, client, message) => {
 
-        room.dispatcher.dispatch(new ResourceCommand(), {
-            client,
-            message,
-            force: false,
-        });
+        // room.dispatcher.dispatch(new ResourceCommand(), {
+        //     client,
+        //     message,
+        //     force: false,
+        // });
         console.log(`Get items : `);
+        
+        const character = getClientCharacter(room, client);
+
+        const item : Item = character.items.find(item => item.id == message.itemId);
+        if(item == null) {
+            const newItem = new Item();
+            newItem.id = message.itemId;
+            newItem.count = 1;
+            newItem.name = `item${message.itemId}`;
+            newItem.description = "description";
+            newItem.level = 1;
+
+            character.items.push(newItem);
+        } else {
+            item.count++;
+        }
+
+        const power : Item = character.powers.find(p => p.id == message.powerId);
+        if(power == null) {
+            const newPower = new Item();
+            newPower.id = message.powerId;
+            newPower.count = 1;
+            newPower.name = `power${message.powerId}`;
+            newPower.description = "description";
+            newPower.level = 1;
+            character.powers.push(newPower);
+        } else {
+            power.count++;
+        }
+
+        character.stats.energy.add(3);
+        character.stats.health.add(3);
+        character.stats.coin += message.coinCount;
+        character.stats.bags++;
+        console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
+
+        client.send("sss", {});
 
     },
 
