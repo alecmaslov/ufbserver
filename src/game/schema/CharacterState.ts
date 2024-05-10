@@ -68,6 +68,7 @@ export class CharacterState extends Schema {
     @type([Item]) items : ArraySchema<Item> = new ArraySchema<Item>();
     @type([Item]) powers : ArraySchema<Item> = new ArraySchema<Item>();
     @type([Item]) stacks : ArraySchema<Item> = new ArraySchema<Item>();
+    @type([Item]) equipSlots: ArraySchema<Item> = new ArraySchema<Item>();
 }
 
 

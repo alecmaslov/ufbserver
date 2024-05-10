@@ -35,7 +35,7 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
           const newItem = new Item();
           newItem.id = message.itemId;
           newItem.count = 1;
-          newItem.name = "item0";
+          newItem.name = `item${message.itemId}`;
           newItem.description = "description";
           newItem.level = 1;
 
@@ -49,7 +49,7 @@ export class ResourceCommand extends Command<UfbRoom, OnResourceCommandPayload> 
           const newPower = new Item();
           newPower.id = message.powerId;
           newPower.count = 1;
-          newPower.name = "power0";
+          newPower.name = `power${message.powerId}`;
           newPower.description = "description";
           newPower.level = 1;
           character.items.push(newPower);
