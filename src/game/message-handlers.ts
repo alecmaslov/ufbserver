@@ -253,22 +253,26 @@ export const messageHandlers: MessageHandlers = {
                 powermove.light = move.light;
                 powermove.range = move.range;
                 powermove.coin = move.coin;
-                move.powerIds.forEach(pid => {
-                    powermove.powerIds.push(pid);
-                })
-                move.costList.forEach(cost => {
-                    const item = new Item();
-                    item.id = cost.id;
-                    item.count = cost.count;
-                    powermove.costList.push(
-                        item
-                    )
-                })
+                // move.powerIds.forEach(pid => {
+                //     powermove.powerIds.push(pid);
+                // })
+                // move.costList.forEach(cost => {
+                //     const item = new Item();
+                //     item.id = cost.id;
+                //     item.count = cost.count;
+                //     powermove.costList.push(
+                //         item
+                //     )
+                // })
                 console.log(move.powerIds, move.costList)
                 clientMessage.powermoves.push(powermove);
             }
         })
-        console.log(clientMessage.powermoves.values());
+        console.log(
+            clientMessage.powermoves[0].id, 
+            clientMessage.powermoves[0].name,
+            clientMessage.powermoves[0].powerIds
+        );
         client.send("ReceivePowerMoveList", clientMessage);
     }
 };
