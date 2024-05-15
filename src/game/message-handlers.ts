@@ -266,7 +266,7 @@ export const messageHandlers: MessageHandlers = {
                 clientMessage.powermoves.push(powermove);
             }
         })
-
+        console.log(clientMessage);
         client.send("ReceivePowerMoveList", clientMessage);
     }
 };
