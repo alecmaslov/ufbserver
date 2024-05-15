@@ -1,11 +1,12 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { coordToGameId, fillPathWithCoords } from "#game/helpers/map-helpers";
 import { getClientCharacter } from "./helpers/room-helpers";
-import { CharacterMovedMessage, GetResourceDataMessage, SpawnInitMessage } from "#game/message-types";
+import { CharacterMovedMessage, GetResourceDataMessage, PowerMoveListMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { ResourceCommand } from "#game/commands/ResourceCommands";
-import { Item } from "#game/schema/CharacterState";
+import { Item, PowerMove } from "#game/schema/CharacterState";
+import { powermoves } from "#assets/resources";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -236,6 +237,37 @@ export const messageHandlers: MessageHandlers = {
             path,
             cost,
         });
+    },
+
+    getPowerMoveList: (room, client, message) => {
+        const powerId = message.powerId;
+        let clientMessage: PowerMoveListMessage = {
+            powermoves: []
+        }
+        powermoves.forEach(move => {
+            if(move.powerIds.indexOf(powerId) > -1) {
+                const powermove = new PowerMove();
+                powermove.id = move.id;
+                powermove.name = move.name;
+                powermove.powerImageId = move.powerImageId;
+                powermove.light = move.light;
+                powermove.range = move.range;
+                powermove.coin = move.coin;
+                powermove.powerIds = move.powerIds;
+                move.costList.forEach(cost => {
+                    const item = new Item();
+                    item.id = cost.id;
+                    item.count = cost.count;
+                    powermove.costList.push(
+                        item
+                    )
+                })
+                
+                clientMessage.powermoves.push(powermove);
+            }
+        })
+
+        client.send("ReceivePowerMoveList", clientMessage);
     }
 };
 

@@ -52,6 +52,18 @@ export class Item extends Schema {
     @type("int16") cost: number = 1;
 }
 
+export class PowerMove extends Schema {
+    @type("int32") id: number = 0;
+    @type("string") name: string = "";
+    @type("int16") powerImageId: number = 0;
+    @type(["int32"]) powerIds: number[];
+    @type([Item]) costList : ArraySchema<Item> = new ArraySchema<Item>();
+    @type("int32") light: number = 0;
+    @type("int32") coin: number = 0;
+    @type("int32") range: number = 0;
+}
+
+
 export class CharacterState extends Schema {
     @type("string") id: string = "";
     @type("string") displayName: string = "";
