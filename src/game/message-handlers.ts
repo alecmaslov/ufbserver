@@ -262,11 +262,11 @@ export const messageHandlers: MessageHandlers = {
                         item
                     )
                 })
-                console.log(powermove.powerIds, powermove.costList)
+                console.log(move.powerIds, move.costList)
                 clientMessage.powermoves.push(powermove);
             }
         })
-        console.log(clientMessage);
+        console.log(clientMessage.powermoves.values());
         client.send("ReceivePowerMoveList", clientMessage);
     }
 };
