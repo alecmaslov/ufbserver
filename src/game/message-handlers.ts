@@ -253,7 +253,9 @@ export const messageHandlers: MessageHandlers = {
                 powermove.light = move.light;
                 powermove.range = move.range;
                 powermove.coin = move.coin;
-                powermove.powerIds = move.powerIds;
+                move.powerIds.forEach(pid => {
+                    powermove.powerIds.push(pid);
+                })
                 move.costList.forEach(cost => {
                     const item = new Item();
                     item.id = cost.id;

@@ -55,8 +55,8 @@ export class Item extends Schema {
 export class PowerMove extends Schema {
     @type("int32") id: number = 0;
     @type("string") name: string = "";
-    @type("int16") powerImageId: number = 0;
-    @type(["int32"]) powerIds: number[];
+    @type("int32") powerImageId: number = 0;
+    @type(["int32"]) powerIds: ArraySchema<number> = new ArraySchema<number>();
     @type([Item]) costList : ArraySchema<Item> = new ArraySchema<Item>();
     @type("int32") light: number = 0;
     @type("int32") coin: number = 0;
