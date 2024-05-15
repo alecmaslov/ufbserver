@@ -262,7 +262,7 @@ export const messageHandlers: MessageHandlers = {
                         item
                     )
                 })
-                
+                console.log(powermove.powerIds, powermove.costList)
                 clientMessage.powermoves.push(powermove);
             }
         })
