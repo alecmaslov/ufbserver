@@ -1196,3 +1196,150 @@ export const powermoves = [
         coin: 0,
     },
 ]
+
+export const powers: { [key: number]: { level: number, name: string } } = {
+    [0] : {
+        level: 1,
+        name: "Sword"
+    },
+    [12] : {
+        level: 2,
+        name: "Sword"
+    },
+    [24] : {
+        level: 3,
+        name: "Sword"
+    },
+    [1] : {
+        level: 1,
+        name: "Axe"
+    },
+    [13] : {
+        level: 2,
+        name: "Axe"
+    },
+    [25] : {
+        level: 3,
+        name: "Axe"
+    },
+    [2] : {
+        level: 1,
+        name: "Spear"
+    },
+    [14] : {
+        level: 2,
+        name: "Spear"
+    },
+    [26] : {
+        level: 3,
+        name: "Spear"
+    },
+    [3] : {
+        level: 1,
+        name: "Shield"
+    },
+    [15] : {
+        level: 2,
+        name: "Shield"
+    },
+    [27] : {
+        level: 3,
+        name: "Shield"
+    },
+    [4] : {
+        level: 1,
+        name: "Bow"
+    },
+    [16] : {
+        level: 2,
+        name: "Bow"
+    },
+    [28] : {
+        level: 3,
+        name: "Bow"
+    },
+    [5] : {
+        level: 1,
+        name: "CrossBow"
+    },
+    [17] : {
+        level: 2,
+        name: "CrossBow"
+    },
+    [29] : {
+        level: 3,
+        name: "CrossBow"
+    },
+    [6] : {
+        level: 1,
+        name: "Cannon"
+    },
+    [18] : {
+        level: 2,
+        name: "Cannon"
+    },
+    [30] : {
+        level: 3,
+        name: "Cannon"
+    },
+    [7] : {
+        level: 1,
+        name: "Armor"
+    },
+    [19] : {
+        level: 2,
+        name: "Armor"
+    },
+    [31] : {
+        level: 3,
+        name: "Armor"
+    },
+    [8] : {
+        level: 1,
+        name: "Fire Crystal"
+    },
+    [20] : {
+        level: 2,
+        name: "Fire Crystal"
+    },
+    [32] : {
+        level: 3,
+        name: "Fire Crystal"
+    },
+    [9] : {
+        level: 1,
+        name: "Ice Crystal"
+    },
+    [21] : {
+        level: 2,
+        name: "Ice Crystal"
+    },
+    [33] : {
+        level: 3,
+        name: "Ice Crystal"
+    },
+    [10] : {
+        level: 1,
+        name: "Holy Crystal"
+    },
+    [22] : {
+        level: 2,
+        name: "Holy Crystal"
+    },
+    [34] : {
+        level: 3,
+        name: "Holy Crystal"
+    },
+    [11] : {
+        level: 1,
+        name: "Void Crystal"
+    },
+    [23] : {
+        level: 2,
+        name: "Void Crystal"
+    },
+    [35] : {
+        level: 3,
+        name: "Void Crystal"
+    },
+}

@@ -6,7 +6,7 @@ import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { ResourceCommand } from "#game/commands/ResourceCommands";
 import { Item } from "#game/schema/CharacterState";
-import { powermoves } from "#assets/resources";
+import { powermoves, powers } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 
 type MessageHandler<TMessage> = (
@@ -191,11 +191,12 @@ export const messageHandlers: MessageHandlers = {
         const power : Item = character.powers.find(p => p.id == message.powerId);
         if(power == null) {
             const newPower = new Item();
-            newPower.id = message.powerId;
+            const id : number = message.powerId;
+            newPower.id = id;
             newPower.count = 1;
-            newPower.name = `power${message.powerId}`;
+            newPower.name = powers[id].name;
             newPower.description = "description";
-            newPower.level = 1;
+            newPower.level = powers[id].level;
             character.powers.push(newPower);
         } else {
             power.count++;
