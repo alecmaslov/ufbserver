@@ -1,5 +1,5 @@
-import { Coordinates, PathStep } from "#shared-types";
-import { CharacterState, PowerMove } from "./schema/CharacterState";
+import { Coordinates, PathStep, PowerMove } from "#shared-types";
+import { CharacterState } from "./schema/CharacterState";
 
 /**
  * search for a path from one tile to another
@@ -35,7 +35,7 @@ export interface CharacterMovedMessage {
 }
 
 export interface PowerMoveListMessage {
-    powermoves: PowerMove[]
+    powermoves: PowerMove[];
 }
 
 export interface GetResourceDataMessage {

@@ -5,8 +5,9 @@ import { CharacterMovedMessage, GetResourceDataMessage, PowerMoveListMessage, Sp
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { ResourceCommand } from "#game/commands/ResourceCommands";
-import { Item, PowerMove } from "#game/schema/CharacterState";
+import { Item } from "#game/schema/CharacterState";
 import { powermoves } from "#assets/resources";
+import { PowerMove } from "#shared-types";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -246,24 +247,28 @@ export const messageHandlers: MessageHandlers = {
         }
         powermoves.forEach(move => {
             if(move.powerIds.indexOf(powerId) > -1) {
-                const powermove = new PowerMove();
-                powermove.id = move.id;
-                powermove.name = move.name;
-                powermove.powerImageId = move.powerImageId;
-                powermove.light = move.light;
-                powermove.range = move.range;
-                powermove.coin = move.coin;
-                // move.powerIds.forEach(pid => {
-                //     powermove.powerIds.push(pid);
-                // })
-                // move.costList.forEach(cost => {
-                //     const item = new Item();
-                //     item.id = cost.id;
-                //     item.count = cost.count;
-                //     powermove.costList.push(
-                //         item
-                //     )
-                // })
+                const powermove : PowerMove = {
+                    id : move.id,
+                    name : move.name,
+                    powerImageId : move.powerImageId,
+                    light : move.light,
+                    range : move.range,
+                    coin : move.coin,
+                    powerIds: [],
+                    costList: []
+                };
+
+                move.powerIds.forEach(pid => {
+                    powermove.powerIds.push(pid);
+                })
+                move.costList.forEach(cost => {
+                    const item = new Item();
+                    item.id = cost.id;
+                    item.count = cost.count;
+                    powermove.costList.push(
+                        item
+                    )
+                })
                 console.log(move.powerIds, move.costList)
                 clientMessage.powermoves.push(powermove);
             }
