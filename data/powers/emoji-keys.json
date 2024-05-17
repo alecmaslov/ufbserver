@@ -1,0 +1,22 @@
+{
+    "effects": {
+        "action": {
+            "Damage": "- ❤️",
+            "Heal": "+ ❤️",
+            "Buff": "+",
+            "Debuff": "-",
+            "SetMax": "(++Max)",
+            "Summon": "🐺",
+            "Bonus": "🎁"
+        },
+        "amountModifier": {
+            "Roll" : "🎲"
+        },
+        "stat": {
+            "Health": "❤️",
+            "Energy": "⚡",
+            "Melee": "✊",
+            "Mana": "🪬"
+        }
+    }
+}

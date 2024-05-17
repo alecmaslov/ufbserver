@@ -52,7 +52,7 @@ function convertToVanilla(obj: any): any {
     return result;
 }
 
-router.get("/inspect-room/:roomId", async (req, res) => {
+router.get("/inspect-room/:roomId", async (req: any, res: any) => {
     const {
         roomId,
     } = req.params;

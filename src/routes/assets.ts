@@ -10,7 +10,7 @@ const router: Router = Router();
 export default router;
 
 
-const getAssetsForBundleHandler: Handler = async (req, res) => {
+const getAssetsForBundleHandler: Handler = async (req: any, res: any) => {
     const {
         version
     } = req.query as { version: string };
@@ -30,7 +30,7 @@ const getAssetsForBundleHandler: Handler = async (req, res) => {
     res.send(assets);
 };
 
-// const getAllMapsHandler: Handler = async (req, res) => {
+// const getAllMapsHandler: Handler = async (req: any, res: any) => {
 
 //     const allMaps = ALL_MAPS.map(m => getMap(m));
 //     res.send(ALL_MAPS.map(m => m.name));

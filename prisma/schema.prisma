@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,71 +7,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Platform {
-  WEB
-  ANDROID
-  IOS
-  STEAM
-  UNITY_EDITOR
-}
-
-// represents a client device
-// we can authenticate JWT which will contain this id
 model Client {
-  id        String   @id @default(cuid())
-  userId    String?
-  platform  Platform @default(WEB)
-  createdAt DateTime @default(now())
-
-  user             User?              @relation(fields: [userId], references: [id]) // a client can be registered or not
+  id               String             @id @default(cuid())
+  userId           String?
+  platform         Platform           @default(WEB)
+  createdAt        DateTime           @default(now())
+  user             User?              @relation(fields: [userId], references: [id])
+  ConnectedBrowser ConnectedBrowser[]
   gameSession      GameSession[]
   player           Player[]
-  ConnectedBrowser ConnectedBrowser[]
+
+  @@index([userId], map: "Client_userId_fkey")
 }
 
 model User {
-  id              String   @id @default(cuid())
+  id              String      @id @default(cuid())
   displayName     String
-  email           String   @unique
+  email           String      @unique
   profileImageUrl String?
-  passwordHash    String? // let's keep the possibility open to have oauth, so pw is not required if they sign in with oauth
-  createdAt       DateTime @default(now())
-
-  client Client[] // user could potentially have multiple clients
+  passwordHash    String?
+  createdAt       DateTime    @default(now())
+  client          Client[]
+  character       Character[]
 }
 
 model GameSession {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  hostClientId String // the client that created the session
-
+  id               String             @id @default(cuid())
+  createdAt        DateTime           @default(now())
+  hostClientId     String
   hostClient       Client             @relation(fields: [hostClientId], references: [id])
-  player           Player[]
   gameSessionState GameSessionState[]
+  player           Player[]
+
+  @@index([hostClientId], map: "GameSession_hostClientId_fkey")
 }
 
 model Player {
-  id            String   @id @default(cuid())
-  clientId      String
-  gameSessionId String
-  lastSeen      DateTime @default(now())
-
+  id              String            @id @default(cuid())
+  clientId        String
+  gameSessionId   String
+  lastSeen        DateTime          @default(now())
   client          Client            @relation(fields: [clientId], references: [id])
   gameSession     GameSession       @relation(fields: [gameSessionId], references: [id])
   playerGameState PlayerGameState[]
+
+  @@index([clientId], map: "Player_clientId_fkey")
+  @@index([gameSessionId], map: "Player_gameSessionId_fkey")
 }
 
 model PlayerGameState {
   id       String @id @default(cuid())
   playerId String
+  energy   Int
+  health   Int
+  player   Player @relation(fields: [playerId], references: [id])
 
-  player Player @relation(fields: [playerId], references: [id])
-
-  // some stuff representing state of the player in the game
-  energy Int
-  health Int
-
-  // we could also have a player inventory or something
+  @@index([playerId], map: "PlayerGameState_playerId_fkey")
 }
 
 model GameSessionState {
@@ -82,40 +70,210 @@ model GameSessionState {
   gameSessionId String
   gameSession   GameSession @relation(fields: [gameSessionId], references: [id])
 
-  // some stuff representing global game state
+  @@index([gameSessionId], map: "GameSessionState_gameSessionId_fkey")
 }
 
-// an s3 bucket asset
 model Asset {
-  objectKey  String @id // the s3 object key
-  bucketName String
-  region     String
-
+  objectKey   String        @id
+  bucketName  String
+  region      String
   bundleAsset BundleAsset[]
 }
 
-// represents the assets needed for a certain unity build bundle
-// necessary for starting the game
 model BundleAsset {
   id      String @id @default(cuid())
   version String
   assetId String
   asset   Asset  @relation(fields: [assetId], references: [objectKey])
+
+  @@index([assetId], map: "BundleAsset_assetId_fkey")
 }
 
-// what if we have the same map name, but different sizes? Maybe id should
-// be cuid
 model UfbMap {
   id              String  @id @default(cuid())
   name            String
-  resourceAddress String?
   thumbnailUrl    String?
   description     String?
   gridWidth       Int
   gridHeight      Int
-  publisher       String? // could also be tied to a userId
+  publisher       String?
+  resourceAddress String?
+  isPublished     Boolean @default(false)
+  tiles           Tile[]
+}
 
-  tiles Tile[]
+model Tile {
+  id                  String          @id @default(cuid())
+  tileCode            String
+  mapId               String
+  x                   Int
+  y                   Int
+  legacyCode          String?
+  type                TileType        @default(Default)
+  walls               Json?
+  spawnZone           SpawnZone?
+  map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  fromTileAdjacencies TileAdjacency[] @relation("FromAdjacency")
+  tileAdjacencies     TileAdjacency[]
+  toTileAdjacencies   TileAdjacency[] @relation("ToAdjacency")
+
+  @@unique([tileCode, mapId])
+  @@unique([x, y, mapId])
+  @@index([mapId], map: "Tile_mapId_fkey")
+}
+
+model SpawnZone {
+  id     String        @id @default(cuid())
+  type   SpawnZoneType
+  seedId Int
+  tileId String        @unique
+  tile   Tile          @relation(fields: [tileId], references: [id], onDelete: Cascade)
+}
+
+model TileAdjacency {
+  id         String        @id @default(cuid())
+  fromId     String
+  toId       String
+  type       AdjacencyType
+  energyCost Int?
+  tileId     String?
+  from       Tile          @relation("FromAdjacency", fields: [fromId], references: [id], onDelete: Cascade)
+  tile       Tile?         @relation(fields: [tileId], references: [id], onDelete: Cascade)
+  to         Tile          @relation("ToAdjacency", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@unique([fromId, toId])
+  @@index([tileId], map: "TileAdjacency_tileId_fkey")
+  @@index([toId], map: "TileAdjacency_toId_fkey")
+}
+
+model ConnectedBrowser {
+  ipAddress      String    @id
+  clientId       String
+  connectedAt    DateTime  @default(now())
+  disconnectedAt DateTime?
+  client         Client    @relation(fields: [clientId], references: [id])
+
+  @@index([clientId], map: "ConnectedBrowser_clientId_fkey")
+}
+
+model CharacterClass {
+  name           String       @id
+  description    String?
+  avatarUrl      String?
+  cardUrl        String?
+  sketchfabUrl   String?
+  ultimateMove   String       @default("None")
+  characterToken Character[]
+  godLevelNft    GodLevelNft?
+
+  @@map("character_class")
+}
+
+model Character {
+  id             String         @id @default(cuid())
+  name           String         @unique
+  traits         Json?
+  ownerId        String?
+  nftId          String?        @unique
+  className      String
+  characterClass CharacterClass @relation(fields: [className], references: [name])
+  nft            Nft?           @relation(fields: [nftId], references: [id])
+  owner          User?          @relation(fields: [ownerId], references: [id])
+
+  @@index([className], map: "character_token_className_fkey")
+  @@index([ownerId], map: "character_token_ownerId_fkey")
+  @@map("character_token")
+}
+
+////
+model CharacterTest {
+  id             String         @id @default(cuid())
+  name           String         @unique
+  traits         Json?
+  ownerId        String?
+  nftId          String?        @unique
+  className      String
+  maxEnergy      String
+  energy         String
+  maxHealth      String
+  health         String
+  ultimate       String
+  maxUltimate    String
+  gold           String
+  melee          String
+  maxMelee       String
+  mana           String
+  maxMana        String
+
+  @@index([className], map: "character_token_className_fkey")
+  @@index([ownerId], map: "character_token_ownerId_fkey")
+}
+
+model Nft {
+  id                 String       @id @default(cuid())
+  tokenId            String
+  contractAddress    String
+  tokenUri           String
+  tokenHolderAddress String
+  tokenHolderName    String?
+  name               String
+  tokenHolderUrl     String?
+  character          Character?
+  godLevelNft        GodLevelNft?
+  contract           NftContract  @relation(fields: [contractAddress], references: [address], onDelete: Cascade)
+
+  @@unique([contractAddress, tokenId])
+  @@map("nft")
+}
+
+model NftContract {
+  address          String  @id
+  name             String
+  symbol           String
+  totalSupply      Int
+  tokenType        String
+  contractDeployer String
+  imageUrl         String?
+  description      String?
+  externalUrl      String?
+  twitterUsername  String?
+  discordUrl       String?
+  bannerImageUrl   String?
+  chainId          String  @default("ethereum")
+  slug             String?
+  nfts             Nft[]
+
+  @@map("nft_contract")
+}
+
+model GodLevelNft {
+  characterClassName String         @unique
+  nftId              String         @unique
+  isPublished        Boolean        @default(false)
+  characterClass     CharacterClass @relation(fields: [characterClassName], references: [name], onDelete: Cascade)
+  nft                Nft            @relation(fields: [nftId], references: [id], onDelete: Cascade)
+
+  @@map("god_level_nft")
+}
+
+model Item {
+  id          String  @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  nftId       String? @unique
+}
+
+model ItemBehavior {
+  id String @id @default(cuid())
+}
+
+enum Platform {
+  WEB
+  ANDROID
+  IOS
+  STEAM
+  UNITY_EDITOR
 }
 
 enum TileType {
@@ -128,39 +286,11 @@ enum TileType {
   Portal
 }
 
-model Tile {
-  id         String   @id @default(cuid())
-  tileCode   String // previously the id, looks like "tile_A_1"
-  mapId      String
-  x          Int
-  y          Int
-  type       TileType @default(Default)
-  walls      Json?
-  legacyCode String? // for backwards compatibility
-
-  map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
-  fromTileAdjacencies TileAdjacency[] @relation("FromAdjacency")
-  toTileAdjacencies   TileAdjacency[] @relation("ToAdjacency")
-  tileAdjacencies     TileAdjacency[]
-  spawnZone           SpawnZone[]
-
-  @@unique([tileCode, mapId])
-  @@unique([x, y, mapId])
-}
-
 enum SpawnZoneType {
   Merchant
   Portal
   Monster
   Chest
-}
-
-model SpawnZone {
-  id     String        @id @default(cuid())
-  type   SpawnZoneType
-  seedId Int
-  tileId String        @unique
-  tile   Tile          @relation(fields: [tileId], references: [id], onDelete: Cascade)
 }
 
 enum AdjacencyType {
@@ -169,32 +299,4 @@ enum AdjacencyType {
   UnderBridge
   Wall
   Void
-}
-
-model TileAdjacency {
-  id         String        @id @default(cuid()) // can there be multiple adjacencies between 2 tiles? 
-  // Maybe we can make id a compund between to and from instead
-  fromId     String // FROM IS ALWAYS THE OWNER OF THE ADJACENCY
-  toId       String
-  type       AdjacencyType
-  energyCost Int?
-
-  from   Tile    @relation("FromAdjacency", fields: [fromId], references: [id], onDelete: Cascade)
-  to     Tile    @relation("ToAdjacency", fields: [toId], references: [id], onDelete: Cascade)
-  tile   Tile?   @relation(fields: [tileId], references: [id], onDelete: Cascade)
-  tileId String?
-
-  @@unique([fromId, toId])
-}
-
-// if we normalize tiles and adjacency list, we can track in-game actions to 
-// those tiles, query them, do more stuff with them
-
-model ConnectedBrowser {
-  ipAddress      String    @id
-  clientId       String
-  connectedAt    DateTime  @default(now())
-  disconnectedAt DateTime?
-
-  client Client @relation(fields: [clientId], references: [id])
 }

@@ -1,4 +1,4 @@
-import { Schema, type } from "@colyseus/schema";
+import { Schema, type, ArraySchema } from "@colyseus/schema";
 
 const DEFAULT_HEALTH = 23;
 const DEFAULT_ENERGY = 23;
@@ -11,6 +11,10 @@ export class RangedValueState extends Schema {
     add(amount: number) {
         this.current += amount;
         this.current = Math.max(this.min, Math.min(this.current, this.max));
+    }
+
+    setToMax() {
+        this.current = this.max;   
     }
 
     constructor(current: number, max: number, min: number = 0) {
@@ -30,11 +34,22 @@ export class CharacterStatsState extends Schema {
         DEFAULT_ENERGY,
         DEFAULT_ENERGY
     );
+    @type("int32") coin: number = 0;
+    @type("int32") bags: number = 0;
 }
 
 export class CoordinatesState extends Schema {
     @type("number") x: number = 0;
     @type("number") y: number = 0;
+}
+
+export class Item extends Schema {
+    @type("int32") id: number = 0;
+    @type("string") name: string = "";
+    @type("string") description: string = "";
+    @type("int16") count: number = 0;
+    @type("int16") level: number = 1;
+    @type("int16") cost: number = 1;
 }
 
 export class CharacterState extends Schema {
@@ -50,4 +65,10 @@ export class CharacterState extends Schema {
         new CoordinatesState();
     @type(CharacterStatsState) stats: CharacterStatsState =
         new CharacterStatsState();
+    @type([Item]) items : ArraySchema<Item> = new ArraySchema<Item>();
+    @type([Item]) powers : ArraySchema<Item> = new ArraySchema<Item>();
+    @type([Item]) stacks : ArraySchema<Item> = new ArraySchema<Item>();
+    @type([Item]) equipSlots: ArraySchema<Item> = new ArraySchema<Item>();
 }
+
+

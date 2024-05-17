@@ -1,0 +1,1198 @@
+export const powermoves = [
+    {
+        // SWORD1
+        id: 1,
+        name: "Sword Strike",
+        powerImageId: 0,
+        powerIds: [
+            0, 12, 24
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // SWORD2
+        id: 2,
+        name: "Flame Slice",
+        powerImageId: 12,
+        powerIds: [
+            12, 24
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // SWORD2
+        id: 3,
+        name: "Vengeance",
+        powerImageId: 12,
+        powerIds: [
+            12, 24
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // SWORD3
+        id: 4,
+        name: "Elemental Strike",
+        powerImageId: 24,
+        powerIds: [
+            24
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 10,
+        coin: 0,
+    },
+    {
+        // SWORD3
+        id: 5,
+        name: "Holy Sword",
+        powerImageId: 24,
+        powerIds: [
+            24
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 6,
+        coin: 0,
+    },
+    {
+        // Ax
+        id: 6,
+        name: "Chop",
+        powerImageId: 1,
+        powerIds: [
+            1, 13, 25
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // Ax2
+        id: 7,
+        name: "Vampire Ax",
+        powerImageId: 13,
+        powerIds: [
+            13, 25
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 8,
+        coin: 0,
+    },
+    {
+        // Ax2
+        id: 8,
+        name: "Rock Steady",
+        powerImageId: 13,
+        powerIds: [
+            13, 25
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Ax3
+        id: 9,
+        name: "Tornado Cleave",
+        powerImageId: 25,
+        powerIds: [
+            25
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 3
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 10,
+        coin: 0,
+    },
+    {
+        // Ax3
+        id: 10,
+        name: "Electrify",
+        powerImageId: 25,
+        powerIds: [
+            25
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Spear1
+        id: 11,
+        name: "Lance",
+        powerImageId: 2,
+        powerIds: [
+            2, 14, 26
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Spear2
+        id: 12,
+        name: "Ice Lance",
+        powerImageId: 14,
+        powerIds: [
+            14, 26
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 4,
+        coin: 0,
+    },
+    {
+        // Spear2
+        id: 13,
+        name: "Harpoon",
+        powerImageId: 14,
+        powerIds: [
+            14, 26
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 2
+            },
+        ],
+        range: 3,
+        light: 8,
+        coin: 0,
+    },
+    {
+        // Spear3
+        id: 14,
+        name: "Pole Vault",
+        powerImageId: 26,
+        powerIds: [
+            26
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 2
+            },
+        ],
+        range: 1,
+        light: 8,
+        coin: 0,
+    },
+    {
+        // Spear3
+        id: 15,
+        name: "Void Spear",
+        powerImageId: 26,
+        powerIds: [
+            26
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 2
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 7,
+        coin: 0,
+    },
+    {
+        // Shield1
+        id: 16,
+        name: "Shield Bash",
+        powerImageId: 3,
+        powerIds: [
+            3, 15, 27
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 4,
+        coin: 0,
+    },
+    {
+        // Shield2
+        id: 17,
+        name: "Magic Shield",
+        powerImageId: 15,
+        powerIds: [
+            15, 27
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 7,
+        coin: 0,
+    },
+    {
+        // Shield2
+        id: 18,
+        name: "Trap Shield",
+        powerImageId: 15,
+        powerIds: [
+            15, 27
+        ],
+        costList: [
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // Shield3
+        id: 19,
+        name: "Shield Charge",
+        powerImageId: 27,
+        powerIds: [
+            27
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 2
+            },
+        ],
+        range: 1,
+        light: 7,
+        coin: 0,
+    },
+    {
+        // Shield3
+        id: 20,
+        name: "Shield Slam",
+        powerImageId: 27,
+        powerIds: [
+            27
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 2
+            },
+        ],
+        range: 1,
+        light: 10,
+        coin: 0,
+    },
+    {
+        // Bow1
+        id: 21,
+        name: "Arrow Strike",
+        powerImageId: 4,
+        powerIds: [
+            4, 16, 28
+        ],
+        costList: [
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 5,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Bow2
+        id: 22,
+        name: "Craft Arrow",
+        powerImageId: 16,
+        powerIds: [
+            16, 28
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 1,
+    },
+    {
+        // Bow2
+        id: 23,
+        name: "Hunter Sense",
+        powerImageId: 16,
+        powerIds: [
+            16, 28
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Bow3
+        id: 24,
+        name: "Sniper",
+        powerImageId: 28,
+        powerIds: [
+            28
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 8,
+        light: 8,
+        coin: 0,
+    },
+    {
+        // Bow3
+        id: 25,
+        name: "Alchemy",
+        powerImageId: 28,
+        powerIds: [
+            28
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // CrossBow1
+        id: 26,
+        name: "Crossbow Bolt",
+        powerImageId: 5,
+        powerIds: [
+            5, 17, 29
+        ],
+        costList: [
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 2,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // CrossBow2
+        id: 27,
+        name: "Hook Shot",
+        powerImageId: 17,
+        powerIds: [
+            17, 29
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 3,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // CrossBow2
+        id: 28,
+        name: "Stake",
+        powerImageId: 17,
+        powerIds: [
+            17, 29
+        ],
+        costList: [
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 4,
+        coin: 0,
+    },    
+    {
+        // CrossBow3
+        id: 29,
+        name: "Bomb Arrow",
+        powerImageId: 29,
+        powerIds: [
+            29
+        ],
+        costList: [
+            {
+                id: 4,
+                count: 1
+            },
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // CrossBow3
+        id: 30,
+        name: "Infuse Arrow",
+        powerImageId: 29,
+        powerIds: [
+            29
+        ],
+        costList: [
+            {
+                id: 4,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // Cannon1
+        id: 31,
+        name: "Cannoball",
+        powerImageId: 6,
+        powerIds: [
+            6, 18, 30
+        ],
+        costList: [
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 4,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Cannon2
+        id: 32,
+        name: "Craft Bomb",
+        powerImageId: 18,
+        powerIds: [
+            18, 30
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 2,
+    },
+    {
+        // Cannon2
+        id: 33,
+        name: "Infuse Bomb",
+        powerImageId: 18,
+        powerIds: [
+            18, 30
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // Cannon3
+        id: 34,
+        name: "Artillery Strike",
+        powerImageId: 30,
+        powerIds: [
+            30
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 3
+            },
+            {
+                id: 5,
+                count: 3
+            },
+        ],
+        range: 8,
+        light: 15,
+        coin: 0,
+    },
+    {
+        // Cannon3
+        id: 35,
+        name: "Alchemy",
+        powerImageId: 30,
+        powerIds: [
+            30
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 4,
+        coin: 0,
+    },
+    {
+        // Armor1
+        id: 36,
+        name: "Defend",
+        powerImageId: 7,
+        powerIds: [
+            7, 19, 31
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Armor2
+        id: 37,
+        name: "Electrify",
+        powerImageId: 19,
+        powerIds: [
+            19, 31
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Armor2
+        id: 38,
+        name: "Magic Armor",
+        powerImageId: 19,
+        powerIds: [
+            19, 31
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Armor3
+        id: 39,
+        name: "Heal",
+        powerImageId: 31,
+        powerIds: [
+            31
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 12,
+        coin: 0,
+    },
+    {
+        // Armor3
+        id: 40,
+        name: "Haste",
+        powerImageId: 31,
+        powerIds: [
+            31
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 1
+            },
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 0,
+        coin: 0,
+    },
+    {
+        // Fire1
+        id: 41,
+        name: "Fireball",
+        powerImageId: 8,
+        powerIds: [
+            8, 20, 32
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 4,
+        light: 9,
+        coin: 0,
+    },
+    {
+        // Fire2
+        id: 42,
+        name: "Burn",
+        powerImageId: 20,
+        powerIds: [
+            20, 32
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 3,
+        coin: 0,
+    },
+    {
+        // Fire2
+        id: 43,
+        name: "Ignite",
+        powerImageId: 20,
+        powerIds: [
+            20, 32
+        ],
+        costList: [
+            {
+                id: 5,
+                count: 1
+            },
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Fire3
+        id: 44,
+        name: "Inferno",
+        powerImageId: 32,
+        powerIds: [
+            32
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+            {
+                id: 4,
+                count: 5
+            },
+        ],
+        range: 0,
+        light: 15,
+        coin: 0,
+    },
+    {
+        // Fire3
+        id: 45,
+        name: "Heart of Fire",
+        powerImageId: 32,
+        powerIds: [
+            32
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+            {
+                id: 4,
+                count: 4
+            },
+        ],
+        range: 0,
+        light: 0,
+        coin: 0,
+    },
+    {
+        // Ice1
+        id: 46,
+        name: "Icicle",
+        powerImageId: 9,
+        powerIds: [
+            9, 21, 33
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+        ],
+        range: 0,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Ice2
+        id: 47,
+        name: "Freeze",
+        powerImageId: 21,
+        powerIds: [
+            21, 33
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Ice2
+        id: 48,
+        name: "Frost",
+        powerImageId: 21,
+        powerIds: [
+            21, 33
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 4,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Ice3
+        id: 49,
+        name: "Blizzard",
+        powerImageId: 33,
+        powerIds: [
+            33
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+            {
+                id: 4,
+                count: 5
+            },
+        ],
+        range: 0,
+        light: 15,
+        coin: 0,
+    },
+    {
+        // Ice3
+        id: 50,
+        name: "Heart of Ice",
+        powerImageId: 33,
+        powerIds: [
+            33
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 4,
+                count: 3
+            },
+        ],
+        range: 0,
+        light: 0,
+        coin: 0,
+    },
+    {
+        // Holy1
+        id: 51,
+        name: "Heal",
+        powerImageId: 10,
+        powerIds: [
+            10, 22, 34
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 12,
+        coin: 0,
+    },
+    {
+        // Holy2
+        id: 52,
+        name: "Divine Blessing",
+        powerImageId: 22,
+        powerIds: [
+            22, 34
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+            {
+                id: 2,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 18,
+        coin: 0,
+    },
+    {
+        // Holy2
+        id: 53,
+        name: "Sacred Halo",
+        powerImageId: 22,
+        powerIds: [
+            22, 34
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+        ],
+        range: 0,
+        light: 8,
+        coin: 0,
+    },
+    {
+        // Holy3
+        id: 54,
+        name: "Guardian Angel",
+        powerImageId: 34,
+        powerIds: [
+            34
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 3
+            },
+            {
+                id: 13,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 24,
+        coin: 0,
+    },
+    {
+        // Holy3
+        id: 55,
+        name: "Holy Light",
+        powerImageId: 34,
+        powerIds: [
+            34
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 10,
+        coin: 0,
+    },
+    {
+        // Void1
+        id: 56,
+        name: "Vampire Bite",
+        powerImageId: 11,
+        powerIds: [
+            11, 23, 35
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 8,
+                count: 1
+            },
+        ],
+        range: 1,
+        light: 8,
+        coin: 0,
+    },
+    {
+        // Void2
+        id: 57,
+        name: "Drain",
+        powerImageId: 23,
+        powerIds: [
+            23, 35
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 2
+            },
+        ],
+        range: 3,
+        light: 10,
+        coin: 0,
+    },
+    {
+        // Void2
+        id: 58,
+        name: "Poison",
+        powerImageId: 23,
+        powerIds: [
+            23, 35
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 1
+            },
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 0,
+        light: 10,
+        coin: 1,
+    },
+    {
+        // Void3
+        id: 59,
+        name: "Void Ray",
+        powerImageId: 35,
+        powerIds: [
+            35
+        ],
+        costList: [
+            {
+                id: 9,
+                count: 3
+            },
+            {
+                id: 5,
+                count: 1
+            },
+        ],
+        range: 3,
+        light: 13,
+        coin: 2,
+    },
+    {
+        // Void3
+        id: 60,
+        name: "Steal",
+        powerImageId: 35,
+        powerIds: [
+            35
+        ],
+        costList: [
+            {
+                id: 8,
+                count: 2
+            },
+        ],
+        range: 1,
+        light: 7,
+        coin: 0,
+    },
+]

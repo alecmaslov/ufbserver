@@ -1,5 +1,5 @@
 import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
-import { AdjacencyListItemState, MapState, SpawnEntity } from "#game/schema/MapState";
+import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
 import { Coordinates, PathStep } from "#shared-types";
 import { shuffleArray } from "#utils/collections";
@@ -46,6 +46,39 @@ export const coordToGameId = (
     return `tile_${TILE_LETTERS[coordinates.x]}_${coordinates.y + 1}`;
 };
 
+export const coordToTileId = (
+    tiles: MapSchema<TileState>, 
+    coordinates: CoordinatesState | Coordinates
+): string => {
+    let id = ""; 
+    tiles.forEach(tile => {
+        if(tile.coordinates.x == coordinates.x && tile.coordinates.y == coordinates.y) {
+            id = tile.id;
+        }
+    })
+    return id;
+}
+
+export const getTileIdByDirection = (
+    tiles: MapSchema<TileState>,
+    coordinates: CoordinatesState | Coordinates,
+    direction: string
+): string => {
+    const coord = new CoordinatesState();
+    coord.x = coordinates.x;
+    coord.y = coordinates.y;
+    if(direction == "left") {
+        coord.x--;
+    } else if(direction == "right") {
+        coord.x++;
+    } else if(direction == "top") {
+        coord.y--;
+    } else if(direction == "down") {
+        coord.y++;
+    }
+    return coordToTileId(tiles, coord);
+}
+
 export const gameIdToCoord = (tileId: string): CoordinatesState => {
     const parts = tileId.split("_");
     const x = TILE_LETTERS.indexOf(parts[1]);
@@ -56,6 +89,64 @@ export const gameIdToCoord = (tileId: string): CoordinatesState => {
 };
 
 export const getPathCost = (
+    p: Node<any>[],
+    adjacencyList: MapSchema<AdjacencyListItemState, string>
+) => {
+    let cost = 0;
+    for (let i = 1; i < p.length; i++) {
+        const from = p[i - 1].id as string;
+        const to = p[i].id as string;
+        const edgeCollection = adjacencyList.get(from);
+        if (!edgeCollection) {
+            throw new Error(`no adjacency list for ${from}`);
+        }
+        let edge: { energyCost: number } | undefined;
+        for (const e of edgeCollection.edges) {
+            if (e.to === to) {
+                edge = e;
+                break;
+            }
+        }
+        // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+        if (!edge) {
+            throw new Error(`no edge from ${from} to ${to}`);
+        }
+        cost += edge.energyCost;
+    }
+    return cost;
+};
+
+////
+export const getTileIdBridge = (
+    p: Node<any>[],
+    adjacencyList: MapSchema<AdjacencyListItemState, string>
+) => {
+    let cost = 0;
+    for (let i = 1; i < p.length; i++) {
+        const from = p[i - 1].id as string;
+        const to = p[i].id as string;
+        const edgeCollection = adjacencyList.get(from);
+        if (!edgeCollection) {
+            throw new Error(`no adjacency list for ${from}`);
+        }
+        let edge: { energyCost: number } | undefined;
+        for (const e of edgeCollection.edges) {
+            if (e.to === to) {
+                edge = e;
+                break;
+            }
+        }
+        // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+        if (!edge) {
+            throw new Error(`no edge from ${from} to ${to}`);
+        }
+        cost += edge.energyCost;
+    }
+    return cost;
+};
+
+////
+export const getTileIdStar = (
     p: Node<any>[],
     adjacencyList: MapSchema<AdjacencyListItemState, string>
 ) => {
@@ -170,8 +261,10 @@ export function initializeSpawnEntities(
     }
 
     const remainingSpawnZones = spawnZones.filter(
-        (zone) => !takenIds.has(zone.id)
+        (zone) => !takenIds.has(zone.id) && zone.type === "Chest"
     );
+
+    console.log(`Number of remaining spawn zones ${remainingSpawnZones.length}`);
 
     const shuffledZones = shuffleArray(remainingSpawnZones) as SpawnZone[];
 
@@ -230,7 +323,7 @@ export function spawnCharacter(
     characterId?: string,
     playerId?: string,
     displayName?: string
-) {
+) : CharacterState {
     const character = new CharacterState();
     const id = playerId || createId();
     character.id = id;
@@ -257,4 +350,6 @@ export function spawnCharacter(
     character.coordinates = coordinates;
 
     characters.set(id, character);
+
+    return character;
 }

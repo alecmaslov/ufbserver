@@ -1,0 +1,115 @@
+[
+    {
+        "id": "sword-1",
+        "name": "Sword Level 1",
+        "description": "A versatile melee weapon.",
+        "category": "Weapon",
+        "behaviors": [
+            {
+                "name": "Sword Strike",
+                "behaviorType": "Use",
+                "requireEquipped": true,
+                "stateChanges": [
+                    {
+                        "action": "Damage",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll",
+                        "range": { "type": "Linear", "distance": 1 }
+                    }
+                ],
+                "costs": [
+                    { "resource": "Melee", "amount": -1 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Damage",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll",
+                        "range": { "type": "Linear", "distance": 1 }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "ax",
+        "name": "Ax",
+        "description": "A heavy weapon with devastating strikes.",
+        "category": "Melee",
+        "holdBehaviors": [],
+        "equipBehaviors": [
+            {
+                "name": "Equip",
+                "costs": [{ "resource": "Energy", "amount": -1 }]
+            },
+            {
+                "name": "Unequip",
+                "costs": [{ "resource": "Energy", "amount": -1 }]
+            }
+        ],
+        "useBehaviors": [
+            {
+                "name": "Ax Throw",
+                "costs": [
+                    {
+                        "target": "Self",
+                        "resource": "Mana",
+                        "amount": -1
+                    },
+                    {
+                        "target": "Self",
+                        "resource": "Energy",
+                        "amount": -1
+                    },
+                    {
+                        "target": "Enemy",
+                        "resource": "Health",
+                        "amount": -3
+                    }
+                ],
+                "effects": [
+                    {
+                        "action": "Damage",
+                        "target": "Enemy",
+                        "amount": 3,
+                        "range": { "type": "Linear", "distance": 1 }
+                    }
+                ]
+            },
+            {
+                "name": "Vampire Ax",
+                "costs": [
+                    { "resource": "Health", "amount": -3 },
+                    { "resource": "Energy", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Damage",
+                        "target": "Enemy",
+                        "amount": 3,
+                        "range": { "type": "Linear", "distance": 1 }
+                    },
+                    { "action": "Heal", "target": "Self", "amount": 1 }
+                ]
+            },
+            {
+                "name": "Tornado Slice",
+                "costs": [
+                    { "resource": "Health", "amount": -8 },
+                    { "resource": "Energy", "amount": -2 }
+                ],
+                "effects": [
+                    {
+                        "action": "Damage",
+                        "target": "Area",
+                        "amount": 5,
+                        "range": { "type": "Radius", "distance": 1 }
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -9,6 +9,8 @@ import assets from "#routes/assets";
 import auth from "#routes/auth";
 import dev from "#routes/dev";
 import maps from "#routes/maps";
+import character from "#routes/character";
+import nft from "#routes/nft";
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import cors from "cors";
@@ -30,6 +32,8 @@ if (VERBOSE_INCOMING_REQUESTS) {
 app.use("/auth", auth);
 app.use("/assets", assets);
 app.use("/maps", maps);
+app.use("/character", character);
+app.use("/nft", nft);
 
 if (DEV_MODE) {
     console.log("🚧🚧 Warning: DEV_MODE is enabled! 🚧🚧");

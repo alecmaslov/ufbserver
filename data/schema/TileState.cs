@@ -14,13 +14,16 @@ namespace UFB.StateSchema {
 		public string id = default(string);
 
 		[Type(1, "string")]
+		public string tileCode = default(string);
+
+		[Type(2, "string")]
 		public string type = default(string);
 
-		[Type(2, "number")]
-		public float x = default(float);
+		[Type(3, "array", typeof(ArraySchema<byte>), "uint8")]
+		public ArraySchema<byte> walls = new ArraySchema<byte>();
 
-		[Type(3, "number")]
-		public float y = default(float);
+		[Type(4, "ref", typeof(CoordinatesState))]
+		public CoordinatesState coordinates = new CoordinatesState();
 
 		/*
 		 * Support for individual property change callbacks below...
@@ -38,6 +41,18 @@ namespace UFB.StateSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<string> __tileCodeChange;
+		public Action OnTileCodeChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.tileCode));
+			__tileCodeChange += __handler;
+			if (__immediate && this.tileCode != default(string)) { __handler(this.tileCode, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(tileCode));
+				__tileCodeChange -= __handler;
+			};
+		}
+
 		protected event PropertyChangeHandler<string> __typeChange;
 		public Action OnTypeChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
@@ -50,36 +65,37 @@ namespace UFB.StateSchema {
 			};
 		}
 
-		protected event PropertyChangeHandler<float> __xChange;
-		public Action OnXChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<ArraySchema<byte>> __wallsChange;
+		public Action OnWallsChange(PropertyChangeHandler<ArraySchema<byte>> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
-			__callbacks.AddPropertyCallback(nameof(this.x));
-			__xChange += __handler;
-			if (__immediate && this.x != default(float)) { __handler(this.x, default(float)); }
+			__callbacks.AddPropertyCallback(nameof(this.walls));
+			__wallsChange += __handler;
+			if (__immediate && this.walls != null) { __handler(this.walls, null); }
 			return () => {
-				__callbacks.RemovePropertyCallback(nameof(x));
-				__xChange -= __handler;
+				__callbacks.RemovePropertyCallback(nameof(walls));
+				__wallsChange -= __handler;
 			};
 		}
 
-		protected event PropertyChangeHandler<float> __yChange;
-		public Action OnYChange(PropertyChangeHandler<float> __handler, bool __immediate = true) {
+		protected event PropertyChangeHandler<CoordinatesState> __coordinatesChange;
+		public Action OnCoordinatesChange(PropertyChangeHandler<CoordinatesState> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
-			__callbacks.AddPropertyCallback(nameof(this.y));
-			__yChange += __handler;
-			if (__immediate && this.y != default(float)) { __handler(this.y, default(float)); }
+			__callbacks.AddPropertyCallback(nameof(this.coordinates));
+			__coordinatesChange += __handler;
+			if (__immediate && this.coordinates != null) { __handler(this.coordinates, null); }
 			return () => {
-				__callbacks.RemovePropertyCallback(nameof(y));
-				__yChange -= __handler;
+				__callbacks.RemovePropertyCallback(nameof(coordinates));
+				__coordinatesChange -= __handler;
 			};
 		}
 
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
 				case nameof(id): __idChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(tileCode): __tileCodeChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(type): __typeChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
-				case nameof(x): __xChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
-				case nameof(y): __yChange?.Invoke((float) change.Value, (float) change.PreviousValue); break;
+				case nameof(walls): __wallsChange?.Invoke((ArraySchema<byte>) change.Value, (ArraySchema<byte>) change.PreviousValue); break;
+				case nameof(coordinates): __coordinatesChange?.Invoke((CoordinatesState) change.Value, (CoordinatesState) change.PreviousValue); break;
 				default: break;
 			}
 		}

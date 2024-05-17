@@ -1,7 +1,13 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords } from "#game/map-helpers";
-import { CharacterMovedMessage } from "#game/message-types";
+import { coordToGameId, fillPathWithCoords } from "#game/helpers/map-helpers";
+import { getClientCharacter } from "./helpers/room-helpers";
+import { CharacterMovedMessage, GetResourceDataMessage, PowerMoveListMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
+import { MoveCommand } from "#game/commands/MoveCommand";
+import { ResourceCommand } from "#game/commands/ResourceCommands";
+import { Item } from "#game/schema/CharacterState";
+import { powermoves } from "#assets/resources";
+import { PowerMove } from "#shared-types";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -13,107 +19,51 @@ export interface MessageHandlers {
     [key: string]: MessageHandler<any>;
 }
 
-const getClientCharacter = (room: UfbRoom, client: Client) => {
-    const playerId = room.sessionIdToPlayerId.get(client.sessionId);
-    return room.state.characters.get(playerId);
-};
-
 const getTileCoord = (room: UfbRoom, tileId: string) => {};
 
-// @kyle - we should put some sort of safety net, so that when it can't pathfind,
-// it doesn't crash the server and close the socket
 export const messageHandlers: MessageHandlers = {
     move: (room, client, message) => {
-        const character = getClientCharacter(room, client);
-
-        if (!character) {
-            room.notify(client, "You are not in room game!", "error");
-        }
-
-        if (character.id !== room.state.currentCharacterId) {
-            room.notify(client, "It's not your turn!", "error");
-            return;
-        }
-
-        const currentTile = room.state.map.tiles.get(character.currentTileId);
-        const destinationTile = room.state.map.tiles.get(message.tileId);
-        
-        console.log(
-            `Character moving from ${coordToGameId(
-                currentTile.coordinates
-            )} -> ${coordToGameId(destinationTile.coordinates)}`
-        );
-
-        const { path, cost } = room.pathfinder.find(
-            character.currentTileId,
-            message.tileId
-        );
-
-        // player must have enough energy to move along the path
-        if (character.stats.energy.current < cost) {
-            room.notify(
-                client,
-                "You don't have enough energy to move there!",
-                "error"
-            );
-            return;
-        }
-
-        
-        character.coordinates.x = destinationTile.coordinates.x;
-        character.coordinates.y = destinationTile.coordinates.y;
-        character.currentTileId = message.tileId;
-        // character.stats.energy.current -= cost;
-        character.stats.energy.add(-cost);
-
-        // add the readable game coordinates to the path
-        fillPathWithCoords(path, room.state.map);
-
-        const characterMovedMessage: CharacterMovedMessage = {
-            characterId: character.id,
-            path,
-        };
-
-        console.log(
-            `Sending playerMoved message ${JSON.stringify(
-                characterMovedMessage,
-                null,
-                2
-            )}`
-        );
-        room.broadcast("characterMoved", characterMovedMessage);
-
-        if (character.stats.energy.current == 0) {
-            room.notify(client, "You are too tired to continue.");
-            room.incrementTurn();
-        }
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: false,
+        });
     },
 
     // we can add some sort of key to this, so only admins can do this
     forceMove: (room, client, message) => {
-        const character = getClientCharacter(room, client);
-        if (!character) {
-            room.notify(client, "You are not in room game!", "error");
-        }
-        const { path, cost } = room.pathfinder.find(
-            character.currentTileId,
-            message.tileId
-        );
-        character.coordinates.x = message.destination.x;
-        character.coordinates.y = message.destination.y;
-        character.currentTileId = message.tileId;
-
-        const characterMovedMessage: CharacterMovedMessage = {
-            characterId: character.id,
-            path,
-        };
-
-        room.broadcast("characterMoved", characterMovedMessage);
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: true,
+        });
     },
 
-    useItem: (room, client, message) => {},
+    cancelMove: (room, client, message) => {
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client, 
+            message, 
+            force: true,
+        });
+    },
 
-    useAbility: (room, client, message) => {},
+    useItem: (room, client, message) => {
+        ////
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: true,
+        });
+    },
+
+    useAbility: (room, client, message) => {
+        ////
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: false,
+        });
+    },
 
     findPath: (room, client, message) => {
         const fromTileId = coordToGameId(message.from);
@@ -142,11 +92,194 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
         room.incrementTurn();
+
+        ////
+        const fromTileId = coordToGameId(message.from);
+        const toTileId = coordToGameId(message.to);
+        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+        client.send("foundPath", {
+            from: message.from,
+            to: message.to,
+            path,
+            cost,
+        });
     },
 
     changeMap: async (room, client, message) => {
         await room.initMap(message.mapName);
     },
+
+    spawnMove: (room, client, message) => {
+        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
+
+        let coinCount = 2 + Math.round(4 * ( Math.random()));
+
+        let itemId = 0 + Math.round(5 * (Math.random()));
+        let powerId = 0 + Math.round(11 * (Math.random()));
+
+        const spawnMessage : SpawnInitMessage = {
+            characterId: message.playerId,
+            spawnId: "default",
+            item: itemId,
+            power: powerId,
+            coin: coinCount,
+            tileId: message.tileId
+        }
+
+        client.send("spawnInit", spawnMessage);
+
+        // const character = getClientCharacter(room, client);
+        // character.coordinates.x = message.destination.x;
+        // character.coordinates.y = message.destination.y;
+        // character.currentTileId = message.tileId;
+
+    },
+
+    initSpawnMove: (room, client, message) => {
+        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
+
+        let coinCount = 2 + Math.round(4 * (Math.random()));
+
+        let itemId = 0 + Math.round(5 * (Math.random()));
+        let powerId = 0 + Math.round(11 * (Math.random()));
+
+        const spawnMessage : SpawnInitMessage = {
+            characterId: message.playerId,
+            spawnId: "default",
+            item: itemId,
+            power: powerId,
+            coin: coinCount,
+            tileId: message.tileId
+        }
+
+        console.log(`itemid: ${itemId}, powerId: ${powerId}, coin: ${coinCount}`);
+
+        client.send("spawnInit", spawnMessage);
+
+        const character = getClientCharacter(room, client);
+        character.coordinates.x = message.destination.x;
+        character.coordinates.y = message.destination.y;
+        character.currentTileId = message.tileId;
+
+    },
+
+    getSpawn: (room, client, message) => {
+
+        // room.dispatcher.dispatch(new ResourceCommand(), {
+        //     client,
+        //     message,
+        //     force: false,
+        // });
+        console.log(`Get items : `);
+        
+        const character = getClientCharacter(room, client);
+
+        const item : Item = character.items.find(item => item.id == message.itemId);
+        if(item == null) {
+            const newItem = new Item();
+            newItem.id = message.itemId;
+            newItem.count = 1;
+            newItem.name = `item${message.itemId}`;
+            newItem.description = "description";
+            newItem.level = 1;
+
+            character.items.push(newItem);
+        } else {
+            item.count++;
+        }
+
+        const power : Item = character.powers.find(p => p.id == message.powerId);
+        if(power == null) {
+            const newPower = new Item();
+            newPower.id = message.powerId;
+            newPower.count = 1;
+            newPower.name = `power${message.powerId}`;
+            newPower.description = "description";
+            newPower.level = 1;
+            character.powers.push(newPower);
+        } else {
+            power.count++;
+        }
+
+        character.stats.energy.add(3);
+        character.stats.health.add(3);
+        character.stats.coin += message.coinCount;
+        character.stats.bags++;
+        console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
+
+        client.send("sss", {});
+
+    },
+
+    getResourceList: (room, client, message) => {
+        const character = getClientCharacter(room, client);
+
+        const getResourceDataMessage: GetResourceDataMessage = {
+            characterState: character
+        };
+
+        client.send("sendResourceList", getResourceDataMessage)
+    },
+
+    getEquipList: (room, client, message) => {
+        const fromTileId = coordToGameId(message.from);
+        const toTileId = coordToGameId(message.to);
+
+        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+
+        if (!path || path.length === 0) {
+            room.notify(client, "No path found", "error");
+            return;
+        }
+
+        client.send("foundPath", {
+            from: message.from,
+            to: message.to,
+            path,
+            cost,
+        });
+    },
+
+    getPowerMoveList: (room, client, message) => {
+        const powerId = message.powerId;
+        let clientMessage: PowerMoveListMessage = {
+            powermoves: []
+        }
+        powermoves.forEach(move => {
+            if(move.powerIds.indexOf(powerId) > -1) {
+                const powermove : PowerMove = {
+                    id : move.id,
+                    name : move.name,
+                    powerImageId : move.powerImageId,
+                    light : move.light,
+                    range : move.range,
+                    coin : move.coin,
+                    powerIds: [],
+                    costList: []
+                };
+
+                move.powerIds.forEach(pid => {
+                    powermove.powerIds.push(pid);
+                })
+                move.costList.forEach(cost => {
+                    const item = new Item();
+                    item.id = cost.id;
+                    item.count = cost.count;
+                    powermove.costList.push(
+                        item
+                    )
+                })
+                console.log(move.powerIds, move.costList)
+                clientMessage.powermoves.push(powermove);
+            }
+        })
+        console.log(
+            clientMessage.powermoves[0].id, 
+            clientMessage.powermoves[0].name,
+            clientMessage.powermoves[0].powerIds
+        );
+        client.send("ReceivePowerMoveList", clientMessage);
+    }
 };
 
 export function registerMessageHandlers(room: UfbRoom) {
