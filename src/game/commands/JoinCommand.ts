@@ -1,29 +1,48 @@
 import { Command } from "@colyseus/command";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
 import { UfbRoom } from "#game/UfbRoom";
-import { UfbRoomOptions } from "#game/types/room-types";
-// import { spawnCharacter } from "#game/map-helpers";
-import { createId } from "@paralleldrive/cuid2";
-import { isNullOrEmpty } from "#util";
 import { Client } from "@colyseus/core";
+import { getClientCharacter } from "#game/helpers/room-helpers";
+import { SpawnInitMessage } from "#game/message-types";
 
-type Payload = { client: Client; sessionId: string; options: UfbRoomOptions };
+type Payload = { client: Client; message: any;};
 
 export class JoinCommand extends Command<UfbRoom, Payload> {
-    validate({ sessionId, options }: Payload) {
+    validate({ client, message }: Payload) {
         // return !isNullOrEmpty(options.joinOptions.playerId);
         return true;
     }
 
-    execute({ client, sessionId, options }: Payload) {
+    execute({ client, message}: Payload) {
 
-        let playerId = options.joinOptions.playerId ?? "";
-        if (isNullOrEmpty(playerId)) {
-            playerId = createId();
-            client.send("generatedPlayerId", {
-                playerId,
-            });
+        const character = getClientCharacter(this.room, client);
+        if (!character) {
+            this.room.notify(client, "You are not in room game!", "error");
         }
+
+
+        let coinCount = 2 + Math.round(4 * (Math.random()));
+
+        let itemId = 0 + Math.round(5 * (Math.random()));
+        let powerId = 0 + Math.round(11 * (Math.random()));
+
+        const spawnMessage : SpawnInitMessage = {
+            characterId: message.playerId,
+            spawnId: "default",
+            item: itemId,
+            power: powerId,
+            coin: coinCount,
+            tileId: message.tileId
+        }
+
+        console.log(`itemid: ${itemId}, powerId: ${powerId}, coin: ${coinCount}`);
+
+        client.send("spawnInit", spawnMessage);
+
+        character.coordinates.x = message.destination.x;
+        character.coordinates.y = message.destination.y;
+        character.currentTileId = message.tileId;
+
         // this.sessionIdToPlayerId.set(client.sessionId, playerId);
 
         
