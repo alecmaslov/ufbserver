@@ -4,7 +4,7 @@ import { getClientCharacter } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, PowerMoveListMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
-import { ResourceCommand } from "#game/commands/ResourceCommands";
+import { EquipCommand } from "./commands/EquipCommand";
 import { Item } from "#game/schema/CharacterState";
 import { powermoves, powers } from "#assets/resources";
 import { PowerMove } from "#shared-types";
@@ -62,6 +62,13 @@ export const messageHandlers: MessageHandlers = {
             client,
             message,
             force: false,
+        });
+    },
+
+    testPath: (room, client, message) => {
+        room.dispatcher.dispatch(new EquipCommand(), {
+            client,
+            message
         });
     },
 
