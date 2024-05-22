@@ -10,11 +10,12 @@ type OnEquipCommandPayload = {
 };
 export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
     validate({ client, message }: OnEquipCommandPayload) {
-        return !isNullOrEmpty(message.tileId);
+        return true;
     }
 
     execute({ client, message }: OnEquipCommandPayload) {
         const character = getClientCharacter(this.room, client);
+        character.stats.energy.add(-2);
 
         console.log("this is room id: haha. test mode.");
 
@@ -23,15 +24,14 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         }
         console.log("this is room id: haha. test mode.");
 
-        const currentTile = this.state.map.tiles.get(character.currentTileId);
-        const destinationTile = this.room.state.map.tiles.get(message.tileId);
-        character.stats.energy.add(-2);
+        // const currentTile = this.state.map.tiles.get(character.currentTileId);
+        // const destinationTile = this.room.state.map.tiles.get(message.tileId);
 
-        // this.room.broadcast("characterMoved", characterMovedMessage);
+        // // this.room.broadcast("characterMoved", characterMovedMessage);
 
-        if (character.stats.energy.current == 0) {
-            this.room.notify(client, "You are too tired to continue.");
-            this.room.incrementTurn();
-        }
+        // if (character.stats.energy.current == 0) {
+        //     this.room.notify(client, "You are too tired to continue.");
+        //     this.room.incrementTurn();
+        // }
     }
 }
