@@ -18,6 +18,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
 
     execute({ client, message, force }: OnMoveCommandPayload) {
         const character = getClientCharacter(this.room, client);
+        console.log("move message execute")
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
         }
