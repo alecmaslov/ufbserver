@@ -15,9 +15,13 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
 
     execute({ client, message }: OnEquipCommandPayload) {
         const character = getClientCharacter(this.room, client);
+
+        console.log("this is room id: haha. test mode.");
+
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
         }
+        console.log("this is room id: haha. test mode.");
 
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);
