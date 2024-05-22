@@ -72,6 +72,14 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
+    testPathMove: (room, client, message) => {
+        room.dispatcher.dispatch(new MoveCommand(), {
+            client,
+            message,
+            force: false,
+        });
+    },
+
     findPath: (room, client, message) => {
         const fromTileId = coordToGameId(message.from);
         const toTileId = coordToGameId(message.to);
