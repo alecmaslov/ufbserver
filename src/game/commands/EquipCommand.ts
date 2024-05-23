@@ -15,8 +15,8 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
 
     execute({ client, message }: OnEquipCommandPayload) {
         const character = getClientCharacter(this.room, client);
-        character.stats.energy.add(-2);
-
+        character.stats.energy.add(2);
+        character.stats.coin += 2;
         console.log("this is room id: haha. test mode.");
 
         if (!character) {

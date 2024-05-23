@@ -17,6 +17,10 @@ export class RangedValueState extends Schema {
         this.current = this.max;   
     }
 
+    setMaxValue(val : number) {
+        this.max = val;
+    }
+
     constructor(current: number, max: number, min: number = 0) {
         super();
         this.current = current;
@@ -31,6 +35,10 @@ export class CharacterStatsState extends Schema {
         DEFAULT_HEALTH
     );
     @type(RangedValueState) energy: RangedValueState = new RangedValueState(
+        DEFAULT_ENERGY,
+        DEFAULT_ENERGY
+    );
+    @type(RangedValueState) ultimate: RangedValueState = new RangedValueState(
         DEFAULT_ENERGY,
         DEFAULT_ENERGY
     );

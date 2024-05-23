@@ -239,12 +239,12 @@ export function initializeSpawnEntities(
         if (!zones.find((zone) => zone.type === "Monster")) {
             throw new Error(`expected 1 monster zone for seed id ${seedId}`);
         }
-
+        const isItemBag = Math.random() < 0.5? true: false;
         const chestZone = zones.find((zone) => zone.type === "Chest");
         const chestEntity = new SpawnEntity();
         chestEntity.id = chestZone.id;
         chestEntity.gameId = `chest_${i}`;
-        chestEntity.prefabAddress = `${entitiesRootAddress}chest`;
+        chestEntity.prefabAddress = isItemBag? `${entitiesRootAddress}ItemBag` : `${entitiesRootAddress}chest`;
         chestEntity.tileId = chestZone.tileId;
         chestEntity.type = "Chest";
         chestEntity.parameters = `{"seedId" : "${chestZone.seedId}"}`;

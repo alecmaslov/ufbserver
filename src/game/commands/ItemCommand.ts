@@ -54,6 +54,8 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         character.stats.energy.add(3);
         character.stats.health.add(3);
+        character.stats.energy.setMaxValue(character.stats.energy.max + 3);
+        character.stats.health.setMaxValue(character.stats.health.max + 3);
         character.stats.coin += message.coinCount;
         character.stats.bags++;
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
