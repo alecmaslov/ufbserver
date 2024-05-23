@@ -2,6 +2,7 @@ import { Schema, type, ArraySchema } from "@colyseus/schema";
 
 const DEFAULT_HEALTH = 23;
 const DEFAULT_ENERGY = 23;
+const DEFAULT_ULTIMATE = 23;
 
 export class RangedValueState extends Schema {
     @type("number") current: number = 0;
@@ -39,8 +40,8 @@ export class CharacterStatsState extends Schema {
         DEFAULT_ENERGY
     );
     @type(RangedValueState) ultimate: RangedValueState = new RangedValueState(
-        DEFAULT_ENERGY,
-        DEFAULT_ENERGY
+        0,
+        DEFAULT_ULTIMATE
     );
     @type("int32") coin: number = 0;
     @type("int32") bags: number = 0;
