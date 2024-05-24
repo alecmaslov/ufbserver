@@ -143,7 +143,7 @@ export const messageHandlers: MessageHandlers = {
 
         const spawnMessage : SpawnInitMessage = {
             characterId: message.playerId,
-            spawnId: "itemBag",
+            spawnId: message.isItemBag? "itemBag" : "default",
             item: itemId,
             power: powerId,
             coin: coinCount,

@@ -1,8 +1,8 @@
 import { Schema, type, ArraySchema } from "@colyseus/schema";
 
-const DEFAULT_HEALTH = 23;
-const DEFAULT_ENERGY = 23;
-const DEFAULT_ULTIMATE = 23;
+const DEFAULT_HEALTH = 40;
+const DEFAULT_ENERGY = 20;
+const DEFAULT_ULTIMATE = 100;
 
 export class RangedValueState extends Schema {
     @type("number") current: number = 0;
