@@ -201,6 +201,7 @@ export const messageHandlers: MessageHandlers = {
         
         const power : Item = character.powers.find(p => p.id == powerId);
         if(power == null || power.count == 0) {
+            console.log("count issue");
             return;
         }
         power.count--;
