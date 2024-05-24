@@ -127,16 +127,23 @@ export const messageHandlers: MessageHandlers = {
     },
 
     spawnMove: (room, client, message) => {
-        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
+        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}, itemBag: ${message.isItemBag}`);
 
         let coinCount = 2 + Math.round(4 * ( Math.random()));
 
         let itemId = 0 + Math.round(5 * (Math.random()));
         let powerId = 0 + Math.round(11 * (Math.random()));
 
+        if(message.isItemBag) {
+            coinCount = 2 + Math.round(4 * ( Math.random()));
+
+            itemId = 6 + Math.round(13 * (Math.random()));
+            powerId = 12 + Math.round(22 * (Math.random()));
+        }
+
         const spawnMessage : SpawnInitMessage = {
             characterId: message.playerId,
-            spawnId: "default",
+            spawnId: "itemBag",
             item: itemId,
             power: powerId,
             coin: coinCount,
