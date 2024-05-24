@@ -194,18 +194,19 @@ export const messageHandlers: MessageHandlers = {
     getPowerMoveList: (room, client, message) => {
         // WHEN PLAYRE CLICK EQUIP POWER
         const powerId = message.powerId;
+        const character = getClientCharacter(room, client);
         
         // REMOVE POWER in Array
-        const character = getClientCharacter(room, client);
-        character.stats.energy.add(-1);
-        
+        const pIdx = character.powers.findIndex(p => p.id == powerId);
         const power : Item = character.powers.find(p => p.id == powerId);
         if(power == null || power.count == 0) {
             console.log("count issue");
             return;
         }
         power.count--;
+        console.log("power count: ", character.powers[pIdx].count);
 
+        character.stats.energy.add(-1);
         // SEND POWER MOVES
         let clientMessage: PowerMoveListMessage = {
             powermoves: []
