@@ -192,7 +192,20 @@ export const messageHandlers: MessageHandlers = {
 
 
     getPowerMoveList: (room, client, message) => {
+        // WHEN PLAYRE CLICK EQUIP POWER
         const powerId = message.powerId;
+        
+        // REMOVE POWER in Array
+        const character = getClientCharacter(room, client);
+        character.stats.energy.add(-1);
+        
+        const power : Item = character.powers.find(p => p.id == powerId);
+        if(power == null || power.count == 0) {
+            return;
+        }
+        power.count--;
+
+        // SEND POWER MOVES
         let clientMessage: PowerMoveListMessage = {
             powermoves: []
         }
@@ -220,16 +233,35 @@ export const messageHandlers: MessageHandlers = {
                         item
                     )
                 })
-                console.log(move.powerIds, move.costList)
                 clientMessage.powermoves.push(powermove);
             }
         })
-        console.log(
-            clientMessage.powermoves[0].id, 
-            clientMessage.powermoves[0].name,
-            clientMessage.powermoves[0].powerIds
-        );
+
         client.send("ReceivePowerMoveList", clientMessage);
+    },
+
+    equipPower: (room, client, message) => {
+
+    },
+
+    unEquipPower: (room, client, message) => {
+        const powerId = message.powerId;
+        const character = getClientCharacter(room, client);
+        character.stats.energy.add(-2);
+        
+        const power : Item = character.powers.find(p => p.id == powerId);
+        if(power == null) {
+            const newPower = new Item();
+            newPower.id = powerId;
+            newPower.count = 1;
+            newPower.name = powers[powerId].name;
+            newPower.description = "description";
+            newPower.level = powers[powerId].level;
+            character.powers.push(newPower);
+        } else {
+            power.count++;
+        }
+        client.send("unEquipPowerReceived", {playerId: character.id});
     }
 };
 
