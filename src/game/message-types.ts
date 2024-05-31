@@ -34,6 +34,13 @@ export interface CharacterMovedMessage {
     down: number,
 }
 
+export interface MoveItemMessage {
+    left: number,
+    right: number,
+    top: number,
+    down: number,
+}
+
 export interface PowerMoveListMessage {
     powermoves: PowerMove[];
 }

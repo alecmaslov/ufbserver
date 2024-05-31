@@ -1,7 +1,7 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords } from "#game/helpers/map-helpers";
+import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { getClientCharacter } from "./helpers/room-helpers";
-import { CharacterMovedMessage, GetResourceDataMessage, PowerMoveListMessage, SpawnInitMessage } from "#game/message-types";
+import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { EquipCommand } from "./commands/EquipCommand";
@@ -223,7 +223,38 @@ export const messageHandlers: MessageHandlers = {
             power.count++;
         }
         client.send("unEquipPowerReceived", {playerId: character.id});
-    }
+    },
+
+    // MOVE DETAIL INFO
+    getMoveItem: (room, client, message) => {
+        const itemId = message.itemId;
+        const character = getClientCharacter(room, client);
+
+        const currentTile = room.state.map.tiles.get(character.currentTileId);
+
+        let directionData = {
+            left: 1,
+            right: 1,
+            top: 0,
+            down: 1
+        }
+
+        // BOMB....
+        if(itemId == 3) {
+            {
+                const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, "top")
+
+            }
+
+        }
+
+        const movemessage: MoveItemMessage = {
+            ...directionData
+        }
+    },
+
+    
+
 };
 
 export function registerMessageHandlers(room: UfbRoom) {
