@@ -211,7 +211,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             tileState.id = tile.id;
             tileState.type = tile.type as TileType;
 
-            if(tile.type != TileType.Default) {
+            if(tile.type != TileType.OpenTile) {
                 console.log(`Tile Type: ${tile.type} Tile index: ${tile.id}, TilePosX : ${tile.x}, Tile Y: ${tile.y}`)
             }
 

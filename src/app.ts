@@ -17,6 +17,7 @@ import cors from "cors";
 import express, { json } from "express";
 import { readFileSync } from "fs";
 import https from "https";
+import http from "http";
 
 const app = express();
 
@@ -40,15 +41,26 @@ if (DEV_MODE) {
     app.use("/dev", dev);
 }
 
-const httpsServer = https.createServer({
-    key: readFileSync(SSL_KEY_PATH as string),
-    cert: readFileSync(SSL_CERT_PATH as string),
-}, app);
+// DEPLOY -- HTTPS PART
+// const httpsServer = https.createServer({
+//     key: readFileSync(SSL_KEY_PATH as string),
+//     cert: readFileSync(SSL_CERT_PATH as string),
+// }, app);
+
+// const colyseusServer = new Server({
+//     greet: false,
+//     transport: new WebSocketTransport({
+//         server: httpsServer
+//     }),
+// });
+
+// DEVELOPMENT PART
+const httpServer = http.createServer(app);
 
 const colyseusServer = new Server({
     greet: false,
     transport: new WebSocketTransport({
-        server: httpsServer
+        server: httpServer
     }),
 });
 

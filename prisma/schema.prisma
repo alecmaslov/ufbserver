@@ -109,7 +109,7 @@ model Tile {
   x                   Int
   y                   Int
   legacyCode          String?
-  type                TileType        @default(Default)
+  type                TileType        @default(OpenTile)
   walls               Json?
   spawnZone           SpawnZone?
   map                 UfbMap          @relation(fields: [mapId], references: [id], onDelete: Cascade)
@@ -277,13 +277,31 @@ enum Platform {
 }
 
 enum TileType {
-  Default
-  Bridge
-  Floor
+  VerticalBridge
+  HorizontalBridge
+  DoubleBridge
   Void
-  Chest
-  Enemy
-  Portal
+  StairsNS
+  StairsSN
+  StairsEW
+  StairsWE
+  Upper
+  Lower
+  OpenTile
+  BlockNorth
+  BlockEast
+  BlockSouth
+  BlockWest
+  BlockNS
+  BlockEW
+  BlockNE
+  BlockES
+  BlockSW
+  BlockNW
+  BlockESW
+  BlockSWN
+  BlockWNE
+  BlockNES
 }
 
 enum SpawnZoneType {

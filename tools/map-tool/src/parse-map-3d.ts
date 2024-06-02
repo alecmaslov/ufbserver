@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import type { TileSide } from "./types/map";
+import type { TileSide, Coordinates } from "./types/map";
 
 type TileType =
     | "VerticalBridge"
@@ -215,10 +215,12 @@ type Tile = {
     id: string; // like "tile_A_1"
     x: number;
     y: number;
+    coordinates: Coordinates,
     tileType: TileType;
     blockPath: BlockPath;
     spawnType: SpawnType;
     sides?: TileSide[];
+    legacyCode: string;
 };
 
 // Parser function
@@ -257,8 +259,15 @@ function parseTiles(tilesData: string[][]): Tile[] {
             }
 
             const id = `tile_${coordinate[0]}_${y + 1}`;
+            
+            const coordinates: Coordinates = {
+                x,
+                y
+            }
 
-            tiles.push({ id, x, y, tileType, blockPath, spawnType, sides });
+            const legacyCode = tileCode;
+
+            tiles.push({ id, x, y, coordinates, tileType, blockPath, spawnType, sides, legacyCode });
         }
     }
 
@@ -270,10 +279,17 @@ function parseTiles(tilesData: string[][]): Tile[] {
 const mapData = JSON.parse(
     readFileSync("./data/maps/input/map-3d.json", "utf-8")
 );
-const parsedTiles = parseTiles(mapData.tiles);
+const _parsedTiles = parseTiles(mapData.tiles);
+
+const map = {
+    name: "kraken",
+    gridWidth: mapData.width,
+    gridHeight: mapData.height,
+    tiles: _parsedTiles
+}
 // console.log(parsedTiles);
 
-writeFileSync("./data/maps/output/map-3d.json", JSON.stringify(parsedTiles, null, 2));
+writeFileSync("./data/maps/output/map-3d.json", JSON.stringify(map, null, 2));
 
 // const TileTypeToSides: { [key in BlockPath]: TileSide[] } = {
 //     VerticalBridge: [

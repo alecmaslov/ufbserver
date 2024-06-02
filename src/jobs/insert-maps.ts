@@ -66,7 +66,7 @@ async function uspertMapTransaction(map: UFBMap) {
             mapId: mapId,
         },
     });
-
+    console.log("deleted origin map data.");
     // Prepare tile data
     const tiles = map.tiles.map((tile: Partial<GameTile>) => {
         return {
@@ -78,11 +78,13 @@ async function uspertMapTransaction(map: UFBMap) {
                 tile.sides === undefined ? null : sidesToWallArray(tile.sides),
             type:
                 tile.type === undefined
-                    ? TileType.Default
+                    ? TileType.OpenTile
                     : (tile.type as TileType),
             mapId: mapId,
         };
     });
+
+    console.log("init tiles data.");
 
     // Map of tileCode to generated ID
     const tileIdMap: Record<string, string> = {};
@@ -142,6 +144,7 @@ async function uspertMapTransaction(map: UFBMap) {
             })
         );
     }
+    console.log("db run.");
 
     await db.$transaction(operations);
 }
