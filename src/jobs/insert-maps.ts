@@ -81,10 +81,11 @@ async function uspertMapTransaction(map: UFBMap) {
                     ? TileType.OpenTile
                     : (tile.type as TileType),
             mapId: mapId,
+            legacyCode: tile.legacyCode
         };
     });
 
-    console.log("init tiles data.");
+    console.log("init tiles data.", tiles[0], tiles[1]);
 
     // Map of tileCode to generated ID
     const tileIdMap: Record<string, string> = {};
@@ -124,6 +125,13 @@ async function uspertMapTransaction(map: UFBMap) {
                     ...tile,
                 },
             })
+            // db.tile.upsert({
+            //     where: {id: tile.id, tileCode_mapId: {tileCode: tile.tileCode, mapId: tile.mapId}},
+            //     update: {},
+            //     create: {
+            //         ...tile
+            //     }
+            // })
         );
     }
 

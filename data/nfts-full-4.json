@@ -12,12 +12,12 @@
       "collectionName": "Stellar Dream God-Level Collection",
       "collectionSlug": "god-levels",
       "safelistRequestStatus": "not_requested",
-      "imageUrl": "https://openseauserdata.com/files/564f7e7152c628022582b9d0e4982015.png",
+      "imageUrl": "https://i.seadn.io/gcs/files/564f7e7152c628022582b9d0e4982015.png?w=500&auto=format",
       "description": "The God-Levels are sick. They will tear the metaverse apart to find a cure.",
       "twitterUsername": "stellardreamnft",
       "discordUrl": "https://discord.gg/Rp5EZvkj",
-      "bannerImageUrl": "https://lh3.googleusercontent.com/pISSVKPTPXde7e3yUfX3NBSCxheSX9fsPLy10tE18AJz6MTtMRli1DQBlghDsHLx_OXj2ve2yJv8n_lzydPNAsNuc0fw6upWE3VSiw=s2500",
-      "lastIngestedAt": "2024-01-18T21:49:18.000Z"
+      "bannerImageUrl": "https://i.seadn.io/gae/pISSVKPTPXde7e3yUfX3NBSCxheSX9fsPLy10tE18AJz6MTtMRli1DQBlghDsHLx_OXj2ve2yJv8n_lzydPNAsNuc0fw6upWE3VSiw?w=500&auto=format",
+      "lastIngestedAt": "2024-05-31T06:31:22.000Z"
     }
   },
   "nfts": [
@@ -29,8 +29,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmeU4aU3Vk75igFkAHcUGrr9PS9iQkLRraHL1e4UVMeL1B",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/9c8a21f7f409bf6b26d5f17f50f089ca",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/9c8a21f7f409bf6b26d5f17f50f089ca",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/9c8a21f7f409bf6b26d5f17f50f089ca",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmZg8bZW91KQZsP4cmRjrKup23MzYYhivumSCewzbYh87y"
       },
       "raw": {
@@ -66,8 +68,10 @@
       "tokenUri": "https://ipfs.io/ipfs/Qmb9hb8xwMWEuQDjz7yySxExRqzSsMjnc8EBmR45Goa6RH",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/17867177e31cd1ac800550ff0c654a67",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/17867177e31cd1ac800550ff0c654a67",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/17867177e31cd1ac800550ff0c654a67",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmTeFyLSwvXw5vJfkLrysfDJ1quomS1hZoYjMW7WfKB6RE"
       },
       "raw": {
@@ -103,8 +107,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmYKAumbGyAsywpyRPndMmcdS31bbG8be2EwXYHWsxBDJ8",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/f9f8d63170c6c8e0a17c5688e0006303",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/f9f8d63170c6c8e0a17c5688e0006303",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/f9f8d63170c6c8e0a17c5688e0006303",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmWxNmtujY2R6sjQALNCwZFmWxtHbQYRsNkk8axwKNN52V"
       },
       "raw": {
@@ -140,8 +146,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmTkquHcD3F6RZRKpyRqEq5MP6aUCJKF8R9BxBe6fSF8gH",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/769c48671bd52cbad438c0976e8cfc7b",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/769c48671bd52cbad438c0976e8cfc7b",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/769c48671bd52cbad438c0976e8cfc7b",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmSAWt9XVQkNX9bcxj5LSAGrVSGttjnwCkyHX6ZVrzmmSp"
       },
       "raw": {
@@ -177,8 +185,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmcrWveQHNFxFFRcoixJMVDgXtwH2RNTDtJZya2RnPZKFc",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/19172288d556d6de58782fbec6246437",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/19172288d556d6de58782fbec6246437",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/19172288d556d6de58782fbec6246437",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmUHo2VTNoKh8EHn1iPSV9Y9AW2uRds1JTWQkCEsZtpZqr"
       },
       "raw": {
@@ -209,39 +219,17 @@
     {
       "tokenId": "6",
       "tokenType": "ERC721",
-      "name": "#6 Mevisto",
-      "description": "No metal or rock can withstand the diamond might of Mevisto and his legendary pickaxe, the Nonce Filament",
       "tokenUri": "https://ipfs.io/ipfs/QmeBHFarrgWB4Ch7TN5178cPrny7sio8bNLJMotiFb2r7c",
-      "image": {
-        "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/83458410e3fc283c6de666b3b9c0f5c8",
-        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/83458410e3fc283c6de666b3b9c0f5c8",
-        "contentType": "image/png",
-        "originalUrl": "https://ipfs.io/ipfs/QmQkYGYc7181fdQohw8ws6VohkGbMTxQsm7nowrWzqZCTx"
-      },
+      "image": {},
       "raw": {
         "tokenUri": "https://violet-objective-limpet-820.mypinata.cloud/ipfs/QmeBHFarrgWB4Ch7TN5178cPrny7sio8bNLJMotiFb2r7c",
-        "metadata": {
-          "name": "#6 Mevisto",
-          "owner": {
-            "name": "x0r",
-            "url": "https://twitter.com/x0rart"
-          },
-          "description": "No metal or rock can withstand the diamond might of Mevisto and his legendary pickaxe, the Nonce Filament",
-          "image": "ipfs://QmQkYGYc7181fdQohw8ws6VohkGbMTxQsm7nowrWzqZCTx",
-          "external_url": "ufb.thig.io/god-levels/mevisto",
-          "attributes": [
-            {
-              "value": "Myth Drill",
-              "trait_type": "Ultimate Move"
-            }
-          ]
-        }
+        "metadata": {}
       },
       "mint": {},
       "owners": [
         "0xE2237100b1FA8D36b8D1CF009A379C2929F46384"
       ],
-      "timeLastUpdated": "2024-01-22T22:54:39.519Z"
+      "timeLastUpdated": "2024-05-19T07:01:44.929Z"
     },
     {
       "tokenId": "7",
@@ -251,8 +239,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmNRULDqXX7MywyAX9XCtxKvJAkwdsNV9WfQMcwFAx6HZc",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/8e7d2e8ad76e1703c8f428b618972bf0",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/8e7d2e8ad76e1703c8f428b618972bf0",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/8e7d2e8ad76e1703c8f428b618972bf0",
         "contentType": "image/gif",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmSVduvhgXn3qP6o5dGg6LRGk4FK8b26zpgXJd3uHVURbP"
       },
       "raw": {
@@ -288,8 +278,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmWmGhvFNqr7bmSbNDVQ84RXn2GrgRnpAQhH9KUMsUdEgq",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/bb32768a01b78d8080132fa7642edc58",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/bb32768a01b78d8080132fa7642edc58",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/bb32768a01b78d8080132fa7642edc58",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmVg7PnwYAnk2mYehK14hwmN43kDfrZaea5xHCsv6TAjTz"
       },
       "raw": {
@@ -325,8 +317,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmQBAV2HCgKRpxNaG6oQF3jz5ATgU3GNB8DyscC5fPFP1h",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/b214976aab0179905edc3c7abf4c21aa",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/b214976aab0179905edc3c7abf4c21aa",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/b214976aab0179905edc3c7abf4c21aa",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmNbKit7FtLgcL8GKoDejmLs3gduhrczbvDXHBgSksodMw"
       },
       "raw": {
@@ -362,8 +356,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmaKar2zBPH8iC6VruiN1xqPtfSLtx7K1B2e49Lyb3kdvL",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/5e1bbd77e20cba4d16f1a8254242cb6e",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/5e1bbd77e20cba4d16f1a8254242cb6e",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/5e1bbd77e20cba4d16f1a8254242cb6e",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmTqDb7FeFnm1qySpuYMf935boNdVUJ3m9GSrXzV3ZxZde"
       },
       "raw": {
@@ -399,8 +395,10 @@
       "tokenUri": "https://ipfs.io/ipfs/Qme56jCvqyfNw18mrH3d3kscDfshM2mmmc1YRngfnAjMD3",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/caf7df2c759bf208a5dbd29f71866db9",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/caf7df2c759bf208a5dbd29f71866db9",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/caf7df2c759bf208a5dbd29f71866db9",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmahJET8v7B6zVfmxSbPKcvK8XjgR54W9Lv3fCJM4kAwHe"
       },
       "raw": {
@@ -436,8 +434,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmRMQptioGkvax9eYZjfFXvnqrLtXLn7h4dLj1HuNDfk2e",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/c7a032ec0c6c6fd0f28a99dbaf32b35e",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/c7a032ec0c6c6fd0f28a99dbaf32b35e",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/c7a032ec0c6c6fd0f28a99dbaf32b35e",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmPDdgZuFqf6R6nbXydkRrQw5ZZJjPXcrCHU8D3dbk9XeT"
       },
       "raw": {
@@ -473,8 +473,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmVwFj1bMvkSoTq27sARm7UgTJzSsVATPJE93D49uLMmQk",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/503a4fc2f2bb03b9910924a23c3d30f6",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/503a4fc2f2bb03b9910924a23c3d30f6",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/503a4fc2f2bb03b9910924a23c3d30f6",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/Qmet32B1LEjWZidwgpUTM6Dy1KmwT6mcNzPL7gMDHkh8ib"
       },
       "raw": {
@@ -549,8 +551,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmdyvqRv2FB7CnjER4fhAAgxrjx6o2qjveFx5vveekNxbZ",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/f76ed56834fc093f4f2020c2e50f5b43",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/f76ed56834fc093f4f2020c2e50f5b43",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/f76ed56834fc093f4f2020c2e50f5b43",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmScedGJjRfJJYPm9n3ibtTiA8mGtSA6GaicGG8n8c8T5o"
       },
       "raw": {
@@ -586,8 +590,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmR5udcyfXteesCvNi4S8QfVkN8zb3jh75BmzPmA2iZKAy",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/a79e237b8f7c5487dbadada8c1d34634",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/a79e237b8f7c5487dbadada8c1d34634",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/a79e237b8f7c5487dbadada8c1d34634",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmUUp9gcPU2ZC9YMnLeg8Pnevfu1hgsZFeAuCA7NFX7uoZ"
       },
       "raw": {
@@ -623,8 +629,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmXWQ8SHBdmNACzskeiSockqdzV9J8wkyvtD5noCEnoL4p",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/cba8eb291aa0036c48ef8751d658baa8",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/cba8eb291aa0036c48ef8751d658baa8",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/cba8eb291aa0036c48ef8751d658baa8",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmYMJRwaGZ3G9qKCDUwbS2h28TmFHuWYDdoNEjcGmKzqey"
       },
       "raw": {
@@ -660,8 +668,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmPVHVe7WCCGvmreeC47Ea2FAgDrua2cfqw47ZqeK9kKfz",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/85e575363aa6dedaa0ab095b6ed1bf90",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/85e575363aa6dedaa0ab095b6ed1bf90",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/85e575363aa6dedaa0ab095b6ed1bf90",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmSZqQAk7YFHSvy7vbp9FqC6HTTk4wt4eaZFJkJjJ1uLvj"
       },
       "raw": {
@@ -697,8 +707,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmXsh7aVUwNN3rvnRHmWZpHGQF3gMCdsFBBgY6HnF8vpg8",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/a53a6133ec99241fe22d5e0e0593a4cf",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/a53a6133ec99241fe22d5e0e0593a4cf",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/a53a6133ec99241fe22d5e0e0593a4cf",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmPZD1w85wEhnLzQn7k27kHmWudRGCLwAaeZ2Kq3mJyhPz"
       },
       "raw": {
@@ -734,8 +746,10 @@
       "tokenUri": "https://ipfs.io/ipfs/QmPf6xzDjVEK5utW7Xc1at6fiKCFpNxfkrgAFZULHsf8A9",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/6c3db953bd1cb3a6ddcec54976738010",
+        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/6c3db953bd1cb3a6ddcec54976738010",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/6c3db953bd1cb3a6ddcec54976738010",
         "contentType": "image/png",
+        "size": 0,
         "originalUrl": "https://ipfs.io/ipfs/QmWxnrCPkCt8dsYQptMMuSikJrZGsa9afXmmVvtJ63Yi29"
       },
       "raw": {
@@ -767,6 +781,6 @@
   "collection": {
     "name": "Stellar Dream God-Level Collection",
     "slug": "god-levels",
-    "bannerImageUrl": "https://lh3.googleusercontent.com/pISSVKPTPXde7e3yUfX3NBSCxheSX9fsPLy10tE18AJz6MTtMRli1DQBlghDsHLx_OXj2ve2yJv8n_lzydPNAsNuc0fw6upWE3VSiw=s2500"
+    "bannerImageUrl": "https://i.seadn.io/gae/pISSVKPTPXde7e3yUfX3NBSCxheSX9fsPLy10tE18AJz6MTtMRli1DQBlghDsHLx_OXj2ve2yJv8n_lzydPNAsNuc0fw6upWE3VSiw?w=500&auto=format"
   }
 }

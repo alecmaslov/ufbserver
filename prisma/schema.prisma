@@ -117,8 +117,8 @@ model Tile {
   tileAdjacencies     TileAdjacency[]
   toTileAdjacencies   TileAdjacency[] @relation("ToAdjacency")
 
-  @@unique([tileCode, mapId])
-  @@unique([x, y, mapId])
+  // @@unique([tileCode, mapId])
+  // @@unique([x, y, mapId])
   @@index([mapId], map: "Tile_mapId_fkey")
 }
 

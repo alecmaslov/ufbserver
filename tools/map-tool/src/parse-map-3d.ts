@@ -185,9 +185,9 @@ const BlockedPathToSides: { [key in BlockPath]: TileSide[] } = {
     ],
     SouthWestNorth: [
         { side: "Top", edgeProperty: "Wall" },
-        { side: "Right", edgeProperty: "Wall" },
+        { side: "Right", edgeProperty: "Basic" },
         { side: "Bottom", edgeProperty: "Wall" },
-        { side: "Left", edgeProperty: "Basic" },
+        { side: "Left", edgeProperty: "Wall" },
     ],
     WestNorthEast: [
         { side: "Top", edgeProperty: "Wall" },
@@ -197,30 +197,34 @@ const BlockedPathToSides: { [key in BlockPath]: TileSide[] } = {
     ],
     NorthEastSouth: [
         { side: "Top", edgeProperty: "Wall" },
-        { side: "Right", edgeProperty: "Basic" },
+        { side: "Right", edgeProperty: "Wall" },
         { side: "Bottom", edgeProperty: "Wall" },
-        { side: "Left", edgeProperty: "Wall" },
+        { side: "Left", edgeProperty: "Basic" },
     ],
 };
 
-type SpawnType = "Chest" | "Monster" | null;
+type SpawnType = "Chest"| "Merchant" | "Monster" | "Portal" | null;
 
 const SpawnTypeRecord: { [key: string]: SpawnType } = {
     "0": null,
     "1": "Chest",
-    "2": "Monster",
+    "2": "Merchant",
+    "3": "Monster",
+    "4": "Portal",
 };
 
 type Tile = {
     id: string; // like "tile_A_1"
-    x: number;
-    y: number;
     coordinates: Coordinates,
-    tileType: TileType;
+    type: TileType;
     blockPath: BlockPath;
     spawnType: SpawnType;
     sides?: TileSide[];
     legacyCode: string;
+    spawnZone?: {
+        type: any;
+        seedId: number;
+    }
 };
 
 // Parser function
@@ -238,7 +242,7 @@ function parseTiles(tilesData: string[][]): Tile[] {
             const blockPath =
                 BlockPathRecord[tileCode[4] as keyof typeof BlockPathRecord];
             if (blockPath === undefined) {
-                console.log(`Invalid block path: ${tileCode[4]}`);
+                console.log(`Invalid block path: ${tileCode[4]}, ${tileCode}`);
             }
             let spawnType =
                 SpawnTypeRecord[tileCode[5] as keyof typeof SpawnTypeRecord];
@@ -267,7 +271,17 @@ function parseTiles(tilesData: string[][]): Tile[] {
 
             const legacyCode = tileCode;
 
-            tiles.push({ id, x, y, coordinates, tileType, blockPath, spawnType, sides, legacyCode });
+            const seedId = parseInt(tileCode.slice(1));
+            const spawnZone = {
+                type: spawnType,
+                seedId: seedId
+            }
+
+            if(spawnType == null) {
+                tiles.push({ id, coordinates, type: tileType, blockPath, spawnType, sides, legacyCode });
+            } else {
+                tiles.push({ id, coordinates, type: tileType, blockPath, spawnType, sides, legacyCode, spawnZone });
+            }
         }
     }
 
@@ -289,7 +303,7 @@ const map = {
 }
 // console.log(parsedTiles);
 
-writeFileSync("./data/maps/output/map-3d.json", JSON.stringify(map, null, 2));
+writeFileSync("./data/maps/output/map.json", JSON.stringify(map, null, 2));
 
 // const TileTypeToSides: { [key in BlockPath]: TileSide[] } = {
 //     VerticalBridge: [

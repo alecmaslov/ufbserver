@@ -41,6 +41,8 @@ if (DEV_MODE) {
     app.use("/dev", dev);
 }
 
+console.log(SSL_KEY_PATH)
+
 // DEPLOY -- HTTPS PART
 // const httpsServer = https.createServer({
 //     key: readFileSync(SSL_KEY_PATH as string),

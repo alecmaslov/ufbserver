@@ -36,6 +36,7 @@ interface TokenRequestPayload {
 }
 
 const tokenRequestHandler: Handler = async (req:any, res:any) => {
+    console.log("tokey request handler")
     const {
         clientId
     } = req.body as TokenRequestPayload;
