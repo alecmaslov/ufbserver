@@ -36,6 +36,7 @@ export interface GameTile {
     spawnZone?: SpawnZone;
     coordinates: Coordinates;
     sides: TileSide[];
+    legacyCode: string;
 }
 
 export interface Spawnable {

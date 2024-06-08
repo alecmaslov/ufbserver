@@ -69,13 +69,16 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.sessionIdToPlayerId.set(client.sessionId, playerId);
         console.log(client.sessionId, "joined!");
 
-        const tile = await db.tile.findUnique({
+        const tile = await db.tile.findFirst({
             where: {
-                x_y_mapId: {
-                    x: Math.floor(Math.random() * this.state.map.gridWidth),
-                    y: Math.floor(Math.random() * this.state.map.gridHeight),
-                    mapId: this.state.map.id,
-                },
+                // x_y_mapId: {
+                //     x: Math.floor(Math.random() * this.state.map.gridWidth),
+                //     y: Math.floor(Math.random() * this.state.map.gridHeight),
+                //     mapId: this.state.map.id,
+                // },
+                x: Math.floor(Math.random() * this.state.map.gridWidth),
+                y: Math.floor(Math.random() * this.state.map.gridHeight),
+                mapId: this.state.map.id,
             },
         });
 
@@ -211,9 +214,9 @@ export class UfbRoom extends Room<UfbRoomState> {
             tileState.id = tile.id;
             tileState.type = tile.type as TileType;
 
-            if(tile.type != TileType.OpenTile) {
-                console.log(`Tile Type: ${tile.type} Tile index: ${tile.id}, TilePosX : ${tile.x}, Tile Y: ${tile.y}`)
-            }
+            // if(tile.type != TileType.OpenTile) {
+            //     console.log(`Tile Type: ${tile.type} Tile index: ${tile.id}, TilePosX : ${tile.x}, Tile Y: ${tile.y}`)
+            // }
 
             tileState.coordinates.x = tile.x;
             tileState.coordinates.y = tile.y;
@@ -230,19 +233,19 @@ export class UfbRoom extends Room<UfbRoomState> {
 
             this.state.map.tiles.set(tile.id, tileState);
 
-            const adjacencyListItem = new AdjacencyListItemState();
-            adjacencyListItem.edges = new ArraySchema<TileEdgeState>();
+            // const adjacencyListItem = new AdjacencyListItemState();
+            // adjacencyListItem.edges = new ArraySchema<TileEdgeState>();
 
-            for (const edge of tile.fromTileAdjacencies) {
-                const edgeState = new TileEdgeState();
-                edgeState.from = edge.fromId;
-                edgeState.to = edge.toId;
-                edgeState.type = edge.type as any;
-                edgeState.energyCost = edge.energyCost;
-                adjacencyListItem.edges.push(edgeState);
-            }
+            // for (const edge of tile.fromTileAdjacencies) {
+            //     const edgeState = new TileEdgeState();
+            //     edgeState.from = edge.fromId;
+            //     edgeState.to = edge.toId;
+            //     edgeState.type = edge.type as any;
+            //     edgeState.energyCost = edge.energyCost;
+            //     adjacencyListItem.edges.push(edgeState);
+            // }
 
-            this.state.map.adjacencyList.set(tile.id, adjacencyListItem);
+            // this.state.map.adjacencyList.set(tile.id, adjacencyListItem);
         }
 
         this.pathfinder = Pathfinder.fromMapState(this.state.map);

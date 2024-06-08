@@ -39,6 +39,12 @@ export interface MoveItemMessage {
     right: number,
     top: number,
     down: number,
+    itemId: number
+}
+
+export interface SetMoveItemMessage {
+    itemId: number,
+    tileId: string
 }
 
 export interface PowerMoveListMessage {

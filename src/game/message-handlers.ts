@@ -1,7 +1,7 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { getClientCharacter } from "./helpers/room-helpers";
-import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SpawnInitMessage } from "#game/message-types";
+import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
 import { EquipCommand } from "./commands/EquipCommand";
@@ -229,31 +229,89 @@ export const messageHandlers: MessageHandlers = {
     getMoveItem: (room, client, message) => {
         const itemId = message.itemId;
         const character = getClientCharacter(room, client);
-
         const currentTile = room.state.map.tiles.get(character.currentTileId);
 
-        let directionData = {
-            left: 1,
-            right: 1,
-            top: 0,
-            down: 1
-        }
+        const directions = [0, 0, 0, 0];
 
         // BOMB....
+        if(itemId == 5) {
+            const conditions = [
+                "top",
+                "right",
+                "down",
+                "left"
+            ];
+            conditions.forEach((cond, i) => {
+                const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, cond)
+                if(currentTile.walls[i] == 0 && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1) {
+                    directions[i] = 1;
+                }
+            })
+        }
+
+        // FEATHER
         if(itemId == 3) {
-            {
-                const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, "top")
+            const conditions = [
+                "top",
+                "right",
+                "down",
+                "left"
+            ];
+            conditions.forEach((cond, i) => {
+                const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, cond)
+                if(currentTile.walls[i] == 1 && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1 && id != "") {
+                    directions[i] = 1;
+                }
+            })
+        }
 
-            }
+        // CRYSTAL
+        if(itemId == 10) {
 
+        }
+
+        let directionData = {
+            left: directions[3],
+            right: directions[1],
+            top: directions[0],
+            down: directions[2],
+            itemId: itemId
         }
 
         const movemessage: MoveItemMessage = {
             ...directionData
         }
+
+        client.send("ReceiveMoveItem", movemessage);
     },
 
-    
+     setMoveItem:(room, client, message) => {
+        const itemId = message.itemId;
+        const character = getClientCharacter(room, client);
+        const currentTile = room.state.map.tiles.get(character.currentTileId);
+
+        if(character.stats.energy.current == 0) {
+            room.notify(
+                client,
+                "You don't have enough energy to move there!",
+                "error"
+            );
+        }
+
+        if(!!character.items[itemId] && character.items[itemId].count > 0) {
+            character.items[itemId].count--;
+        }
+
+        character.stats.energy.add(-1);
+
+        const setmoveitemMessage : SetMoveItemMessage = {
+            itemId: itemId,
+            tileId: message.tileId
+        }
+
+        client.send("SetMoveItem", setmoveitemMessage);
+
+     }
 
 };
 

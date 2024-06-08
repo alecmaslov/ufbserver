@@ -22,6 +22,23 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             this.room.notify(client, "You are not in room game!", "error");
         }
 
+        // TEST:::
+        [5, 18, 19, 20, 21].forEach(id => {
+            const testItem : Item = character.items.find(item => item.id == id);
+            if(testItem == null) {
+                const newItem = new Item();
+                newItem.id = id;
+                newItem.count = 4;
+                newItem.name = `item${id}`;
+                newItem.description = "description";
+                newItem.level = 1;
+    
+                character.items.push(newItem);
+            } else {
+                testItem.count++;
+            }
+        })
+
         const item : Item = character.items.find(item => item.id == message.itemId);
         if(item == null) {
             const newItem = new Item();

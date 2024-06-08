@@ -5,7 +5,7 @@ import { Coordinates, PathStep } from "#shared-types";
 import { shuffleArray } from "#utils/collections";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
-import { SpawnZone, Tile } from "@prisma/client";
+import { SpawnZone, SpawnZoneType, Tile } from "@prisma/client";
 import { ok } from "assert";
 import { Node } from "ngraph.graph";
 
@@ -211,6 +211,7 @@ export function initializeSpawnEntities(
     const takenIds = new Set<string>();
 
     const totalSpawnZones = spawnZones.length;
+    console.log("total spawn zone count: ", totalSpawnZones);
     if (config.chests < config.monsters) {
         throw new Error("not enough chests for monsters");
     }
@@ -221,26 +222,55 @@ export function initializeSpawnEntities(
         throw new Error("config provided has too many spawn zones for map");
     }
 
+    console.log(shuffledSeedIds, config)
+
     let numMonsters = 0;
 
     // spawn 16 chests
-    for (let i = 0; i < config.chests - 1; i++) {
-        const seedId = shuffledSeedIds.pop();
+    // for (let i = 0; i < config.chests - 1; i++) {
+    //     const seedId = shuffledSeedIds.pop();
 
-        const zones = spawnZones.filter((zone) => zone.seedId === seedId);
-        if (zones.length < 2) {
-            throw new Error(
-                `expected 2 chest zones for seed id ${seedId}, got ${zones.length}`
-            );
-        }
-        if (!zones.find((zone) => zone.type === "Chest")) {
-            throw new Error(`expected 1 chest zone for seed id ${seedId}`);
-        }
-        if (!zones.find((zone) => zone.type === "Monster")) {
-            throw new Error(`expected 1 monster zone for seed id ${seedId}`);
-        }
+    //     const zones = spawnZones.filter((zone) => zone.seedId === seedId);
+    //     console.log(zones, seedId)
+
+    //     if (zones.length < 2) {
+    //         throw new Error(
+    //             `expected 2 chest zones for seed id ${seedId}, got ${zones.length}`
+    //         );
+    //     }
+    //     if (!zones.find((zone) => zone.type === "Chest")) {
+    //         throw new Error(`expected 1 chest zone for seed id ${seedId}`);
+    //     }
+    //     if (!zones.find((zone) => zone.type === "Monster")) {
+    //         throw new Error(`expected 1 monster zone for seed id ${seedId}`);
+    //     }
+    //     const isItemBag = Math.random() < 0.5? true: false;
+    //     const chestZone = zones.find((zone) => zone.type === "Chest");
+
+    //     const chestEntity = new SpawnEntity();
+    //     chestEntity.id = chestZone.id;
+    //     chestEntity.gameId = `chest_${i}`;
+    //     chestEntity.prefabAddress = isItemBag? `${entitiesRootAddress}ItemBag` : `${entitiesRootAddress}chest`;
+    //     chestEntity.tileId = chestZone.tileId;
+    //     chestEntity.type = "Chest";
+    //     chestEntity.parameters = `{"seedId" : "${chestZone.seedId}"}`;
+    //     spawnEntities.push(chestEntity);
+
+    //     takenIds.add(chestZone.id);
+
+    //     if (numMonsters < config.monsters) {
+    //         const monsterZone = zones.find((zone) => zone.type === "Monster");
+    //         onMonsterSpawn(monsterZone); // allow caller to figure out how to spawn a new monster (which is a character)
+    //         takenIds.add(monsterZone.id);
+    //         numMonsters++;
+    //     }
+
+    // }
+
+    const zones = spawnZones.filter(zone => (zone.type == SpawnZoneType.Chest));
+    zones.forEach((chestZone, i) => {
         const isItemBag = Math.random() < 0.5? true: false;
-        const chestZone = zones.find((zone) => zone.type === "Chest");
+
         const chestEntity = new SpawnEntity();
         chestEntity.id = chestZone.id;
         chestEntity.gameId = `chest_${i}`;
@@ -249,51 +279,36 @@ export function initializeSpawnEntities(
         chestEntity.type = "Chest";
         chestEntity.parameters = `{"seedId" : "${chestZone.seedId}"}`;
         spawnEntities.push(chestEntity);
+    })
 
-        takenIds.add(chestZone.id);
+    const monsterZones = spawnZones.filter(zone => zone.type == SpawnZoneType.Monster);
+    monsterZones.forEach((monsterZone, i) => {
+        onMonsterSpawn(monsterZone); // allow caller to figure out how to spawn a new monster (which is a character)
+    })
 
-        if (numMonsters < config.monsters) {
-            const monsterZone = zones.find((zone) => zone.type === "Monster");
-            onMonsterSpawn(monsterZone); // allow caller to figure out how to spawn a new monster (which is a character)
-            takenIds.add(monsterZone.id);
-            numMonsters++;
-        }
-    }
-
-    const remainingSpawnZones = spawnZones.filter(
-        (zone) => !takenIds.has(zone.id) && zone.type === "Chest"
-    );
-
-    console.log(`Number of remaining spawn zones ${remainingSpawnZones.length}`);
-
-    const shuffledZones = shuffleArray(remainingSpawnZones) as SpawnZone[];
-
-    for (let i = 0; i < config.portals; i++) {
-        // spawn 2 portals for each
-        for (let j = 0; j < 2; j++) {
-            const zone = shuffledZones.pop();
-
+    const portalZones = spawnZones.filter(zone => zone.type == SpawnZoneType.Portal)
+    portalZones.forEach((protalZone, i) => {
+        for (let j = 0; j < 2; j++) { 
             const parameters: PortalEntityParameters = {
-                seedId: zone.seedId,
+                seedId: protalZone.seedId,
                 portalGroup: i,
                 portalIndex: j,
             };
-
+    
             const portalEntity = new SpawnEntity();
-            portalEntity.id = zone.id;
+            portalEntity.id = protalZone.id;
             portalEntity.gameId = `portal_${i}`;
             portalEntity.prefabAddress = `${entitiesRootAddress}portal`;
-            portalEntity.tileId = zone.tileId;
+            portalEntity.tileId = protalZone.tileId;
             portalEntity.type = "Portal";
             portalEntity.parameters = JSON.stringify(parameters);
             // portalEntity.parameters = `{"seedId" : "${zone.seedId}", "portalGroup" : "${i}", "portalIndex" : "${j}"}`;
             spawnEntities.push(portalEntity);
         }
-    }
+    })
 
-    for (let i = 0; i < config.merchants; i++) {
-        const zone = shuffledZones.pop();
-
+    const merchantZones = spawnZones.filter(zone => zone.type == SpawnZoneType.Merchant);
+    merchantZones.forEach((zone, i) => {
         const parameters: MerchantEntityParameters = {
             seedId: zone.seedId,
             merchantIndex: i,
@@ -310,7 +325,60 @@ export function initializeSpawnEntities(
         merchantEntity.parameters = JSON.stringify(parameters);
         // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
         spawnEntities.push(merchantEntity);
-    }
+    })
+
+
+    // const remainingSpawnZones = spawnZones.filter(
+    //     (zone) => !takenIds.has(zone.id) && zone.type === "Chest"
+    // );
+
+    // console.log(`Number of remaining spawn zones ${remainingSpawnZones.length}`);
+
+    // const shuffledZones = shuffleArray(remainingSpawnZones) as SpawnZone[];
+
+    // for (let i = 0; i < config.portals; i++) {
+    //     // spawn 2 portals for each
+    //     for (let j = 0; j < 2; j++) {
+    //         const zone = shuffledZones.pop();
+
+    //         const parameters: PortalEntityParameters = {
+    //             seedId: zone.seedId,
+    //             portalGroup: i,
+    //             portalIndex: j,
+    //         };
+
+    //         const portalEntity = new SpawnEntity();
+    //         portalEntity.id = zone.id;
+    //         portalEntity.gameId = `portal_${i}`;
+    //         portalEntity.prefabAddress = `${entitiesRootAddress}portal`;
+    //         portalEntity.tileId = zone.tileId;
+    //         portalEntity.type = "Portal";
+    //         portalEntity.parameters = JSON.stringify(parameters);
+    //         // portalEntity.parameters = `{"seedId" : "${zone.seedId}", "portalGroup" : "${i}", "portalIndex" : "${j}"}`;
+    //         spawnEntities.push(portalEntity);
+    //     }
+    // }
+
+    // for (let i = 0; i < config.merchants; i++) {
+    //     const zone = shuffledZones.pop();
+
+    //     const parameters: MerchantEntityParameters = {
+    //         seedId: zone.seedId,
+    //         merchantIndex: i,
+    //         merchantName: `Merchant ${i}`,
+    //         inventory: [],
+    //     };
+
+    //     const merchantEntity = new SpawnEntity();
+    //     merchantEntity.id = zone.id;
+    //     merchantEntity.gameId = `merchant_${i}`;
+    //     merchantEntity.prefabAddress = `${entitiesRootAddress}merchant`;
+    //     merchantEntity.tileId = zone.tileId;
+    //     merchantEntity.type = "Merchant";
+    //     merchantEntity.parameters = JSON.stringify(parameters);
+    //     // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
+    //     spawnEntities.push(merchantEntity);
+    // }
 
     return spawnEntities;
 }

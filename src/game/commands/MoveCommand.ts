@@ -5,6 +5,7 @@ import { Client } from "colyseus";
 import { getClientCharacter } from "#game/helpers/room-helpers";
 import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
+import { PathStep } from "#shared-types";
 
 type OnMoveCommandPayload = {
     client: Client;
@@ -44,13 +45,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.left = 0;
             } else {
-                const { path, cost } = this.room.pathfinder.find(
-                    message.tileId,
-                    id
-                );
-                if(cost == 0 || cost > 2) {
-                    directionData.left = 0;
-                }
+                directionData.left = destinationTile.walls[3] == 1? 0 : 1;
             }
         }
         // RIGHT
@@ -60,13 +55,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.right = 0;
             } else {
-                const { path, cost } = this.room.pathfinder.find(
-                    message.tileId,
-                    id
-                );
-                if(cost == 0 || cost > 2) {
-                    directionData.right = 0;
-                }
+                directionData.right = destinationTile.walls[1] == 1? 0 : 1;
             }
         }
         // TOP
@@ -76,13 +65,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.top = 0;
             } else {
-                const { path, cost } = this.room.pathfinder.find(
-                    message.tileId,
-                    id
-                );
-                if(cost == 0 || cost > 2) {
-                    directionData.top = 0;
-                }
+                directionData.top = destinationTile.walls[0] == 1? 0 : 1;
             }
         }
         // DOWN
@@ -92,13 +75,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.down = 0;
             } else {
-                const { path, cost } = this.room.pathfinder.find(
-                    message.tileId,
-                    id
-                );
-                if(cost == 0 || cost > 2) {
-                    directionData.down = 0;
-                }
+                directionData.down = destinationTile.walls[2] == 1? 0 : 1;
             }
         }
 
@@ -108,12 +85,15 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     )} -> ${coordToGameId(destinationTile.coordinates)}`
         // );
 
-        const { path, cost } = this.room.pathfinder.find(
-            character.currentTileId,
-            message.tileId
-        );
+        // const { path, cost } = this.room.pathfinder.find(
+        //     character.currentTileId,
+        //     message.tileId
+        // );
+        const path: PathStep[] = [{
+            tileId: message.tileId
+        }];
 
-        if (!force && character.stats.energy.current < cost) {
+        if (!force && character.stats.energy.current < 1) {
             this.room.notify(
                 client,
                 "You don't have enough energy to move there!",
@@ -126,11 +106,13 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         character.coordinates.y = destinationTile.coordinates.y;
         character.currentTileId = message.tileId;
 
+        const cost = message.tileId == destinationTile.id? 0 : -1;
+
         if(force) {
             const originEnergy = message.originEnergy;
             character.stats.energy.add(originEnergy - character.stats.energy.current);
         } else {
-            character.stats.energy.add(-cost);
+            character.stats.energy.add(cost);
         }
         fillPathWithCoords(path, this.room.state.map);
 
