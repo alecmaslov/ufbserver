@@ -8,8 +8,9 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item } from "#game/schema/CharacterState";
-import { powermoves, powers } from "#assets/resources";
+import { ITEMTYPE, itemResults, powermoves, powers } from "#assets/resources";
 import { PowerMove } from "#shared-types";
+import { MoveItemEntity } from "./schema/MapState";
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -234,7 +235,7 @@ export const messageHandlers: MessageHandlers = {
         const directions = [0, 0, 0, 0];
 
         // BOMB....
-        if(itemId == 5) {
+        if(itemId == ITEMTYPE.BOMB) {
             const conditions = [
                 "top",
                 "right",
@@ -250,7 +251,7 @@ export const messageHandlers: MessageHandlers = {
         }
 
         // FEATHER
-        if(itemId == 3) {
+        if(itemId == ITEMTYPE.FEATHER) {
             const conditions = [
                 "top",
                 "right",
@@ -266,7 +267,7 @@ export const messageHandlers: MessageHandlers = {
         }
 
         // CRYSTAL
-        if(itemId == 10) {
+        if(itemId == ITEMTYPE.WARP_CRYSTAL) {
 
         }
 
@@ -287,6 +288,7 @@ export const messageHandlers: MessageHandlers = {
 
      setMoveItem:(room, client, message) => {
         const itemId = message.itemId;
+        const tileId = message.tileId;
         const character = getClientCharacter(room, client);
         const currentTile = room.state.map.tiles.get(character.currentTileId);
 
@@ -298,8 +300,29 @@ export const messageHandlers: MessageHandlers = {
             );
         }
 
-        if(!!character.items[itemId] && character.items[itemId].count > 0) {
-            character.items[itemId].count--;
+        const idx = character.items.findIndex(it => it.id == itemId && it.count > 0);
+        if(idx != -1) {
+            character.items[idx].count--;
+        } else {
+            room.notify(
+                client,
+                "Your item is not enough!",
+                "error"
+            );
+            return;
+        }
+
+        if(itemId == ITEMTYPE.BOMB || itemId == ITEMTYPE.ICE_BOMB || itemId == ITEMTYPE.FIRE_BOMB || itemId == ITEMTYPE.VOID_BOMB || itemId == ITEMTYPE.CALTROP_BOMB) {
+            const idx = room.state.map.moveItemEntities.findIndex(mItem => mItem.tileId == tileId)
+            if(idx == -1) {
+                const entity : MoveItemEntity = new MoveItemEntity();
+                entity.itemId = itemId;
+                entity.tileId = tileId;
+                entity.playerId = client.id;
+                room.state.map.moveItemEntities.push(entity);
+            } else {
+                room.state.map.moveItemEntities.deleteAt(idx);
+            }
         }
 
         character.stats.energy.add(-1);

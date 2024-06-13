@@ -1,3 +1,28 @@
+export const ITEMTYPE: {[key: string] : number} = {
+    HEART_PIECE: 0,
+    ENERGY_SHARD: 1,
+    POTION: 2,
+    FEATHER: 3,
+    ARROW: 4,
+    BOMB: 5,
+    HEART_CRYSTAL: 6,
+    ENERGY_CRYSTAL: 7,
+    MELEE: 8,
+    MANA: 9,
+    WARP_CRYSTAL: 10,
+    ELIXIR: 11,
+    QUIVER: 12,
+    BOMB_BAG: 13,
+    BOMB_ARROW: 14,
+    FIRE_ARROW: 15,
+    ICE_ARROW: 16,
+    VOID_ARROW: 17,
+    FIRE_BOMB: 18,
+    ICE_BOMB: 19,
+    VOID_BOMB: 20,
+    CALTROP_BOMB: 21,
+}
+
 export const powermoves = [
     {
         // SWORD1
@@ -1342,4 +1367,27 @@ export const powers: { [key: number]: { level: number, name: string } } = {
         level: 3,
         name: "Void Crystal"
     },
+}
+
+export const itemResults: {[key: number]: {heart?: number, energy?: number, ultimate?: number, stackId?: number, powerId?: number}} = {
+    [ITEMTYPE.BOMB]: {
+        heart: -3
+    },
+    [ITEMTYPE.CALTROP_BOMB]: {
+        energy: -4,
+        ultimate: -4
+    },
+    [ITEMTYPE.FIRE_BOMB]: {
+        heart: -4,
+        stackId: 1
+    },
+    [ITEMTYPE.ICE_BOMB]: {
+        heart: -3,
+        energy: -2,
+        stackId: 3
+    },
+    [ITEMTYPE.VOID_BOMB]: {
+        heart: -5,
+        stackId: 4
+    }
 }

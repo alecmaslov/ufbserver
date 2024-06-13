@@ -14,6 +14,12 @@ export class SpawnEntity extends Schema {
     @type("string") parameters: string = ""; // e.g. "seedId=1234"
 }
 
+export class MoveItemEntity extends Schema {
+    @type("string") tileId: string = "";
+    @type("string") playerId: string = "";
+    @type("number") itemId: number = 0;
+}
+
 export class TileState extends Schema {
     @type("string") id: string = "";
     @type("string") tileCode: string = ""; // e.g. "tile_A_1"
@@ -51,6 +57,7 @@ export class MapState extends Schema {
     @type({ map: AdjacencyListItemState }) adjacencyList =
         new MapSchema<AdjacencyListItemState>();
     @type([SpawnEntity]) spawnEntities = new ArraySchema<SpawnEntity>();
+    @type([MoveItemEntity]) moveItemEntities = new ArraySchema<MoveItemEntity>();
 
     /** raw representation for internal use */
     _map: UFBMap | null = null;
