@@ -11,6 +11,9 @@ import { Item } from "#game/schema/CharacterState";
 import { ITEMTYPE, itemResults, powermoves, powers } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
+import { Schema, type, ArraySchema } from "@colyseus/schema";
+import { Dictionary } from "@prisma/client/runtime/library";
+
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -43,6 +46,17 @@ export const messageHandlers: MessageHandlers = {
     },
 
     cancelMove: (room, client, message) => {
+        const items = message.items;
+        const playerId = room.sessionIdToPlayerId.get(client.sessionId);
+        const player = room.state.characters.get(playerId);
+
+        items.forEach((item : Item) => {
+            const pId = player.items.findIndex((ii: Item) => ii.id == item.id);
+            if(pId > 0) {
+                player.items[pId].count = item.count;
+            }
+        })
+
         room.dispatcher.dispatch(new MoveCommand(), {
             client, 
             message, 

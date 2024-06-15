@@ -104,10 +104,6 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             return;
         }
 
-        character.coordinates.x = destinationTile.coordinates.x;
-        character.coordinates.y = destinationTile.coordinates.y;
-        character.currentTileId = message.tileId;
-
         const idx = this.room.state.map.moveItemEntities.findIndex(
             mItem => mItem.tileId == destinationTile.id && 
             (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
@@ -135,10 +131,14 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     type: "ultimate"
                 });
             }
+
+            client.send("getBombDamage", {
+                playerId: moveEntity.playerId
+            });
             this.room.state.map.moveItemEntities.deleteAt(idx);
 
         } else {
-            const cost = message.tileId == destinationTile.id? 0 : -1;
+            const cost = currentTile.id == destinationTile.id? 0 : -1;
 
             if(force) {
                 const originEnergy = message.originEnergy;
@@ -148,6 +148,10 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             }
         }
 
+
+        character.coordinates.x = destinationTile.coordinates.x;
+        character.coordinates.y = destinationTile.coordinates.y;
+        character.currentTileId = message.tileId;
 
         fillPathWithCoords(path, this.room.state.map);
 
