@@ -23,6 +23,70 @@ export const ITEMTYPE: {[key: string] : number} = {
     CALTROP_BOMB: 21,
 }
 
+export const STACKTYPE: {[key: string] : number} = {
+    Dodge : 0,
+    Cure : 1,
+    Steady : 2,
+    Charge : 3,
+    Revenge : 4,
+    Block : 5,
+    Reflect : 6,
+    Revive : 7,
+    Void : 8,
+    Burn : 9,
+    Freeze : 10,
+    Slow : 11
+}
+
+export const PERKTYPE : {[key : string] : number} = {
+    Push : 0,
+    Pull : 1,
+    Vampire : 2,
+    XRay : 3,
+    AreaOfEffect: 4
+}
+
+export const POWERTYPE : {[key : string] : number} = {
+    Sword1 : 0,
+    Axe1 : 1,
+    Spear1 : 2,
+    Shield1 : 3,
+    Bow1 : 4,
+    Crossbow1 : 5,
+    Cannon1 : 6,
+    Armor1 : 7,
+    Fire1 : 8,
+    Ice1 : 9,
+    Holy1 : 10,
+    Void1 : 11,
+
+    Sword2 : 12,
+    Axe2 : 13,
+    Spear2 : 14,
+    Shield2 : 15,
+    Bow2 : 16,
+    Crossbow2 : 17,
+    Cannon2 : 18,
+    Armor2 : 19,
+    Fire2 : 20,
+    Ice2 : 21,
+    Holy2 : 22,
+    Void2 : 23,
+
+    Sword3 : 24,
+    Axe3 : 25,
+    Spear3 : 26,
+    Shield3 : 27,
+    Bow3 : 28,
+    Crossbow3 : 29,
+    Cannon3 : 30,
+    Armor3 : 31,
+    Fire3 : 32,
+    Ice3 : 33,
+    Holy3 : 34,
+    Void3 : 35,
+}
+
 export const powermoves = [
     {
         // SWORD1
@@ -1222,6 +1286,87 @@ export const powermoves = [
     },
 ]
 
+export const stacks : { [key: number]: { level: number, name: string, description: string } } = {
+    [STACKTYPE.Dodge] : {
+        level : 1,
+        name : "Dodge",
+        description: "Use 1 Dodge stack to avoid being damaged from 1 bomb or arrow."
+    },
+    [STACKTYPE.Cure] : {
+        level : 1,
+        name : "Cure",
+        description: "At the beginning of your turn, roll a dice to recover health or cancel a void stack."
+    },
+    [STACKTYPE.Steady] : {
+        level : 1,
+        name : "Steady",
+        description: "Use 1 steady stack to avoid 1 push or pull perk."
+    },
+    [STACKTYPE.Charge] : {
+        level : 1,
+        name : "Charge",
+        description: "Use 1 charge stack with your next attack. Double ultimate move gage."
+    },
+    [STACKTYPE.Block] : {
+        level : 1,
+        name : "Block",
+        description: "Use 1 block stack to roll 1 dice and subtract damage from the next attack."
+    },
+    [STACKTYPE.Reflect] : {
+        level : 1,
+        name : "Reflect",
+        description: "When hit with magic, use 1 reflect stack to subtract from the damage and deal it in revenge damage."
+    },
+    [STACKTYPE.Revive] : {
+        level : 1,
+        name : "Revive",
+        description: "If you are killed, revive on your next turn with 10 HP and all items."
+    },
+    [STACKTYPE.Void] : {
+        level : 1,
+        name : "Void",
+        description: "At the beginning of your turn, roll a dice to take damage from 1 Void stack."
+    },
+    [STACKTYPE.Burn] : {
+        level : 1,
+        name : "Burn",
+        description: "At the beginning of your turn, roll a dice to take damage from 1 fire stack."
+    },
+    [STACKTYPE.Freeze] : {
+        level : 1,
+        name : "Freeze",
+        description: "At the beginning of your turn, roll a dice to subtract from energy."
+    },
+    [STACKTYPE.Slow] : {
+        level : 1,
+        name : "Slow",
+        description: "At the beginning of your turni roll a dice to subtract your energy and from your ultimate move gage."
+    },
+}
+
+export const perks: {[key : number] : { name : string, description : string }} = {
+    [PERKTYPE.Push] : {
+        name : "Push",
+        description : "Push the defending player 1 square away from the attacking player."
+    },
+    [PERKTYPE.Pull] : {
+        name : "Pull",
+        description : "Pull the defending player 1 square toward the attacking player."
+    },
+    [PERKTYPE.Vampire] : {
+        name : "Vampire",
+        description : "Recover 1 health for every 1 damage dealt with Vampire."
+    },
+    [PERKTYPE.XRay] : {
+        name : "XRay",
+        description : "X-Ray attacks can ignore walls."
+    },
+    [PERKTYPE.AreaOfEffect] : {
+        name : "AreaOfEffect",
+        description : "The attack can affect multiple players within a given range."
+    },
+}
+
 export const powers: { [key: number]: { level: number, name: string } } = {
     [0] : {
         level: 1,
@@ -1369,7 +1514,7 @@ export const powers: { [key: number]: { level: number, name: string } } = {
     },
 }
 
-export const itemResults: {[key: number]: {heart?: number, energy?: number, ultimate?: number, stackId?: number, powerId?: number}} = {
+export const itemResults: {[key: number]: {heart?: number, energy?: number, ultimate?: number, stackId?: number, powerId?: number, perkId?: number}} = {
     [ITEMTYPE.BOMB]: {
         heart: -3
     },
@@ -1379,15 +1524,42 @@ export const itemResults: {[key: number]: {heart?: number, energy?: number, ulti
     },
     [ITEMTYPE.FIRE_BOMB]: {
         heart: -4,
-        stackId: 1
+        stackId: STACKTYPE.Burn
     },
     [ITEMTYPE.ICE_BOMB]: {
         heart: -3,
         energy: -2,
-        stackId: 3
+        stackId: STACKTYPE.Freeze
     },
     [ITEMTYPE.VOID_BOMB]: {
         heart: -5,
-        stackId: 4
+        stackId: STACKTYPE.Void
+    },
+    [ITEMTYPE.ARROW] : {
+        heart : -2
+    },
+    [ITEMTYPE.BOMB_ARROW] : {
+        heart : -6,
+        perkId : PERKTYPE.Push
+    },
+    [ITEMTYPE.FIRE_ARROW] : {
+        heart : -3,
+        stackId : STACKTYPE.Burn
+    },
+    [ITEMTYPE.ICE_ARROW] : {
+        energy : -3,
+        ultimate : -5,
+        stackId : STACKTYPE.Freeze
+    },
+    [ITEMTYPE.VOID_ARROW] : {
+        heart : -4,
+        stackId : STACKTYPE.Void
+    },
+    [ITEMTYPE.POTION] : {
+        heart : 5
+    },
+    [ITEMTYPE.ELIXIR] : {
+        energy : 10,
+        stackId : STACKTYPE.Dodge
     }
 }
