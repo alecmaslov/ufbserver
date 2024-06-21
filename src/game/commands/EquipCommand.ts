@@ -51,7 +51,8 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     range : move.range,
                     coin : move.coin,
                     powerIds: [],
-                    costList: []
+                    costList: [],
+                    result: move.result
                 };
 
                 move.powerIds.forEach(pid => {
@@ -65,6 +66,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                         item
                     )
                 })
+                console.log(powermove);
                 clientMessage.powermoves.push(powermove);
             }
         })

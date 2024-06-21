@@ -24,18 +24,18 @@ export const ITEMTYPE: {[key: string] : number} = {
 }
 
 export const STACKTYPE: {[key: string] : number} = {
-    Dodge : 0,
-    Cure : 1,
+    Cure : 0,
+    Block : 1,
     Steady : 2,
-    Charge : 3,
-    Revenge : 4,
-    Block : 5,
-    Reflect : 6,
-    Revive : 7,
-    Void : 8,
-    Burn : 9,
-    Freeze : 10,
-    Slow : 11
+    Reflect : 3,
+    Charge : 4,
+    Revenge : 5,
+    Revive : 6,
+    Slow : 7,
+    Dodge : 8,
+    Freeze : 9,
+    Burn : 10,
+    Void : 11,
 }
 
 export const PERKTYPE : {[key : string] : number} = {
@@ -102,6 +102,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result: {
+            health: -1,
+        },
         range: 1,
         light: 3,
         coin: 0,
@@ -124,6 +127,16 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result: {
+            health: -1,
+            stacks: [
+                {
+                    id: STACKTYPE.Burn,
+                    count: 2
+                }
+            ]
+        },
+
         range: 0,
         light: 5,
         coin: 0,
@@ -142,6 +155,15 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result: {
+            health: -2,
+            stacks: [
+                {
+                    id: STACKTYPE.Revenge,
+                    count : 1
+                },
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -164,6 +186,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result: {
+
+        },
         range: 1,
         light: 10,
         coin: 0,
@@ -186,6 +211,18 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result: {
+            stacks: [
+                {
+                    id : STACKTYPE.Dodge,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Cure,
+                    count: 1
+                }
+            ]
+        },
         range: 0,
         light: 6,
         coin: 0,
@@ -204,6 +241,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            health : -1
+        },
         range: 1,
         light: 3,
         coin: 0,
@@ -226,6 +266,15 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            perkId: PERKTYPE.Push,
+            stacks: [
+                {
+                    id : STACKTYPE.Void,
+                    count : 1
+                }
+            ]
+        },
         range: 1,
         light: 8,
         coin: 0,
@@ -244,6 +293,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks: [
+                {
+                    id : STACKTYPE.Steady,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -266,6 +323,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 10,
         coin: 0,
@@ -284,6 +344,15 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            ultimate: 5,
+            stacks: [
+                {
+                    id : STACKTYPE.Charge,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -302,6 +371,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 5,
         coin: 0,
@@ -324,6 +396,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 4,
         coin: 0,
@@ -342,6 +417,9 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+
+        },
         range: 3,
         light: 8,
         coin: 0,
@@ -360,6 +438,9 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 8,
         coin: 0,
@@ -382,6 +463,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 7,
         coin: 0,
@@ -400,6 +484,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 4,
         coin: 0,
@@ -422,6 +509,26 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Block,
+                    count: 1
+                },
+                {
+                    id : STACKTYPE.Reflect,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Burn,
+                    count : -1
+                },
+                {
+                    id : STACKTYPE.Freeze,
+                    count : -1
+                }
+            ]
+        },
         range: 0,
         light: 7,
         coin: 0,
@@ -440,6 +547,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Revenge,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 3,
         coin: 0,
@@ -458,6 +573,9 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 7,
         coin: 0,
@@ -465,7 +583,7 @@ export const powermoves = [
     {
         // Shield3
         id: 20,
-        name: "Shield Slam",
+        name: "Shield Shield",
         powerImageId: 27,
         powerIds: [
             27
@@ -476,6 +594,14 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Revive,
+                    count : 1
+                }
+            ]
+        },
         range: 1,
         light: 10,
         coin: 0,
@@ -494,6 +620,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 5,
         light: 2,
         coin: 0,
@@ -512,6 +641,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.ARROW,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 1,
@@ -530,6 +667,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Dodge,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -552,6 +697,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 8,
         light: 8,
         coin: 0,
@@ -574,6 +722,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            coin : 2
+        },
         range: 0,
         light: 3,
         coin: 0,
@@ -592,6 +743,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 2,
         light: 2,
         coin: 0,
@@ -614,6 +768,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 3,
         light: 2,
         coin: 0,
@@ -632,6 +789,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Steady,
+                    count : 2
+                }
+            ]
+        },
         range: 0,
         light: 4,
         coin: 0,
@@ -654,6 +819,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.BOMB_ARROW,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -676,6 +849,22 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.FIRE_ARROW,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.ICE_ARROW,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.VOID_ARROW,
+                    count : 1
+                },
+            ]
+        },
         range: 0,
         light: 3,
         coin: 0,
@@ -694,6 +883,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 4,
         light: 5,
         coin: 0,
@@ -712,6 +904,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.BOMB,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 2,
@@ -734,6 +934,22 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.FIRE_BOMB,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.VOID_BOMB,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.ICE_BOMB,
+                    count : 1
+                },
+            ]
+        },
         range: 0,
         light: 3,
         coin: 0,
@@ -756,6 +972,9 @@ export const powermoves = [
                 count: 3
             },
         ],
+        result : {
+
+        },
         range: 8,
         light: 15,
         coin: 0,
@@ -778,6 +997,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            coin : 3
+        },
         range: 0,
         light: 4,
         coin: 0,
@@ -796,6 +1018,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Block,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -814,6 +1044,15 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Charge,
+                    count : 1
+                }
+            ],
+            ultimate : 5
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -836,6 +1075,27 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks :[
+                {
+                    id : STACKTYPE.Steady,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Block,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Burn,
+                    count : -1
+                },
+                {
+                    id : STACKTYPE.Freeze,
+                    count : -1
+                },
+
+            ]
+        },
         range: 0,
         light: 5,
         coin: 0,
@@ -854,6 +1114,20 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.POTION,
+                    count : 1
+                }
+            ],
+            stacks : [
+                {
+                    id : STACKTYPE.Cure,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 12,
         coin: 0,
@@ -876,6 +1150,15 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            energy : 10,
+            stacks : [
+                {
+                    id : STACKTYPE.Dodge,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 0,
         coin: 0,
@@ -894,6 +1177,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 4,
         light: 9,
         coin: 0,
@@ -912,6 +1198,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Burn,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 3,
         coin: 0,
@@ -934,6 +1228,18 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.FIRE_ARROW,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.FIRE_BOMB,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -956,6 +1262,9 @@ export const powermoves = [
                 count: 5
             },
         ],
+        result : {
+
+        },
         range: 0,
         light: 15,
         coin: 0,
@@ -978,6 +1287,15 @@ export const powermoves = [
                 count: 4
             },
         ],
+        result : {
+            health : 5,
+            stacks : [
+                {
+                    id : STACKTYPE.Steady,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 0,
         coin: 0,
@@ -996,6 +1314,9 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+
+        },
         range: 0,
         light: 5,
         coin: 0,
@@ -1014,6 +1335,14 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Freeze,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 5,
         coin: 0,
@@ -1036,6 +1365,18 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.ICE_ARROW,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.ICE_BOMB,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 2,
         coin: 0,
@@ -1058,6 +1399,9 @@ export const powermoves = [
                 count: 5
             },
         ],
+        result : {
+
+        },
         range: 0,
         light: 15,
         coin: 0,
@@ -1080,6 +1424,15 @@ export const powermoves = [
                 count: 3
             },
         ],
+        result : {
+            energy : 5,
+            stacks : [
+                {
+                    id : STACKTYPE.Dodge,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 0,
         coin: 0,
@@ -1098,6 +1451,20 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.POTION,
+                    count : 1
+                }
+            ],
+            stacks : [
+                {
+                    id : STACKTYPE.Cure,
+                    count : 1
+                }
+            ]
+        },
         range: 0,
         light: 12,
         coin: 0,
@@ -1120,6 +1487,20 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.ELIXIR,
+                    count : 1
+                }
+            ],
+            stacks : [
+                {
+                    id : STACKTYPE.Cure,
+                    count : 2
+                }
+            ]
+        },
         range: 0,
         light: 18,
         coin: 0,
@@ -1138,6 +1519,26 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+            stacks :[
+                {
+                    id : STACKTYPE.Dodge,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Steady,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Burn,
+                    count : -1
+                },
+                {
+                    id : STACKTYPE.Freeze,
+                    count : -1
+                },
+            ]
+        },
         range: 0,
         light: 8,
         coin: 0,
@@ -1160,6 +1561,18 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks : [
+                {
+                    id : STACKTYPE.Revive,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Cure,
+                    count : 3
+                },
+            ]
+        },
         range: 0,
         light: 24,
         coin: 0,
@@ -1178,6 +1591,19 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            stacks :[
+                {
+                    id : STACKTYPE.Charge,
+                    count : 1
+                },
+                {
+                    id : STACKTYPE.Reflect,
+                    count : 1
+                },
+            ],
+            ultimate : 5
+        },
         range: 0,
         light: 10,
         coin: 0,
@@ -1200,6 +1626,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 1,
         light: 8,
         coin: 0,
@@ -1218,6 +1647,9 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+
+        },
         range: 3,
         light: 10,
         coin: 0,
@@ -1240,6 +1672,18 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+            items : [
+                {
+                    id : ITEMTYPE.VOID_BOMB,
+                    count : 1
+                },
+                {
+                    id : ITEMTYPE.VOID_ARROW,
+                    count : 1
+                },
+            ]
+        },
         range: 0,
         light: 10,
         coin: 1,
@@ -1262,6 +1706,9 @@ export const powermoves = [
                 count: 1
             },
         ],
+        result : {
+
+        },
         range: 3,
         light: 13,
         coin: 2,
@@ -1280,6 +1727,9 @@ export const powermoves = [
                 count: 2
             },
         ],
+        result : {
+            coin : 1
+        },
         range: 1,
         light: 7,
         coin: 0,
@@ -1341,6 +1791,11 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
         level : 1,
         name : "Slow",
         description: "At the beginning of your turni roll a dice to subtract your energy and from your ultimate move gage."
+    },
+    [STACKTYPE.Revenge] : {
+        level : 1,
+        name : "Revenge",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage."
     },
 }
 

@@ -44,6 +44,7 @@ export class CharacterStatsState extends Schema {
         DEFAULT_ULTIMATE
     );
     @type("int32") coin: number = 0;
+    @type("int32") range: number = 0;
     @type("int32") bags: number = 0;
 }
 

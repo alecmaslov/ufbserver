@@ -17,4 +17,19 @@ export interface PowerMove {
     light: number;
     coin: number;
     range: number;
+    result: {
+        health?: number;
+        stacks?: {
+            id : number,
+            count : number
+        }[];
+        perkId?: number;
+        ultimate?: number;
+        items?: {
+            id : number,
+            count : number
+        }[];
+        coin?: number;
+        energy?: number;
+    } 
 }

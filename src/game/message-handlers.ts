@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMTYPE, itemResults, powermoves, powers } from "#assets/resources";
+import { ITEMTYPE, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -312,6 +312,7 @@ export const messageHandlers: MessageHandlers = {
                 "You don't have enough energy to move there!",
                 "error"
             );
+            return;
         }
 
         const idx = character.items.findIndex(it => it.id == itemId && it.count > 0);
@@ -337,9 +338,45 @@ export const messageHandlers: MessageHandlers = {
             } else {
                 room.state.map.moveItemEntities.deleteAt(idx);
             }
+    
+            character.stats.energy.add(-1);
+        }
+        
+        if(itemId == ITEMTYPE.POTION) {
+            character.stats.health.add(5);
+        }
+        else if(itemId == ITEMTYPE.ELIXIR) {
+            character.stats.energy.add(10);
+
+            const CureStack : Item = character.stacks.find(stack => stack.id == STACKTYPE.Cure);
+            if(CureStack == null) {
+                const newStack = new Item();
+                newStack.id = STACKTYPE.Cure;
+                newStack.count = 1;
+                newStack.name = stacks[STACKTYPE.Cure].name;
+                newStack.description = stacks[STACKTYPE.Cure].description;
+                newStack.level = 1;
+
+                character.stacks.push(newStack);
+            } else {
+                CureStack.count++;
+            }
+
+            const DodgeStack : Item = character.stacks.find(stack => stack.id == STACKTYPE.Dodge);
+            if(DodgeStack == null) {
+                const newStack = new Item();
+                newStack.id = STACKTYPE.Dodge;
+                newStack.count = 1;
+                newStack.name = stacks[STACKTYPE.Dodge].name;
+                newStack.description = stacks[STACKTYPE.Dodge].description;
+                newStack.level = 1;
+
+                character.stacks.push(newStack);
+            } else {
+                DodgeStack.count++;
+            }
         }
 
-        character.stats.energy.add(-1);
 
         const setmoveitemMessage : SetMoveItemMessage = {
             itemId: itemId,
@@ -347,6 +384,124 @@ export const messageHandlers: MessageHandlers = {
         }
 
         client.send("SetMoveItem", setmoveitemMessage);
+
+     },
+
+     setPowerMove: (room, client, message) => {
+        const powerMoveId = message.powerMoveId;
+        const character = getClientCharacter(room, client);
+
+        const powermove = powermoves.find(pm => pm.id == powerMoveId);
+        let isResult = true;
+
+        console.log(powermove)
+        Object.keys(powermove).forEach(key => {
+            if(isResult) {
+                if(key == "range") {
+                    isResult = character.stats.range >= powermove.range;
+                    console.log("range", isResult);
+                    if(!isResult) return;
+                } else if(key == "light") {
+                    isResult = character.stats.energy.current >= powermove.light;
+                    console.log("light", isResult);
+                    if(!isResult) return;
+                } else if(key == "coin") {
+                    isResult = character.stats.coin >= powermove.coin;
+                    console.log("coin", isResult);
+                    if(!isResult) return;
+                } else if(key == "costList") {
+                    powermove.costList.forEach(item => {
+                        if(isResult) {
+                            const idx = character.items.findIndex(ii => ii.id == item.id);
+                            if(idx > -1) {
+                                isResult = character.items[idx].count >= item.count;
+                                if(!isResult) return;
+                            } else {
+                                isResult = false;
+                                return;
+                            }
+                        }
+                    });
+                    if(!isResult) return;
+                }
+            }
+
+        });
+        console.log("------ check logic======", isResult)
+        if(!isResult) {
+            room.notify(
+                client,
+                "Your item is not enough!",
+                "error"
+            );
+            return;
+        }
+
+        // REDUCE COST PART
+        Object.keys(powermove).forEach(key => {
+            if(key == "range") {
+                 character.stats.range -= powermove.range;
+            } else if(key == "light") {
+                character.stats.energy.add(-powermove.light);
+            } else if(key == "coin") {
+                character.stats.coin -= powermove.coin;
+            } else if(key == "costList") {
+                powermove.costList.forEach(item => {
+                    const idx = character.items.findIndex(ii => ii.id == item.id);
+                    character.items[idx].count -= item.count;
+                });
+            }
+        });
+
+        console.log("------ check cost ppart======")
+
+        // ADD RESOULT PART
+        Object.keys(powermove.result).forEach(key => {
+            if(key == "health") {
+                character.stats.health.add(powermove.result.health);
+            } else if(key == "energy") {
+                character.stats.energy.add(powermove.result.energy);
+            } else if(key == "coin") {
+                character.stats.coin += powermove.result.coin;
+            } else if(key == "ultimate") {
+                character.stats.ultimate.add(powermove.result.ultimate);
+            } else if(key == "perkId") {
+
+            } else if(key == "items") {
+                powermove.result.items.forEach(item => {
+                    const id = character.items.findIndex(ii => ii.id == item.id);
+                    if(id > -1) {
+                        character.items[id].count += item.count;                        
+                    } else {
+                        const newItem = new Item();
+                        newItem.id = item.id;
+                        newItem.count = item.count;
+                        newItem.level = 1;
+                        newItem.name = "item" + item.id;
+                        newItem.cost = 1;
+
+                        character.items.push(newItem);
+                    }
+                })
+            } else if(key == "stacks") {
+                powermove.result.stacks.forEach(stack => {
+                    const id = character.stacks.findIndex(ii => ii.id == stack.id);
+                    if(id > -1) {
+                        character.stacks[id].count += stack.count;
+                    } else {
+                        const newStack = new Item();
+                        newStack.id = stack.id;
+                        newStack.count = stack.count;
+                        newStack.cost = 1;
+                        newStack.name = stacks[stack.id].name;
+                        newStack.description = stacks[stack.id].description;
+                        newStack.level = 1;
+
+                        character.stacks.push(newStack);
+                    }
+                })
+            }
+        });
 
      }
 

@@ -3,11 +3,12 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getClientCharacter } from "#game/helpers/room-helpers";
-import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
-import { ITEMTYPE, itemResults } from "#assets/resources";
+import { ITEMTYPE, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
+import { Item } from "#game/schema/CharacterState";
 
 type OnMoveCommandPayload = {
     client: Client;
@@ -132,8 +133,27 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 });
             }
 
+            if(!!result.stackId) {
+                const stack = character.stacks.find(stack => stack.id == result.stackId);
+                if(stack == null) {
+                    const newStack = new Item();
+                    newStack.id = result.stackId;
+                    newStack.count = 1;
+                    newStack.name = stacks[result.stackId].name;
+                    newStack.description = stacks[result.stackId].description;
+                    newStack.level = 1;
+    
+                    character.stacks.push(newStack);
+                }
+                else 
+                {
+                    stack.count++;
+                }
+            }
+
             client.send("getBombDamage", {
-                playerId: moveEntity.playerId
+                playerId: moveEntity.playerId,
+                itemResult: result
             });
             this.room.state.map.moveItemEntities.deleteAt(idx);
 

@@ -4,7 +4,7 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { powers } from "#assets/resources";
+import { STACKTYPE, powers, stacks } from "#assets/resources";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -23,12 +23,12 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        [5, 18, 19, 20, 21].forEach(id => {
+        [5, 18, 19, 20, 21, 8, 9].forEach(id => {
             const testItem : Item = character.items.find(item => item.id == id);
             if(testItem == null) {
                 const newItem = new Item();
                 newItem.id = id;
-                newItem.count = 4;
+                newItem.count = 6;
                 newItem.name = `item${id}`;
                 newItem.description = "description";
                 newItem.level = 1;
@@ -38,6 +38,41 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
                 testItem.count++;
             }
         })
+
+        // ADD STACKS
+        Object.keys(STACKTYPE).forEach(key => {
+            const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
+            if(testStack == null) {
+                console.log(STACKTYPE[key])
+                const newStack = new Item();
+                newStack.id = STACKTYPE[key];
+                newStack.count = 5;
+                newStack.name = key;
+                newStack.description = stacks[STACKTYPE[key]].description;
+                newStack.level = 1;
+
+                character.stacks.push(newStack);
+            }
+        });
+
+        // ADD POWER for MOVE ITEM
+        [10].forEach(key => {
+            const testPower : Item = character.powers.find(power => power.id == key);
+            if(testPower == null) {
+                const newPower = new Item();
+                newPower.id = key;
+                newPower.name = powers[key].name;
+                newPower.count = 1;
+                newPower.description = "";
+                newPower.level = 1;
+
+                character.powers.push(newPower);
+            } else {
+                testPower.count++;
+            }
+        })
+
+        // END TEST
 
         const item : Item = character.items.find(item => item.id == message.itemId);
         if(item == null) {
