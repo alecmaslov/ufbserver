@@ -149,6 +149,12 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 {
                     stack.count++;
                 }
+
+                client.send("addExtraScore", {
+                    score: 1,
+                    type: "stack",
+                    stackId: result.stackId
+                });
             }
 
             client.send("getBombDamage", {

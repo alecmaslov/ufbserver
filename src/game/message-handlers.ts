@@ -441,14 +441,38 @@ export const messageHandlers: MessageHandlers = {
         Object.keys(powermove).forEach(key => {
             if(key == "range") {
                  character.stats.range -= powermove.range;
+                 client.send("addExtraScore", {
+                    score: -powermove.range,
+                    type: "range",
+                });
             } else if(key == "light") {
                 character.stats.energy.add(-powermove.light);
+                client.send("addExtraScore", {
+                    score: -powermove.light,
+                    type: "energy",
+                });
             } else if(key == "coin") {
                 character.stats.coin -= powermove.coin;
+                client.send("addExtraScore", {
+                    score: -powermove.coin,
+                    type: "coin",
+                });
             } else if(key == "costList") {
                 powermove.costList.forEach(item => {
                     const idx = character.items.findIndex(ii => ii.id == item.id);
                     character.items[idx].count -= item.count;
+
+                    if(item.id == ITEMTYPE.MELEE) {
+                        client.send("addExtraScore", {
+                            score: -item.count,
+                            type: "melee",
+                        });
+                    } else if(item.id == ITEMTYPE.MANA) {
+                        client.send("addExtraScore", {
+                            score: -item.count,
+                            type: "mana",
+                        });
+                    }
                 });
             }
         });
@@ -459,12 +483,28 @@ export const messageHandlers: MessageHandlers = {
         Object.keys(powermove.result).forEach(key => {
             if(key == "health") {
                 character.stats.health.add(powermove.result.health);
+                client.send("addExtraScore", {
+                    score: powermove.result.health,
+                    type: "heart",
+                });
             } else if(key == "energy") {
                 character.stats.energy.add(powermove.result.energy);
+                client.send("addExtraScore", {
+                    score: powermove.result.energy,
+                    type: "energy",
+                });
             } else if(key == "coin") {
                 character.stats.coin += powermove.result.coin;
+                client.send("addExtraScore", {
+                    score: powermove.result.coin,
+                    type: "coin",
+                });
             } else if(key == "ultimate") {
                 character.stats.ultimate.add(powermove.result.ultimate);
+                client.send("addExtraScore", {
+                    score: powermove.result.ultimate,
+                    type: "ultimate",
+                });
             } else if(key == "perkId") {
 
             } else if(key == "items") {
@@ -481,6 +521,18 @@ export const messageHandlers: MessageHandlers = {
                         newItem.cost = 1;
 
                         character.items.push(newItem);
+                    }
+
+                    if(id == ITEMTYPE.MELEE) {
+                        client.send("addExtraScore", {
+                            score: item.count,
+                            type: "melee",
+                        });
+                    } else if(id == ITEMTYPE.MANA) {
+                        client.send("addExtraScore", {
+                            score: item.count,
+                            type: "mana",
+                        });
                     }
                 })
             } else if(key == "stacks") {
