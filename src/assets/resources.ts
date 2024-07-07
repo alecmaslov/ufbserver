@@ -21,6 +21,8 @@ export const ITEMTYPE: {[key: string] : number} = {
     ICE_BOMB: 19,
     VOID_BOMB: 20,
     CALTROP_BOMB: 21,
+    ICE_TEA: 22,
+    FLAME_CHILI: 23,
 }
 
 export const STACKTYPE: {[key: string] : number} = {
@@ -44,6 +46,17 @@ export const PERKTYPE : {[key : string] : number} = {
     Vampire : 2,
     XRay : 3,
     AreaOfEffect: 4
+}
+
+export const QUESTTYPE: {[key : string]: number} = {
+    SLAYER: 0,
+    GLITTER: 1,
+    KILL: 2,
+    CRAFTS: 3,
+    LUCK: 4,
+    ENERGY: 5,
+    STRENGTH: 6,
+    LIFE: 7
 }
 
 export const POWERTYPE : {[key : string] : number} = {
@@ -1736,66 +1749,90 @@ export const powermoves = [
     },
 ]
 
-export const stacks : { [key: number]: { level: number, name: string, description: string } } = {
+export const stacks : { [key: number]: { level: number, name: string, description: string, cost: number, sell: number } } = {
     [STACKTYPE.Dodge] : {
         level : 1,
         name : "Dodge",
-        description: "Use 1 Dodge stack to avoid being damaged from 1 bomb or arrow."
+        description: "Use 1 Dodge stack to avoid being damaged from 1 bomb or arrow.",
+        cost: 4,
+        sell: 2
     },
     [STACKTYPE.Cure] : {
         level : 1,
         name : "Cure",
-        description: "At the beginning of your turn, roll a dice to recover health or cancel a void stack."
+        description: "At the beginning of your turn, roll a dice to recover health or cancel a void stack.",
+        cost: 4,
+        sell: 2
     },
     [STACKTYPE.Steady] : {
         level : 1,
         name : "Steady",
-        description: "Use 1 steady stack to avoid 1 push or pull perk."
+        description: "Use 1 steady stack to avoid 1 push or pull perk.",
+        cost: 2,
+        sell: 1
     },
     [STACKTYPE.Charge] : {
         level : 1,
         name : "Charge",
-        description: "Use 1 charge stack with your next attack. Double ultimate move gage."
+        description: "Use 1 charge stack with your next attack. Double ultimate move gage.",
+        cost: 2,
+        sell: 1
     },
     [STACKTYPE.Block] : {
         level : 1,
         name : "Block",
-        description: "Use 1 block stack to roll 1 dice and subtract damage from the next attack."
+        description: "Use 1 block stack to roll 1 dice and subtract damage from the next attack.",
+        cost: 4,
+        sell: 2
     },
     [STACKTYPE.Reflect] : {
         level : 1,
         name : "Reflect",
-        description: "When hit with magic, use 1 reflect stack to subtract from the damage and deal it in revenge damage."
+        description: "When hit with magic, use 1 reflect stack to subtract from the damage and deal it in revenge damage.",
+        cost: 6,
+        sell: 3
     },
     [STACKTYPE.Revive] : {
         level : 1,
         name : "Revive",
-        description: "If you are killed, revive on your next turn with 10 HP and all items."
+        description: "If you are killed, revive on your next turn with 10 HP and all items.",
+        cost: 25,
+        sell: 12
     },
     [STACKTYPE.Void] : {
         level : 1,
         name : "Void",
-        description: "At the beginning of your turn, roll a dice to take damage from 1 Void stack."
+        description: "At the beginning of your turn, roll a dice to take damage from 1 Void stack.",
+        cost: -1,
+        sell: -1
     },
     [STACKTYPE.Burn] : {
         level : 1,
         name : "Burn",
-        description: "At the beginning of your turn, roll a dice to take damage from 1 fire stack."
+        description: "At the beginning of your turn, roll a dice to take damage from 1 fire stack.",
+        cost: 4,
+        sell: -1
     },
     [STACKTYPE.Freeze] : {
         level : 1,
         name : "Freeze",
-        description: "At the beginning of your turn, roll a dice to subtract from energy."
+        description: "At the beginning of your turn, roll a dice to subtract from energy.",
+        cost: 4,
+        sell: -1
     },
     [STACKTYPE.Slow] : {
         level : 1,
         name : "Slow",
-        description: "At the beginning of your turni roll a dice to subtract your energy and from your ultimate move gage."
+        description: "At the beginning of your turni roll a dice to subtract your energy and from your ultimate move gage.",
+        cost: -1,
+        sell: -1
     },
     [STACKTYPE.Revenge] : {
         level : 1,
         name : "Revenge",
-        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage."
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 4,
+        sell: 2
     },
 }
 
@@ -1822,10 +1859,10 @@ export const perks: {[key : number] : { name : string, description : string }} =
     },
 }
 
-export const powers: { [key: number]: { level: number, name: string } } = {
+export const powers: { [key: number]: { level: number, name: string} } = {
     [0] : {
         level: 1,
-        name: "Sword"
+        name: "Sword",
     },
     [12] : {
         level: 2,
@@ -2017,4 +2054,234 @@ export const itemResults: {[key: number]: {heart?: number, energy?: number, ulti
         energy : 10,
         stackId : STACKTYPE.Dodge
     }
+}
+
+export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string}} = {
+    [ITEMTYPE.HEART_PIECE]: {
+        level: 1,
+        cost: 4,
+        sell: -1,
+        name: "Heart Piece"
+    },
+    [ITEMTYPE.ENERGY_SHARD]: {
+        level: 1,
+        cost: 4,
+        sell: -1,
+        name: "Energy Shard"
+
+    },
+    [ITEMTYPE.POTION]: {
+        level: 1,
+        cost: 6,
+        sell: 3,
+        name: "Potion"
+    },
+    [ITEMTYPE.FEATHER]: {
+        level: 1,
+        cost: 6,
+        sell: 3,
+        name: "Feather"
+    },
+    [ITEMTYPE.ARROW]: {
+        level: 1,
+        cost: 4,
+        sell: 2,
+        name: "Arrow"
+    },
+    [ITEMTYPE.BOMB]: {
+        level: 1,
+        cost: 6,
+        sell: 3,
+        name: "Bomb"
+    },
+    [ITEMTYPE.HEART_CRYSTAL]: {
+        level: 2,
+        cost: 12,
+        sell: -1,
+        name: "Heart Crystal"
+    },
+    [ITEMTYPE.ENERGY_CRYSTAL]: {
+        level: 2,
+        cost: 11,
+        sell: -1,
+        name: "Energy Crystal"
+    },
+    [ITEMTYPE.MELEE]: {
+        level: 2,
+        cost: 8,
+        sell: -1,
+        name: "Melee"
+    },
+    [ITEMTYPE.MANA]: {
+        level: 2,
+        cost: 8,
+        sell: -1,
+        name: "Mana"
+    },
+    [ITEMTYPE.WARP_CRYSTAL]: {
+        level: 2,
+        cost: 12,
+        sell: 6,
+        name: "Warp Crystal"
+    },
+    [ITEMTYPE.ELIXIR]: {
+        level: 2,
+        cost: 10,
+        sell: 5,
+        name: "Elixir"
+    },
+    [ITEMTYPE.QUIVER]: {
+        level: 2,
+        cost: 8,
+        sell: -1,
+        name: "Quiver"
+    },
+    [ITEMTYPE.BOMB_BAG]: {
+        level: 2,
+        cost: 8,
+        sell: -1,
+        name: "Bomb Bag"
+    },
+    [ITEMTYPE.BOMB_ARROW]: {
+        level: 2,
+        cost: 8,
+        sell: 4,
+        name: "Bomb Arrow"
+    },
+    [ITEMTYPE.FIRE_ARROW]: {
+        level: 2,
+        cost: 8,
+        sell: 4,
+        name: "Fire Arrow"
+    },
+    [ITEMTYPE.ICE_ARROW]: {
+        level: 2,
+        cost: 8,
+        sell: 4,
+        name: "Ice Arrow"
+    },
+    [ITEMTYPE.VOID_ARROW]: {
+        level: 2,
+        cost: 8,
+        sell: 4,
+        name: "Void Arrow"
+    },
+    [ITEMTYPE.FIRE_BOMB]: {
+        level: 2,
+        cost: 10,
+        sell: 5,
+        name: "Fire Bomb"
+    },
+    [ITEMTYPE.ICE_BOMB]: {
+        level: 2,
+        cost: 10,
+        sell: 5,
+        name: "Ice Bomb"
+    },
+    [ITEMTYPE.VOID_BOMB]: {
+        level: 2,
+        cost: 10,
+        sell: 5,
+        name: "Void Bomb"
+    },
+    [ITEMTYPE.CALTROP_BOMB]: {
+        level: 2,
+        cost: 10,
+        sell: 5,
+        name: "Caltrops"
+    },
+    [ITEMTYPE.ICE_TEA]: {
+        level: 1,
+        cost: 2,
+        sell: 1,
+        name: "Ice Tea"
+    },
+    [ITEMTYPE.FLAME_CHILI]: {
+        level: 1,
+        cost: 2,
+        sell: 1,
+        name: "Flame Chili"
+    },
+}
+
+export const POWERCOSTS: {[key: number]: {cost: number, sell: number}} = {
+    [1] : {
+        cost: 8,
+        sell: 4
+    },
+    [2] : {
+        cost: -1,
+        sell: 8
+    },
+    [3]: {
+        cost: -1,
+        sell: 15
+    }
+}
+
+export const QUESTS: {[key: number]: {id: number, title: string, normal: string, hard: string, level: number, condition: Object}} = {
+    [QUESTTYPE.SLAYER]: {
+        id: QUESTTYPE.SLAYER,
+        title: "SLAYERS GONNA SLAY",
+        normal: "Get 3 kills",
+        hard: "Get 6 kills",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.GLITTER]: {
+        id: QUESTTYPE.GLITTER,
+        title: "ALL THAT GLITTERS",
+        normal: "Get 20 gold",
+        hard: "Get 40 gold",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.KILL]: {
+        id: QUESTTYPE.KILL,
+        title: "LICENSE TO KILL",
+        normal: "Kill a Green Monster",
+        hard: "Kill a Yellow Monster",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.CRAFTS]: {
+        id: QUESTTYPE.CRAFTS,
+        title: "ARTS & CRAFTS",
+        normal: "Craft 2 items",
+        hard: "Craft 4 items",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.LUCK]: {
+        id: QUESTTYPE.LUCK,
+        title: "LUCK OF THE DRAW",
+        normal: "Get 4 Treasures/ItemBags",
+        hard: "Get 8 Treasures/ItemBags",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.ENERGY]: {
+        id: QUESTTYPE.ENERGY,
+        title: "BUNDLE OF ENERGY",
+        normal: "Complete 2 Energy Crystal",
+        hard: "Complete 4 Energy Crystal",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.STRENGTH]: {
+        id: QUESTTYPE.STRENGTH,
+        title: "THE STRENGTH WITHIN",
+        normal: " Get 7 stacks at once",
+        hard: " Get 15 stacks at once",
+        condition: {},
+        level: 1
+    },
+    [QUESTTYPE.LIFE]: {
+        id: QUESTTYPE.LIFE,
+        title: "THE MEANING OF LIFE",
+        normal: "Complete 2 Heart Crystal",
+        hard: "Complete 4 Heart Crystal",
+        condition: {},
+        level: 1
+    },
 }

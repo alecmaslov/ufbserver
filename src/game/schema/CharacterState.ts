@@ -59,7 +59,8 @@ export class Item extends Schema {
     @type("string") description: string = "";
     @type("int16") count: number = 0;
     @type("int16") level: number = 1;
-    @type("int16") cost: number = 1;
+    @type("int16") cost: number = -1;
+    @type("int16") sell: number = -1;
 }
 
 export class CharacterState extends Schema {

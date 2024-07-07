@@ -4,7 +4,7 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { STACKTYPE, powers, stacks } from "#assets/resources";
+import { ITEMDETAIL, POWERCOSTS, STACKTYPE, powers, stacks } from "#assets/resources";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -29,9 +29,11 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
                 const newItem = new Item();
                 newItem.id = id;
                 newItem.count = 6;
-                newItem.name = `item${id}`;
+                newItem.name = ITEMDETAIL[id].name;
                 newItem.description = "description";
-                newItem.level = 1;
+                newItem.level = ITEMDETAIL[id].level;
+                newItem.cost = ITEMDETAIL[id].cost;
+                newItem.sell = ITEMDETAIL[id].sell;
     
                 character.items.push(newItem);
             } else {
@@ -49,7 +51,9 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
                 newStack.count = 5;
                 newStack.name = key;
                 newStack.description = stacks[STACKTYPE[key]].description;
-                newStack.level = 1;
+                newStack.level = stacks[STACKTYPE[key]].level;
+                newStack.cost = stacks[STACKTYPE[key]].cost;
+                newStack.sell = stacks[STACKTYPE[key]].sell;
 
                 character.stacks.push(newStack);
             }
@@ -64,7 +68,9 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
                 newPower.name = powers[key].name;
                 newPower.count = 1;
                 newPower.description = "";
-                newPower.level = 1;
+                newPower.level = powers[key].level;
+                newPower.cost = POWERCOSTS[powers[key].level].cost;
+                newPower.sell = POWERCOSTS[powers[key].level].sell;
 
                 character.powers.push(newPower);
             } else {
@@ -79,9 +85,11 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             const newItem = new Item();
             newItem.id = message.itemId;
             newItem.count = 1;
-            newItem.name = `item${message.itemId}`;
+            newItem.name = ITEMDETAIL[newItem.id].name;
             newItem.description = "description";
-            newItem.level = 1;
+            newItem.level = ITEMDETAIL[newItem.id].level;
+            newItem.cost = ITEMDETAIL[newItem.id].cost;
+            newItem.sell = ITEMDETAIL[newItem.id].sell;
 
             character.items.push(newItem);
         } else {
@@ -97,6 +105,9 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             newPower.name = powers[id].name;
             newPower.description = "description";
             newPower.level = powers[id].level;
+            newPower.cost = POWERCOSTS[newPower.level].cost;
+            newPower.sell = POWERCOSTS[newPower.level].sell;
+
             character.powers.push(newPower);
         } else {
             power.count++;

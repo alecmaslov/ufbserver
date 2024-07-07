@@ -8,11 +8,12 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMTYPE, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
 import { Dictionary } from "@prisma/client/runtime/library";
+import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 
 
 type MessageHandler<TMessage> = (
@@ -183,12 +184,6 @@ export const messageHandlers: MessageHandlers = {
     },
 
     getSpawn: (room, client, message) => {
-
-        // room.dispatcher.dispatch(new ResourceCommand(), {
-        //     client,
-        //     message,
-        //     force: false,
-        // });
         room.dispatcher.dispatch(new ItemCommand(), {
             client,
             message
@@ -207,13 +202,10 @@ export const messageHandlers: MessageHandlers = {
 
 
     getPowerMoveList: (room, client, message) => {
-
         room.dispatcher.dispatch(new EquipCommand(), {
             client,
             message
-        });
-
-        
+        });        
     },
 
     equipPower: (room, client, message) => {
@@ -233,6 +225,9 @@ export const messageHandlers: MessageHandlers = {
             newPower.name = powers[powerId].name;
             newPower.description = "description";
             newPower.level = powers[powerId].level;
+            newPower.cost = POWERCOSTS[newPower.id].cost;
+            newPower.sell = POWERCOSTS[newPower.id].sell;
+
             character.powers.push(newPower);
         } else {
             power.count++;
@@ -300,7 +295,7 @@ export const messageHandlers: MessageHandlers = {
         client.send("ReceiveMoveItem", movemessage);
     },
 
-     setMoveItem:(room, client, message) => {
+    setMoveItem:(room, client, message) => {
         const itemId = message.itemId;
         const tileId = message.tileId;
         const character = getClientCharacter(room, client);
@@ -338,7 +333,7 @@ export const messageHandlers: MessageHandlers = {
             } else {
                 room.state.map.moveItemEntities.deleteAt(idx);
             }
-    
+
             character.stats.energy.add(-1);
         }
         
@@ -355,7 +350,9 @@ export const messageHandlers: MessageHandlers = {
                 newStack.count = 1;
                 newStack.name = stacks[STACKTYPE.Cure].name;
                 newStack.description = stacks[STACKTYPE.Cure].description;
-                newStack.level = 1;
+                newStack.level = stacks[STACKTYPE.Cure].level;
+                newStack.cost = stacks[STACKTYPE.Cure].cost;
+                newStack.sell = stacks[STACKTYPE.Cure].sell;
 
                 character.stacks.push(newStack);
             } else {
@@ -369,7 +366,9 @@ export const messageHandlers: MessageHandlers = {
                 newStack.count = 1;
                 newStack.name = stacks[STACKTYPE.Dodge].name;
                 newStack.description = stacks[STACKTYPE.Dodge].description;
-                newStack.level = 1;
+                newStack.level = stacks[STACKTYPE.Dodge].level;
+                newStack.cost = stacks[STACKTYPE.Dodge].cost;
+                newStack.sell = stacks[STACKTYPE.Dodge].sell;
 
                 character.stacks.push(newStack);
             } else {
@@ -385,178 +384,71 @@ export const messageHandlers: MessageHandlers = {
 
         client.send("SetMoveItem", setmoveitemMessage);
 
-     },
+    },
 
-     setPowerMove: (room, client, message) => {
-        const powerMoveId = message.powerMoveId;
+    setPowerMove: (room, client, message) => {
+        room.dispatcher.dispatch(new PowerMoveCommand(), {
+            client,
+            message
+        });
+    },
+
+    getMerchantData: (room, client, message) => {
         const character = getClientCharacter(room, client);
 
-        const powermove = powermoves.find(pm => pm.id == powerMoveId);
-        let isResult = true;
 
-        console.log(powermove)
-        Object.keys(powermove).forEach(key => {
-            if(isResult) {
-                if(key == "range") {
-                    isResult = character.stats.range >= powermove.range;
-                    console.log("range", isResult);
-                    if(!isResult) return;
-                } else if(key == "light") {
-                    isResult = character.stats.energy.current >= powermove.light;
-                    console.log("light", isResult);
-                    if(!isResult) return;
-                } else if(key == "coin") {
-                    isResult = character.stats.coin >= powermove.coin;
-                    console.log("coin", isResult);
-                    if(!isResult) return;
-                } else if(key == "costList") {
-                    powermove.costList.forEach(item => {
-                        if(isResult) {
-                            const idx = character.items.findIndex(ii => ii.id == item.id);
-                            if(idx > -1) {
-                                isResult = character.items[idx].count >= item.count;
-                                if(!isResult) return;
-                            } else {
-                                isResult = false;
-                                return;
-                            }
-                        }
-                    });
-                    if(!isResult) return;
-                }
-            }
-
-        });
-        console.log("------ check logic======", isResult)
-        if(!isResult) {
-            room.notify(
-                client,
-                "Your item is not enough!",
-                "error"
-            );
-            return;
-        }
-
-        // REDUCE COST PART
-        Object.keys(powermove).forEach(key => {
-            if(key == "range") {
-                 character.stats.range -= powermove.range;
-                 client.send("addExtraScore", {
-                    score: -powermove.range,
-                    type: "range",
-                });
-            } else if(key == "light") {
-                character.stats.energy.add(-powermove.light);
-                client.send("addExtraScore", {
-                    score: -powermove.light,
-                    type: "energy",
-                });
-            } else if(key == "coin") {
-                character.stats.coin -= powermove.coin;
-                client.send("addExtraScore", {
-                    score: -powermove.coin,
-                    type: "coin",
-                });
-            } else if(key == "costList") {
-                powermove.costList.forEach(item => {
-                    const idx = character.items.findIndex(ii => ii.id == item.id);
-                    character.items[idx].count -= item.count;
-
-                    if(item.id == ITEMTYPE.MELEE) {
-                        client.send("addExtraScore", {
-                            score: -item.count,
-                            type: "melee",
-                        });
-                    } else if(item.id == ITEMTYPE.MANA) {
-                        client.send("addExtraScore", {
-                            score: -item.count,
-                            type: "mana",
-                        });
-                    }
-                });
-            }
+        const itemData : Item[] = [];
+        Object.keys(ITEMTYPE).forEach(key => {
+            const id: number = ITEMTYPE[key];
+            let item = new Item();
+            item.id = id;
+            item.name = ITEMDETAIL[id].name;
+            item.level = ITEMDETAIL[id].level;
+            item.cost = ITEMDETAIL[id].cost;
+            item.sell = ITEMDETAIL[id].sell;
+            itemData.push(item);
         });
 
-        console.log("------ check cost ppart======")
-
-        // ADD RESOULT PART
-        Object.keys(powermove.result).forEach(key => {
-            if(key == "health") {
-                character.stats.health.add(powermove.result.health);
-                client.send("addExtraScore", {
-                    score: powermove.result.health,
-                    type: "heart",
-                });
-            } else if(key == "energy") {
-                character.stats.energy.add(powermove.result.energy);
-                client.send("addExtraScore", {
-                    score: powermove.result.energy,
-                    type: "energy",
-                });
-            } else if(key == "coin") {
-                character.stats.coin += powermove.result.coin;
-                client.send("addExtraScore", {
-                    score: powermove.result.coin,
-                    type: "coin",
-                });
-            } else if(key == "ultimate") {
-                character.stats.ultimate.add(powermove.result.ultimate);
-                client.send("addExtraScore", {
-                    score: powermove.result.ultimate,
-                    type: "ultimate",
-                });
-            } else if(key == "perkId") {
-
-            } else if(key == "items") {
-                powermove.result.items.forEach(item => {
-                    const id = character.items.findIndex(ii => ii.id == item.id);
-                    if(id > -1) {
-                        character.items[id].count += item.count;                        
-                    } else {
-                        const newItem = new Item();
-                        newItem.id = item.id;
-                        newItem.count = item.count;
-                        newItem.level = 1;
-                        newItem.name = "item" + item.id;
-                        newItem.cost = 1;
-
-                        character.items.push(newItem);
-                    }
-
-                    if(id == ITEMTYPE.MELEE) {
-                        client.send("addExtraScore", {
-                            score: item.count,
-                            type: "melee",
-                        });
-                    } else if(id == ITEMTYPE.MANA) {
-                        client.send("addExtraScore", {
-                            score: item.count,
-                            type: "mana",
-                        });
-                    }
-                })
-            } else if(key == "stacks") {
-                powermove.result.stacks.forEach(stack => {
-                    const id = character.stacks.findIndex(ii => ii.id == stack.id);
-                    if(id > -1) {
-                        character.stacks[id].count += stack.count;
-                    } else {
-                        const newStack = new Item();
-                        newStack.id = stack.id;
-                        newStack.count = stack.count;
-                        newStack.cost = 1;
-                        newStack.name = stacks[stack.id].name;
-                        newStack.description = stacks[stack.id].description;
-                        newStack.level = 1;
-
-                        character.stacks.push(newStack);
-                    }
-                })
-            }
+        const powerData : Item[] = [];
+        Object.keys(POWERCOSTS).forEach(key => {
+            const id: number = Number(key);
+            let power = new Item();
+            power.id = id;
+            power.name = powers[id].name;
+            power.level = powers[id].level;
+            power.cost = POWERCOSTS[id].cost;
+            power.sell = POWERCOSTS[id].sell;
+            powerData.push(power);
         });
 
-     }
+        const stackData : Item[] = [];
+        Object.keys(stacks).forEach(key => {
+            const id: number = Number(key);
+            let stack = new Item();
+            stack.id = id;
+            stack.name = stacks[id].name;
+            stack.level = stacks[id].level;
+            stack.cost = stacks[id].cost;
+            stack.sell = stacks[id].sell;
+            stackData.push(stack);
+        });
 
+        const getMerchantDataDataMessage = {
+            items: itemData,
+            powers: powerData,
+            stacks: stackData
+        };
+
+        client.send("getMerchantData", getMerchantDataDataMessage)
+    },
+
+    buyItem: (room, client, message) => {
+
+    },
+
+    sellItem: (room, client, message) => {
+        
+    }
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

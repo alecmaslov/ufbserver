@@ -141,7 +141,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     newStack.count = 1;
                     newStack.name = stacks[result.stackId].name;
                     newStack.description = stacks[result.stackId].description;
-                    newStack.level = 1;
+                    newStack.level = stacks[result.stackId].level;
+                    newStack.cost = stacks[result.stackId].cost;
+                    newStack.sell = stacks[result.stackId].sell;
     
                     character.stacks.push(newStack);
                 }
