@@ -32,3 +32,14 @@ export function shuffleArray(array : any[]) {
 
     return array;
 }
+
+export function getRandomElements(array: any[], num: number) {
+    const copyArray = [...array];
+    const randomElements = [];
+    for (let i = 0; i < num; i++) {
+      const randomIndex = Math.floor(Math.random() * copyArray.length);
+      const element = copyArray.splice(randomIndex, 1)[0];
+      randomElements.push(element);
+    }
+    return randomElements;
+  }

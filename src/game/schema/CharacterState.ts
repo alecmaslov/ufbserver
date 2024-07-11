@@ -63,6 +63,18 @@ export class Item extends Schema {
     @type("int16") sell: number = -1;
 }
 
+export class Quest extends Schema {
+    @type("int32") id: number = 0;
+    @type("string") name: string = "";
+    @type("string") description: string = "";
+    @type("int16") level: number = 1;
+    @type("int32") itemId: number = 0;
+    @type("int32") powerId: number = 0;
+    @type("int32") melee: number = 0;
+    @type("int32") mana: number = 0;
+    @type("int32") coin: number = 0;
+}
+
 export class CharacterState extends Schema {
     @type("string") id: string = "";
     @type("string") displayName: string = "";
@@ -80,6 +92,8 @@ export class CharacterState extends Schema {
     @type([Item]) powers : ArraySchema<Item> = new ArraySchema<Item>();
     @type([Item]) stacks : ArraySchema<Item> = new ArraySchema<Item>();
     @type([Item]) equipSlots: ArraySchema<Item> = new ArraySchema<Item>();
+    @type([Quest]) quests : ArraySchema<Quest> = new ArraySchema<Quest>();
+
 }
 
 

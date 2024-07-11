@@ -2285,3 +2285,55 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         level: 1
     },
 }
+
+export const CRAFTS_ITEM: {id: number, item1: number, item2: number, coin: number, result: number}[] = [
+    {
+        id: 0,
+        item1: ITEMTYPE.FLAME_CHILI,
+        item2: ITEMTYPE.ARROW,
+        coin: 1,
+        result: ITEMTYPE.FIRE_ARROW
+    },
+    {
+        id: 1,
+        item1: ITEMTYPE.FLAME_CHILI,
+        item2: ITEMTYPE.BOMB,
+        coin: 1,
+        result: ITEMTYPE.FIRE_BOMB
+    },
+    {
+        id: 2,
+        item1: ITEMTYPE.ICE_TEA,
+        item2: ITEMTYPE.ARROW,
+        coin: 1,
+        result: ITEMTYPE.ICE_ARROW
+    },
+    {
+        id: 3,
+        item1: ITEMTYPE.ICE_TEA,
+        item2: ITEMTYPE.BOMB,
+        coin: 1,
+        result: ITEMTYPE.ICE_BOMB
+    },
+    {
+        id: 4,
+        item1: ITEMTYPE.FLAME_CHILI,
+        item2: ITEMTYPE.FLAME_CHILI,
+        coin: 1,
+        result: ITEMTYPE.HEART_PIECE
+    },
+    {
+        id: 5,
+        item1: ITEMTYPE.ICE_TEA,
+        item2: ITEMTYPE.ICE_TEA,
+        coin: 1,
+        result: ITEMTYPE.ENERGY_SHARD
+    },
+    {
+        id: 6,
+        item1: ITEMTYPE.ARROW,
+        item2: ITEMTYPE.BOMB,
+        coin: 1,
+        result: ITEMTYPE.BOMB_ARROW
+    },
+]
