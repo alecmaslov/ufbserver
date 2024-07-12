@@ -435,7 +435,8 @@ export const messageHandlers: MessageHandlers = {
         //const randomStack = getRandomElements(stackData, 3);
 
         const questData : Quest[] = [];
-        const Qarray = Object.keys(QUESTS).map(key => QUESTS[Number(key)]);
+        const Qarray = getRandomElements(Object.keys(QUESTS).map(key => QUESTS[Number(key)]), 3);
+        
         for(let i = 0; i < 3; i++) {
             const quest = new Quest();
             quest.id = Qarray[i].id;
