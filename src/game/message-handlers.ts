@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -270,7 +270,9 @@ export const messageHandlers: MessageHandlers = {
             ];
             conditions.forEach((cond, i) => {
                 const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, cond)
-                if(currentTile.walls[i] == 1 && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1 && id != "") {
+                if((currentTile.walls[i] == EDGE_TYPE.WALL || currentTile.walls[i] == EDGE_TYPE.RAVINE || currentTile.walls[i] == EDGE_TYPE.CLIFF) 
+                    && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1 
+                    && id != "") {
                     directions[i] = 1;
                 }
             })
@@ -336,12 +338,9 @@ export const messageHandlers: MessageHandlers = {
             }
 
             character.stats.energy.add(-1);
-        }
-        
-        if(itemId == ITEMTYPE.POTION) {
+        } else if(itemId == ITEMTYPE.POTION) {
             character.stats.health.add(5);
-        }
-        else if(itemId == ITEMTYPE.ELIXIR) {
+        } else if(itemId == ITEMTYPE.ELIXIR) {
             character.stats.energy.add(10);
 
             const CureStack : Item = character.stacks.find(stack => stack.id == STACKTYPE.Cure);
@@ -375,6 +374,13 @@ export const messageHandlers: MessageHandlers = {
             } else {
                 DodgeStack.count++;
             }
+        } else if(itemId == ITEMTYPE.FEATHER) {
+
+            room.dispatcher.dispatch(new MoveCommand(), {
+                client,
+                message,
+                force: false,
+            });
         }
 
 

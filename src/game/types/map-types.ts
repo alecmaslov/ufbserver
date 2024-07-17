@@ -27,7 +27,7 @@ export interface TileEdge {
 
 export interface TileSide {
     side: "Top" | "Right" | "Bottom" | "Left";
-    edgeProperty: "Wall" | "Door" | "Portal" | "Bridge";
+    edgeProperty: "Wall" | "Door" | "Portal" | "Bridge" | "null" | "Ravine" | "Void" | "Cliff" | "Basic" | "Stair";
 }
 
 export interface GameTile {

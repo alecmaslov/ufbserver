@@ -1,4 +1,5 @@
 import { getAllMapFiles, getMap } from "#assets/maps";
+import { EDGE_TYPE } from "#assets/resources";
 import db from "#db";
 import { GameTile, TileSide, UFBMap } from "#game/types/map-types";
 import { createId } from "@paralleldrive/cuid2";
@@ -32,8 +33,27 @@ async function upsertMap(mapData: UFBMap): Promise<string> {
 
 function sidesToWallArray(sides: TileSide[]) {
     const wallArray = [0, 0, 0, 0];
+
     for (const side of sides) {
-        const wallValue = side.edgeProperty === "Wall" ? 1 : 0;
+        let wallValue = 0;
+        if(side.edgeProperty === "Wall") {
+            wallValue = EDGE_TYPE.WALL;
+        } else if(side.edgeProperty === "Basic") {
+            wallValue = EDGE_TYPE.BASIC;
+        } else if(side.edgeProperty === "Bridge") {
+            wallValue = EDGE_TYPE.BRIDGE;
+        } else if(side.edgeProperty === "Stair") {
+            wallValue = EDGE_TYPE.STAIR;
+        } else if(side.edgeProperty === "null") {
+            wallValue = EDGE_TYPE.NULL;
+        } else if(side.edgeProperty === "Ravine") {
+            wallValue = EDGE_TYPE.RAVINE;
+        } else if(side.edgeProperty === "Void") {
+            wallValue = EDGE_TYPE.VOID;
+        } else if(side.edgeProperty === "Cliff") {
+            wallValue = EDGE_TYPE.CLIFF;
+        }
+
         switch (side.side) {
             case "Top":
                 wallArray[0] = wallValue;
@@ -81,11 +101,10 @@ async function uspertMapTransaction(map: UFBMap) {
                     ? TileType.OpenTile
                     : (tile.type as TileType),
             mapId: mapId,
-            legacyCode: tile.legacyCode
+            legacyCode: tile.legacyCode,
         };
     });
 
-    console.log("init tiles data.", tiles[0], tiles[1]);
 
     // Map of tileCode to generated ID
     const tileIdMap: Record<string, string> = {};
@@ -97,11 +116,11 @@ async function uspertMapTransaction(map: UFBMap) {
     const spawnZones = tilesWithSpawns.map((tile: Partial<GameTile>) => {
         return {
             type: tile.spawnZone?.type,
-            seedId: tile.spawnZone?.seedId,
+            seedId: 0,
             tileId: tileIdMap[tile.id],
         };
     });
-
+    console.log("-------------", spawnZones)
     // Prepare adjacency data
     const adjacencies: any[] = [];
     for (const tileCode in map.adjacencyList) {
@@ -117,6 +136,7 @@ async function uspertMapTransaction(map: UFBMap) {
     }
 
     const operations: any[] = [];
+    console.log("init tiles data.", tiles[0], tiles[1]);
 
     for (const tile of tiles) {
         operations.push(

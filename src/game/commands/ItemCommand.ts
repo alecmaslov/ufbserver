@@ -23,7 +23,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        [5, 18, 19, 20, 21, 8, 9].forEach(id => {
+        [5, 18, 19, 20, 21, 8, 9, 10, 3].forEach(id => {
             const testItem : Item = character.items.find(item => item.id == id);
             if(testItem == null) {
                 const newItem = new Item();

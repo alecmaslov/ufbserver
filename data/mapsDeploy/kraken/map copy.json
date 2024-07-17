@@ -15,7 +15,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -27,7 +27,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A01JU0"
@@ -44,7 +44,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -73,7 +73,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -102,7 +102,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -131,7 +131,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -160,7 +160,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -189,7 +189,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -218,7 +218,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -247,7 +247,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -276,7 +276,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -293,7 +293,8 @@
       ],
       "legacyCode": "J01JY1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 1
       }
     },
     {
@@ -308,7 +309,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -320,7 +321,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "K01IU0"
@@ -337,7 +338,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -362,15 +363,15 @@
       },
       "type": "Upper",
       "blockPath": "North",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -383,7 +384,8 @@
       ],
       "legacyCode": "M01IL2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 1
       }
     },
     {
@@ -427,7 +429,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -439,7 +441,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "O01JL0"
@@ -456,7 +458,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -485,7 +487,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -514,7 +516,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -543,7 +545,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -572,7 +574,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -601,7 +603,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -630,7 +632,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -659,7 +661,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -688,7 +690,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -717,7 +719,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -746,11 +748,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -787,7 +789,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A02JQ0"
@@ -804,7 +806,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -816,7 +818,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B02IU0"
@@ -833,7 +835,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -841,7 +843,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -862,7 +864,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -870,7 +872,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -891,7 +893,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -899,7 +901,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -914,17 +916,17 @@
         "x": 5,
         "y": 1
       },
-      "type": "Upper",
+      "type": "Lower",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -986,7 +988,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -1036,7 +1038,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -1048,7 +1050,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J02IU0"
@@ -1098,7 +1100,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -1127,7 +1129,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -1135,7 +1137,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "M02IM0"
@@ -1152,7 +1154,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -1355,7 +1357,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -1367,7 +1369,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U02IU0"
@@ -1384,7 +1386,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -1392,7 +1394,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -1413,7 +1415,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -1421,7 +1423,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -1442,7 +1444,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -1450,7 +1452,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -1471,11 +1473,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -1504,7 +1506,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -1541,7 +1543,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A03JQ0"
@@ -1562,7 +1564,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -1570,7 +1572,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B03IQ0"
@@ -1682,11 +1684,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F03IT0"
@@ -1703,15 +1705,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -1720,8 +1722,8 @@
       ],
       "legacyCode": "G03IP1",
       "spawnZone": {
-        "type": "Chest"
-     
+        "type": "Chest",
+        "seedId": 3
       }
     },
     {
@@ -1736,19 +1738,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "H03DY0"
@@ -1777,7 +1779,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "I03JQ0"
@@ -1806,7 +1808,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J03IO0"
@@ -1847,7 +1849,7 @@
         "y": 2
       },
       "type": "Upper",
-      "blockPath": "East",
+      "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
@@ -1856,7 +1858,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -1867,7 +1869,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L03IM0"
+      "legacyCode": "L03IK0"
     },
     {
       "id": "tile_M_3",
@@ -1885,7 +1887,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -1893,7 +1895,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "M03IM0"
@@ -1968,7 +1970,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -1980,7 +1982,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "P03IU0"
@@ -1997,7 +1999,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -2005,7 +2007,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -2026,11 +2028,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -2043,8 +2045,8 @@
       ],
       "legacyCode": "R03IR1",
       "spawnZone": {
-        "type": "Chest"
-    
+        "type": "Chest",
+        "seedId": 3
       }
     },
     {
@@ -2121,7 +2123,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -2129,7 +2131,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U03IQ0"
@@ -2237,7 +2239,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -2245,7 +2247,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y03IQ0"
@@ -2266,7 +2268,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -2303,7 +2305,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A04JQ0"
@@ -2324,7 +2326,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -2332,7 +2334,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B04IQ0"
@@ -2432,7 +2434,7 @@
       },
       "type": "Lower",
       "blockPath": "NorthSouth",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -2453,8 +2455,8 @@
       ],
       "legacyCode": "F04JP2",
       "spawnZone": {
-        "type": "Monster"
-    
+        "type": "Merchant",
+        "seedId": 4
       }
     },
     {
@@ -2476,7 +2478,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -2497,7 +2499,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -2563,11 +2565,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J04IT0"
@@ -2617,7 +2619,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -2646,7 +2648,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -2654,7 +2656,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "M04IM0"
@@ -2708,7 +2710,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -2733,7 +2735,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -2741,7 +2743,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "P04IO0"
@@ -2758,19 +2760,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "Q04DK0"
@@ -2782,12 +2784,12 @@
         "y": 3
       },
       "type": "Upper",
-      "blockPath": "NorthSouth",
+      "blockPath": "None",
       "spawnType": "Chest",
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -2795,17 +2797,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "R04IK1",
       "spawnZone": {
-        "type": "Chest"
- 
+        "type": "Chest",
+        "seedId": 4
       }
     },
     {
@@ -2816,11 +2818,11 @@
       },
       "type": "Upper",
       "blockPath": "North",
-      "spawnType": "Monster",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -2835,11 +2837,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S04IL0",
-      "spawnZone": {
-        "type": "Monster"
-   
-	}
+      "legacyCode": "S04IL0"
     },
     {
       "id": "tile_T_4",
@@ -2853,7 +2851,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -2861,7 +2859,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -2886,11 +2884,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -3002,7 +3000,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3010,7 +3008,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y04IQ0"
@@ -3031,7 +3029,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3068,7 +3066,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A05JQ0"
@@ -3089,7 +3087,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3097,7 +3095,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B05IQ0"
@@ -3139,11 +3137,11 @@
       },
       "type": "Upper",
       "blockPath": "SouthWestNorth",
-      "spawnType": "Chest",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -3151,18 +3149,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "D05IW0",
-      "spawnZone": {
-        "type": "Chest"
-   
-      }
+      "legacyCode": "D05IW0"
     },
     {
       "id": "tile_E_5",
@@ -3176,7 +3170,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -3205,11 +3199,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -3275,7 +3269,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "H05JN0"
@@ -3358,11 +3352,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "K05IO0"
@@ -3383,11 +3377,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -3396,8 +3390,8 @@
       ],
       "legacyCode": "L05IK1",
       "spawnZone": {
-        "type": "Chest"
-
+        "type": "Chest",
+        "seedId": 5
       }
     },
     {
@@ -3416,7 +3410,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3424,7 +3418,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "M05IM0"
@@ -3437,7 +3431,7 @@
       },
       "type": "Lower",
       "blockPath": "SouthWest",
-      "spawnType": "Monster",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
@@ -3445,7 +3439,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -3456,11 +3450,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "N05JT0",
-      "spawnZone": {
-        "type": "Monster"
-  
-      }
+      "legacyCode": "N05JT0"
     },
     {
       "id": "tile_O_5",
@@ -3511,11 +3501,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "P05IN0"
@@ -3532,7 +3522,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -3540,7 +3530,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -3561,15 +3551,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -3578,8 +3568,8 @@
       ],
       "legacyCode": "R05IN1",
       "spawnZone": {
-        "type": "Chest"
- 
+        "type": "Chest",
+        "seedId": 5
       }
     },
     {
@@ -3598,7 +3588,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3606,13 +3596,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "S05IM1",
       "spawnZone": {
-        "type": "Chest"
-
+        "type": "Chest",
+        "seedId": 5
       }
     },
     {
@@ -3776,7 +3766,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3784,7 +3774,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y05IQ0"
@@ -3805,7 +3795,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3842,7 +3832,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A06JQ0"
@@ -3863,7 +3853,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -3871,7 +3861,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B06IQ0"
@@ -3954,11 +3944,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "E06IT0"
@@ -3998,13 +3988,12 @@
         "x": 6,
         "y": 5
       },
-      "type": "Upper",
-	"blockPath": "North",
+      "blockPath": "North",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4033,7 +4022,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4062,7 +4051,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4091,7 +4080,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4099,7 +4088,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -4120,7 +4109,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -4149,7 +4138,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -4207,7 +4196,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4236,7 +4225,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4265,7 +4254,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4294,7 +4283,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4323,7 +4312,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -4356,11 +4345,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -4530,7 +4519,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -4538,7 +4527,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y06IQ0"
@@ -4559,7 +4548,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -4596,7 +4585,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A07JQ0"
@@ -4617,7 +4606,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -4625,7 +4614,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B07IQ0"
@@ -4696,7 +4685,7 @@
       },
       "type": "Lower",
       "blockPath": "NorthEastSouth",
-      "spawnType": "Chest",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
@@ -4715,11 +4704,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "E07JY0",
-      "spawnZone": {
-        "type": "Chest"
-
-      }
+      "legacyCode": "E07JY0"
     },
     {
       "id": "tile_F_7",
@@ -4741,11 +4726,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F07IO0"
@@ -4799,7 +4784,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -4824,7 +4809,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -4849,19 +4834,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "J07DK0"
@@ -4890,7 +4875,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "K07IK0"
@@ -5085,11 +5070,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5110,7 +5095,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -5168,7 +5153,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -5180,7 +5165,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U07IU0"
@@ -5197,7 +5182,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -5205,7 +5190,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5226,11 +5211,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -5288,15 +5273,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y07IQ0"
@@ -5317,7 +5302,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -5354,7 +5339,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A08JQ0"
@@ -5379,11 +5364,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B08IT0"
@@ -5400,7 +5385,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -5408,7 +5393,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5429,7 +5414,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -5437,7 +5422,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5458,7 +5443,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -5466,7 +5451,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5487,11 +5472,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -5520,15 +5505,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "G08IS0"
@@ -5569,7 +5554,7 @@
         "y": 7
       },
       "type": "Upper",
-      "blockPath": "South",
+      "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
         {
@@ -5578,18 +5563,18 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "I08IN0"
+      "legacyCode": "I08IT0"
     },
     {
       "id": "tile_J_8",
@@ -5603,11 +5588,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -5615,13 +5600,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "J08IK1",
       "spawnZone": {
-        "type": "Chest"
- 
+        "type": "Chest",
+        "seedId": 8
       }
     },
     {
@@ -5644,11 +5629,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "K08IN0"
@@ -5673,7 +5658,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5702,7 +5687,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5731,7 +5716,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5760,7 +5745,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5789,7 +5774,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5814,11 +5799,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -5833,7 +5818,7 @@
         "x": 17,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -5930,7 +5915,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -5938,7 +5923,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U08IQ0"
@@ -5972,8 +5957,8 @@
       ],
       "legacyCode": "V08JX1",
       "spawnZone": {
-        "type": "Chest"
-
+        "type": "Chest",
+        "seedId": 8
       }
     },
     {
@@ -5992,7 +5977,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6000,7 +5985,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W08IQ0"
@@ -6021,7 +6006,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6050,7 +6035,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6058,7 +6043,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y08AQ0"
@@ -6071,7 +6056,7 @@
       },
       "type": "Lower",
       "blockPath": "EastWest",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -6079,7 +6064,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6087,13 +6072,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Z08JQ2",
       "spawnZone": {
-        "type": "Monster"
-
+        "type": "Merchant",
+        "seedId": 8
       }
     },
     {
@@ -6104,7 +6089,7 @@
       },
       "type": "Lower",
       "blockPath": "West",
-      "spawnType": "Monster",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
@@ -6120,14 +6105,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A09JO0",
-      "spawnZone": {
-        "type": "Monster"
-   
-      }
+      "legacyCode": "A09JO0"
     },
     {
       "id": "tile_B_9",
@@ -6164,7 +6145,7 @@
         "x": 2,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -6261,7 +6242,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6269,7 +6250,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F09IQ0"
@@ -6311,11 +6292,11 @@
       },
       "type": "Lower",
       "blockPath": "South",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -6332,8 +6313,8 @@
       ],
       "legacyCode": "H09JN2",
       "spawnZone": {
-        "type": "Monster"
- 
+        "type": "Merchant",
+        "seedId": 9
       }
     },
     {
@@ -6365,8 +6346,8 @@
       ],
       "legacyCode": "I09JY1",
       "spawnZone": {
-        "type": "Chest"
-  
+        "type": "Chest",
+        "seedId": 9
       }
     },
     {
@@ -6385,15 +6366,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J09IQ0"
@@ -6427,8 +6408,8 @@
       ],
       "legacyCode": "K09JW1",
       "spawnZone": {
-        "type": "Chest"
-  
+        "type": "Chest",
+        "seedId": 9
       }
     },
     {
@@ -6468,7 +6449,7 @@
       },
       "type": "Lower",
       "blockPath": "North",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -6489,8 +6470,8 @@
       ],
       "legacyCode": "M09JL2",
       "spawnZone": {
-        "type": "Monster"
- 
+        "type": "Merchant",
+        "seedId": 9
       }
     },
     {
@@ -6712,7 +6693,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6720,7 +6701,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U09IQ0"
@@ -6770,7 +6751,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6778,7 +6759,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W09IQ0"
@@ -6824,11 +6805,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6836,7 +6817,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y09IQ0"
@@ -6857,7 +6838,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6894,7 +6875,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A10JQ0"
@@ -6911,7 +6892,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -6923,7 +6904,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B10IU0"
@@ -6940,7 +6921,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -6948,7 +6929,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -6969,11 +6950,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7031,7 +7012,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7039,7 +7020,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F10IQ0"
@@ -7085,7 +7066,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7097,7 +7078,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "H10IU0"
@@ -7114,15 +7095,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7167,12 +7148,12 @@
         "y": 9
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "North",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7180,14 +7161,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K10IQ0"
+      "legacyCode": "K10IL0"
     },
     {
       "id": "tile_L_10",
@@ -7201,11 +7182,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7226,7 +7207,7 @@
       },
       "type": "Lower",
       "blockPath": "EastWest",
-      "spawnType": "Monster",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
@@ -7245,11 +7226,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "M10JQ0",
-      "spawnZone": {
-        "type": "Monster"
- 
-      }
+      "legacyCode": "M10JQ0"
     },
     {
       "id": "tile_N_10",
@@ -7263,7 +7240,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7275,7 +7252,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "N10IU0"
@@ -7292,7 +7269,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7300,7 +7277,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7321,7 +7298,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7329,7 +7306,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7350,7 +7327,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7358,7 +7335,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7379,7 +7356,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7387,7 +7364,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7408,7 +7385,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7416,7 +7393,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7437,7 +7414,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -7445,7 +7422,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7470,11 +7447,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7528,7 +7505,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7536,7 +7513,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W10IQ0"
@@ -7586,7 +7563,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7594,7 +7571,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y10IQ0"
@@ -7615,7 +7592,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7652,7 +7629,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A11JQ0"
@@ -7673,7 +7650,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7681,7 +7658,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B11IQ0"
@@ -7715,8 +7692,8 @@
       ],
       "legacyCode": "C11JX1",
       "spawnZone": {
-        "type": "Chest"
-
+        "type": "Chest",
+        "seedId": 11
       }
     },
     {
@@ -7735,7 +7712,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7743,7 +7720,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D11IQ0"
@@ -7793,7 +7770,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7801,7 +7778,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F11IQ0"
@@ -7851,7 +7828,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -7859,7 +7836,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "H11IQ0"
@@ -7893,7 +7870,8 @@
       ],
       "legacyCode": "I11JX1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 11
       }
     },
     {
@@ -7908,7 +7886,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -7916,11 +7894,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J11IT0"
@@ -7937,7 +7915,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -7945,7 +7923,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -7970,11 +7948,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -8028,20 +8006,21 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "N11IQ1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 11
       }
     },
     {
@@ -8292,7 +8271,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8300,7 +8279,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W11IQ0"
@@ -8350,7 +8329,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8358,7 +8337,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y11IQ0"
@@ -8379,7 +8358,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8416,7 +8395,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A12JQ0"
@@ -8437,7 +8416,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8445,7 +8424,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B12IQ0"
@@ -8495,7 +8474,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8503,7 +8482,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D12IQ0"
@@ -8553,7 +8532,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8561,7 +8540,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F12IQ0"
@@ -8611,15 +8590,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "H12IQ0"
@@ -8731,7 +8710,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -8756,7 +8735,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -8781,19 +8760,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "N12DV0"
@@ -8822,7 +8801,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "O12JO0"
@@ -8847,7 +8826,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -8926,7 +8905,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -8938,7 +8917,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "S12IU0"
@@ -8955,7 +8934,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -8963,7 +8942,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -8984,7 +8963,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -8992,7 +8971,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -9013,7 +8992,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -9021,7 +9000,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -9046,11 +9025,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -9104,7 +9083,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9112,7 +9091,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y12IQ0"
@@ -9133,7 +9112,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9170,7 +9149,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A13JQ0"
@@ -9191,7 +9170,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9199,7 +9178,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B13IQ0"
@@ -9249,7 +9228,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9257,7 +9236,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D13IQ0"
@@ -9307,7 +9286,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9315,7 +9294,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F13IQ0"
@@ -9328,7 +9307,7 @@
       },
       "type": "Lower",
       "blockPath": "EastWest",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -9336,7 +9315,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9349,7 +9328,8 @@
       ],
       "legacyCode": "G13JQ2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 13
       }
     },
     {
@@ -9368,7 +9348,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9376,7 +9356,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "H13AQ0"
@@ -9405,7 +9385,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "I13JO0"
@@ -9455,7 +9435,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -9480,7 +9460,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -9492,12 +9472,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "L13JN1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 13
       }
     },
     {
@@ -9508,7 +9489,7 @@
       },
       "type": "Lower",
       "blockPath": "South",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -9529,7 +9510,8 @@
       ],
       "legacyCode": "M13JN2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 13
       }
     },
     {
@@ -9544,7 +9526,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -9602,11 +9584,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -9619,7 +9601,8 @@
       ],
       "legacyCode": "P13JN1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 13
       }
     },
     {
@@ -9646,7 +9629,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "Q13JN0"
@@ -9696,7 +9679,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9704,7 +9687,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "S13IQ0"
@@ -9738,7 +9721,8 @@
       ],
       "legacyCode": "T13JW1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 13
       }
     },
     {
@@ -9778,7 +9762,7 @@
       },
       "type": "Lower",
       "blockPath": "North",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -9799,7 +9783,8 @@
       ],
       "legacyCode": "V13JL2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 13
       }
     },
     {
@@ -9876,7 +9861,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9884,7 +9869,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y13IQ0"
@@ -9905,7 +9890,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9942,7 +9927,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A14JQ0"
@@ -9963,7 +9948,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -9971,7 +9956,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B14IQ0"
@@ -10021,7 +10006,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10029,7 +10014,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D14IQ0"
@@ -10079,7 +10064,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10087,7 +10072,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F14IQ0"
@@ -10133,11 +10118,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10145,7 +10130,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "H14IQ0"
@@ -10220,7 +10205,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10232,7 +10217,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "K14IU0"
@@ -10249,7 +10234,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10257,7 +10242,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -10278,11 +10263,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10315,7 +10300,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -10336,7 +10321,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10348,7 +10333,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "O14IU0"
@@ -10365,7 +10350,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10373,7 +10358,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -10394,11 +10379,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10440,7 +10425,8 @@
       ],
       "legacyCode": "R14JV1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 14
       }
     },
     {
@@ -10463,11 +10449,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "S14IN0"
@@ -10484,7 +10470,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10492,7 +10478,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -10513,11 +10499,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10633,7 +10619,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10641,7 +10627,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y14IQ0"
@@ -10662,7 +10648,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10699,7 +10685,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A15JQ0"
@@ -10720,7 +10706,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10728,7 +10714,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B15IQ0"
@@ -10778,7 +10764,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10786,7 +10772,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D15IQ0"
@@ -10836,7 +10822,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -10844,7 +10830,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F15IQ0"
@@ -10869,7 +10855,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -10878,7 +10864,8 @@
       ],
       "legacyCode": "G15JQ1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 15
       }
     },
     {
@@ -10901,11 +10888,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "H15IT0"
@@ -10922,7 +10909,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10930,7 +10917,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -10951,7 +10938,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -10984,11 +10971,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -11009,19 +10996,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "L15DK0"
@@ -11042,7 +11029,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -11050,7 +11037,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "M15IK0"
@@ -11067,7 +11054,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11075,7 +11062,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11100,7 +11087,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -11108,7 +11095,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "O15IK0"
@@ -11125,19 +11112,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "P15DK0"
@@ -11162,11 +11149,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "Q15IK0"
@@ -11183,7 +11170,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11212,7 +11199,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11220,7 +11207,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11241,7 +11228,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11249,7 +11236,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11274,11 +11261,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11307,7 +11294,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11328,7 +11315,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11340,7 +11327,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W15IU0"
@@ -11357,7 +11344,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11365,7 +11352,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11390,11 +11377,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11419,7 +11406,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -11456,7 +11443,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A16JQ0"
@@ -11477,7 +11464,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -11485,7 +11472,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B16IQ0"
@@ -11535,7 +11522,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -11543,7 +11530,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D16IQ0"
@@ -11577,7 +11564,8 @@
       ],
       "legacyCode": "E16JV1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 16
       }
     },
     {
@@ -11600,11 +11588,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "F16IN0"
@@ -11621,7 +11609,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11629,7 +11617,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11650,7 +11638,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11658,7 +11646,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11679,7 +11667,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11687,7 +11675,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11712,11 +11700,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11737,19 +11725,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "K16DK0"
@@ -11766,7 +11754,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -11778,7 +11766,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "L16IK0"
@@ -11799,11 +11787,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11824,7 +11812,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11861,11 +11849,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "O16IT0"
@@ -11882,11 +11870,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -11911,19 +11899,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "Q16DK0"
@@ -11948,11 +11936,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "R16IN0"
@@ -11969,7 +11957,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -11977,7 +11965,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -11998,7 +11986,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12006,7 +11994,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12027,15 +12015,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12056,7 +12044,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12064,7 +12052,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12089,15 +12077,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "W16IS0"
@@ -12176,7 +12164,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -12213,7 +12201,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A17JQ0"
@@ -12234,7 +12222,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -12242,7 +12230,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B17IQ0"
@@ -12296,11 +12284,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D17IT0"
@@ -12317,7 +12305,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12325,7 +12313,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12346,7 +12334,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12354,7 +12342,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12375,7 +12363,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12383,7 +12371,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12404,7 +12392,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12412,7 +12400,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12433,7 +12421,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12441,7 +12429,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12462,7 +12450,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12470,7 +12458,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12491,7 +12479,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -12499,7 +12487,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -12524,11 +12512,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -12574,7 +12562,7 @@
       },
       "type": "Lower",
       "blockPath": "None",
-      "spawnType": "Monster",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
@@ -12586,17 +12574,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N17JK0",
-      "spawnZone": {
-        "type": "Monster"
-      }
+      "legacyCode": "N17JK0"
     },
     {
       "id": "tile_O_17",
@@ -12647,11 +12632,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "P17IT0"
@@ -12668,11 +12653,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -12738,7 +12723,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "S17JP0"
@@ -12813,7 +12798,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12900,7 +12885,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -12908,11 +12893,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y17IU0"
@@ -12933,7 +12918,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -12970,7 +12955,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A18JQ0"
@@ -12991,7 +12976,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -12999,7 +12984,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B18IQ0"
@@ -13010,7 +12995,7 @@
         "x": 2,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -13082,7 +13067,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -13099,7 +13084,7 @@
       },
       "type": "Lower",
       "blockPath": "North",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -13120,7 +13105,8 @@
       ],
       "legacyCode": "F18JL2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 18
       }
     },
     {
@@ -13226,7 +13212,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -13255,7 +13241,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -13263,7 +13249,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "K18AQ0"
@@ -13292,7 +13278,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "L18JU0"
@@ -13313,7 +13299,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -13379,7 +13365,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "O18JO0"
@@ -13437,7 +13423,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Q18IO0"
@@ -13454,7 +13440,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13478,12 +13464,12 @@
         "y": 17
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13491,14 +13477,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S18IQ0"
+      "legacyCode": "S18IP0"
     },
     {
       "id": "tile_T_18",
@@ -13507,12 +13493,12 @@
         "y": 17
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13520,14 +13506,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T18IQ0"
+      "legacyCode": "T18IP0"
     },
     {
       "id": "tile_U_18",
@@ -13536,12 +13522,12 @@
         "y": 17
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13549,14 +13535,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U18IQ0"
+      "legacyCode": "U18IP0"
     },
     {
       "id": "tile_V_18",
@@ -13565,12 +13551,12 @@
         "y": 17
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13578,14 +13564,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V18IQ0"
+      "legacyCode": "V18IP0"
     },
     {
       "id": "tile_W_18",
@@ -13594,12 +13580,12 @@
         "y": 17
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13607,14 +13593,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W18IQ0"
+      "legacyCode": "W18IP0"
     },
     {
       "id": "tile_X_18",
@@ -13623,27 +13609,27 @@
         "y": 17
       },
       "type": "Upper",
-      "blockPath": "EastWest",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X18IQ0"
+      "legacyCode": "X18IP0"
     },
     {
       "id": "tile_Y_18",
@@ -13690,15 +13676,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "Z18IS0"
@@ -13727,7 +13713,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A19JQ0"
@@ -13752,11 +13738,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B19IT0"
@@ -13767,13 +13753,13 @@
         "x": 2,
         "y": 18
       },
-      "type": "Upper",
+      "type": "Lower",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13781,7 +13767,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -13802,15 +13788,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -13831,19 +13817,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "E19DY0"
@@ -13872,7 +13858,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "F19JQ0"
@@ -13889,7 +13875,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13901,7 +13887,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "G19JU0"
@@ -13918,7 +13904,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13926,7 +13912,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -13947,7 +13933,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -13955,7 +13941,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -13976,7 +13962,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14005,11 +13991,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -14063,7 +14049,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14075,7 +14061,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "M19IU0"
@@ -14092,15 +14078,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -14191,7 +14177,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Q19IO0"
@@ -14237,7 +14223,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14245,7 +14231,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -14266,7 +14252,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14274,7 +14260,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -14295,7 +14281,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14303,7 +14289,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -14324,7 +14310,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14332,7 +14318,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -14353,11 +14339,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -14399,7 +14385,8 @@
       ],
       "legacyCode": "X19JX1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 19
       }
     },
     {
@@ -14414,11 +14401,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -14426,7 +14413,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y19IQ0"
@@ -14447,7 +14434,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -14460,7 +14447,8 @@
       ],
       "legacyCode": "Z19JX1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 19
       }
     },
     {
@@ -14487,7 +14475,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A20JO0"
@@ -14527,7 +14515,7 @@
         "x": 2,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -14591,7 +14579,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14643,7 +14631,7 @@
         "x": 6,
         "y": 19
       },
-      "type": "Upper",
+      "type": "Lower",
       "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
@@ -14653,7 +14641,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -14661,7 +14649,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "G20JQ0"
@@ -14724,7 +14712,8 @@
       ],
       "legacyCode": "I20JY1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 20
       }
     },
     {
@@ -14751,7 +14740,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J20IO0"
@@ -14772,11 +14761,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -14834,11 +14823,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "M20IT0"
@@ -14855,7 +14844,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -14863,7 +14852,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -14884,11 +14873,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -14950,11 +14939,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Q20IT0"
@@ -14975,7 +14964,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15017,7 +15006,8 @@
       ],
       "legacyCode": "S20JW1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 20
       }
     },
     {
@@ -15069,7 +15059,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -15123,7 +15113,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15131,7 +15121,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W20IQ0"
@@ -15181,7 +15171,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15189,7 +15179,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y20IQ0"
@@ -15210,7 +15200,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15247,7 +15237,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A21JQ0"
@@ -15264,7 +15254,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -15276,7 +15266,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B21IU0"
@@ -15293,7 +15283,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -15301,7 +15291,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -15322,11 +15312,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15403,7 +15393,7 @@
         "x": 6,
         "y": 20
       },
-      "type": "Upper",
+      "type": "Lower",
       "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
@@ -15413,7 +15403,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15421,7 +15411,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "G21JQ0"
@@ -15467,7 +15457,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -15479,7 +15469,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "I21IU0"
@@ -15500,7 +15490,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15583,7 +15573,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -15595,7 +15585,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "M21IO0"
@@ -15607,16 +15597,16 @@
         "y": 20
       },
       "type": "Upper",
-      "blockPath": "NorthWest",
+      "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15627,7 +15617,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N21IU0"
+      "legacyCode": "N21IR0"
     },
     {
       "id": "tile_O_21",
@@ -15645,7 +15635,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15653,7 +15643,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "O21IQ0"
@@ -15722,7 +15712,7 @@
         "x": 17,
         "y": 20
       },
-      "type": "Upper",
+      "type": "Lower",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -15740,7 +15730,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "R21JO0"
@@ -15757,11 +15747,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15780,7 +15770,7 @@
         "x": 19,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -15790,7 +15780,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -15815,19 +15805,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U21DX0"
@@ -15861,7 +15851,8 @@
       ],
       "legacyCode": "V21JV1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 21
       }
     },
     {
@@ -15880,7 +15871,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15888,7 +15879,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "W21IQ0"
@@ -15938,7 +15929,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -15946,7 +15937,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y21IQ0"
@@ -15967,7 +15958,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16004,7 +15995,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A22JQ0"
@@ -16025,7 +16016,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16033,7 +16024,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B22IQ0"
@@ -16044,7 +16035,7 @@
         "x": 2,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "WestNorthEast",
       "spawnType": "Chest",
       "sides": [
@@ -16067,7 +16058,8 @@
       ],
       "legacyCode": "C22IX1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 22
       }
     },
     {
@@ -16090,11 +16082,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D22IT0"
@@ -16111,7 +16103,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -16119,7 +16111,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16140,7 +16132,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -16148,7 +16140,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16173,11 +16165,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16231,7 +16223,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -16239,7 +16231,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "I22IO0"
@@ -16260,7 +16252,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16268,7 +16260,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "J22IM0"
@@ -16314,7 +16306,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -16322,16 +16314,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "L22IW1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 22
       }
     },
     {
@@ -16350,11 +16343,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16383,11 +16376,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "N22IT0"
@@ -16412,7 +16405,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16433,11 +16426,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16495,7 +16488,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -16503,7 +16496,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "R22IO0"
@@ -16524,7 +16517,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16532,7 +16525,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "S22IM0"
@@ -16578,7 +16571,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -16586,16 +16579,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U22IT1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 22
       }
     },
     {
@@ -16610,7 +16604,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -16618,7 +16612,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16643,11 +16637,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16701,7 +16695,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16709,7 +16703,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y22IQ0"
@@ -16730,7 +16724,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16767,7 +16761,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A23JQ0"
@@ -16788,7 +16782,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -16796,7 +16790,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B23IQ0"
@@ -16807,7 +16801,7 @@
         "x": 2,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -16821,7 +16815,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -16954,7 +16948,7 @@
       },
       "type": "Lower",
       "blockPath": "East",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -16975,7 +16969,8 @@
       ],
       "legacyCode": "H23JM2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 23
       }
     },
     {
@@ -16998,11 +16993,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "I23IT0"
@@ -17023,7 +17018,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -17106,7 +17101,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -17114,16 +17109,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "M23IW1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 23
       }
     },
     {
@@ -17138,7 +17134,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -17146,7 +17142,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -17167,7 +17163,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Raviine"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -17175,7 +17171,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -17200,11 +17196,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -17242,7 +17238,8 @@
       ],
       "legacyCode": "Q23JV1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 23
       }
     },
     {
@@ -17269,7 +17266,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "R23IO0"
@@ -17290,11 +17287,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -17311,7 +17308,7 @@
       },
       "type": "Lower",
       "blockPath": "West",
-      "spawnType": "Monster",
+      "spawnType": null,
       "sides": [
         {
           "side": "Top",
@@ -17330,10 +17327,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "T23JO0",
-      "spawnZone": {
-        "type": "Monster"
-      }
+      "legacyCode": "T23JO0"
     },
     {
       "id": "tile_U_23",
@@ -17467,15 +17461,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y23IQ0"
@@ -17496,7 +17490,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -17533,7 +17527,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A24JQ0"
@@ -17554,15 +17548,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B24IT0"
@@ -17579,19 +17573,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "C24DY0"
@@ -17620,7 +17614,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "D24JO0"
@@ -17695,11 +17689,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -17707,12 +17701,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "G24IX1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 24
       }
     },
     {
@@ -17793,11 +17788,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "J24IT0"
@@ -17814,11 +17809,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -17897,7 +17892,7 @@
       },
       "type": "Lower",
       "blockPath": "NorthSouth",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -17909,7 +17904,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -17918,7 +17913,8 @@
       ],
       "legacyCode": "N24JP2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 24
       }
     },
     {
@@ -17979,7 +17975,8 @@
       ],
       "legacyCode": "P24JY1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 24
       }
     },
     {
@@ -17994,7 +17991,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -18006,7 +18003,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Q24IU0"
@@ -18027,11 +18024,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18110,11 +18107,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18122,12 +18119,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U24IX1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 24
       }
     },
     {
@@ -18179,7 +18177,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -18196,7 +18194,7 @@
       },
       "type": "Lower",
       "blockPath": "East",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -18204,7 +18202,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18217,7 +18215,8 @@
       ],
       "legacyCode": "X24JM2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 24
       }
     },
     {
@@ -18232,19 +18231,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Y24DV0"
@@ -18265,7 +18264,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18273,7 +18272,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "Z24JQ0"
@@ -18286,7 +18285,7 @@
       },
       "type": "Lower",
       "blockPath": "West",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -18302,12 +18301,13 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A25JO2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 25
       }
     },
     {
@@ -18330,7 +18330,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18351,7 +18351,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -18409,11 +18409,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18421,7 +18421,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "E25IX0"
@@ -18455,7 +18455,8 @@
       ],
       "legacyCode": "F25JV1",
       "spawnZone": {
-        "type" : "Chest"
+        "type": "Chest",
+        "seedId": 25
       }
     },
     {
@@ -18474,7 +18475,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18482,7 +18483,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "G25IQ0"
@@ -18536,7 +18537,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18594,11 +18595,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "K25IN0"
@@ -18615,7 +18616,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -18623,7 +18624,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18644,15 +18645,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18673,7 +18674,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -18681,7 +18682,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18702,7 +18703,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -18710,11 +18711,11 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "O25IP0"
@@ -18731,7 +18732,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -18739,7 +18740,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18764,11 +18765,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -18880,7 +18881,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18888,7 +18889,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "U25IQ0"
@@ -18909,7 +18910,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18975,7 +18976,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "X25JT0"
@@ -18992,7 +18993,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19025,7 +19026,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -19054,20 +19055,21 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Void"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "A26JV1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 26
       }
     },
     {
@@ -19082,19 +19084,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "B26DW0"
@@ -19111,7 +19113,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19119,16 +19121,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Void"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "C26IP1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 26
       }
     },
     {
@@ -19143,7 +19146,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19151,7 +19154,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19180,7 +19183,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19201,7 +19204,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19209,7 +19212,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19238,7 +19241,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19259,15 +19262,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19313,7 +19316,7 @@
       },
       "type": "Lower",
       "blockPath": "South",
-      "spawnType": "Monster",
+      "spawnType": "Merchant",
       "sides": [
         {
           "side": "Top",
@@ -19325,16 +19328,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "J26JN2",
       "spawnZone": {
-        "type": "Monster"
+        "type": "Merchant",
+        "seedId": 26
       }
     },
     {
@@ -19357,7 +19361,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19386,7 +19390,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19415,7 +19419,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19436,7 +19440,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Bridge"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19444,7 +19448,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19473,7 +19477,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19502,7 +19506,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19531,7 +19535,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19560,7 +19564,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19581,7 +19585,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19589,16 +19593,17 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "S26IU1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 26
       }
     },
     {
@@ -19613,7 +19618,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19621,7 +19626,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19650,7 +19655,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19671,7 +19676,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19679,7 +19684,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19700,7 +19705,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Stair"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -19708,7 +19713,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19729,7 +19734,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19737,7 +19742,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19758,7 +19763,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
@@ -19766,7 +19771,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19787,15 +19792,15 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -19804,7 +19809,8 @@
       ],
       "legacyCode": "Z26IY1",
       "spawnZone": {
-        "type": "Chest"
+        "type": "Chest",
+        "seedId": 26
       }
     }
   ]

@@ -6,7 +6,7 @@ import { getClientCharacter } from "#game/helpers/room-helpers";
 import { fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
-import { ITEMTYPE, itemResults, stacks } from "#assets/resources";
+import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
 
@@ -48,7 +48,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.left = 0;
             } else {
-                directionData.left = destinationTile.walls[3] == 1? 0 : 1;
+                directionData.left = (destinationTile.walls[3] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[3] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[3] == EDGE_TYPE.STAIR)? 1 : 0;
             }
         }
         // RIGHT
@@ -58,7 +60,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.right = 0;
             } else {
-                directionData.right = destinationTile.walls[1] == 1? 0 : 1;
+                directionData.right = (destinationTile.walls[1] == EDGE_TYPE.BASIC || 
+                    destinationTile.walls[1] == EDGE_TYPE.BRIDGE || 
+                    destinationTile.walls[1] == EDGE_TYPE.STAIR)? 1 : 0;
             }
         }
         // TOP
@@ -68,7 +72,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.top = 0;
             } else {
-                directionData.top = destinationTile.walls[0] == 1? 0 : 1;
+                directionData.top = directionData.right = (destinationTile.walls[0] == EDGE_TYPE.BASIC || 
+                    destinationTile.walls[0] == EDGE_TYPE.BRIDGE || 
+                    destinationTile.walls[0] == EDGE_TYPE.STAIR)? 1 : 0;
             }
         }
         // DOWN
@@ -78,7 +84,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if(id == "") {
                 directionData.down = 0;
             } else {
-                directionData.down = destinationTile.walls[2] == 1? 0 : 1;
+                directionData.down = directionData.right = (destinationTile.walls[2] == EDGE_TYPE.BASIC || 
+                    destinationTile.walls[2] == EDGE_TYPE.BRIDGE || 
+                    destinationTile.walls[2] == EDGE_TYPE.STAIR)? 1 : 0;
             }
         }
 

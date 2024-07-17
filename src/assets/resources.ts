@@ -1,3 +1,14 @@
+export const EDGE_TYPE : {[key: string] : number} = {
+    NULL : -1,
+    BASIC : 0,
+    WALL : 1,
+    RAVINE : 2,
+    VOID : 3,
+    CLIFF: 4,
+    BRIDGE: 5,
+    STAIR: 5,
+}
+
 export const ITEMTYPE: {[key: string] : number} = {
     HEART_PIECE: 0,
     ENERGY_SHARD: 1,
@@ -23,6 +34,35 @@ export const ITEMTYPE: {[key: string] : number} = {
     CALTROP_BOMB: 21,
     ICE_TEA: 22,
     FLAME_CHILI: 23,
+    
+    FLAME_CHILI2 : 24,
+    FLAME_CHILI3 : 25,
+    ICE_TEA2 : 26,
+    ICE_TEA3 : 27,
+    HEART_PIECE2 : 28,
+    POTION2 : 29,
+    POTION3 : 30,
+    FEATHER2 : 31,
+    FEATHER3 : 32,
+    ARROW2 : 33,
+    ARROW3 : 34,
+    BOMB2 : 35,
+    BOMB3 : 36,
+
+    MELEE2 : 37,
+    MANA2 : 38,
+    QUIVER2 : 39,
+    BOMB_BAG2 : 40,
+    WARP_CRYSTAL2 : 41,
+    ELIXIR2 : 42,
+    BOMB_ARROW2 : 43,
+    FIRE_ARROW2 : 44,
+    ICE_ARROW2 : 45,
+    VOID_ARROW2 : 46,
+    FIRE_BOMB2 : 47,
+    ICE_BOMB2 : 48,
+    VOID_BOMB2 : 49,
+    CALTROP_BOMB2 : 50,
 }
 
 export const STACKTYPE: {[key: string] : number} = {
@@ -38,6 +78,14 @@ export const STACKTYPE: {[key: string] : number} = {
     Freeze : 9,
     Burn : 10,
     Void : 11,
+
+    Dodge2 : 12,
+    Cure2 : 13,
+    Charge2 : 14,
+    Barrier2 : 15,
+    Steady2 : 16,
+    Revenge2 : 17,
+    Block2 : 18
 }
 
 export const PERKTYPE : {[key : string] : number} = {
@@ -1834,6 +1882,55 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
         cost: 4,
         sell: 2
     },
+    [STACKTYPE.Dodge2] : {
+        level : 1,
+        name : "Revenge2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 7,
+        sell: -1
+    },
+    [STACKTYPE.Cure2] : {
+        level : 1,
+        name : "Cure2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 11,
+        sell: -1
+    },
+    [STACKTYPE.Charge2] : {
+        level : 1,
+        name : "Charge2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 3,
+        sell: -1
+    },
+    [STACKTYPE.Barrier2] : {
+        level : 1,
+        name : "Barrier2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 7,
+        sell: -1
+    },
+    [STACKTYPE.Steady2] : {
+        level : 1,
+        name : "Steady2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 3,
+        sell: -1
+    },
+    [STACKTYPE.Revenge2] : {
+        level : 1,
+        name : "Revenge2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 7,
+        sell: -1
+    },
+    [STACKTYPE.Block2] : {
+        level : 1,
+        name : "Block2",
+        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        cost: 7,
+        sell: -1
+    },
 }
 
 export const perks: {[key : number] : { name : string, description : string }} = {
@@ -2056,151 +2153,357 @@ export const itemResults: {[key: number]: {heart?: number, energy?: number, ulti
     }
 }
 
-export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string}} = {
+export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string, percent: number}} = {
     [ITEMTYPE.HEART_PIECE]: {
         level: 1,
         cost: 4,
         sell: -1,
-        name: "Heart Piece"
+        name: "Heart Piece",
+        percent: 7
     },
     [ITEMTYPE.ENERGY_SHARD]: {
         level: 1,
         cost: 4,
         sell: -1,
-        name: "Energy Shard"
-
+        name: "Energy Shard",
+        percent: 8
     },
     [ITEMTYPE.POTION]: {
         level: 1,
         cost: 6,
         sell: 3,
-        name: "Potion"
+        name: "Potion",
+        percent: 6
     },
     [ITEMTYPE.FEATHER]: {
         level: 1,
         cost: 6,
         sell: 3,
-        name: "Feather"
+        name: "Feather",
+        percent: 7
     },
     [ITEMTYPE.ARROW]: {
         level: 1,
         cost: 4,
         sell: 2,
-        name: "Arrow"
+        name: "Arrow",
+        percent: 9.5
     },
     [ITEMTYPE.BOMB]: {
         level: 1,
         cost: 6,
         sell: 3,
-        name: "Bomb"
+        name: "Bomb",
+        percent: 8.1
     },
     [ITEMTYPE.HEART_CRYSTAL]: {
         level: 2,
         cost: 12,
         sell: -1,
-        name: "Heart Crystal"
+        name: "Heart Crystal",
+        percent: 3.6
     },
     [ITEMTYPE.ENERGY_CRYSTAL]: {
         level: 2,
         cost: 11,
         sell: -1,
-        name: "Energy Crystal"
+        name: "Energy Crystal",
+        percent: 3.6
     },
     [ITEMTYPE.MELEE]: {
         level: 2,
         cost: 8,
         sell: -1,
-        name: "Melee"
+        name: "Melee",
+        percent: 4.8
     },
     [ITEMTYPE.MANA]: {
         level: 2,
         cost: 8,
         sell: -1,
-        name: "Mana"
+        name: "Mana",
+        percent: 5
     },
     [ITEMTYPE.WARP_CRYSTAL]: {
         level: 2,
         cost: 12,
         sell: 6,
-        name: "Warp Crystal"
+        name: "Warp Crystal",
+        percent: 5
     },
     [ITEMTYPE.ELIXIR]: {
         level: 2,
         cost: 10,
         sell: 5,
-        name: "Elixir"
+        name: "Elixir",
+        percent: 5
     },
     [ITEMTYPE.QUIVER]: {
         level: 2,
         cost: 8,
         sell: -1,
-        name: "Quiver"
+        name: "Quiver",
+        percent: 5
     },
     [ITEMTYPE.BOMB_BAG]: {
         level: 2,
         cost: 8,
         sell: -1,
-        name: "Bomb Bag"
+        name: "Bomb Bag",
+        percent: 3.6
     },
     [ITEMTYPE.BOMB_ARROW]: {
         level: 2,
         cost: 8,
         sell: 4,
-        name: "Bomb Arrow"
+        name: "Bomb Arrow",
+        percent: 7.2
     },
     [ITEMTYPE.FIRE_ARROW]: {
         level: 2,
         cost: 8,
         sell: 4,
-        name: "Fire Arrow"
+        name: "Fire Arrow",
+        percent: 6
     },
     [ITEMTYPE.ICE_ARROW]: {
         level: 2,
         cost: 8,
         sell: 4,
-        name: "Ice Arrow"
+        name: "Ice Arrow",
+        percent: 6
     },
     [ITEMTYPE.VOID_ARROW]: {
         level: 2,
         cost: 8,
         sell: 4,
-        name: "Void Arrow"
+        name: "Void Arrow",
+        percent: 6
     },
     [ITEMTYPE.FIRE_BOMB]: {
         level: 2,
         cost: 10,
         sell: 5,
-        name: "Fire Bomb"
+        name: "Fire Bomb",
+        percent: 5
     },
     [ITEMTYPE.ICE_BOMB]: {
         level: 2,
         cost: 10,
         sell: 5,
-        name: "Ice Bomb"
+        name: "Ice Bomb",
+        percent: 5
     },
     [ITEMTYPE.VOID_BOMB]: {
         level: 2,
         cost: 10,
         sell: 5,
-        name: "Void Bomb"
+        name: "Void Bomb",
+        percent: 5
     },
     [ITEMTYPE.CALTROP_BOMB]: {
         level: 2,
         cost: 10,
         sell: 5,
-        name: "Caltrops"
+        name: "Caltrops",
+        percent: 5
     },
     [ITEMTYPE.ICE_TEA]: {
         level: 1,
         cost: 2,
         sell: 1,
-        name: "Ice Tea"
+        name: "Ice Tea",
+        percent: 7
     },
     [ITEMTYPE.FLAME_CHILI]: {
         level: 1,
         cost: 2,
         sell: 1,
-        name: "Flame Chili"
+        name: "Flame Chili",
+        percent: 7
+    },
+    [ITEMTYPE.FLAME_CHILI2]: {
+        level: 1,
+        cost: 3,
+        sell: -1,
+        name: "Flame Chili2",
+        percent: 5
+    },
+    [ITEMTYPE.FLAME_CHILI3]: {
+        level: 1,
+        cost: 4,
+        sell: -1,
+        name: "Flame Chili3",
+        percent: 3
+    },
+    [ITEMTYPE.ICE_TEA2]: {
+        level: 1,
+        cost: 3,
+        sell: -1,
+        name: "Ice Tea2",
+        percent: 5
+    },
+    [ITEMTYPE.ICE_TEA3]: {
+        level: 1,
+        cost: 4,
+        sell: -1,
+        name: "Ice Tea3",
+        percent: 3
+    },
+    [ITEMTYPE.HEART_PIECE2]: {
+        level: 1,
+        cost: 7,
+        sell: -1,
+        name: "Heart Piece3",
+        percent: 1
+    },
+    [ITEMTYPE.POTION2]: {
+        level: 1,
+        cost: 10,
+        sell: -1,
+        name: "Potion2",
+        percent: 3
+    },
+    [ITEMTYPE.POTION3]: {
+        level: 1,
+        cost: 15,
+        sell: -1,
+        name: "Potion3",
+        percent: 1.5
+    },
+    [ITEMTYPE.FEATHER2]: {
+        level: 1,
+        cost: 10,
+        sell: -1,
+        name: "Feather2",
+        percent: 3
+    },
+    [ITEMTYPE.FEATHER3]: {
+        level: 1,
+        cost: 14,
+        sell: -1,
+        name: "Feather3",
+        percent: 1.5
+    },
+    [ITEMTYPE.ARROW2]: {
+        level: 1,
+        cost: 7,
+        sell: -1,
+        name: "Arrow2",
+        percent: 5.1
+    },
+    [ITEMTYPE.ARROW3]: {
+        level: 1,
+        cost: 10,
+        sell: -1,
+        name: "Arrow3",
+        percent: 3
+    },
+    [ITEMTYPE.BOMB2]: {
+        level: 1,
+        cost: 10,
+        sell: -1,
+        name: "Bomb 2",
+        percent: 3
+    },
+    [ITEMTYPE.BOMB3]: {
+        level: 1,
+        cost: 14,
+        sell: -1,
+        name: "Bomb 3",
+        percent: 1.5
+    },
+
+    [ITEMTYPE.MELEE2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Melee + 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.MANA2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Mana + 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.QUIVER2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Arrow + 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.BOMB_BAG2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "BOMB + 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.ELIXIR2]: {
+        level: 2,
+        cost: 17,
+        sell: -1,
+        name: "Elixir + 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.WARP_CRYSTAL2]: {
+        level: 2,
+        cost: 17,
+        sell: -1,
+        name: "Warp Crystal 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.FIRE_ARROW2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Fire Arrow 2",
+        percent: 2.4
+    },
+    [ITEMTYPE.ICE_ARROW2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Ice Arrow 2",
+        percent: 2.4
+    },
+    [ITEMTYPE.VOID_ARROW2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Void Arrow 2",
+        percent: 2.4
+    },
+    [ITEMTYPE.CALTROP_BOMB2]: {
+        level: 2,
+        cost: 17,
+        sell: -1,
+        name: "Caltrop Bomb 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.FIRE_BOMB2]: {
+        level: 2,
+        cost: 17,
+        sell: -1,
+        name: "Fire Bomb 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.ICE_BOMB2]: {
+        level: 2,
+        cost: 17,
+        sell: -1,
+        name: "Ice Bomb 2",
+        percent: 1.2
+    },
+    [ITEMTYPE.VOID_BOMB2]: {
+        level: 2,
+        cost: 17,
+        sell: -1,
+        name: "Void Bomb 2",
+        percent: 1.2
     },
 }
 
