@@ -2456,6 +2456,13 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         name: "Warp Crystal 2",
         percent: 1.2
     },
+    [ITEMTYPE.BOMB_ARROW2]: {
+        level: 2,
+        cost: 15,
+        sell: -1,
+        name: "Bomb Arrow 2",
+        percent: 2.4
+    },
     [ITEMTYPE.FIRE_ARROW2]: {
         level: 2,
         cost: 15,
