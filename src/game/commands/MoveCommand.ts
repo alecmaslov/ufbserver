@@ -90,6 +90,13 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             }
         }
 
+        // directionData = {
+        //     left: 1,
+        //     right: 1,
+        //     top: 1,
+        //     down: 1
+        // }
+
         // console.log(
         //     `Character moving from ${coordToGameId(
         //         currentTile.coordinates

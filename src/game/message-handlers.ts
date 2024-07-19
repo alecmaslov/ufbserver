@@ -376,13 +376,10 @@ export const messageHandlers: MessageHandlers = {
             }
         } else if(itemId == ITEMTYPE.FEATHER) {
 
-            room.dispatcher.dispatch(new MoveCommand(), {
-                client,
-                message,
-                force: false,
-            });
+            
         }
 
+        console.log("feather : ", message.tileId);
 
         const setmoveitemMessage : SetMoveItemMessage = {
             itemId: itemId,
