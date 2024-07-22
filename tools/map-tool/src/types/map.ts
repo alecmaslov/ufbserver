@@ -17,7 +17,7 @@ export interface SpawnZone {
     seedId: number;
 }
 
-export type EdgeType = "Basic" | "OverBridge" | "UnderBridge" | "Wall" | "Void";
+export type EdgeType = "Basic" | "OverBridge" | "UnderBridge" | "Wall" | "Void" | "StairTop" | "StairBottom" | null;
 
 export interface TileEdge {
     from: string;

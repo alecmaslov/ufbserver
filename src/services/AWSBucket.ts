@@ -14,41 +14,47 @@ export class AWSBucket {
         this.s3 = new AWS.S3();
     }
 
-    public get region() : string {
+    public get region(): string {
         return this.bucketConfig.region as string;
     }
 
     public upload(
-        params: S3.Types.PutObjectRequest,
+        params: Omit<S3.Types.PutObjectRequest, "Bucket">,
         onProgress?: (progress: S3.ManagedUpload.Progress) => void,
         onComplete?: (err: Error, data: S3.ManagedUpload.SendData) => void
     ) {
-        const upload = this.s3.upload(params);
+        const uploadParams = {
+            ...params,
+            Bucket: this.bucketName,
+        };
+
+        const upload = this.s3.upload(uploadParams);
         if (onProgress) {
             upload.on("httpUploadProgress", onProgress);
         }
         upload.send(onComplete);
     }
 
-    public static generateObjectKeyForUser(userId: string, fileExt?: string) : string {
-        return `${userId}/${uuidv4()}${fileExt ? `.${fileExt}` : ""}`;
+    public uploadPromise(
+        params: Omit<S3.Types.PutObjectRequest, "Bucket">,
+        onProgress?: (progress: S3.ManagedUpload.Progress) => void
+    ) {
+        return new Promise<S3.ManagedUpload.SendData>((resolve, reject) => {
+            this.upload(params, onProgress, (err, data) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(data);
+                }
+            });
+        });
     }
 
-    public static generateObjectKeyForUserThumbnail(userId: string, existingObjectKey?: string) : string {
-        let objectKeyId = uuidv4();
-        // if there is an existing object key, we need to remove the file extension
-        // and append the thumbnail extension
-        if (existingObjectKey) {
-            const ext = existingObjectKey.split(".").pop();
-            const uuid = existingObjectKey.split("/").pop();
-            if (ext && uuid) {
-                objectKeyId = uuid.replace(`.${ext}`, "");
-            }
-        }
-        return `${userId}/thumbnails/${objectKeyId}.jpg`;
-    }
-
-    public getSignedUploadURL(objectKey: string, expires: number, filetype?: string) {
+    public getSignedUploadURL(
+        objectKey: string,
+        expires: number,
+        filetype?: string
+    ) {
         return this.s3.getSignedUrl("putObject", {
             Bucket: this.bucketName,
             Key: objectKey,
@@ -65,21 +71,31 @@ export class AWSBucket {
         });
     }
 
-    public deleteObject(objectKey: string, callback?: (err: Error, data: S3.DeleteObjectOutput) => void) {
-        this.s3.deleteObject({
-            Bucket: this.bucketName,
-            Key: objectKey,
-        }, callback);
+    public deleteObject(
+        objectKey: string,
+        callback?: (err: Error, data: S3.DeleteObjectOutput) => void
+    ) {
+        this.s3.deleteObject(
+            {
+                Bucket: this.bucketName,
+                Key: objectKey,
+            },
+            callback
+        );
+    }
+
+    public getObjectUrl(objectKey: string) {
+        return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${objectKey}`;
     }
 }
 
-export function getBucketManager() {
+export function getBucketManager(bucketName: string) {
     return new AWSBucket(
         {
             accessKeyId: process.env.AWS_ACCESS_KEY_ID,
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
             region: process.env.AWS_BUCKET_REGION,
         },
-        "ufb-assets"
+        bucketName
     );
 }

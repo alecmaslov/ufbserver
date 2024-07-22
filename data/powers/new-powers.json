@@ -1,0 +1,82 @@
+{
+    "items": [
+        {
+            "id": "sword",
+            "name": "Sword",
+            "description": "A basic sword.",
+            "category": "Melee",
+            "holdBehaviors": [],
+            "equipBehaviors": [
+                {
+                    "name": "Default",
+                    "costs": [{ "resource": "Energy", "amount": -1 }]
+                }
+            ],
+            "useBehaviors": [
+                {
+                    "name": "Sword Strike",
+                    "costs": [
+                        { "resource": "Health", "amount": -2 },
+                        { "resource": "Mana", "amount": -1 }
+                    ],
+                    "effects": []
+                },
+                {
+                    "name": "Fighter Stance",
+                    "costs": [
+                        { "resource": "Health", "amount": -2 },
+                        { "resource": "Mana", "amount": -1 }
+                    ],
+                    "effects": []
+                },
+                {
+                    "name": "Holy Sword",
+                    "costs": [
+                        { "resource": "Health", "amount": -5 },
+                        { "resource": "Mana", "amount": -1 }
+                    ],
+                    "effects": []
+                }
+            ]
+        },
+        {
+            "id": "ax",
+            "name": "Ax",
+            "description": "A powerful ax.",
+            "category": "Melee",
+            "holdBehaviors": [],
+            "equipBehaviors": [
+                {
+                    "name": "Default",
+                    "costs": [{ "resource": "Energy", "amount": -1 }]
+                }
+            ],
+            "useBehaviors": [
+                {
+                    "name": "Ax Throw",
+                    "costs": [
+                        { "resource": "Health", "amount": -2 },
+                        { "resource": "Mana", "amount": -1 }
+                    ],
+                    "effects": []
+                },
+                {
+                    "name": "Vampire Ax",
+                    "costs": [
+                        { "resource": "Health", "amount": -3 },
+                        { "resource": "Mana", "amount": -1 }
+                    ],
+                    "effects": []
+                },
+                {
+                    "name": "Tornado Slice",
+                    "costs": [
+                        { "resource": "Health", "amount": -8 },
+                        { "resource": "Mana", "amount": -2 }
+                    ],
+                    "effects": []
+                }
+            ]
+        }
+    ]
+}

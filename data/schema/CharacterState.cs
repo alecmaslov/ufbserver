@@ -28,10 +28,13 @@ namespace UFB.StateSchema {
 		[Type(5, "string")]
 		public string mapName = default(string);
 
-		[Type(6, "ref", typeof(CoordinatesState))]
+		[Type(6, "string")]
+		public string currentTileId = default(string);
+
+		[Type(7, "ref", typeof(CoordinatesState))]
 		public CoordinatesState coordinates = new CoordinatesState();
 
-		[Type(7, "ref", typeof(CharacterStatsState))]
+		[Type(8, "ref", typeof(CharacterStatsState))]
 		public CharacterStatsState stats = new CharacterStatsState();
 
 		/*
@@ -110,6 +113,18 @@ namespace UFB.StateSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<string> __currentTileIdChange;
+		public Action OnCurrentTileIdChange(PropertyChangeHandler<string> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.currentTileId));
+			__currentTileIdChange += __handler;
+			if (__immediate && this.currentTileId != default(string)) { __handler(this.currentTileId, default(string)); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(currentTileId));
+				__currentTileIdChange -= __handler;
+			};
+		}
+
 		protected event PropertyChangeHandler<CoordinatesState> __coordinatesChange;
 		public Action OnCoordinatesChange(PropertyChangeHandler<CoordinatesState> __handler, bool __immediate = true) {
 			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
@@ -142,6 +157,7 @@ namespace UFB.StateSchema {
 				case nameof(characterId): __characterIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(characterClass): __characterClassChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(mapName): __mapNameChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
+				case nameof(currentTileId): __currentTileIdChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
 				case nameof(coordinates): __coordinatesChange?.Invoke((CoordinatesState) change.Value, (CoordinatesState) change.PreviousValue); break;
 				case nameof(stats): __statsChange?.Invoke((CharacterStatsState) change.Value, (CharacterStatsState) change.PreviousValue); break;
 				default: break;

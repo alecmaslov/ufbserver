@@ -3,12 +3,12 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { initializeSpawnEntities, spawnCharacter } from "#game/map-helpers";
+import { initializeSpawnEntities, spawnCharacter } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
     TileEdgeState,
-    TileState
+    TileState,
 } from "#game/schema/MapState";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
 import { SpawnEntityConfig, UFBMap } from "#game/types/map-types";
@@ -19,33 +19,8 @@ import { createId } from "@paralleldrive/cuid2";
 import { TileType } from "@prisma/client";
 import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
-
-interface UfbRoomRules {
-    maxPlayers: number;
-    initHealth: number;
-    initEnergy: number;
-    turnTime: number;
-}
-
-interface UfbRoomCreateOptions {
-    mapName: string;
-    rules: UfbRoomRules;
-}
-
-interface UfbRoomJoinOptions {
-    token: string;
-    playerId: string;
-    displayName: string;
-    /** unique id of a specific instance of a character (optional) */
-    characterId?: string;
-    /** e.g. "kirin" (optional) */
-    characterClass?: string;
-}
-
-interface UfbRoomOptions {
-    createOptions: UfbRoomCreateOptions;
-    joinOptions: UfbRoomJoinOptions;
-}
+import { Dispatcher } from "@colyseus/command";
+import { UfbRoomOptions } from "./types/room-types";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -55,6 +30,8 @@ const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
 };
 
 export class UfbRoom extends Room<UfbRoomState> {
+    dispatcher = new Dispatcher(this);
+
     maxClients = 10;
     sessionIdToPlayerId = new Map<string, string>();
     pathfinder: Pathfinder = new Pathfinder();
@@ -92,17 +69,20 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.sessionIdToPlayerId.set(client.sessionId, playerId);
         console.log(client.sessionId, "joined!");
 
-        const tile = await db.tile.findUnique({
+        const tile = await db.tile.findFirst({
             where: {
-                x_y_mapId: {
-                    x: Math.floor(Math.random() * this.state.map.gridWidth),
-                    y: Math.floor(Math.random() * this.state.map.gridHeight),
-                    mapId: this.state.map.id,
-                },
+                // x_y_mapId: {
+                //     x: Math.floor(Math.random() * this.state.map.gridWidth),
+                //     y: Math.floor(Math.random() * this.state.map.gridHeight),
+                //     mapId: this.state.map.id,
+                // },
+                x: Math.floor(Math.random() * this.state.map.gridWidth),
+                y: Math.floor(Math.random() * this.state.map.gridHeight),
+                mapId: this.state.map.id,
             },
         });
 
-        spawnCharacter(
+        const character = spawnCharacter(
             this.state.characters,
             client.sessionId,
             tile,
@@ -111,7 +91,10 @@ export class UfbRoom extends Room<UfbRoomState> {
             playerId,
             options.joinOptions.displayName
         );
-        this.state.turnOrder.push(client.sessionId);
+
+        // @change
+        this.state.turnOrder.push(character.id);
+
         if (this.state.turnOrder.length === 1) {
             this.state.currentCharacterId = playerId;
             console.log("first player, setting current player id to", playerId);
@@ -125,6 +108,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     onDispose() {
         console.log("room", this.roomId, "disposing...");
+        this.dispatcher.stop();
     }
 
     onAuth(client: Client, options: Record<string, any>) {
@@ -146,7 +130,6 @@ export class UfbRoom extends Room<UfbRoomState> {
     }
 
     // custom state change actions
-
     incrementTurn() {
         const n = this.state.turnOrder.length;
         const nextPlayerIndex =
@@ -155,6 +138,14 @@ export class UfbRoom extends Room<UfbRoomState> {
         // could compute nextPlayerIndex from turn instead, but this works if turnOrder length changes
         this.state.currentCharacterId = this.state.turnOrder[nextPlayerIndex];
         this.state.turn++;
+
+        // const currentCharacter =
+
+        this.broadcast(
+            "turnChanged",
+            { turn: this.state.turn },
+            { afterNextPatch: true }
+        );
     }
 
     resetTurn() {
@@ -189,7 +180,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.state.map.spawnEntities = initializeSpawnEntities(
             spawnZones,
             DEFAULT_SPAWN_ENTITY_CONFIG,
-            async (spawnZone) => { // Spawn monsters
+            async (spawnZone) => {
+                // Spawn monsters
                 const tile = await db.tile.findUnique({
                     where: { id: spawnZone.tileId },
                 });
@@ -201,7 +193,109 @@ export class UfbRoom extends Room<UfbRoomState> {
                         "kirin"
                     );
                 } catch {
-                    console.error(`Tried to spawn monster at ${tile.id} but failed. | ${tile.x}, ${tile.y}`);
+                    console.error(
+                        `Tried to spawn monster at ${tile.id} but failed. | ${tile.x}, ${tile.y}`
+                    );
+                }
+            }
+        );
+
+        this.state.map.id = map.id;
+        this.state.map.name = map.name;
+        this.state.map.resourceAddress = map.resourceAddress;
+        this.state.map.gridWidth = map.gridWidth;
+        this.state.map.gridHeight = map.gridHeight;
+        this.state.map._map = map as any;
+
+        this.state.map.adjacencyList = new MapSchema<AdjacencyListItemState>();
+
+        for (const tile of map.tiles) {
+            const tileState = new TileState();
+            tileState.id = tile.id;
+            tileState.type = tile.type as TileType;
+
+            // if(tile.type != TileType.OpenTile) {
+            //     console.log(`Tile Type: ${tile.type} Tile index: ${tile.id}, TilePosX : ${tile.x}, Tile Y: ${tile.y}`)
+            // }
+
+            tileState.coordinates.x = tile.x;
+            tileState.coordinates.y = tile.y;
+            tileState.tileCode = tile.tileCode;
+            // walls can be null
+            const walls = new ArraySchema<number>();
+            if (tile.walls) {
+                for (const wall of tile.walls as number[]) {
+                    walls.push(wall);
+                }
+            }
+
+            tileState.walls = walls;
+
+            this.state.map.tiles.set(tile.id, tileState);
+
+            // const adjacencyListItem = new AdjacencyListItemState();
+            // adjacencyListItem.edges = new ArraySchema<TileEdgeState>();
+
+            // for (const edge of tile.fromTileAdjacencies) {
+            //     const edgeState = new TileEdgeState();
+            //     edgeState.from = edge.fromId;
+            //     edgeState.to = edge.toId;
+            //     edgeState.type = edge.type as any;
+            //     edgeState.energyCost = edge.energyCost;
+            //     adjacencyListItem.edges.push(edgeState);
+            // }
+
+            // this.state.map.adjacencyList.set(tile.id, adjacencyListItem);
+        }
+
+        this.pathfinder = Pathfinder.fromMapState(this.state.map);
+
+        this.broadcast("mapChanged", {}, { afterNextPatch: true });
+        this.resetTurn();
+    }
+
+    ////
+    async initNewMap(mapName: string) {
+        const map = await db.ufbMap.findFirst({
+            where: {
+                name: mapName,
+            },
+            include: {
+                tiles: {
+                    include: {
+                        fromTileAdjacencies: true,
+                    },
+                },
+            },
+        });
+
+        const spawnZones = await db.spawnZone.findMany({
+            where: {
+                tile: {
+                    mapId: map.id,
+                },
+            },
+        });
+
+        this.state.map.spawnEntities = initializeSpawnEntities(
+            spawnZones,
+            DEFAULT_SPAWN_ENTITY_CONFIG,
+            async (spawnZone) => {
+                // Spawn monsters
+                const tile = await db.tile.findUnique({
+                    where: { id: spawnZone.tileId },
+                });
+                try {
+                    spawnCharacter(
+                        this.state.characters,
+                        "foobarbaz",
+                        tile,
+                        "kirin"
+                    );
+                } catch {
+                    console.error(
+                        `Tried to spawn monster at ${tile.id} but failed. | ${tile.x}, ${tile.y}`
+                    );
                 }
             }
         );

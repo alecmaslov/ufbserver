@@ -1,4 +1,5 @@
-import { Coordinates, PathStep } from "#shared-types";
+import { Coordinates, PathStep, PowerMove } from "#shared-types";
+import { CharacterState } from "./schema/CharacterState";
 
 /**
  * search for a path from one tile to another
@@ -27,6 +28,40 @@ export interface MoveMessage {
 export interface CharacterMovedMessage {
     characterId: string;
     path: PathStep[];
+    left: number,
+    right: number,
+    top: number,
+    down: number,
+}
+
+export interface MoveItemMessage {
+    left: number,
+    right: number,
+    top: number,
+    down: number,
+    itemId: number
+}
+
+export interface SetMoveItemMessage {
+    itemId: number,
+    tileId: string
+}
+
+export interface PowerMoveListMessage {
+    powermoves: PowerMove[];
+}
+
+export interface GetResourceDataMessage {
+    characterState: CharacterState
+}
+
+export interface SpawnInitMessage {
+    characterId: string;
+    spawnId: string;
+    item: number;
+    power: number;
+    coin: number;
+    tileId: string;
 }
 
 export interface ChangeMapMessage {

@@ -1,0 +1,87 @@
+[
+    {
+        "id": "sword-1",
+        "name": "Sword Level 1",
+        "description": "A basic sword.",
+        "category": "Melee",
+        "holdBehaviors": [],
+        "equipBehaviors": [
+            {
+                "name": "Default",
+                "costs": [{ "resource": "Energy", "amount": -1 }]
+            }
+        ],
+        "useBehaviors": [
+            {
+                "name": "Sword Strike",
+                "costs": [
+                    { "resource": "Health", "amount": -2 },
+                    { "resource": "Mana", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "name": "Sword Strike",
+                        "costs": [
+                            { "resource": "Health", "amount": -2 },
+                            { "resource": "Melee", "amount": -1 }
+                        ],
+                        "effects": [
+                            {
+                                "action": "Damage",
+                                "target": "Enemy",
+                                "amount": 1,
+                                "amountModifier": "Roll"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "sword-2",
+        "name": "Sword Level 2",
+        "description": "A better sword.",
+        "category": "Melee",
+        "holdBehaviors": [],
+        "equipBehaviors": [
+            {
+                "name": "Default",
+                "costs": [{ "resource": "Energy", "amount": -1 }]
+            }
+        ],
+        "useBehaviors": [
+            {
+                "name": "Sword Strike",
+                "costs": [
+                    { "resource": "Health", "amount": -2 },
+                    { "resource": "Melee", "amount": -1 }
+                ],
+                "effects": [
+                    {
+                        "action": "Damage",
+                        "target": "Enemy",
+                        "amount": 1,
+                        "amountModifier": "Roll"
+                    }
+                ]
+            },
+            {
+                "name": "Fighter Stance",
+                "costs": [
+                    { "resource": "Health", "amount": -2 },
+                    { "resource": "Melee", "amount": -1 }
+                ],
+                "effects": [{ "action": "Buff", "target": "Self", "amount": 1 }]
+            },
+            {
+                "name": "Charge",
+                "costs": [
+                    { "resource": "Energy", "amount": -2 },
+                    { "resource": "Mana", "amount": -1 }
+                ],
+                "effects": []
+            }
+        ]
+    }
+]

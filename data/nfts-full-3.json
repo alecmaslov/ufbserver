@@ -1,0 +1,38 @@
+{
+  "contract": {
+    "address": "0xCb01F00562c7a70026374F29e75510E3066D2932",
+    "name": "Stellar Dream God-Level Collection",
+    "symbol": "GOD$",
+    "totalSupply": "20",
+    "tokenType": "ERC721",
+    "contractDeployer": "0x0092f2D0129407bdcF88f861F400BBef3D83F7D9",
+    "deployedBlockNumber": 14616078,
+    "openSeaMetadata": {
+      "floorPrice": 0,
+      "collectionName": "Stellar Dream God-Level Collection",
+      "collectionSlug": "god-levels",
+      "safelistRequestStatus": "not_requested",
+      "imageUrl": "https://openseauserdata.com/files/564f7e7152c628022582b9d0e4982015.png",
+      "description": "The God-Levels are sick. They will tear the metaverse apart to find a cure.",
+      "discordUrl": "https://discord.gg/Rp5EZvkj",
+      "bannerImageUrl": "https://lh3.googleusercontent.com/pISSVKPTPXde7e3yUfX3NBSCxheSX9fsPLy10tE18AJz6MTtMRli1DQBlghDsHLx_OXj2ve2yJv8n_lzydPNAsNuc0fw6upWE3VSiw=s2500",
+      "lastIngestedAt": "2023-12-18T22:19:59.000Z"
+    },
+    "spamClassifications": []
+  },
+  "tokenId": "1",
+  "tokenType": "ERC721",
+  "image": {},
+  "raw": {
+    "tokenUri": "‘ipfs://QmPhpEywoQzAAnydbDKWgP2aKQU5XEHm46uKhey9R7b1PP’",
+    "metadata": {},
+    "error": "Malformed token uri, do not retry"
+  },
+  "collection": {
+    "name": "Stellar Dream God-Level Collection",
+    "slug": "god-levels",
+    "bannerImageUrl": "https://lh3.googleusercontent.com/pISSVKPTPXde7e3yUfX3NBSCxheSX9fsPLy10tE18AJz6MTtMRli1DQBlghDsHLx_OXj2ve2yJv8n_lzydPNAsNuc0fw6upWE3VSiw=s2500"
+  },
+  "mint": {},
+  "timeLastUpdated": "2023-12-23T04:19:49.775Z"
+}
