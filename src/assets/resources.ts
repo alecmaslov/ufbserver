@@ -6,7 +6,7 @@ export const EDGE_TYPE : {[key: string] : number} = {
     VOID : 3,
     CLIFF: 4,
     BRIDGE: 5,
-    STAIR: 5,
+    STAIR: 6,
 }
 
 export const ITEMTYPE: {[key: string] : number} = {

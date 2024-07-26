@@ -301,7 +301,7 @@ export function initializeSpawnEntities(
             merchantEntity.parameters = JSON.stringify(parameters);
             // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
             spawnEntities.push(merchantEntity);
-        } else if(n < config.chests + config.merchants + config.portals) {
+        } else if(n < config.chests + config.merchants + config.portals * 2) {
             const parameters: PortalEntityParameters = {
                 seedId: zone.seedId,
                 portalGroup: i,

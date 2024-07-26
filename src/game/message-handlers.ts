@@ -302,8 +302,8 @@ export const messageHandlers: MessageHandlers = {
         const itemId = message.itemId;
         const tileId = message.tileId;
         const character = getClientCharacter(room, client);
-        const currentTile = room.state.map.tiles.get(character.currentTileId);
-
+        const desTile = room.state.map.tiles.get(message.tileId);
+        
         if(character.stats.energy.current == 0) {
             room.notify(
                 client,
@@ -375,9 +375,19 @@ export const messageHandlers: MessageHandlers = {
                 DodgeStack.count++;
             }
         } else if(itemId == ITEMTYPE.FEATHER) {
+        } else if(itemId == ITEMTYPE.WARP_CRYSTAL) {
+            console.log("WARP CRYSTAL: walls", desTile.walls);
 
-            
-        }
+            if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
+            } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "right");
+            } else if(desTile.walls[2] == EDGE_TYPE.BASIC) {   //DOWN
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "down");
+            } else if(desTile.walls[3] == EDGE_TYPE.BASIC) {   //LEFT
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
+            }
+        } 
 
         console.log("feather : ", message.tileId);
 

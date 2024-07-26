@@ -35,6 +35,12 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);
 
+        console.log("des tile", destinationTile.walls);
+        console.log("des tile1", destinationTile.walls[0]);
+        console.log("des tile2", destinationTile.walls[1]);
+        console.log("des tile3", destinationTile.walls[2]);
+        console.log("des tile4", destinationTile.walls[3]);
+        
         let directionData = {
             left: 1,
             right: 1,
@@ -43,51 +49,27 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         }
         // LEFT
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "left")
-
-            if(id == "") {
-                directionData.left = 0;
-            } else {
-                directionData.left = (destinationTile.walls[3] == EDGE_TYPE.BASIC || 
+            directionData.left = (destinationTile.walls[3] == EDGE_TYPE.BASIC || 
                 destinationTile.walls[3] == EDGE_TYPE.BRIDGE || 
                 destinationTile.walls[3] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
         }
         // RIGHT
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "right")
-
-            if(id == "") {
-                directionData.right = 0;
-            } else {
-                directionData.right = (destinationTile.walls[1] == EDGE_TYPE.BASIC || 
-                    destinationTile.walls[1] == EDGE_TYPE.BRIDGE || 
-                    destinationTile.walls[1] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
+            directionData.right = (destinationTile.walls[1] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[1] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[1] == EDGE_TYPE.STAIR)? 1 : 0;
         }
         // TOP
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "top")
-
-            if(id == "") {
-                directionData.top = 0;
-            } else {
-                directionData.top = directionData.right = (destinationTile.walls[0] == EDGE_TYPE.BASIC || 
-                    destinationTile.walls[0] == EDGE_TYPE.BRIDGE || 
-                    destinationTile.walls[0] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
+            directionData.top = (destinationTile.walls[0] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[0] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[0] == EDGE_TYPE.STAIR)? 1 : 0;
         }
         // DOWN
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "down")
-
-            if(id == "") {
-                directionData.down = 0;
-            } else {
-                directionData.down = directionData.right = (destinationTile.walls[2] == EDGE_TYPE.BASIC || 
-                    destinationTile.walls[2] == EDGE_TYPE.BRIDGE || 
-                    destinationTile.walls[2] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
+            directionData.down = (destinationTile.walls[2] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[2] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[2] == EDGE_TYPE.STAIR)? 1 : 0;
         }
 
         // directionData = {
@@ -181,14 +163,25 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             this.room.state.map.moveItemEntities.deleteAt(idx);
 
         } else {
+            // const cost = currentTile.id == destinationTile.id? 0 : -(
+            //     Math.abs(currentTile.coordinates.x - destinationTile.coordinates.x) + Math.abs(currentTile.coordinates.y - destinationTile.coordinates.y)
+            // );
             const cost = currentTile.id == destinationTile.id? 0 : -1;
-
+            let energy = cost;
             if(force) {
                 const originEnergy = message.originEnergy;
+                energy = originEnergy - character.stats.energy.current;
                 character.stats.energy.add(originEnergy - character.stats.energy.current);
             } else {
                 character.stats.energy.add(cost);
             }
+            if(energy != 0) {
+                client.send("addExtraScore", {
+                    score: energy,
+                    type: "energy"
+                });
+            }
+
         }
 
 
