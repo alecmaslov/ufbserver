@@ -1,3 +1,170 @@
+export const USER_TYPE : {[key : string] : number} = {
+    USER : 1,
+    MONSTER : 2
+}
+
+export const MONSTER_TYPE : {[key : string] : number} = {
+    WASP_BLUE : 1,
+    SPIDER_BLUE : 2,
+    EARWIG_BLUE : 3,
+    CENTIPEDE_BLUE : 4,
+    WASP_GREEN : 5,
+    SPIDER_GREEN : 6,
+    EARWIG_GREEN : 7,
+    CENTIPEDE_GREEN : 8,
+    WASP_YELLOW : 9,
+    SPIDER_YELLOW : 10,
+    EARWIG_YELLOW : 11,
+    CENTIPEDE_YELLOW : 12,
+}
+
+export const MONSTERS : {[key : number] : {
+    name : string,
+    level : number,
+    characterClass : string,
+    property : {
+        heart : number,
+        energy : number,
+        melee : number,
+        mana : number
+    }
+}} = {
+    [MONSTER_TYPE.WASP_BLUE] : {
+        name : "Wasp 1",
+        level : 1,
+        characterClass : "Wasp_blue",
+        property : {
+            heart : 30,
+            energy : 26,
+            melee : 2,
+            mana : 2
+        }
+    },
+    [MONSTER_TYPE.WASP_GREEN] : {
+        name : "Wasp 2",
+        level : 2,
+        characterClass : "Wasp_green",
+        property : {
+            heart : 50,
+            energy : 36,
+            melee : 4,
+            mana : 4
+        }
+    },
+    [MONSTER_TYPE.WASP_YELLOW] : {
+        name : "Wasp 3",
+        level : 3,
+        characterClass : "Wasp_yellow",
+        property : {
+            heart : 70,
+            energy : 46,
+            melee : 6,
+            mana : 6
+        }
+    },
+    [MONSTER_TYPE.SPIDER_BLUE] : {
+        name : "Spider 1",
+        level : 1,
+        characterClass : "Spider_blue",
+        property : {
+            heart : 35,
+            energy : 24,
+            melee : 2,
+            mana : 2
+        }
+    },
+    [MONSTER_TYPE.SPIDER_GREEN] : {
+        name : "Spider 2",
+        level : 2,
+        characterClass : "Spider_green",
+        property : {
+            heart : 55,
+            energy : 34,
+            melee : 4,
+            mana : 4
+        }
+    },
+    [MONSTER_TYPE.SPIDER_YELLOW] : {
+        name : "Spider 3",
+        level : 3,
+        characterClass : "Spider_yellow",
+        property : {
+            heart : 75,
+            energy : 44,
+            melee : 6,
+            mana : 6
+        }
+    },
+
+    [MONSTER_TYPE.EARWIG_BLUE] : {
+        name : "Earwig 1",
+        level : 1,
+        characterClass : "Earwig_blue",
+        property : {
+            heart : 40,
+            energy : 22,
+            melee : 2,
+            mana : 2
+        }
+    },
+    [MONSTER_TYPE.EARWIG_GREEN] : {
+        name : "Earwig 2",
+        level : 2,
+        characterClass : "Earwig_green",
+        property : {
+            heart : 60,
+            energy : 32,
+            melee : 4,
+            mana : 4
+        }
+    },
+    [MONSTER_TYPE.EARWIG_YELLOW] : {
+        name : "Earwig 3",
+        level : 3,
+        characterClass : "Earwig_yellow",
+        property : {
+            heart : 80,
+            energy : 42,
+            melee : 6,
+            mana : 6
+        }
+    },
+
+    [MONSTER_TYPE.CENTIPEDE_BLUE] : {
+        name : "Centipede 1",
+        level : 1,
+        characterClass : "Centipede_blue",
+        property : {
+            heart : 45,
+            energy : 20,
+            melee : 2,
+            mana : 2
+        }
+    },
+    [MONSTER_TYPE.CENTIPEDE_GREEN] : {
+        name : "Centipede 2",
+        level : 2,
+        characterClass : "Centipede_green",
+        property : {
+            heart : 65,
+            energy : 30,
+            melee : 4,
+            mana : 4
+        }
+    },
+    [MONSTER_TYPE.CENTIPEDE_YELLOW] : {
+        name : "Centipede 3",
+        level : 3,
+        characterClass : "Centipede_yellow",
+        property : {
+            heart : 85,
+            energy : 40,
+            melee : 6,
+            mana : 6
+        }
+    },
+}
+
 export const EDGE_TYPE : {[key: string] : number} = {
     NULL : -1,
     BASIC : 0,

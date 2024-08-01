@@ -203,7 +203,7 @@ interface MerchantEntityParameters {
 export function initializeSpawnEntities(
     spawnZones: SpawnZone[],
     config: SpawnEntityConfig,
-    onMonsterSpawn: (spawnZone: SpawnZone) => void
+    onMonsterSpawn: (spawnZone: SpawnZone, type : number) => void
 ) : ArraySchema<SpawnEntity> {
     const spawnEntities = new ArraySchema<SpawnEntity>();
     const seedIds = new Set(spawnZones.map((zone) => zone.seedId));
@@ -328,7 +328,7 @@ export function initializeSpawnEntities(
     monsterZones.forEach((monsterZone, i) => {
         if(n < config.monsters)
         {
-            onMonsterSpawn(monsterZone); // allow caller to figure out how to spawn a new monster (which is a character)
+            onMonsterSpawn(monsterZone, n + 1); // allow caller to figure out how to spawn a new monster (which is a character)
         }
         n++;
     })
@@ -417,7 +417,8 @@ export function spawnCharacter(
     characterClass: string,
     characterId?: string,
     playerId?: string,
-    displayName?: string
+    displayName?: string,
+    type?: number
 ) : CharacterState {
     const character = new CharacterState();
     const id = playerId || createId();
@@ -426,6 +427,10 @@ export function spawnCharacter(
     character.characterClass = characterClass;
     character.characterId = characterId || createId();
     character.currentTileId = tile.id;
+
+    if(!!type) {
+        character.type = type;
+    }
 
     if (displayName) {
         character.displayName = displayName;
