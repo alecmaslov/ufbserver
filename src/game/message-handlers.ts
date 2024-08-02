@@ -1,6 +1,6 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
-import { getClientCharacter } from "./helpers/room-helpers";
+import { getCharacterById, getClientCharacter } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
@@ -215,7 +215,7 @@ export const messageHandlers: MessageHandlers = {
 
     unEquipPower: (room, client, message) => {
         const powerId = message.powerId;
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         character.stats.energy.add(-2);
         
         const power : Item = character.powers.find(p => p.id == powerId);
@@ -239,7 +239,7 @@ export const messageHandlers: MessageHandlers = {
     // MOVE DETAIL INFO
     getMoveItem: (room, client, message) => {
         const itemId = message.itemId;
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         const currentTile = room.state.map.tiles.get(character.currentTileId);
 
         const directions = [0, 0, 0, 0];
@@ -301,7 +301,7 @@ export const messageHandlers: MessageHandlers = {
     setMoveItem:(room, client, message) => {
         const itemId = message.itemId;
         const tileId = message.tileId;
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         const desTile = room.state.map.tiles.get(message.tileId);
         
         if(character.stats.energy.current == 0) {
@@ -486,7 +486,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     buyItem: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
 
         const type = message.type;
         const id = message.id;
@@ -576,7 +576,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     sellItem: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
 
         const type = message.type;
         const id = message.id;
@@ -642,7 +642,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     setActiveQuest: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
 
         const quest = message.quest;
         const newQ = new Quest();
@@ -661,7 +661,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     addCraftItem: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         const type = message.type;
         const idx1 = message.idx1;
         const idx2 = message.idx2;

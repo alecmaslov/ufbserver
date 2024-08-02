@@ -325,7 +325,7 @@ export function initializeSpawnEntities(
     console.log("monsterZones: ", monsterZones.length)
 
     n = 0;
-    monsterZones.forEach((monsterZone, i) => {
+    monsterZones.sort(() => Math.random() - 0.5).forEach((monsterZone, i) => {
         if(n < config.monsters)
         {
             onMonsterSpawn(monsterZone, n + 1); // allow caller to figure out how to spawn a new monster (which is a character)

@@ -2,7 +2,7 @@ import { Command } from "@colyseus/command";
 import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
-import { getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, POWERCOSTS, STACKTYPE, powers, stacks } from "#assets/resources";
 
@@ -16,7 +16,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
     }
 
     execute({ client, message }: OnItemCommandPayload) {
-        const character = getClientCharacter(this.room, client);
+        const character = getCharacterById(this.room, message.characterId);
 
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");

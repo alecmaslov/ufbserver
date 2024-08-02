@@ -2,7 +2,7 @@ import { Command } from "@colyseus/command";
 import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
-import { getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 
@@ -16,7 +16,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
     }
 
     execute({ client, message }: OnPowerMoveCommandPayload) {
-        const character = getClientCharacter(this.room, client);
+        const character = getCharacterById(this.room, message.characterId);
 
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");

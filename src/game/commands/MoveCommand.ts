@@ -2,7 +2,7 @@ import { Command } from "@colyseus/command";
 import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
-import { getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
@@ -21,16 +21,16 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
     }
 
     execute({ client, message, force }: OnMoveCommandPayload) {
-        const character = getClientCharacter(this.room, client);
+        const character = getCharacterById(this.room, message.characterId);
         console.log("move message execute")
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
         }
 
-        if (!force && character.id !== this.state.currentCharacterId) {
-            this.room.notify(client, "It's not your turn!", "error");
-            return;
-        }
+        // if (!force && character.id !== this.state.currentCharacterId) {
+        //     this.room.notify(client, "It's not your turn!", "error");
+        //     return;
+        // }
 
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);
@@ -212,7 +212,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
 
         if (character.stats.energy.current == 0) {
             this.room.notify(client, "You are too tired to continue.");
-            this.room.incrementTurn();
+            //this.room.incrementTurn();
         }
     }
 }
