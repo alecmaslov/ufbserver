@@ -21,7 +21,7 @@ import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { MONSTERS, USER_TYPE } from "#assets/resources";
+import { MONSTER_TYPE, MONSTERS, TURN_TIME, USER_TYPE } from "#assets/resources";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -96,7 +96,9 @@ export class UfbRoom extends Room<UfbRoomState> {
         // @change
         this.state.turnOrder.push(character.id);
 
-        if (this.state.turnOrder.length === 1) {
+        const users = this.state.turnOrder.map(key => this.state.characters.get(key)).filter(p => p.type == USER_TYPE.USER);
+
+        if (users.length === 1) {
             this.state.currentCharacterId = playerId;
             console.log("first player, setting current player id to", playerId);
         }
@@ -142,9 +144,11 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         // const currentCharacter =
 
+        console.log("turn orders:", this.state.turnOrder, n);
+
         this.broadcast(
             "turnChanged",
-            { turn: this.state.turn },
+            { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime : TURN_TIME },
             { afterNextPatch: true }
         );
     }
@@ -187,7 +191,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                     where: { id: spawnZone.tileId },
                 });
                 try {
-                    spawnCharacter(
+                    const monster = spawnCharacter(
                         this.state.characters,
                         "foobarbaz",
                         tile,
@@ -195,8 +199,11 @@ export class UfbRoom extends Room<UfbRoomState> {
                         "",
                         "",
                         "",
-                        USER_TYPE.MONSTER
+                        USER_TYPE.MONSTER,
+                        type
                     );
+
+                    this.state.turnOrder.push(monster.id);
                 } catch {
                     console.error(
                         `Tried to spawn monster at ${tile.id} but failed. | ${tile.x}, ${tile.y}`

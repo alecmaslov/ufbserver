@@ -30,7 +30,7 @@ export const MONSTERS : {[key : number] : {
     }
 }} = {
     [MONSTER_TYPE.WASP_BLUE] : {
-        name : "Wasp 1",
+        name : "Blue Wasp",
         level : 1,
         characterClass : "Wasp_blue",
         property : {
@@ -41,7 +41,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.WASP_GREEN] : {
-        name : "Wasp 2",
+        name : "Green Wasp",
         level : 2,
         characterClass : "Wasp_green",
         property : {
@@ -52,7 +52,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.WASP_YELLOW] : {
-        name : "Wasp 3",
+        name : "Yellow Wasp",
         level : 3,
         characterClass : "Wasp_yellow",
         property : {
@@ -63,7 +63,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.SPIDER_BLUE] : {
-        name : "Spider 1",
+        name : "Blue Spider",
         level : 1,
         characterClass : "Spider_blue",
         property : {
@@ -74,7 +74,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.SPIDER_GREEN] : {
-        name : "Spider 2",
+        name : "Green Spider",
         level : 2,
         characterClass : "Spider_green",
         property : {
@@ -85,7 +85,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.SPIDER_YELLOW] : {
-        name : "Spider 3",
+        name : "Yellow Spider",
         level : 3,
         characterClass : "Spider_yellow",
         property : {
@@ -97,7 +97,7 @@ export const MONSTERS : {[key : number] : {
     },
 
     [MONSTER_TYPE.EARWIG_BLUE] : {
-        name : "Earwig 1",
+        name : "Blue Earwig",
         level : 1,
         characterClass : "Earwig_blue",
         property : {
@@ -108,7 +108,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.EARWIG_GREEN] : {
-        name : "Earwig 2",
+        name : "Green Earwig",
         level : 2,
         characterClass : "Earwig_green",
         property : {
@@ -119,7 +119,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.EARWIG_YELLOW] : {
-        name : "Earwig 3",
+        name : "Yellow Earwig",
         level : 3,
         characterClass : "Earwig_yellow",
         property : {
@@ -131,7 +131,7 @@ export const MONSTERS : {[key : number] : {
     },
 
     [MONSTER_TYPE.CENTIPEDE_BLUE] : {
-        name : "Centipede 1",
+        name : "Blue Centipede",
         level : 1,
         characterClass : "Centipede_blue",
         property : {
@@ -142,7 +142,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.CENTIPEDE_GREEN] : {
-        name : "Centipede 2",
+        name : "Green Centipede",
         level : 2,
         characterClass : "Centipede_green",
         property : {
@@ -153,7 +153,7 @@ export const MONSTERS : {[key : number] : {
         }
     },
     [MONSTER_TYPE.CENTIPEDE_YELLOW] : {
-        name : "Centipede 3",
+        name : "Yellow Centipede",
         level : 3,
         characterClass : "Centipede_yellow",
         property : {
@@ -2814,3 +2814,21 @@ export const CRAFTS_ITEM: {id: number, item1: number, item2: number, coin: numbe
         result: ITEMTYPE.BOMB_ARROW
     },
 ]
+
+export const DICE_SIX_PERCENT: {[key: number] : number} = {
+    [1] : 1,
+    [2] : 9,
+    [3] : 25,
+    [4] : 25,
+    [5] : 25,
+    [6] : 15,
+}
+
+export const DICE_FOUR_PERCENT: {[key: number] : number} = {
+    [1] : 2,
+    [2] : 40,
+    [3] : 40,
+    [4] : 18,
+}
+
+export const TURN_TIME = 200;

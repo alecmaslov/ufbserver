@@ -1,3 +1,4 @@
+import { MONSTERS, USER_TYPE } from "#assets/resources";
 import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
@@ -418,7 +419,8 @@ export function spawnCharacter(
     characterId?: string,
     playerId?: string,
     displayName?: string,
-    type?: number
+    type?: number,
+    monsterType?: number
 ) : CharacterState {
     const character = new CharacterState();
     const id = playerId || createId();
@@ -437,9 +439,11 @@ export function spawnCharacter(
     } else {
         let defaultName;
         if (!playerId) {
-            defaultName = `NPC (${character.characterClass})`;
+            defaultName = character.type == USER_TYPE.USER? `NPC (${character.characterClass})` : `<color="red"><size=50%>MONSTER</size></color>
+${MONSTERS[monsterType].name}`;
         } else {
-            defaultName = `Player (${character.characterClass})`;
+            defaultName = `<size=50%>Player</size>
+${character.characterClass}`;
         }
         character.displayName = defaultName;
     }
@@ -452,4 +456,14 @@ export function spawnCharacter(
     characters.set(id, character);
 
     return character;
+}
+
+export function getDiceCount(percent : number, type : number) {
+    if(type == 6) {
+
+    } else {
+
+    }
+
+    return 1;
 }

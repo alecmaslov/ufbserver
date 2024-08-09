@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { coordToGameId, fillPathWithCoords, getDiceCount, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -119,7 +119,8 @@ export const messageHandlers: MessageHandlers = {
     },
 
     endTurn: (room, client, message) => {
-        const playerId = room.sessionIdToPlayerId.get(client.sessionId);
+        // const playerId = room.sessionIdToPlayerId.get(client.sessionId);
+        const playerId = message.characterId;
         const player = room.state.characters.get(playerId);
         if (player.id !== room.state.currentCharacterId) {
             room.notify(client, "It's not your turn!", "error");
@@ -128,15 +129,15 @@ export const messageHandlers: MessageHandlers = {
         room.incrementTurn();
 
         ////
-        const fromTileId = coordToGameId(message.from);
-        const toTileId = coordToGameId(message.to);
-        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
-        client.send("foundPath", {
-            from: message.from,
-            to: message.to,
-            path,
-            cost,
-        });
+        // const fromTileId = coordToGameId(message.from);
+        // const toTileId = coordToGameId(message.to);
+        // const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+        // client.send("foundPath", {
+        //     from: message.from,
+        //     to: message.to,
+        //     path,
+        //     cost,
+        // });
     },
 
     changeMap: async (room, client, message) => {
@@ -779,6 +780,15 @@ export const messageHandlers: MessageHandlers = {
             "success"
         );
     },
+
+    getDiceValue: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+
+        const random = Math.random() * 100;
+        const diceCount = getDiceCount(random, message.diceType);
+
+        client.send("setDiceCount", {diceCount});
+    }
 };
 
 export function registerMessageHandlers(room: UfbRoom) {
