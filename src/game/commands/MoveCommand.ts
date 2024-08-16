@@ -2,13 +2,14 @@ import { Command } from "@colyseus/command";
 import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
-import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
 import { fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
 type OnMoveCommandPayload = {
     client: Client;
@@ -35,12 +36,6 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);
 
-        console.log("des tile", destinationTile.walls);
-        console.log("des tile1", destinationTile.walls[0]);
-        console.log("des tile2", destinationTile.walls[1]);
-        console.log("des tile3", destinationTile.walls[2]);
-        console.log("des tile4", destinationTile.walls[3]);
-        
         let directionData = {
             left: 1,
             right: 1,
@@ -110,21 +105,21 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             const result = itemResults[moveEntity.itemId];
             if(!!result.energy) {
                 character.stats.energy.add(result.energy);
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.energy,
                     type: "energy"
                 });
             }
             if(!!result.heart) {
                 character.stats.health.add(result.heart);
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.heart,
                     type: "heart"
                 });
             }
             if(!!result.ultimate) {
                 character.stats.ultimate.add(result.ultimate);
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.ultimate,
                     type: "ultimate"
                 });
@@ -149,14 +144,14 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     stack.count++;
                 }
 
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 1,
                     type: "stack",
                     stackId: result.stackId
                 });
             }
 
-            client.send("getBombDamage", {
+            client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
                 playerId: moveEntity.playerId,
                 itemResult: result
             });
@@ -176,7 +171,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 character.stats.energy.add(cost);
             }
             if(energy != 0) {
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: energy,
                     type: "energy"
                 });
@@ -200,6 +195,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             down: directionData.down,
         };
 
+
+
         // console.log(
         //     `Sending playerMoved message ${JSON.stringify(
         //         characterMovedMessage,
@@ -208,8 +205,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     )}`
         // );
 
-        this.room.broadcast("characterMoved", characterMovedMessage);
-
+        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
         if (character.stats.energy.current == 0) {
             this.room.notify(client, "You are too tired to continue.");
             //this.room.incrementTurn();

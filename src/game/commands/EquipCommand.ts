@@ -7,6 +7,7 @@ import { Item } from "#game/schema/CharacterState";
 import { PowerMoveListMessage } from "#game/message-types";
 import { powermoves } from "#assets/resources";
 import { PowerMove } from "#shared-types";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
 type OnEquipCommandPayload = {
     client: Client;
@@ -71,7 +72,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
             }
         })
 
-        client.send("ReceivePowerMoveList", clientMessage);
+        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_POWERMOVE_LIST, clientMessage);
 
     }
 }

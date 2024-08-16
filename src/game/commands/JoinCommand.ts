@@ -5,6 +5,7 @@ import { Client } from "@colyseus/core";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { SpawnInitMessage } from "#game/message-types";
 import { TURN_TIME } from "#assets/resources";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
 type Payload = { client: Client; message: any;};
 
@@ -38,10 +39,10 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
 
         console.log(`itemid: ${itemId}, powerId: ${powerId}, coin: ${coinCount}`);
 
-        client.send("spawnInit", spawnMessage);
+        client.send(SERVER_TO_CLIENT_MESSAGE.SPAWN_INIT, spawnMessage);
         
         // Turn start....
-        client.send("InitTurn", {
+        client.send(SERVER_TO_CLIENT_MESSAGE.INIT_TURN, {
             characterId : message.playerId,
             curTime : TURN_TIME
         });

@@ -60,7 +60,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         });
 
         // ADD POWER for MOVE ITEM
-        [10].forEach(key => {
+        [4].forEach(key => {
             const testPower : Item = character.powers.find(power => power.id == key);
             if(testPower == null) {
                 const newPower = new Item();
