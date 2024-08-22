@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -274,7 +274,7 @@ export const messageHandlers: MessageHandlers = {
         client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_MOVEITEM, movemessage);
     },
 
-    setMoveItem:(room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.SET_MOVE_ITEM]:(room, client, message) => {
         const itemId = message.itemId;
         const tileId = message.tileId;
         const character = getCharacterById(room, message.characterId);
@@ -376,11 +376,28 @@ export const messageHandlers: MessageHandlers = {
 
     },
 
-    setPowerMove: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.SET_POWER_MOVE_ITEM]: (room, client, message) => {
         room.dispatcher.dispatch(new PowerMoveCommand(), {
             client,
             message
         });
+    },
+
+    [CLIENT_SERVER_MESSAGE.END_POWER_MOVE_ITEM]: (room, client, message) => {
+        const {enemyId, characterId, powerMoveId, diceCount, enemyDiceCount} = message;
+
+        const enemy = getCharacterById(room, enemyId);
+        const character = getCharacterById(room, characterId);
+
+        const deltaCount = diceCount - enemyDiceCount;
+        if(diceCount > 0) {
+            enemy.stats.health.add(-deltaCount);
+            client.send("addExtraScore", {
+                score: -deltaCount,
+                type: "heart_e",
+            });
+        }
+
     },
 
     getMerchantData: (room, client, message) => {
@@ -774,7 +791,47 @@ export const messageHandlers: MessageHandlers = {
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
             tileIds : getHighLightTileIds(room, character.currentTileId, powermove.range)
         });
-    }
+    },
+
+    [CLIENT_SERVER_MESSAGE.SET_DICE_ROLL]: (room, client, message) => {
+        console.log(CLIENT_SERVER_MESSAGE.SET_DICE_ROLL);
+
+        const character = getCharacterById(room, message.characterId);
+        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+
+        if(!!powermove.result.dice) {
+            const setDiceRollMessage: any = {
+                diceData : []
+            }
+            if(powermove.result.dice == DICE_TYPE.DICE_4 || powermove.result.dice == DICE_TYPE.DICE_6) {
+                setDiceRollMessage.diceData.push({
+                    type: powermove.result.dice,
+                    diceCount: getDiceCount(Math.random(), powermove.result.dice)
+                })
+            } else if(powermove.result.dice == DICE_TYPE.DICE_6_4) {
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_6,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                })
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_4,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                })
+            } else if(powermove.result.dice == DICE_TYPE.DICE_6_6) {
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_6,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                })
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_6,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                })
+            }
+
+            client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        }
+
+    },
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

@@ -4,7 +4,9 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, ITEMDETAIL, ITEMTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { getDiceCount } from "#game/helpers/map-helpers";
 
 type OnPowerMoveCommandPayload = {
     client: Client;
@@ -17,6 +19,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
     execute({ client, message }: OnPowerMoveCommandPayload) {
         const character = getCharacterById(this.room, message.characterId);
+        const enemy = getCharacterById(this.room, message.enemyId);
 
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
@@ -29,38 +32,27 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         let isResult = true;
 
         console.log(powermove)
-        Object.keys(powermove).forEach(key => {
-            if(isResult) {
-                if(key == "range") {
-                    isResult = character.stats.range >= powermove.range;
-                    console.log("range", isResult);
-                    if(!isResult) return;
-                } else if(key == "light") {
-                    isResult = character.stats.energy.current >= powermove.light;
-                    console.log("light", isResult);
-                    if(!isResult) return;
-                } else if(key == "coin") {
-                    isResult = character.stats.coin >= powermove.coin;
-                    console.log("coin", isResult);
-                    if(!isResult) return;
-                } else if(key == "costList") {
-                    powermove.costList.forEach(item => {
-                        if(isResult) {
-                            const idx = character.items.findIndex(ii => ii.id == item.id);
-                            if(idx > -1) {
-                                isResult = character.items[idx].count >= item.count;
-                                if(!isResult) return;
-                            } else {
-                                isResult = false;
-                                return;
-                            }
-                        }
-                    });
-                    if(!isResult) return;
+        if(powermove["coin"] > 0) {
+            isResult = character.stats.coin >= powermove.coin;
+        }
+        if(powermove["light"] > 0 && isResult) {
+            isResult = character.stats.energy.current >= powermove.light;
+        }
+        if(powermove["costList"].length > 0 && isResult) {
+            powermove.costList.forEach(item => {
+                if(isResult) {
+                    const idx = character.items.findIndex(ii => ii.id == item.id);
+                    if(idx > -1) {
+                        isResult = character.items[idx].count >= item.count;
+                        if(!isResult) return;
+                    } else {
+                        isResult = false;
+                        return;
+                    }
                 }
-            }
+            });
+        }
 
-        });
         console.log("------ check logic======", isResult)
         if(!isResult) {
             this.room.notify(
@@ -74,11 +66,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         // REDUCE COST PART
         Object.keys(powermove).forEach(key => {
             if(key == "range") {
-                    character.stats.range -= powermove.range;
-                    client.send("addExtraScore", {
-                    score: -powermove.range,
-                    type: "range",
-                });
+
             } else if(key == "light") {
                 character.stats.energy.add(-powermove.light);
                 client.send("addExtraScore", {
@@ -114,39 +102,49 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         console.log("------ check cost ppart======")
 
-        // ADD RESOULT PART
+        // ADD RESOULT PART -- IMPORTANT
+        let target;
+        if(powermove.range == 0) {
+            target = character;
+        } else {
+            target = enemy;
+        }
+
+        if(target == null) return;
+
         Object.keys(powermove.result).forEach(key => {
             if(key == "health") {
-                character.stats.health.add(powermove.result.health);
-                client.send("addExtraScore", {
+                target.stats.health.add(powermove.result.health);
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.health,
-                    type: "heart",
+                    type: target == character? "heart" : "heart_e",
                 });
             } else if(key == "energy") {
-                character.stats.energy.add(powermove.result.energy);
-                client.send("addExtraScore", {
+                target.stats.energy.add(powermove.result.energy);
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.energy,
-                    type: "energy",
+                    type: target == character? "energy" : "energy_e",
                 });
             } else if(key == "coin") {
-                character.stats.coin += powermove.result.coin;
-                client.send("addExtraScore", {
+                target.stats.coin += powermove.result.coin;
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.coin,
                     type: "coin",
                 });
             } else if(key == "ultimate") {
-                character.stats.ultimate.add(powermove.result.ultimate);
-                client.send("addExtraScore", {
+                target.stats.ultimate.add(powermove.result.ultimate);
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.ultimate,
-                    type: "ultimate",
+                    type: target == character? "ultimate" : "ultimate_e",
                 });
             } else if(key == "perkId") {
 
             } else if(key == "items") {
+                let ctn = 0;
                 powermove.result.items.forEach(item => {
-                    const id = character.items.findIndex(ii => ii.id == item.id);
+                    const id = target.items.findIndex(ii => ii.id == item.id);
                     if(id > -1) {
-                        character.items[id].count += item.count;                        
+                        target.items[id].count += item.count;                        
                     } else {
                         const newItem = new Item();
                         newItem.id = item.id;
@@ -156,26 +154,33 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         newItem.cost = ITEMDETAIL[item.id].cost;
                         newItem.sell = ITEMDETAIL[item.id].sell;
 
-                        character.items.push(newItem);
+                        target.items.push(newItem);
                     }
 
+                    ctn += item.count;
+                    
                     if(id == ITEMTYPE.MELEE) {
-                        client.send("addExtraScore", {
+                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: item.count,
                             type: "melee",
                         });
                     } else if(id == ITEMTYPE.MANA) {
-                        client.send("addExtraScore", {
+                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: item.count,
                             type: "mana",
                         });
                     }
                 })
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: ctn,
+                    type: "item",
+                });
             } else if(key == "stacks") {
+                let ctn = 0;
                 powermove.result.stacks.forEach(stack => {
-                    const id = character.stacks.findIndex(ii => ii.id == stack.id);
+                    const id = target.stacks.findIndex(ii => ii.id == stack.id);
                     if(id > -1) {
-                        character.stacks[id].count += stack.count;
+                        target.stacks[id].count += stack.count;
                     } else {
                         const newStack = new Item();
                         newStack.id = stack.id;
@@ -186,9 +191,38 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         newStack.level = stacks[stack.id].level;
                         newStack.sell = stacks[stack.id].sell;
 
-                        character.stacks.push(newStack);
+                        target.stacks.push(newStack);
                     }
+                    ctn += stack.count;
                 })
+                console.log("use stack....")
+
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: ctn,
+                    type: "stack",
+                });
+                if(target == enemy) {
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: ctn,
+                        type: "stack_e",
+                    });
+                }
+
+            } else if(key == "dice") {
+                if(target == enemy) {
+                    if(!!enemy.stacks[STACKTYPE.Block] && enemy.stacks[STACKTYPE.Block].count > 0) {
+                        enemy.stacks[STACKTYPE.Block].count--;
+                        client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
+                            enemyId: enemy.id,
+                            characterId: character.id,
+                            powerMoveId: message.powerMoveId,
+                            stackId: STACKTYPE.Block,
+                            diceCount: message.diceCount,
+                            enemyDiceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        });
+
+                    }
+                }
             }
         });
       

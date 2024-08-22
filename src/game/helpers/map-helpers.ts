@@ -1,4 +1,4 @@
-import { MONSTERS, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, MONSTERS, USER_TYPE } from "#assets/resources";
 import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
@@ -459,10 +459,31 @@ ${character.characterClass}`;
 }
 
 export function getDiceCount(percent : number, type : number) {
-    if(type == 6) {
-
+    const p = percent * 100;
+    if(type == DICE_TYPE.DICE_6) {
+        if(p <= 1) {
+            return 1;
+        } else if(p > 1 && p <= 10) {
+            return 2;
+        } else if(p > 10 && p <= 35) {
+            return 3;
+        } else if(p > 35 && p <= 60) {
+            return 4;
+        } else if(p > 60 && p <= 85) {
+            return 5;
+        } else if(p > 85 && p <= 100) {
+            return 6;
+        }
     } else {
-
+        if(p <= 2) {
+            return 1;
+        } else if(p > 2 && p <= 42) {
+            return 2;
+        } else if(p > 42 && p <= 82) {
+            return 3;
+        } else if(p > 82 && p <= 100) {
+            return 4;
+        }
     }
 
     return 1;

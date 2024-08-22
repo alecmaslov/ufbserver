@@ -21,7 +21,8 @@ import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { MONSTER_TYPE, MONSTERS, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { MONSTER_TYPE, MONSTERS, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { Item } from "./schema/CharacterState";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -202,6 +203,24 @@ export class UfbRoom extends Room<UfbRoomState> {
                         USER_TYPE.MONSTER,
                         type
                     );
+
+                    // TEST:::
+                    Object.keys(STACKTYPE).forEach(key => {
+                        const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
+                        if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
+                            console.log(STACKTYPE[key])
+                            const newStack = new Item();
+                            newStack.id = STACKTYPE[key];
+                            newStack.count = 5;
+                            newStack.name = key;
+                            newStack.description = stacks[STACKTYPE[key]].description;
+                            newStack.level = stacks[STACKTYPE[key]].level;
+                            newStack.cost = stacks[STACKTYPE[key]].cost;
+                            newStack.sell = stacks[STACKTYPE[key]].sell;
+                            monster.stacks.push(newStack);
+                        }
+                    });                    
+                    // END TEST:::
 
                     this.state.turnOrder.push(monster.id);
                 } catch {

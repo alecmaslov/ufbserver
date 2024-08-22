@@ -4,7 +4,7 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMDETAIL, POWERCOSTS, STACKTYPE, powers, stacks } from "#assets/resources";
+import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -23,12 +23,13 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        [5, 18, 19, 20, 21, 8, 9, 10, 3].forEach(id => {
+        Object.keys(ITEMTYPE).forEach(key => {
+            const id = ITEMTYPE[key];
             const testItem : Item = character.items.find(item => item.id == id);
             if(testItem == null) {
                 const newItem = new Item();
                 newItem.id = id;
-                newItem.count = 6;
+                newItem.count = 30;
                 newItem.name = ITEMDETAIL[id].name;
                 newItem.description = "description";
                 newItem.level = ITEMDETAIL[id].level;
@@ -60,7 +61,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         });
 
         // ADD POWER for MOVE ITEM
-        [4].forEach(key => {
+        [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3].forEach(key => {
             const testPower : Item = character.powers.find(power => power.id == key);
             if(testPower == null) {
                 const newPower = new Item();
