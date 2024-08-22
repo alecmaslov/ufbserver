@@ -1,3 +1,4 @@
+import { DICE_TYPE, MONSTERS, USER_TYPE } from "#assets/resources";
 import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
@@ -203,7 +204,7 @@ interface MerchantEntityParameters {
 export function initializeSpawnEntities(
     spawnZones: SpawnZone[],
     config: SpawnEntityConfig,
-    onMonsterSpawn: (spawnZone: SpawnZone) => void
+    onMonsterSpawn: (spawnZone: SpawnZone, type : number) => void
 ) : ArraySchema<SpawnEntity> {
     const spawnEntities = new ArraySchema<SpawnEntity>();
     const seedIds = new Set(spawnZones.map((zone) => zone.seedId));
@@ -301,7 +302,7 @@ export function initializeSpawnEntities(
             merchantEntity.parameters = JSON.stringify(parameters);
             // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
             spawnEntities.push(merchantEntity);
-        } else if(n < config.chests + config.merchants + config.portals) {
+        } else if(n < config.chests + config.merchants + config.portals * 2) {
             const parameters: PortalEntityParameters = {
                 seedId: zone.seedId,
                 portalGroup: i,
@@ -325,10 +326,10 @@ export function initializeSpawnEntities(
     console.log("monsterZones: ", monsterZones.length)
 
     n = 0;
-    monsterZones.forEach((monsterZone, i) => {
+    monsterZones.sort(() => Math.random() - 0.5).forEach((monsterZone, i) => {
         if(n < config.monsters)
         {
-            onMonsterSpawn(monsterZone); // allow caller to figure out how to spawn a new monster (which is a character)
+            onMonsterSpawn(monsterZone, n + 1); // allow caller to figure out how to spawn a new monster (which is a character)
         }
         n++;
     })
@@ -417,7 +418,9 @@ export function spawnCharacter(
     characterClass: string,
     characterId?: string,
     playerId?: string,
-    displayName?: string
+    displayName?: string,
+    type?: number,
+    monsterType?: number
 ) : CharacterState {
     const character = new CharacterState();
     const id = playerId || createId();
@@ -427,14 +430,20 @@ export function spawnCharacter(
     character.characterId = characterId || createId();
     character.currentTileId = tile.id;
 
+    if(!!type) {
+        character.type = type;
+    }
+
     if (displayName) {
         character.displayName = displayName;
     } else {
         let defaultName;
         if (!playerId) {
-            defaultName = `NPC (${character.characterClass})`;
+            defaultName = character.type == USER_TYPE.USER? `NPC (${character.characterClass})` : `<color="red"><size=50%>MONSTER</size></color>
+${MONSTERS[monsterType].name}`;
         } else {
-            defaultName = `Player (${character.characterClass})`;
+            defaultName = `<size=50%>Player</size>
+${character.characterClass}`;
         }
         character.displayName = defaultName;
     }
@@ -447,4 +456,35 @@ export function spawnCharacter(
     characters.set(id, character);
 
     return character;
+}
+
+export function getDiceCount(percent : number, type : number) {
+    const p = percent * 100;
+    if(type == DICE_TYPE.DICE_6) {
+        if(p <= 1) {
+            return 1;
+        } else if(p > 1 && p <= 10) {
+            return 2;
+        } else if(p > 10 && p <= 35) {
+            return 3;
+        } else if(p > 35 && p <= 60) {
+            return 4;
+        } else if(p > 60 && p <= 85) {
+            return 5;
+        } else if(p > 85 && p <= 100) {
+            return 6;
+        }
+    } else {
+        if(p <= 2) {
+            return 1;
+        } else if(p > 2 && p <= 42) {
+            return 2;
+        } else if(p > 42 && p <= 82) {
+            return 3;
+        } else if(p > 82 && p <= 100) {
+            return 4;
+        }
+    }
+
+    return 1;
 }

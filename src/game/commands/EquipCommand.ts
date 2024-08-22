@@ -2,11 +2,12 @@ import { Command } from "@colyseus/command";
 import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
-import { getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { PowerMoveListMessage } from "#game/message-types";
 import { powermoves } from "#assets/resources";
 import { PowerMove } from "#shared-types";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
 type OnEquipCommandPayload = {
     client: Client;
@@ -18,7 +19,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
     }
 
     execute({ client, message }: OnEquipCommandPayload) {
-        const character = getClientCharacter(this.room, client);
+        const character = getCharacterById(this.room, message.characterId);
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
         }
@@ -71,7 +72,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
             }
         })
 
-        client.send("ReceivePowerMoveList", clientMessage);
+        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_POWERMOVE_LIST, clientMessage);
 
     }
 }

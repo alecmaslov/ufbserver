@@ -84,6 +84,7 @@ export class CharacterState extends Schema {
     @type("string") mapName: string = "";
     // @kyle - What if instead of sending CoordinatesState, we send tileId?
     @type("string") currentTileId: string = "";
+    @type("int8") type: number = 1;
     @type(CoordinatesState) coordinates: CoordinatesState =
         new CoordinatesState();
     @type(CharacterStatsState) stats: CharacterStatsState =

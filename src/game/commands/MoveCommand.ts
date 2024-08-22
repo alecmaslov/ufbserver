@@ -2,13 +2,14 @@ import { Command } from "@colyseus/command";
 import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
-import { getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
 import { fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
 type OnMoveCommandPayload = {
     client: Client;
@@ -21,16 +22,16 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
     }
 
     execute({ client, message, force }: OnMoveCommandPayload) {
-        const character = getClientCharacter(this.room, client);
+        const character = getCharacterById(this.room, message.characterId);
         console.log("move message execute")
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
         }
 
-        if (!force && character.id !== this.state.currentCharacterId) {
-            this.room.notify(client, "It's not your turn!", "error");
-            return;
-        }
+        // if (!force && character.id !== this.state.currentCharacterId) {
+        //     this.room.notify(client, "It's not your turn!", "error");
+        //     return;
+        // }
 
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);
@@ -43,51 +44,27 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         }
         // LEFT
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "left")
-
-            if(id == "") {
-                directionData.left = 0;
-            } else {
-                directionData.left = (destinationTile.walls[3] == EDGE_TYPE.BASIC || 
+            directionData.left = (destinationTile.walls[3] == EDGE_TYPE.BASIC || 
                 destinationTile.walls[3] == EDGE_TYPE.BRIDGE || 
                 destinationTile.walls[3] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
         }
         // RIGHT
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "right")
-
-            if(id == "") {
-                directionData.right = 0;
-            } else {
-                directionData.right = (destinationTile.walls[1] == EDGE_TYPE.BASIC || 
-                    destinationTile.walls[1] == EDGE_TYPE.BRIDGE || 
-                    destinationTile.walls[1] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
+            directionData.right = (destinationTile.walls[1] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[1] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[1] == EDGE_TYPE.STAIR)? 1 : 0;
         }
         // TOP
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "top")
-
-            if(id == "") {
-                directionData.top = 0;
-            } else {
-                directionData.top = directionData.right = (destinationTile.walls[0] == EDGE_TYPE.BASIC || 
-                    destinationTile.walls[0] == EDGE_TYPE.BRIDGE || 
-                    destinationTile.walls[0] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
+            directionData.top = (destinationTile.walls[0] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[0] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[0] == EDGE_TYPE.STAIR)? 1 : 0;
         }
         // DOWN
         {
-            const id = getTileIdByDirection(this.room.state.map.tiles, destinationTile.coordinates, "down")
-
-            if(id == "") {
-                directionData.down = 0;
-            } else {
-                directionData.down = directionData.right = (destinationTile.walls[2] == EDGE_TYPE.BASIC || 
-                    destinationTile.walls[2] == EDGE_TYPE.BRIDGE || 
-                    destinationTile.walls[2] == EDGE_TYPE.STAIR)? 1 : 0;
-            }
+            directionData.down = (destinationTile.walls[2] == EDGE_TYPE.BASIC || 
+                destinationTile.walls[2] == EDGE_TYPE.BRIDGE || 
+                destinationTile.walls[2] == EDGE_TYPE.STAIR)? 1 : 0;
         }
 
         // directionData = {
@@ -128,21 +105,21 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             const result = itemResults[moveEntity.itemId];
             if(!!result.energy) {
                 character.stats.energy.add(result.energy);
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.energy,
                     type: "energy"
                 });
             }
             if(!!result.heart) {
                 character.stats.health.add(result.heart);
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.heart,
                     type: "heart"
                 });
             }
             if(!!result.ultimate) {
                 character.stats.ultimate.add(result.ultimate);
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.ultimate,
                     type: "ultimate"
                 });
@@ -167,28 +144,39 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     stack.count++;
                 }
 
-                client.send("addExtraScore", {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 1,
                     type: "stack",
                     stackId: result.stackId
                 });
             }
 
-            client.send("getBombDamage", {
+            client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
                 playerId: moveEntity.playerId,
                 itemResult: result
             });
             this.room.state.map.moveItemEntities.deleteAt(idx);
 
         } else {
+            // const cost = currentTile.id == destinationTile.id? 0 : -(
+            //     Math.abs(currentTile.coordinates.x - destinationTile.coordinates.x) + Math.abs(currentTile.coordinates.y - destinationTile.coordinates.y)
+            // );
             const cost = currentTile.id == destinationTile.id? 0 : -1;
-
+            let energy = cost;
             if(force) {
                 const originEnergy = message.originEnergy;
+                energy = originEnergy - character.stats.energy.current;
                 character.stats.energy.add(originEnergy - character.stats.energy.current);
             } else {
                 character.stats.energy.add(cost);
             }
+            if(energy != 0) {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: energy,
+                    type: "energy"
+                });
+            }
+
         }
 
 
@@ -207,6 +195,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             down: directionData.down,
         };
 
+
+
         // console.log(
         //     `Sending playerMoved message ${JSON.stringify(
         //         characterMovedMessage,
@@ -215,11 +205,10 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     )}`
         // );
 
-        this.room.broadcast("characterMoved", characterMovedMessage);
-
+        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
         if (character.stats.energy.current == 0) {
             this.room.notify(client, "You are too tired to continue.");
-            this.room.incrementTurn();
+            //this.room.incrementTurn();
         }
     }
 }

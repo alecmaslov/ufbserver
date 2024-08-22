@@ -1,6 +1,6 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
-import { getClientCharacter } from "./helpers/room-helpers";
+import { coordToGameId, fillPathWithCoords, getDiceCount, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { getCharacterById, getClientCharacter, getHighLightTileIds } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
@@ -8,13 +8,14 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
 import { Dictionary } from "@prisma/client/runtime/library";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 import { getRandomElements } from "#utils/collections";
+import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
 
 type MessageHandler<TMessage> = (
@@ -84,21 +85,6 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    testPath: (room, client, message) => {
-        room.dispatcher.dispatch(new EquipCommand(), {
-            client,
-            message
-        });
-    },
-
-    testPathMove: (room, client, message) => {
-        room.dispatcher.dispatch(new MoveCommand(), {
-            client,
-            message,
-            force: false,
-        });
-    },
-
     findPath: (room, client, message) => {
         const fromTileId = coordToGameId(message.from);
         const toTileId = coordToGameId(message.to);
@@ -119,7 +105,8 @@ export const messageHandlers: MessageHandlers = {
     },
 
     endTurn: (room, client, message) => {
-        const playerId = room.sessionIdToPlayerId.get(client.sessionId);
+        // const playerId = room.sessionIdToPlayerId.get(client.sessionId);
+        const playerId = message.characterId;
         const player = room.state.characters.get(playerId);
         if (player.id !== room.state.currentCharacterId) {
             room.notify(client, "It's not your turn!", "error");
@@ -128,15 +115,15 @@ export const messageHandlers: MessageHandlers = {
         room.incrementTurn();
 
         ////
-        const fromTileId = coordToGameId(message.from);
-        const toTileId = coordToGameId(message.to);
-        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
-        client.send("foundPath", {
-            from: message.from,
-            to: message.to,
-            path,
-            cost,
-        });
+        // const fromTileId = coordToGameId(message.from);
+        // const toTileId = coordToGameId(message.to);
+        // const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+        // client.send("foundPath", {
+        //     from: message.from,
+        //     to: message.to,
+        //     path,
+        //     cost,
+        // });
     },
 
     changeMap: async (room, client, message) => {
@@ -167,7 +154,7 @@ export const messageHandlers: MessageHandlers = {
             tileId: message.tileId
         }
 
-        client.send("spawnInit", spawnMessage);
+        client.send(SERVER_TO_CLIENT_MESSAGE.SPAWN_INIT, spawnMessage);
 
         // const character = getClientCharacter(room, client);
         // character.coordinates.x = message.destination.x;
@@ -191,17 +178,6 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    getResourceList: (room, client, message) => {
-        const character = getClientCharacter(room, client);
-
-        const getResourceDataMessage: GetResourceDataMessage = {
-            characterState: character
-        };
-
-        client.send("sendResourceList", getResourceDataMessage)
-    },
-
-
     getPowerMoveList: (room, client, message) => {
         room.dispatcher.dispatch(new EquipCommand(), {
             client,
@@ -215,7 +191,7 @@ export const messageHandlers: MessageHandlers = {
 
     unEquipPower: (room, client, message) => {
         const powerId = message.powerId;
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         character.stats.energy.add(-2);
         
         const power : Item = character.powers.find(p => p.id == powerId);
@@ -233,13 +209,13 @@ export const messageHandlers: MessageHandlers = {
         } else {
             power.count++;
         }
-        client.send("unEquipPowerReceived", {playerId: character.id});
+        client.send(SERVER_TO_CLIENT_MESSAGE.UNEQUIP_POWER_RECEIVED, {playerId: character.id});
     },
 
     // MOVE DETAIL INFO
     getMoveItem: (room, client, message) => {
         const itemId = message.itemId;
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         const currentTile = room.state.map.tiles.get(character.currentTileId);
 
         const directions = [0, 0, 0, 0];
@@ -295,15 +271,15 @@ export const messageHandlers: MessageHandlers = {
             ...directionData
         }
 
-        client.send("ReceiveMoveItem", movemessage);
+        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_MOVEITEM, movemessage);
     },
 
-    setMoveItem:(room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.SET_MOVE_ITEM]:(room, client, message) => {
         const itemId = message.itemId;
         const tileId = message.tileId;
-        const character = getClientCharacter(room, client);
-        const currentTile = room.state.map.tiles.get(character.currentTileId);
-
+        const character = getCharacterById(room, message.characterId);
+        const desTile = room.state.map.tiles.get(message.tileId);
+        
         if(character.stats.energy.current == 0) {
             room.notify(
                 client,
@@ -375,9 +351,19 @@ export const messageHandlers: MessageHandlers = {
                 DodgeStack.count++;
             }
         } else if(itemId == ITEMTYPE.FEATHER) {
+        } else if(itemId == ITEMTYPE.WARP_CRYSTAL) {
+            console.log("WARP CRYSTAL: walls", desTile.walls);
 
-            
-        }
+            if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
+            } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "right");
+            } else if(desTile.walls[2] == EDGE_TYPE.BASIC) {   //DOWN
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "down");
+            } else if(desTile.walls[3] == EDGE_TYPE.BASIC) {   //LEFT
+                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
+            }
+        } 
 
         console.log("feather : ", message.tileId);
 
@@ -386,15 +372,32 @@ export const messageHandlers: MessageHandlers = {
             tileId: message.tileId
         }
 
-        client.send("SetMoveItem", setmoveitemMessage);
+        client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVEITEM, setmoveitemMessage);
 
     },
 
-    setPowerMove: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.SET_POWER_MOVE_ITEM]: (room, client, message) => {
         room.dispatcher.dispatch(new PowerMoveCommand(), {
             client,
             message
         });
+    },
+
+    [CLIENT_SERVER_MESSAGE.END_POWER_MOVE_ITEM]: (room, client, message) => {
+        const {enemyId, characterId, powerMoveId, diceCount, enemyDiceCount} = message;
+
+        const enemy = getCharacterById(room, enemyId);
+        const character = getCharacterById(room, characterId);
+
+        const deltaCount = diceCount - enemyDiceCount;
+        if(diceCount > 0) {
+            enemy.stats.health.add(-deltaCount);
+            client.send("addExtraScore", {
+                score: -deltaCount,
+                type: "heart_e",
+            });
+        }
+
     },
 
     getMerchantData: (room, client, message) => {
@@ -472,11 +475,11 @@ export const messageHandlers: MessageHandlers = {
             tileId: message.tileId
         };
 
-        client.send("getMerchantData", getMerchantDataDataMessage)
+        client.send(SERVER_TO_CLIENT_MESSAGE.GET_MERCHANT_DATA, getMerchantDataDataMessage)
     },
 
     buyItem: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
 
         const type = message.type;
         const id = message.id;
@@ -566,7 +569,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     sellItem: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
 
         const type = message.type;
         const id = message.id;
@@ -625,14 +628,14 @@ export const messageHandlers: MessageHandlers = {
             }
         });
 
-        room.broadcast("respawnMerchant", {
+        room.broadcast(SERVER_TO_CLIENT_MESSAGE.RESPAWN_MERCHANT, {
             tileId : tileId,
             oldTileId : message.tileId
         })
     },
 
     setActiveQuest: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
 
         const quest = message.quest;
         const newQ = new Quest();
@@ -651,7 +654,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     addCraftItem: (room, client, message) => {
-        const character = getClientCharacter(room, client);
+        const character = getCharacterById(room, message.characterId);
         const type = message.type;
         const idx1 = message.idx1;
         const idx2 = message.idx2;
@@ -768,6 +771,66 @@ export const messageHandlers: MessageHandlers = {
             "Add Craft Item!",
             "success"
         );
+    },
+
+    getDiceValue: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+
+        const random = Math.random() * 100;
+        const diceCount = getDiceCount(random, message.diceType);
+
+        client.send("setDiceCount", {diceCount});
+    },
+
+    [CLIENT_SERVER_MESSAGE.GET_HIGHLIGHT_RECT] : (room, client, message) => {
+        console.log("-----power move message - test range")
+        const character = getCharacterById(room, message.characterId);
+        
+        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+
+        client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
+            tileIds : getHighLightTileIds(room, character.currentTileId, powermove.range)
+        });
+    },
+
+    [CLIENT_SERVER_MESSAGE.SET_DICE_ROLL]: (room, client, message) => {
+        console.log(CLIENT_SERVER_MESSAGE.SET_DICE_ROLL);
+
+        const character = getCharacterById(room, message.characterId);
+        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+
+        if(!!powermove.result.dice) {
+            const setDiceRollMessage: any = {
+                diceData : []
+            }
+            if(powermove.result.dice == DICE_TYPE.DICE_4 || powermove.result.dice == DICE_TYPE.DICE_6) {
+                setDiceRollMessage.diceData.push({
+                    type: powermove.result.dice,
+                    diceCount: getDiceCount(Math.random(), powermove.result.dice)
+                })
+            } else if(powermove.result.dice == DICE_TYPE.DICE_6_4) {
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_6,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                })
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_4,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                })
+            } else if(powermove.result.dice == DICE_TYPE.DICE_6_6) {
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_6,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                })
+                setDiceRollMessage.diceData.push({
+                    type: DICE_TYPE.DICE_6,
+                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                })
+            }
+
+            client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        }
+
     },
 };
 
