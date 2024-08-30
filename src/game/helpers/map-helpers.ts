@@ -1,5 +1,5 @@
-import { DICE_TYPE, MONSTERS, USER_TYPE } from "#assets/resources";
-import { CharacterState, CoordinatesState } from "#game/schema/CharacterState";
+import { DICE_TYPE, ITEMDETAIL, ITEMTYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE } from "#assets/resources";
+import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
 import { Coordinates, PathStep } from "#shared-types";
@@ -487,4 +487,221 @@ export function getDiceCount(percent : number, type : number) {
     }
 
     return 1;
+}
+
+export function getPowerMoveFromId(id : number) {
+    let powermove = powermoves.find(pm => pm.id == id);
+
+    if(powermove != null) {
+        return powermove;
+    } else {
+        if(id < 0) {
+            let arrowId = Math.abs(id + (id <= -100? 100 : 1));
+            console.log(arrowId);
+            if(id <= -100) {
+                powermove = {
+                    id: 1000,
+                    name: "Punch",
+                    powerImageId: -1,
+                    powerIds: [
+                        22, 34
+                    ],
+                    costList: [
+                        {
+                            id: ITEMTYPE.MANA,
+                            count: 1
+                        },
+
+                    ],
+                    result : {
+                        dice: DICE_TYPE.DICE_4
+                    },
+                    range: 1,
+                    light: 2,
+                    coin: 0,
+                }
+            } else {
+                powermove = {
+                    id: 1000,
+                    name: "Punch",
+                    powerImageId: -1,
+                    powerIds: [
+                        22, 34
+                    ],
+                    costList: [
+                        {
+                            id: ITEMTYPE.MELEE,
+                            count: 1
+                        },
+                    ],
+                    result : {
+                        dice: DICE_TYPE.DICE_4
+                    },
+                    range: 1,
+                    light: 2,
+                    coin: 0,
+                }
+            }
+            if(arrowId > 0) {
+                powermove.costList.push({
+                    id: arrowId,
+                    count: 1
+                });
+
+                if(arrowId == ITEMTYPE.ARROW) {
+                    powermove.result.health = 2;
+                } else if(arrowId == ITEMTYPE.BOMB_ARROW) {
+                    powermove.result.health = 6;
+                    powermove.result.perkId = PERKTYPE.Pull;
+                } else if(arrowId == ITEMTYPE.FIRE_ARROW) {
+                    powermove.result.health = 3;
+                    powermove.result.stacks = [{
+                        id: STACKTYPE.Burn,
+                        count: 1
+                    }];
+                } else if(arrowId == ITEMTYPE.ICE_ARROW) {
+                    powermove.result.ultimate = 3;
+                    powermove.result.energy = 3;
+                    powermove.result.stacks = [{
+                        id: STACKTYPE.Freeze,
+                        count: 1
+                    }];
+                } else if(arrowId == ITEMTYPE.VOID_ARROW) {
+                    powermove.result.health = 4;
+                    powermove.result.stacks = [{
+                        id: STACKTYPE.Void,
+                        count: 1
+                    }];
+                }
+
+
+            }
+
+            return powermove;
+
+        } else {
+            return null;
+        }
+    }
+}
+
+export function addItemToCharacter(id: number, count : number, state: CharacterState) {
+    const it = state.items.find(ii => ii.id == id);
+    if(it != null) {
+        it.count += count;
+    } else {
+        const newItem = new Item();
+        newItem.id = id;
+        newItem.count = count;
+        newItem.name = ITEMDETAIL[id].name;
+        newItem.description = "description";
+        newItem.level = ITEMDETAIL[id].level;
+        newItem.cost = ITEMDETAIL[id].cost;
+        newItem.sell = ITEMDETAIL[id].sell;
+        state.items.push(newItem);
+    }
+}
+
+export function addStackToCharacter(id: number, count : number, state: CharacterState) {
+    const stack : Item = state.stacks.find(stack => stack.id == id);
+
+    if(id == STACKTYPE.Cure) {
+        const banStack = state.stacks.find(st => st.id == STACKTYPE.Void);
+        if(banStack != null) {
+            if(banStack.count >= count) {
+                banStack.count -= count;
+                return;
+            } else {
+                count -= banStack.count;
+                banStack.count = 0;
+            }
+        }
+    } else if(id == STACKTYPE.Void) {
+        const banStack = state.stacks.find(st => st.id == STACKTYPE.Cure);
+        if(banStack != null) {
+            if(banStack.count >= count) {
+                banStack.count -= count;
+                return;
+            } else {
+                count -= banStack.count;
+                banStack.count = 0;
+            }
+        }
+    } else if(id == STACKTYPE.Burn) {
+        const banStack = state.stacks.find(st => st.id == STACKTYPE.Freeze);
+        if(banStack != null) {
+            if(banStack.count >= count) {
+                banStack.count -= count;
+                return;
+            } else {
+                count -= banStack.count;
+                banStack.count = 0;
+            }
+        }
+    } else if(id == STACKTYPE.Freeze) {
+        const banStack = state.stacks.find(st => st.id == STACKTYPE.Burn);
+        if(banStack != null) {
+            if(banStack.count >= count) {
+                banStack.count -= count;
+                return;
+            } else {
+                count -= banStack.count;
+                banStack.count = 0;
+            }
+        }
+    } else if(id == STACKTYPE.Charge) {
+        const banStack = state.stacks.find(st => st.id == STACKTYPE.Slow);
+        if(banStack != null) {
+            if(banStack.count >= count) {
+                banStack.count -= count;
+                return;
+            } else {
+                count -= banStack.count;
+                banStack.count = 0;
+            }
+        }
+    } else if(id == STACKTYPE.Slow) {
+        const banStack = state.stacks.find(st => st.id == STACKTYPE.Charge);
+        if(banStack != null) {
+            if(banStack.count >= count) {
+                banStack.count -= count;
+                return;
+            } else {
+                count -= banStack.count;
+                banStack.count = 0;
+            }
+        }
+    }
+
+
+    if(stack == null) {
+        const newStack = new Item();
+        newStack.id = id;
+        newStack.count = count;
+        newStack.name = stacks[id].name;
+        newStack.description = stacks[id].description;
+        newStack.level = stacks[id].level;
+        newStack.cost = stacks[id].cost;
+        newStack.sell = stacks[id].sell;
+
+        state.stacks.push(newStack);
+    } else {
+        stack.count += count;
+    }
+}
+
+export function addPowerToCharacter(id: number, count: number, state: CharacterState) {
+    const power : Item = state.powers.find(p => p.id == id);
+    if(power == null) {
+        const newPower = new Item();
+        newPower.id = id;
+        newPower.name = powers[id].name;
+        newPower.count = 1;
+        newPower.description = "";
+        newPower.level = powers[id].level;
+        newPower.cost = POWERCOSTS[powers[id].level].cost;
+        newPower.sell = POWERCOSTS[powers[id].level].sell;
+    } else {
+        power.count += count;
+    }
 }

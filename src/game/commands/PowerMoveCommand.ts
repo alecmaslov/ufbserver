@@ -6,7 +6,7 @@ import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers
 import { Item } from "#game/schema/CharacterState";
 import { DICE_TYPE, ITEMDETAIL, ITEMTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { getDiceCount } from "#game/helpers/map-helpers";
+import { getDiceCount, getPowerMoveFromId } from "#game/helpers/map-helpers";
 
 type OnPowerMoveCommandPayload = {
     client: Client;
@@ -28,7 +28,8 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         const powerMoveId = message.powerMoveId;
 
-        const powermove = powermoves.find(pm => pm.id == powerMoveId);
+        let powermove = getPowerMoveFromId(powerMoveId);
+        console.log(powermove);
         let isResult = true;
 
         console.log(powermove)
@@ -201,13 +202,6 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                     score: ctn,
                     type: "stack",
                 });
-                if(target == enemy) {
-                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                        score: ctn,
-                        type: "stack_e",
-                    });
-                }
-
             } else if(key == "dice") {
                 if(target == enemy) {
                     if(!!enemy.stacks[STACKTYPE.Block] && enemy.stacks[STACKTYPE.Block].count > 0) {

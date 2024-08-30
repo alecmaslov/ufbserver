@@ -37,6 +37,9 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         power.count--;
         console.log("power count: ", character.powers[pIdx].count);
 
+        // ADD EQUIP SLOTS
+        character.equipSlots.push(power);
+
         character.stats.energy.add(-1);
         // SEND POWER MOVES
         let clientMessage: PowerMoveListMessage = {

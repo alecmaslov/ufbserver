@@ -3,7 +3,7 @@ export const USER_TYPE : {[key : string] : number} = {
     MONSTER : 2
 }
 
-export const DICE_TYPE = {
+export const DICE_TYPE : {[key : string] : number} = {
     DICE_6 : 1,
     DICE_4 : 2,
     DICE_6_6 : 3,
@@ -183,7 +183,7 @@ export const EDGE_TYPE : {[key: string] : number} = {
     STAIR: 6,
 }
 
-export const ITEMTYPE: any = {
+export const ITEMTYPE: {[key : string] : number} = {
     HEART_PIECE: 0,
     ENERGY_SHARD: 1,
     POTION: 2,
@@ -239,7 +239,7 @@ export const ITEMTYPE: any = {
     CALTROP_BOMB2 : 50,
 }
 
-export const STACKTYPE: any = {
+export const STACKTYPE: {[key : string] : number} = {
     Cure : 0,
     Block : 1,
     Steady : 2,
@@ -508,17 +508,13 @@ export const powermoves = [
         ],
         result : {
             dice: DICE_TYPE.DICE_6,
-            perkId: PERKTYPE.Push,
+            perkId: PERKTYPE.Vampire,
             stacks: [
                 {
                     id : STACKTYPE.Void,
                     count : 1
                 },
-                {
-                    id : STACKTYPE.Slow,
-                    count : 1
-                },
-            ]
+            ],
         },
         range: 1,
         light: 8,
@@ -569,6 +565,7 @@ export const powermoves = [
             },
         ],
         result : {
+            perkId: PERKTYPE.AreaOfEffect,
             dice: DICE_TYPE.DICE_6_6
         },
         range: 1,
@@ -617,7 +614,8 @@ export const powermoves = [
             },
         ],
         result : {
-            dice: DICE_TYPE.DICE_6
+            dice: DICE_TYPE.DICE_6,
+            perkId: PERKTYPE.Push
         },
         range: 1,
         light: 5,
@@ -648,7 +646,8 @@ export const powermoves = [
                     id : STACKTYPE.Freeze,
                     count : 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Push
         },
         range: 1,
         light: 4,
@@ -669,7 +668,8 @@ export const powermoves = [
             },
         ],
         result : {
-            dice: DICE_TYPE.DICE_6
+            dice: DICE_TYPE.DICE_6,
+            perkId: PERKTYPE.Pull
         },
         range: 3,
         light: 8,
@@ -730,7 +730,8 @@ export const powermoves = [
                     id : STACKTYPE.Charge,
                     count : 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Push
         },
         range: 1,
         light: 7,
@@ -1060,7 +1061,9 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -4
+            health: -4,
+            perkId: PERKTYPE.Vampire,
+            perkId1: PERKTYPE.Pull
         },
         range: 3,
         light: 4,
@@ -1175,7 +1178,8 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -5
+            health: -5,
+            perkId: PERKTYPE.Push
         },
         range: 4,
         light: 5,
@@ -1472,7 +1476,8 @@ export const powermoves = [
                     id: STACKTYPE.Burn,
                     count: 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Push
         },
         range: 4,
         light: 9,
@@ -1563,7 +1568,8 @@ export const powermoves = [
                     id: STACKTYPE.Burn,
                     count: 2
                 }
-            ]
+            ],
+            perkId: PERKTYPE.AreaOfEffect
         },
         range: 0,
         light: 15,
@@ -1712,7 +1718,8 @@ export const powermoves = [
                     id: STACKTYPE.Freeze,
                     count: 2
                 }
-            ]
+            ],
+            perkId: PERKTYPE.AreaOfEffect
         },
         range: 0,
         light: 15,
@@ -1937,7 +1944,8 @@ export const powermoves = [
                     id: STACKTYPE.Void,
                     count : 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Vampire
         },
         range: 1,
         light: 4,
@@ -2058,7 +2066,9 @@ export const powermoves = [
                     id: STACKTYPE.Void,
                     count: 2
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Vampire,
+            perkId1: PERKTYPE.Pull
         },
         range: 3,
         light: 6,
@@ -2950,6 +2960,213 @@ export const DICE_FOUR_PERCENT: {[key: number] : number} = {
     [2] : 40,
     [3] : 40,
     [4] : 18,
+}
+
+export const EQUIP_TURN_BONUS = {
+    [POWERTYPE.Sword3] : {
+        stacks: [
+            {
+                id: STACKTYPE.Revenge,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Axe3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Spear3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Charge,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Shield2]: {
+        stacks: [
+            {
+                id: STACKTYPE.Reflect,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Shield3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count : 1
+            },
+            {
+                id: STACKTYPE.Dodge,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Armor3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Block,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Fire3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Burn,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Ice3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Freeze,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Holy3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Cure,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Void3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Void,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Bow1]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Bow2]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 2
+            }
+        ]
+    },
+    [POWERTYPE.Bow3]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 3
+            }
+        ]
+    },
+    [POWERTYPE.CrossBow1]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.CrossBow2]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.CrossBow3]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ],
+        randomItems: [
+            {
+                id: ITEMTYPE.FIRE_ARROW,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.ICE_ARROW,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.VOID_ARROW,
+                count: 1
+            },
+        ]
+    },
+    [POWERTYPE.Cannon1]: {
+        items: [
+            {
+                id: ITEMTYPE.BOMB,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Cannon2]: {
+        items: [
+            {
+                id: ITEMTYPE.BOMB,
+                count : 1
+            }
+        ],
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count: 1
+            }
+        ]
+    },
+    [POWERTYPE.Cannon3]: {
+        items: [
+            {
+                id: ITEMTYPE.BOMB,
+                count : 1
+            }
+        ],
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count: 1
+            }
+        ],
+        randomItems: [
+            {
+                id: ITEMTYPE.FIRE_BOMB,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.ICE_BOMB,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.VOID_BOMB,
+                count: 1
+            },
+        ]
+    },
+    [POWERTYPE.Holy2]: {
+        stacks: [
+            {
+                id: STACKTYPE.Cure,
+                count : 1
+            }
+        ]
+    },
 }
 
 export const TURN_TIME = 200;

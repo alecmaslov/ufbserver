@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords, getDiceCount, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -104,7 +104,7 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    endTurn: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.END_TURN]: (room, client, message) => {
         // const playerId = room.sessionIdToPlayerId.get(client.sessionId);
         const playerId = message.characterId;
         const player = room.state.characters.get(playerId);
@@ -178,20 +178,23 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    getPowerMoveList: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.EQUIP_POWER]: (room, client, message) => {
         room.dispatcher.dispatch(new EquipCommand(), {
             client,
             message
         });        
     },
 
-    equipPower: (room, client, message) => {
-
-    },
-
-    unEquipPower: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.UN_EQUIP_POWER]: (room, client, message) => {
         const powerId = message.powerId;
         const character = getCharacterById(room, message.characterId);
+
+        if(character.stats.energy.current <= 2) {
+            console.log("energy less");
+            room.notify(client, "You are not enough in energy!", "error");
+            return;
+        }
+
         character.stats.energy.add(-2);
         
         const power : Item = character.powers.find(p => p.id == powerId);
@@ -209,6 +212,11 @@ export const messageHandlers: MessageHandlers = {
         } else {
             power.count++;
         }
+
+        // DELETE SLOTS SYSTEM
+        const idx = character.equipSlots.findIndex(p => p.id == power.id);
+        character.equipSlots.deleteAt(idx);
+
         client.send(SERVER_TO_CLIENT_MESSAGE.UNEQUIP_POWER_RECEIVED, {playerId: character.id});
     },
 
@@ -388,14 +396,22 @@ export const messageHandlers: MessageHandlers = {
 
         const enemy = getCharacterById(room, enemyId);
         const character = getCharacterById(room, characterId);
+        const pm = getPowerMoveFromId(powerMoveId);
+        const health = !!pm.result.health? pm.result.health : 0;
 
-        const deltaCount = diceCount - enemyDiceCount;
+        const deltaCount = diceCount + health - enemyDiceCount;
         if(diceCount > 0) {
             enemy.stats.health.add(-deltaCount);
             client.send("addExtraScore", {
                 score: -deltaCount,
                 type: "heart_e",
             });
+            if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: 1,
+                    type: "stack_e",
+                });
+            }
         }
 
     },
@@ -773,15 +789,6 @@ export const messageHandlers: MessageHandlers = {
         );
     },
 
-    getDiceValue: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
-
-        const random = Math.random() * 100;
-        const diceCount = getDiceCount(random, message.diceType);
-
-        client.send("setDiceCount", {diceCount});
-    },
-
     [CLIENT_SERVER_MESSAGE.GET_HIGHLIGHT_RECT] : (room, client, message) => {
         console.log("-----power move message - test range")
         const character = getCharacterById(room, message.characterId);
@@ -789,7 +796,7 @@ export const messageHandlers: MessageHandlers = {
         const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
 
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
-            tileIds : getHighLightTileIds(room, character.currentTileId, powermove.range)
+            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? powermove.range : 1)
         });
     },
 
@@ -797,12 +804,24 @@ export const messageHandlers: MessageHandlers = {
         console.log(CLIENT_SERVER_MESSAGE.SET_DICE_ROLL);
 
         const character = getCharacterById(room, message.characterId);
-        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+        const powermove = getPowerMoveFromId(message.powerMoveId);
 
-        if(!!powermove.result.dice) {
+        if(powermove == null) {
             const setDiceRollMessage: any = {
                 diceData : []
             }
+            setDiceRollMessage.diceData.push({
+                type: powermove.result.dice,
+                diceCount: getDiceCount(Math.random(), powermove.result.dice)
+            })
+            client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+            return;
+        }
+        const setDiceRollMessage: any = {
+            diceData : []
+        }
+        if(!!powermove.result.dice && message.diceTimes == 1) {
+
             if(powermove.result.dice == DICE_TYPE.DICE_4 || powermove.result.dice == DICE_TYPE.DICE_6) {
                 setDiceRollMessage.diceData.push({
                     type: powermove.result.dice,
@@ -828,10 +847,63 @@ export const messageHandlers: MessageHandlers = {
                 })
             }
 
-            client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        }
+        
+        if(!!powermove.result.perkId && powermove.result.perkId == PERKTYPE.Vampire) {
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_6,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+            })
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_4,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+            })
         }
 
+        client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
     },
+
+    [CLIENT_SERVER_MESSAGE.TURN_START_EQUIP]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        console.log(room.state.currentCharacterId, character.id);
+        if(room.state.currentCharacterId == character.id) {
+            let bonuses: any = [];
+            character.equipSlots.forEach(slot => {
+                // ADD BONUS in CHARACTER..
+                const bonus = {
+                    ...EQUIP_TURN_BONUS[slot.id],
+                    id: slot.id,
+                }
+
+                if(!!bonus.items) {
+                    bonus.items.forEach(item => {
+                        addItemToCharacter(item.id, item.count, character);
+                    })
+                }
+
+                if(!!bonus.stacks) {
+                    bonus.stacks.forEach(stack => {
+                        addStackToCharacter(stack.id, stack.count, character);
+                    });
+                }
+
+                if(!!bonus.randomItems) {
+                    const idx = Math.floor(bonus.randomItems.length * Math.random())
+                    const item = bonus.randomItems[idx];
+                    delete bonus.randomItems;
+                    bonus.items.push(item);
+                    addItemToCharacter(item.id, item.count, character);
+                }
+
+                bonuses.push(bonus);
+            })
+            console.log(bonuses.length, "---- length of bonus: ",  bonuses);
+
+            if(bonuses.length > 0) {
+                client.send( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
+            }
+        }
+    }
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

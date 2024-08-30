@@ -61,7 +61,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         });
 
         // ADD POWER for MOVE ITEM
-        [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3].forEach(key => {
+        [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear2, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {
             const testPower : Item = character.powers.find(power => power.id == key);
             if(testPower == null) {
                 const newPower = new Item();
