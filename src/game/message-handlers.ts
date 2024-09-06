@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection, IsEquipPower } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -205,8 +205,8 @@ export const messageHandlers: MessageHandlers = {
             newPower.name = powers[powerId].name;
             newPower.description = "description";
             newPower.level = powers[powerId].level;
-            newPower.cost = POWERCOSTS[newPower.id].cost;
-            newPower.sell = POWERCOSTS[newPower.id].sell;
+            newPower.cost = POWERCOSTS[newPower.level].cost;
+            newPower.sell = POWERCOSTS[newPower.level].sell;
 
             character.powers.push(newPower);
         } else {
@@ -360,8 +360,6 @@ export const messageHandlers: MessageHandlers = {
             }
         } else if(itemId == ITEMTYPE.FEATHER) {
         } else if(itemId == ITEMTYPE.WARP_CRYSTAL) {
-            console.log("WARP CRYSTAL: walls", desTile.walls);
-
             if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
                 message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
             } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
@@ -372,8 +370,6 @@ export const messageHandlers: MessageHandlers = {
                 message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
             }
         } 
-
-        console.log("feather : ", message.tileId);
 
         const setmoveitemMessage : SetMoveItemMessage = {
             itemId: itemId,
@@ -399,10 +395,34 @@ export const messageHandlers: MessageHandlers = {
         const pm = getPowerMoveFromId(powerMoveId);
         const health = !!pm.result.health? pm.result.health : 0;
 
-        const deltaCount = diceCount + health - enemyDiceCount;
-        if(diceCount > 0) {
+        let deltaCount = diceCount + health - enemyDiceCount;
+
+        // REVENGE STACK ACTIVE
+        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0) {
+            if(message.stackId == STACKTYPE.Revenge) {
+                enemy.stacks[STACKTYPE.Revenge].count--;
+                character.stats.health.add(-enemyDiceCount);
+                deltaCount += enemyDiceCount;
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: -enemyDiceCount,
+                    type: "heart",
+                });
+            } else {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
+                    enemyId: enemy.id,
+                    characterId: character.id,
+                    powerMoveId: powerMoveId,
+                    stackId: STACKTYPE.Revenge,
+                    diceCount: 0,
+                    enemyDiceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                });
+            }
+
+        }
+
+        if(deltaCount > 0) {
             enemy.stats.health.add(-deltaCount);
-            client.send("addExtraScore", {
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "heart_e",
             });
@@ -413,6 +433,10 @@ export const messageHandlers: MessageHandlers = {
                 });
             }
         }
+
+    },
+
+    [CLIENT_SERVER_MESSAGE.END_REVENGER_STACK]: (room, client, message) => {
 
     },
 
@@ -801,20 +825,10 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.SET_DICE_ROLL]: (room, client, message) => {
-        console.log(CLIENT_SERVER_MESSAGE.SET_DICE_ROLL);
-
         const character = getCharacterById(room, message.characterId);
         const powermove = getPowerMoveFromId(message.powerMoveId);
 
         if(powermove == null) {
-            const setDiceRollMessage: any = {
-                diceData : []
-            }
-            setDiceRollMessage.diceData.push({
-                type: powermove.result.dice,
-                diceCount: getDiceCount(Math.random(), powermove.result.dice)
-            })
-            client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
             return;
         }
         const setDiceRollMessage: any = {
@@ -863,9 +877,34 @@ export const messageHandlers: MessageHandlers = {
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
     },
 
+    [CLIENT_SERVER_MESSAGE.SET_DICE_STACK_TURN_ROLL]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        const diceType = message.diceType;
+        
+        const setDiceRollMessage: any = {
+            diceData : []
+        }
+        if(diceType == DICE_TYPE.DICE_6_4) {
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_6,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+            })
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_4,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+            })
+        } else if(diceType == DICE_TYPE.DICE_4) {
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_4,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+            })
+        }
+
+        client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+    },
+
     [CLIENT_SERVER_MESSAGE.TURN_START_EQUIP]: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
-        console.log(room.state.currentCharacterId, character.id);
         if(room.state.currentCharacterId == character.id) {
             let bonuses: any = [];
             character.equipSlots.forEach(slot => {
@@ -883,7 +922,7 @@ export const messageHandlers: MessageHandlers = {
 
                 if(!!bonus.stacks) {
                     bonus.stacks.forEach(stack => {
-                        addStackToCharacter(stack.id, stack.count, character);
+                        addStackToCharacter(stack.id, stack.count, character, client);
                     });
                 }
 
@@ -897,13 +936,115 @@ export const messageHandlers: MessageHandlers = {
 
                 bonuses.push(bonus);
             })
-            console.log(bonuses.length, "---- length of bonus: ",  bonuses);
 
             if(bonuses.length > 0) {
                 client.send( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
             }
         }
+    },
+
+    [CLIENT_SERVER_MESSAGE.GET_STACK_ON_TURN_START]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        let stackList: any[] = [];
+        character.stacks.forEach(stack => {
+            if(
+                (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Void2) && !IsEquipPower(character, POWERTYPE.Void3)) ||
+                (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Fire2) && !IsEquipPower(character, POWERTYPE.Fire3)) ||
+                (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Ice2) && !IsEquipPower(character, POWERTYPE.Ice3)) ||
+                (stack.id == STACKTYPE.Cure && stack.count > 0) ||
+                (stack.id == STACKTYPE.Slow && stack.count > 0)
+            
+            ) {
+                stackList.push({
+                    id : stack.id,
+                    count: 1
+                });
+            }
+        });
+
+        client.send( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
+            characterId : character.id,
+            stackList: stackList
+        });
+
+    },
+
+    [CLIENT_SERVER_MESSAGE.SET_STACK_ON_START]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        const stackId = message.stackId;
+        const diceData = message.diceData;
+
+        character.stacks.forEach(stack => {
+            if(stack.id == stackId) {
+                stack.count--;
+            }
+        });
+
+        if(stackId == STACKTYPE.Cure) {
+            
+            character.stats.health.add(diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: diceData[0].diceCount,
+                type: "heart"
+            });
+
+        } else if(stackId == STACKTYPE.Void) {
+            
+            character.stats.health.add(-diceData[1].diceCount);
+            character.stats.ultimate.add(-diceData[0].diceCount);
+            
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[1].diceCount,
+                type: "heart"
+            });
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "ultimate"
+            });
+
+        } else if(stackId == STACKTYPE.Burn) {
+
+            character.stats.health.add(-diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "heart"
+            });
+
+        } else if(stackId == STACKTYPE.Freeze) {
+
+            character.stats.energy.add(diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: diceData[0].diceCount,
+                type: "energy"
+            });
+
+        } else if(stackId == STACKTYPE.Charge) {
+
+            character.stats.energy.add(-diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "energy"
+            });
+            
+        } else if(stackId == STACKTYPE.Slow) {
+
+            character.stats.energy.add(-diceData[1].diceCount);
+            character.stats.ultimate.add(-diceData[0].diceCount);
+            
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[1].diceCount,
+                type: "energy"
+            });
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "ultimate"
+            });
+
+        }
     }
+
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

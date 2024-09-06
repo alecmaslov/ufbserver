@@ -10,6 +10,13 @@ export const DICE_TYPE : {[key : string] : number} = {
     DICE_6_4 : 4
 }
 
+export const WALL_DIRECT : {[key : string] : number} = {
+    TOP: 0,
+    RIGHT: 1,
+    DOWN: 2,
+    LEFT: 3
+}
+
 export const MONSTER_TYPE : {[key : string] : number} = {
     WASP_BLUE : 1,
     SPIDER_BLUE : 2,
@@ -3167,6 +3174,16 @@ export const EQUIP_TURN_BONUS = {
             }
         ]
     },
+}
+
+export const BAN_STACKS = {
+    [STACKTYPE.Cure] : STACKTYPE.Void,
+    [STACKTYPE.Void] : STACKTYPE.Cure,
+    [STACKTYPE.Burn] : STACKTYPE.Freeze,
+    [STACKTYPE.Freeze] : STACKTYPE.Burn,
+    [STACKTYPE.Charge] : STACKTYPE.Slow,
+    [STACKTYPE.Slow] : STACKTYPE.Charge,
+
 }
 
 export const TURN_TIME = 200;

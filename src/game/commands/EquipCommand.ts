@@ -28,14 +28,12 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         const powerId = message.powerId;
         
         // REMOVE POWER in Array
-        const pIdx = character.powers.findIndex(p => p.id == powerId);
         const power : Item = character.powers.find(p => p.id == powerId);
         if(power == null || power.count == 0) {
             console.log("count issue");
             return;
         }
         power.count--;
-        console.log("power count: ", character.powers[pIdx].count);
 
         // ADD EQUIP SLOTS
         character.equipSlots.push(power);
@@ -70,7 +68,6 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                         item
                     )
                 })
-                console.log(powermove);
                 clientMessage.powermoves.push(powermove);
             }
         })

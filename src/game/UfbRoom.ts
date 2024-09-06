@@ -208,7 +208,6 @@ export class UfbRoom extends Room<UfbRoomState> {
                     Object.keys(STACKTYPE).forEach(key => {
                         const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
                         if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
-                            console.log(STACKTYPE[key])
                             const newStack = new Item();
                             newStack.id = STACKTYPE[key];
                             newStack.count = 5;

@@ -1,13 +1,16 @@
-import { DICE_TYPE, ITEMDETAIL, ITEMTYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, ITEMDETAIL, ITEMTYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
+import { UfbRoom } from "#game/UfbRoom";
 import { Coordinates, PathStep } from "#shared-types";
 import { shuffleArray } from "#utils/collections";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, Tile } from "@prisma/client";
 import { ok } from "assert";
+import { Client } from "colyseus";
 import { Node } from "ngraph.graph";
 
 const TILE_LETTERS = [
@@ -497,7 +500,6 @@ export function getPowerMoveFromId(id : number) {
     } else {
         if(id < 0) {
             let arrowId = Math.abs(id + (id <= -100? 100 : 1));
-            console.log(arrowId);
             if(id <= -100) {
                 powermove = {
                     id: 1000,
@@ -602,77 +604,39 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     }
 }
 
-export function addStackToCharacter(id: number, count : number, state: CharacterState) {
+export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client) {
     const stack : Item = state.stacks.find(stack => stack.id == id);
+    // ADD BAN STACK LOGIC
+    if(!!BAN_STACKS[id]) {
+        const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
+        console.log("ban stack?", BAN_STACKS[id], id, banStack.count);
+        if(banStack != null && banStack.count > 0) {
+            if(banStack.count >= count) {
+                client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
+                    characterId : state.id,
+                    stack1 : id,
+                    stack2 : banStack.id,
+                    count1 : count,
+                    count2 : banStack.count
+                });
 
-    if(id == STACKTYPE.Cure) {
-        const banStack = state.stacks.find(st => st.id == STACKTYPE.Void);
-        if(banStack != null) {
-            if(banStack.count >= count) {
                 banStack.count -= count;
                 return;
             } else {
+                client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
+                    characterId : state.id,
+                    stack1 : id,
+                    stack2 : banStack.id,
+                    count1 : count,
+                    count2 : banStack.count
+                });
+
                 count -= banStack.count;
                 banStack.count = 0;
             }
-        }
-    } else if(id == STACKTYPE.Void) {
-        const banStack = state.stacks.find(st => st.id == STACKTYPE.Cure);
-        if(banStack != null) {
-            if(banStack.count >= count) {
-                banStack.count -= count;
-                return;
-            } else {
-                count -= banStack.count;
-                banStack.count = 0;
-            }
-        }
-    } else if(id == STACKTYPE.Burn) {
-        const banStack = state.stacks.find(st => st.id == STACKTYPE.Freeze);
-        if(banStack != null) {
-            if(banStack.count >= count) {
-                banStack.count -= count;
-                return;
-            } else {
-                count -= banStack.count;
-                banStack.count = 0;
-            }
-        }
-    } else if(id == STACKTYPE.Freeze) {
-        const banStack = state.stacks.find(st => st.id == STACKTYPE.Burn);
-        if(banStack != null) {
-            if(banStack.count >= count) {
-                banStack.count -= count;
-                return;
-            } else {
-                count -= banStack.count;
-                banStack.count = 0;
-            }
-        }
-    } else if(id == STACKTYPE.Charge) {
-        const banStack = state.stacks.find(st => st.id == STACKTYPE.Slow);
-        if(banStack != null) {
-            if(banStack.count >= count) {
-                banStack.count -= count;
-                return;
-            } else {
-                count -= banStack.count;
-                banStack.count = 0;
-            }
-        }
-    } else if(id == STACKTYPE.Slow) {
-        const banStack = state.stacks.find(st => st.id == STACKTYPE.Charge);
-        if(banStack != null) {
-            if(banStack.count >= count) {
-                banStack.count -= count;
-                return;
-            } else {
-                count -= banStack.count;
-                banStack.count = 0;
-            }
+
         }
     }
-
 
     if(stack == null) {
         const newStack = new Item();
@@ -704,4 +668,96 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
     } else {
         power.count += count;
     }
+}
+
+export function getPerkEffectDamage(character: CharacterState, enemy : CharacterState, room: UfbRoom, type: number) {
+    const currentTile = room.state.map.tiles.get(character.currentTileId);
+    const enemyTile = room.state.map.tiles.get(enemy.currentTileId);
+
+    const x = enemyTile.coordinates.x - currentTile.coordinates.x;
+    const y = enemyTile.coordinates.y - currentTile.coordinates.y;
+
+    let x1 = 0;
+    let y1 = 0;
+
+    let step = type == PERKTYPE.Push? 1 : -1;
+
+    if(x > y || (x == y && Math.random() < 0.5)) {
+        y1 = y;
+        x1 = (Math.abs(x) + step) * Math.sign(x);
+    } else if(x < y) {
+        x1 = x;
+        y1 = (Math.abs(y) + step) * Math.sign(y);
+    } else {
+        x1 = x;
+        y1 = (Math.abs(y) + step) * Math.sign(y);
+    }
+
+    const desCoodinate = new CoordinatesState();
+    desCoodinate.x = currentTile.coordinates.x + x1;
+    desCoodinate.y = currentTile.coordinates.y + y1;
+
+    const xDir = x1 - x;
+    const yDir = y1 - y;
+    if(xDir == 1) {
+        return {
+            wallType: enemyTile.walls[WALL_DIRECT.RIGHT],
+            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+            desCoodinate: desCoodinate
+        };
+    } else if(xDir == -1) {
+        return {
+            wallType: enemyTile.walls[WALL_DIRECT.LEFT],
+            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+            desCoodinate: desCoodinate
+        };
+    } else if(yDir == 1) {
+        return {
+            wallType: enemyTile.walls[WALL_DIRECT.TOP],
+            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+            desCoodinate: desCoodinate
+        };
+    } else if(yDir == -1) {
+        return {
+            wallType: enemyTile.walls[WALL_DIRECT.DOWN],
+            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+            desCoodinate: desCoodinate
+        };
+    }
+
+}
+
+export function getCharacterIdsInArea(character: CharacterState, range: number, room : UfbRoom) : string[] {
+    let ids: string[] = [];
+    room.state.characters.forEach(c => {
+        if(c.id != character.id) {
+            const currentTile = room.state.map.tiles.get(character.currentTileId);
+            const enemyTile = room.state.map.tiles.get(c.currentTileId);
+            const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
+            if(r <= range) {
+                ids.push(c.id);
+            }
+        }
+    });
+
+    return ids;
+}
+
+export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string) {
+    if(type == "heart") {
+        character.stats.health.add(-amount);
+
+    } else {
+
+    }
+}
+
+export function IsEquipPower(character : CharacterState, powerId: number) {
+    let isEquiped = false;
+    character.equipSlots.forEach(slot => {
+        if(slot.id == powerId && !isEquiped) {
+            isEquiped = true;
+        }
+    })
+    return isEquiped;
 }
