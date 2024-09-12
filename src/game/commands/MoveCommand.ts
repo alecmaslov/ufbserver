@@ -3,7 +3,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { fillPathWithCoords, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { fillPathWithCoords, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
@@ -111,7 +111,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 });
             }
             if(!!result.heart) {
-                character.stats.health.add(result.heart);
+                setCharacterHealth(character, result.heart, this.room, client, "heart");
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.heart,
                     type: "heart"

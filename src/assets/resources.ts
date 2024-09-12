@@ -3,6 +3,11 @@ export const USER_TYPE : {[key : string] : number} = {
     MONSTER : 2
 }
 
+export const END_TYPE : {[key : string] : number} = {
+    VICTORY : 1,
+    DEFEAT : 2
+}
+
 export const DICE_TYPE : {[key : string] : number} = {
     DICE_6 : 1,
     DICE_4 : 2,
@@ -329,7 +334,7 @@ export const POWERTYPE : {[key : string] : number} = {
     Void3 : 35,
 }
 
-export const powermoves = [
+export const powermoves : any = [
     {
         // SWORD1
         id: 1,
@@ -340,8 +345,8 @@ export const powermoves = [
         ],
         costList: [
             {
-                id: 8,
-                count: ITEMTYPE.MELEE
+                id: ITEMTYPE.MELEE,
+                count: 8
             },
         ],
         result: {
@@ -1173,7 +1178,7 @@ export const powermoves = [
     {
         // Cannon1
         id: 31,
-        name: "Cannoball",
+        name: "Cannonball",
         powerImageId: 6,
         powerIds: [
             6, 18, 30
@@ -1259,7 +1264,7 @@ export const powermoves = [
     {
         // Cannon3
         id: 34,
-        name: "Artillery Strike",
+        name: "Remote Bomb",
         powerImageId: 30,
         powerIds: [
             30
@@ -2083,6 +2088,17 @@ export const powermoves = [
     },
 ]
 
+export const MONSTER_BAN_TIEM : {[key : number] : number} = {
+    [ITEMTYPE.HEART_PIECE] : 1,
+    [ITEMTYPE.HEART_CRYSTAL] : 1,
+    [ITEMTYPE.MELEE] : 1,
+    [ITEMTYPE.MANA] : 1,
+    [ITEMTYPE.ENERGY_SHARD] : 1,
+    [ITEMTYPE.ENERGY_CRYSTAL] : 1,
+    [ITEMTYPE.QUIVER] : 1,
+    [ITEMTYPE.BOMB_BAG] : 1,
+}
+
 export const stacks : { [key: number]: { level: number, name: string, description: string, cost: number, sell: number, anti: number } } = {
     [STACKTYPE.Dodge] : {
         level : 1,
@@ -2458,7 +2474,7 @@ export const itemResults: {[key: number]: {heart?: number, energy?: number, ulti
     }
 }
 
-export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string, percent: number}} = {
+export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string, percent: number, isDouble?: boolean}} = {
     [ITEMTYPE.HEART_PIECE]: {
         level: 1,
         cost: 4,
@@ -2548,7 +2564,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         cost: 8,
         sell: -1,
         name: "Quiver",
-        percent: 5
+        percent: 5,
     },
     [ITEMTYPE.BOMB_BAG]: {
         level: 2,
@@ -2625,98 +2641,111 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         cost: 2,
         sell: 1,
         name: "Flame Chili",
-        percent: 7
+        percent: 7,
     },
     [ITEMTYPE.FLAME_CHILI2]: {
         level: 1,
         cost: 3,
         sell: -1,
         name: "Flame Chili2",
-        percent: 5
+        percent: 5,
+        isDouble: true
     },
     [ITEMTYPE.FLAME_CHILI3]: {
         level: 1,
         cost: 4,
         sell: -1,
         name: "Flame Chili3",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.ICE_TEA2]: {
         level: 1,
         cost: 3,
         sell: -1,
         name: "Ice Tea2",
-        percent: 5
+        percent: 5,
+        isDouble: true
     },
     [ITEMTYPE.ICE_TEA3]: {
         level: 1,
         cost: 4,
         sell: -1,
         name: "Ice Tea3",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.HEART_PIECE2]: {
         level: 1,
         cost: 7,
         sell: -1,
         name: "Heart Piece3",
-        percent: 1
+        percent: 1,
+        isDouble: true
     },
     [ITEMTYPE.POTION2]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Potion2",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.POTION3]: {
         level: 1,
         cost: 15,
         sell: -1,
         name: "Potion3",
-        percent: 1.5
+        percent: 1.5,
+        isDouble: true
     },
     [ITEMTYPE.FEATHER2]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Feather2",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.FEATHER3]: {
         level: 1,
         cost: 14,
         sell: -1,
         name: "Feather3",
-        percent: 1.5
+        percent: 1.5,
+        isDouble: true
     },
     [ITEMTYPE.ARROW2]: {
         level: 1,
         cost: 7,
         sell: -1,
         name: "Arrow2",
-        percent: 5.1
+        percent: 5.1,
+        isDouble: true
     },
     [ITEMTYPE.ARROW3]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Arrow3",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.BOMB2]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Bomb 2",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.BOMB3]: {
         level: 1,
         cost: 14,
         sell: -1,
         name: "Bomb 3",
-        percent: 1.5
+        percent: 1.5,
+        isDouble: true
     },
 
     [ITEMTYPE.MELEE2]: {
@@ -2724,98 +2753,112 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         cost: 15,
         sell: -1,
         name: "Melee + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.MANA2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Mana + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.QUIVER2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Arrow + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.BOMB_BAG2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "BOMB + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.ELIXIR2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Elixir + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.WARP_CRYSTAL2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Warp Crystal 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.BOMB_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Bomb Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.FIRE_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Fire Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.ICE_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Ice Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.VOID_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Void Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.CALTROP_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Caltrop Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.FIRE_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Fire Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.ICE_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Ice Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.VOID_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Void Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
 }
 
@@ -3186,4 +3229,4 @@ export const BAN_STACKS = {
 
 }
 
-export const TURN_TIME = 200;
+export const TURN_TIME = 180;

@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { initializeSpawnEntities, spawnCharacter } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, initializeSpawnEntities, spawnCharacter } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -21,8 +21,9 @@ import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { MONSTER_TYPE, MONSTERS, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { Item } from "./schema/CharacterState";
+import { getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -143,7 +144,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.state.currentCharacterId = this.state.turnOrder[nextPlayerIndex];
         this.state.turn++;
 
-        // const currentCharacter =
+        const currentCharacter = this.state.characters.get(this.state.currentCharacterId);
+        currentCharacter.stats.isRevive = false;
 
         console.log("turn orders:", this.state.turnOrder, n);
 
@@ -152,6 +154,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime : TURN_TIME },
             { afterNextPatch: true }
         );
+
     }
 
     resetTurn() {
@@ -220,6 +223,89 @@ export class UfbRoom extends Room<UfbRoomState> {
                         }
                     });                    
                     // END TEST:::
+                    console.log("init monster")
+                    // AI MONSTER EQUIP all POWERS AND INIT ITEM...
+                    if(MONSTERS[type].level == 1) {
+                        const lvl1Items = getItemIdsByLevel(1, true);
+                        const lvl1Powers = getPowerIdsByLevel(1, true);
+
+                        const idxItem = Math.ceil(Math.random() * lvl1Items.length);
+                        const idxPower = Math.ceil(Math.random() * lvl1Powers.length);
+
+                        addItemToCharacter(lvl1Items[idxItem].id, 1, monster);
+                        addPowerToCharacter(lvl1Powers[idxPower].id, 1, monster);
+                        
+                        monster.powers.forEach(p => {
+                            monster.equipSlots.push(p);
+                            p.count--;
+                        });
+
+                        monster.stats.coin = 3 + Math.ceil(Math.random() * 3);
+                    } else if(MONSTERS[type].level == 2) {
+                        const lvl1Items = getItemIdsByLevel(1, true);
+                        const lvl1Powers = getPowerIdsByLevel(1, true);
+
+                        let idxItem = Math.ceil(Math.random() * lvl1Items.length);
+                        let idxPower = Math.ceil(Math.random() * lvl1Powers.length);
+
+                        addItemToCharacter(lvl1Items[idxItem].id, 1, monster);
+                        addPowerToCharacter(lvl1Powers[idxPower].id, 1, monster);
+
+                        const lvl2Items = getItemIdsByLevel(2, true);
+                        const lvl2Powers = getPowerIdsByLevel(2, true);
+
+                        idxItem = Math.ceil(Math.random() * lvl2Items.length);
+                        idxPower = Math.ceil(Math.random() * lvl2Powers.length);
+
+                        addItemToCharacter(lvl2Items[idxItem].id, 1, monster);
+                        addPowerToCharacter(lvl2Powers[idxPower].id, 1, monster);
+
+                        monster.powers.forEach(p => {
+                            monster.equipSlots.push(p);
+                            p.count--;
+                        });
+
+                        monster.stats.coin = 8 + Math.ceil(Math.random() * 5);
+
+                    } else if(MONSTERS[type].level == 3) {
+
+                        const lvl1Items = getItemIdsByLevel(1, true);
+                        const lvl2Items = getItemIdsByLevel(2, true);
+                        const lvl2Powers = getPowerIdsByLevel(2, true);
+
+                        for(let i = 0; i < 2; i++) {
+                            const idx1 = Math.ceil(Math.random() * lvl1Items.length);
+                            const idx2 = Math.ceil(Math.random() * lvl2Items.length);
+                            addItemToCharacter(lvl1Items[idx1].id, 1, monster);
+                            addItemToCharacter(lvl2Items[idx2].id, 1, monster);
+                        }
+
+                        for(let i = 0; i < 3; i++) {
+                            const idx = Math.ceil(Math.random() * lvl2Powers.length);
+                            addPowerToCharacter(lvl2Powers[idx].id, 1, monster);
+                        }
+
+                        monster.powers.forEach(p => {
+                            monster.equipSlots.push(p);
+                            p.count--;
+                        });
+
+                        monster.stats.coin = 15 + Math.ceil(Math.random() * 6);
+                    }
+
+                    console.log("init end monster")
+
+                    // END EQUIP ALL ITEM, POWERS
+
+                    // SET MONSTER PROPERTY
+                    monster.stats.health.setMaxValue(MONSTERS[type].property.heart);
+                    monster.stats.health.setToMax();
+                    monster.stats.energy.setMaxValue(MONSTERS[type].property.energy);
+                    monster.stats.energy.setToMax();
+
+                    addItemToCharacter(ITEMTYPE.MELEE, MONSTERS[type].property.melee, monster);
+                    addItemToCharacter(ITEMTYPE.MANA, MONSTERS[type].property.mana, monster);
+                    // END MONSTER PROPERTY
 
                     this.state.turnOrder.push(monster.id);
                 } catch {
@@ -282,6 +368,17 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         this.broadcast("mapChanged", {}, { afterNextPatch: true });
         this.resetTurn();
+    }
+
+    // @amin - AI Monsters checking..
+    aiChecking() {
+        const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
+        if(selectedMonster.type == USER_TYPE.USER) {
+            return;
+        }
+
+        // AI MONSTER MOVEMENT LOGIC
+
     }
 
 }

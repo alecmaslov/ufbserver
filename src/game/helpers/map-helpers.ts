@@ -1,4 +1,4 @@
-import { BAN_STACKS, DICE_TYPE, ITEMDETAIL, ITEMTYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
@@ -492,12 +492,86 @@ export function getDiceCount(percent : number, type : number) {
     return 1;
 }
 
-export function getPowerMoveFromId(id : number) {
-    let powermove = powermoves.find(pm => pm.id == id);
-
+export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
+    const p = powermoves.find((pm : any) => pm.id == id);
+    const powermove = {
+        ...p,
+        result: {
+            ...p.result
+        },
+        costList: [...p.costList],
+    };
     if(powermove != null) {
+
+        if(extraItemId > 0) {
+
+            powermove.costList.push({
+                id: extraItemId,
+                count: 1
+            })
+
+            powermove.result.health = !!powermove.result.health? powermove.result.health : 0;
+            powermove.result.energy = !!powermove.result.energy? powermove.result.energy : 0;
+            powermove.result.ultimate = !!powermove.result.ultimate? powermove.result.ultimate : 0;
+            powermove.result.stacks = !!powermove.result.stacks? [...powermove.result.stacks] : [];
+
+            if(extraItemId == ITEMTYPE.ARROW) {
+                powermove.result.health -= 2;
+            } else if(extraItemId == ITEMTYPE.BOMB_ARROW) {
+                powermove.result.health -= 6;
+                if(!!powermove.result.perkId) {
+                    powermove.result.perkId1 = PERKTYPE.Pull;
+                } else {
+                    powermove.result.perkId = PERKTYPE.Pull;
+                }
+            } else if(extraItemId == ITEMTYPE.FIRE_ARROW) {
+                powermove.result.health -= 3;
+                powermove.result.stacks.push({
+                    id: STACKTYPE.Burn,
+                    count: 1
+                });
+            } else if(extraItemId == ITEMTYPE.ICE_ARROW) {
+                powermove.result.ultimate -= 3;
+                powermove.result.energy -= 3;
+                powermove.result.stacks.push({
+                    id: STACKTYPE.Freeze,
+                    count: 1
+                });
+            } else if(extraItemId == ITEMTYPE.VOID_ARROW) {
+                powermove.result.health -= 4;
+                powermove.result.stacks.push({
+                    id: STACKTYPE.Void,
+                    count: 1
+                });
+            } else if(extraItemId == ITEMTYPE.BOMB) {
+                powermove.result.health -= 3;
+            } else if(extraItemId == ITEMTYPE.FIRE_BOMB) {
+                powermove.result.health -= 4;
+                powermove.result.stacks.push({
+                    id: STACKTYPE.Burn,
+                    count: 1
+                });
+            } else if(extraItemId == ITEMTYPE.ICE_BOMB) {
+                powermove.result.health -= 3;
+                powermove.result.energy -= 2;
+                powermove.result.stacks.push({
+                    id: STACKTYPE.Freeze,
+                    count: 1
+                });
+            } else if(extraItemId == ITEMTYPE.VOID_BOMB) {
+                powermove.result.health -= 5;
+                powermove.result.stacks.push({
+                    id: STACKTYPE.Void,
+                    count: 1
+                });
+            } else if(extraItemId == ITEMTYPE.CALTROP_BOMB) {
+                powermove.result.ultimate -= 4;
+                powermove.result.energy -= 4;
+            }
+        } 
         return powermove;
     } else {
+        let powermove : any;
         if(id < 0) {
             let arrowId = Math.abs(id + (id <= -100? 100 : 1));
             if(id <= -100) {
@@ -551,32 +625,30 @@ export function getPowerMoveFromId(id : number) {
                 });
 
                 if(arrowId == ITEMTYPE.ARROW) {
-                    powermove.result.health = 2;
+                    powermove.result.health = -2;
                 } else if(arrowId == ITEMTYPE.BOMB_ARROW) {
-                    powermove.result.health = 6;
+                    powermove.result.health = -6;
                     powermove.result.perkId = PERKTYPE.Pull;
                 } else if(arrowId == ITEMTYPE.FIRE_ARROW) {
-                    powermove.result.health = 3;
+                    powermove.result.health = -3;
                     powermove.result.stacks = [{
                         id: STACKTYPE.Burn,
                         count: 1
                     }];
                 } else if(arrowId == ITEMTYPE.ICE_ARROW) {
-                    powermove.result.ultimate = 3;
-                    powermove.result.energy = 3;
+                    powermove.result.ultimate = -3;
+                    powermove.result.energy = -3;
                     powermove.result.stacks = [{
                         id: STACKTYPE.Freeze,
                         count: 1
                     }];
                 } else if(arrowId == ITEMTYPE.VOID_ARROW) {
-                    powermove.result.health = 4;
+                    powermove.result.health = -4;
                     powermove.result.stacks = [{
                         id: STACKTYPE.Void,
                         count: 1
                     }];
                 }
-
-
             }
 
             return powermove;
@@ -587,7 +659,153 @@ export function getPowerMoveFromId(id : number) {
     }
 }
 
+export function getArrowBombCount(character : CharacterState) {
+    let arrowCount = 0;
+    let bombCount = 0;
+    character.items.forEach(item => {
+        if(IsArrowItem(item.id)) {
+            arrowCount += item.count;
+        } else if(IsBombItem(item.id)) {
+            bombCount++;
+        }
+    });
+
+    return {
+        arrow : arrowCount,
+        bomb : bombCount
+    }
+}
+
+export function IsArrowItem(id: number) {
+    return id == ITEMTYPE.ARROW || id == ITEMTYPE.ICE_ARROW || id == ITEMTYPE.BOMB_ARROW || id == ITEMTYPE.FIRE_ARROW || id == ITEMTYPE.VOID_ARROW;
+}
+
+export function IsBombItem(id : number) {
+    return id == ITEMTYPE.BOMB || id == ITEMTYPE.ICE_BOMB || id == ITEMTYPE.FIRE_BOMB || id == ITEMTYPE.VOID_BOMB || id == ITEMTYPE.CALTROP_BOMB;
+}
+
+export function IsDoubleItem(id : number) {
+    return id >= ITEMTYPE.FLAME_CHILI2;
+}
+
+
+export function GetRealItemIdByDouble(id : number) {
+    let realId = id;
+    let count = 1;
+    if(id == ITEMTYPE.FLAME_CHILI2) {
+        realId = ITEMTYPE.FLAME_CHILI;
+        count = 2;
+    } else if(id == ITEMTYPE.FLAME_CHILI3) {
+        realId = ITEMTYPE.FLAME_CHILI;
+        count = 3;
+    } else if(id == ITEMTYPE.ICE_TEA2) {
+        realId = ITEMTYPE.ICE_TEA;
+        count = 2;
+    } else if(id == ITEMTYPE.ICE_TEA3) {
+        realId = ITEMTYPE.ICE_TEA;
+        count = 3;
+    } else if(id == ITEMTYPE.HEART_PIECE2) {
+        realId = ITEMTYPE.HEART_PIECE;
+        count = 2;
+    } else if(id == ITEMTYPE.POTION2) {
+        realId = ITEMTYPE.POSITION;
+        count = 2;
+    } else if(id == ITEMTYPE.POTION3) {
+        realId = ITEMTYPE.POSITION;
+        count = 3;
+    } else if(id == ITEMTYPE.FEATHER2) {
+        realId = ITEMTYPE.FEATHER;
+        count = 2;
+    } else if(id == ITEMTYPE.FEATHER3) {
+        realId = ITEMTYPE.FEATHER;
+        count = 3;
+    } else if(id == ITEMTYPE.ARROW2) {
+        realId = ITEMTYPE.ARROW;
+        count = 2;
+    } else if(id == ITEMTYPE.ARROW3) {
+        realId = ITEMTYPE.ARROW;
+        count = 3;
+    } else if(id == ITEMTYPE.BOMB2) {
+        realId = ITEMTYPE.BOMB;
+        count = 2;
+    } else if(id == ITEMTYPE.BOMB3) {
+        realId = ITEMTYPE.BOMB;
+        count = 3;
+    } else if(id == ITEMTYPE.MELEE2) {
+        realId = ITEMTYPE.MELEE;
+        count = 2;
+    } else if(id == ITEMTYPE.MANA2) {
+        realId = ITEMTYPE.MANA;
+        count = 2;
+    } else if(id == ITEMTYPE.QUIVER2) {
+        realId = ITEMTYPE.QUIVER;
+        count = 2;
+    } else if(id == ITEMTYPE.BOMB_BAG2) {
+        realId = ITEMTYPE.BOMB_BAG;
+        count = 2;
+    } else if(id == ITEMTYPE.WARP_CRYSTAL2) {
+        realId = ITEMTYPE.WARP_CRYSTAL;
+        count = 2;
+    } else if(id == ITEMTYPE.ELIXIR2) {
+        realId = ITEMTYPE.ELIXIR;
+        count = 2;
+    } else if(id == ITEMTYPE.BOMB_ARROW2) {
+        realId = ITEMTYPE.BOMB_ARROW;
+        count = 2;
+    } else if(id == ITEMTYPE.FIRE_ARROW2) {
+        realId = ITEMTYPE.FIRE_ARROW;
+        count = 2;
+    } else if(id == ITEMTYPE.ICE_ARROW2) {
+        realId = ITEMTYPE.ICE_ARROW;
+        count = 2;
+    } else if(id == ITEMTYPE.VOID_ARROW2) {
+        realId = ITEMTYPE.VOID_ARROW;
+        count = 2;
+    } else if(id == ITEMTYPE.FIRE_BOMB2) {
+        realId = ITEMTYPE.FIRE_BOMB;
+        count = 2;
+    } else if(id == ITEMTYPE.ICE_BOMB2) {
+        realId = ITEMTYPE.ICE_BOMB;
+        count = 2;
+    } else if(id == ITEMTYPE.VOID_BOMB2) {
+        realId = ITEMTYPE.VOID_BOMB;
+        count = 2;
+    } else if(id == ITEMTYPE.CALTROP_BOMB2) {
+        realId = ITEMTYPE.CALTROP_BOMB;
+        count = 2;
+    }
+
+    return {
+        id : realId,
+        count : count
+    }
+}
+
 export function addItemToCharacter(id: number, count : number, state: CharacterState) {
+    const {arrow, bomb} = getArrowBombCount(state);
+
+    const data = GetRealItemIdByDouble(id);
+
+    id = data.id;
+    count = data.count * count;
+
+    // AUTOMATICALLY SELL ARROW BOMB ITEM BEGIN
+    if(IsArrowItem(id) && arrow < state.stats.arrowLimit) {
+        const addedCount = Math.min(state.stats.arrowLimit - arrow, count);
+        const shopCount = count - addedCount;
+        state.stats.coin += ITEMDETAIL[id].sell * shopCount;
+        count = addedCount;
+    } else if(IsBombItem(id) && bomb < state.stats.bombLimit) {
+        const addedCount = Math.min(state.stats.bombLimit - bomb, count);
+        const shopCount = count - addedCount;
+        state.stats.coin += ITEMDETAIL[id].sell * shopCount;
+        count = addedCount;
+    }
+
+    // AUTOMATICALLY SELL ARROW BOMB ITEM END
+
+    if(count == 0) return;
+
     const it = state.items.find(ii => ii.id == id);
     if(it != null) {
         it.count += count;
@@ -660,7 +878,7 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
         const newPower = new Item();
         newPower.id = id;
         newPower.name = powers[id].name;
-        newPower.count = 1;
+        newPower.count = count;
         newPower.description = "";
         newPower.level = powers[id].level;
         newPower.cost = POWERCOSTS[powers[id].level].cost;
@@ -745,7 +963,28 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string) {
     if(type == "heart") {
-        character.stats.health.add(-amount);
+        character.stats.health.add(amount);
+        character.stats.ultimate.add(2 * Math.abs(amount));
+
+        if(character.stats.health.current == 0) {
+            if(character.type == USER_TYPE.MONSTER) {
+                
+
+
+            } else if(character.type == USER_TYPE.USER) {
+                if(!!character.stacks[STACKTYPE.Revive] && character.stacks[STACKTYPE.Revive].count > 0) {
+                    character.stacks[STACKTYPE.Revive].count--;
+                    character.stats.health.add(1);
+                    character.stats.isRevive = true;
+                    return;
+                } else {
+                    client.send(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
+                        characterId: character.id,
+                        endType : END_TYPE.DEFEAT
+                    })
+                }
+            }
+        }
 
     } else {
 
@@ -760,4 +999,11 @@ export function IsEquipPower(character : CharacterState, powerId: number) {
         }
     })
     return isEquiped;
+}
+
+export function IsEnemyAdjacent(character: CharacterState, enemy : CharacterState, room : UfbRoom) {
+    const currentTile = room.state.map.tiles.get(character.currentTileId);
+    const enemyTile = room.state.map.tiles.get(enemy.currentTileId);
+    const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
+    return r == 1;
 }

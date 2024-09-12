@@ -11,7 +11,9 @@ export class RangedValueState extends Schema {
 
     add(amount: number) {
         this.current += amount;
+        let total = this.current;
         this.current = Math.max(this.min, Math.min(this.current, this.max));
+        return total = this.current;
     }
 
     setToMax() {
@@ -43,9 +45,12 @@ export class CharacterStatsState extends Schema {
         0,
         DEFAULT_ULTIMATE
     );
+    @type("boolean") isRevive = false;
     @type("int32") coin: number = 0;
     @type("int32") range: number = 0;
     @type("int32") bags: number = 0;
+    @type("int16") arrowLimit: number = 3;
+    @type("int16") bombLimit: number = 3;
 }
 
 export class CoordinatesState extends Schema {

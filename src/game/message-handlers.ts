@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection, IsEquipPower } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -113,6 +113,10 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
         room.incrementTurn();
+
+        // END TURN,,, remain energy will convert ultimate value
+        player.stats.ultimate.add(player.stats.energy.current);
+
 
         ////
         // const fromTileId = coordToGameId(message.from);
@@ -323,7 +327,11 @@ export const messageHandlers: MessageHandlers = {
 
             character.stats.energy.add(-1);
         } else if(itemId == ITEMTYPE.POTION) {
-            character.stats.health.add(5);
+            let extra = character.stats.health.add(5);
+            if(extra > 0) {
+                character.stats.coin += extra;
+            }
+
         } else if(itemId == ITEMTYPE.ELIXIR) {
             character.stats.energy.add(10);
 
@@ -388,20 +396,23 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.END_POWER_MOVE_ITEM]: (room, client, message) => {
-        const {enemyId, characterId, powerMoveId, diceCount, enemyDiceCount} = message;
+        const {enemyId, characterId, powerMoveId, diceCount, enemyDiceCount, extraItemId} = message;
 
         const enemy = getCharacterById(room, enemyId);
         const character = getCharacterById(room, characterId);
-        const pm = getPowerMoveFromId(powerMoveId);
+        const pm = getPowerMoveFromId(powerMoveId, extraItemId);
         const health = !!pm.result.health? pm.result.health : 0;
 
-        let deltaCount = diceCount + health - enemyDiceCount;
+        let deltaCount = diceCount - health - enemyDiceCount;
 
         // REVENGE STACK ACTIVE
-        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0) {
+        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, room)) {
             if(message.stackId == STACKTYPE.Revenge) {
                 enemy.stacks[STACKTYPE.Revenge].count--;
-                character.stats.health.add(-enemyDiceCount);
+                setCharacterHealth(character, -enemyDiceCount, room, client, "heart");
+
+                enemy.stats.ultimate.add(enemyDiceCount);
+
                 deltaCount += enemyDiceCount;
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: -enemyDiceCount,
@@ -421,7 +432,9 @@ export const messageHandlers: MessageHandlers = {
         }
 
         if(deltaCount > 0) {
-            enemy.stats.health.add(-deltaCount);
+            setCharacterHealth(character, -deltaCount, room, client, "heart");
+            enemy.stats.ultimate.add(deltaCount);
+
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "heart_e",
@@ -817,7 +830,7 @@ export const messageHandlers: MessageHandlers = {
         console.log("-----power move message - test range")
         const character = getCharacterById(room, message.characterId);
         
-        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+        const powermove = powermoves.find((pm : any) => pm.id == message.powerMoveId);
 
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
             tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? powermove.range : 1)
@@ -826,7 +839,7 @@ export const messageHandlers: MessageHandlers = {
 
     [CLIENT_SERVER_MESSAGE.SET_DICE_ROLL]: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
-        const powermove = getPowerMoveFromId(message.powerMoveId);
+        const powermove = getPowerMoveFromId(message.powerMoveId, message.extraItemId);
 
         if(powermove == null) {
             return;
@@ -982,15 +995,17 @@ export const messageHandlers: MessageHandlers = {
 
         if(stackId == STACKTYPE.Cure) {
             
-            character.stats.health.add(diceData[0].diceCount);
+            let extra = character.stats.health.add(diceData[0].diceCount);
+            if(extra > 0) {
+                character.stats.coin += extra;
+            }
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: diceData[0].diceCount,
                 type: "heart"
             });
 
         } else if(stackId == STACKTYPE.Void) {
-            
-            character.stats.health.add(-diceData[1].diceCount);
+            setCharacterHealth(character, -diceData[1].diceCount, room, client, "heart");
             character.stats.ultimate.add(-diceData[0].diceCount);
             
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1004,8 +1019,7 @@ export const messageHandlers: MessageHandlers = {
             });
 
         } else if(stackId == STACKTYPE.Burn) {
-
-            character.stats.health.add(-diceData[0].diceCount);
+            setCharacterHealth(character, -diceData[0].diceCount, room, client, "heart");
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -diceData[0].diceCount,
                 type: "heart"

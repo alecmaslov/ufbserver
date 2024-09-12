@@ -43,7 +43,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         let clientMessage: PowerMoveListMessage = {
             powermoves: []
         }
-        powermoves.forEach(move => {
+        powermoves.forEach((move : any) => {
             if(move.powerIds.indexOf(powerId) > -1) {
                 const powermove : PowerMove = {
                     id : move.id,
@@ -57,10 +57,10 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     result: move.result
                 };
 
-                move.powerIds.forEach(pid => {
+                move.powerIds.forEach((pid : number) => {
                     powermove.powerIds.push(pid);
                 })
-                move.costList.forEach(cost => {
+                move.costList.forEach((cost : any) => {
                     const item = new Item();
                     item.id = cost.id;
                     item.count = cost.count;
