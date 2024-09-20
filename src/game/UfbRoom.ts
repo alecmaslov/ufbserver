@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, initializeSpawnEntities, spawnCharacter } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getDiceCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, initializeSpawnEntities, IsEnemyAdjacent, spawnCharacter } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -21,9 +21,12 @@ import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { Item } from "./schema/CharacterState";
 import { getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
+import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { CharacterMovedMessage } from "./message-types";
+import { PathStep } from "#shared-types";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -39,6 +42,9 @@ export class UfbRoom extends Room<UfbRoomState> {
     sessionIdToPlayerId = new Map<string, string>();
     pathfinder: Pathfinder = new Pathfinder();
 
+    isMonsterActive: boolean = true;
+    aiInterval: any;
+
     async onCreate(options: UfbRoomOptions) {
         RoomCache.set(this.roomId, this);
         this.setState(new UfbRoomState());
@@ -51,6 +57,10 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
         registerMessageHandlers(this);
         console.log(`created room ${this.roomId}`);
+
+        this.aiInterval = setInterval(() => {
+            this.aiChecking();
+        }, 3000);
     }
 
     notify(client: Client, message: string, notificationType: string = "info") {
@@ -114,6 +124,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     onDispose() {
         console.log("room", this.roomId, "disposing...");
         this.dispatcher.stop();
+        clearInterval(this.aiInterval);
     }
 
     onAuth(client: Client, options: Record<string, any>) {
@@ -146,15 +157,21 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         const currentCharacter = this.state.characters.get(this.state.currentCharacterId);
         currentCharacter.stats.isRevive = false;
+        currentCharacter.stats.energy.setToMax();
+        
+        const mana = currentCharacter.items.find(it => it.id == ITEMTYPE.MANA);
+        const melee = currentCharacter.items.find(it => it.id == ITEMTYPE.MELEE);
 
-        console.log("turn orders:", this.state.turnOrder, n);
+        mana.count = currentCharacter.stats.maxMana;
+        melee.count = currentCharacter.stats.maxMelee;
+
+        console.log("turn orders:", this.state.turnOrder, n, this.state.currentCharacterId);
 
         this.broadcast(
-            "turnChanged",
+            SERVER_TO_CLIENT_MESSAGE.TURN_CHANGED,
             { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime : TURN_TIME },
             { afterNextPatch: true }
         );
-
     }
 
     resetTurn() {
@@ -373,12 +390,156 @@ export class UfbRoom extends Room<UfbRoomState> {
     // @amin - AI Monsters checking..
     aiChecking() {
         const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
-        if(selectedMonster.type == USER_TYPE.USER) {
+        console.log(!!selectedMonster, "checking AIIIII")
+
+        if(selectedMonster == null || selectedMonster.type == USER_TYPE.USER || !this.isMonsterActive) {
             return;
+        }
+
+        console.log("AI CHECKING..kkk")
+
+        // AI MONSTER ITEM
+        let isItemUse = false;
+        selectedMonster.items.forEach(p => {
+            if(p.id == ITEMTYPE.POSITION && p.count > 0) {
+                isItemUse = true
+                selectedMonster.stats.health.add(5);
+                this.sendBroadcastStats(5, 'heart');
+                p.count--;
+            } else if(p.id == ITEMTYPE.ELIXIR && p.count > 0) {
+                isItemUse = true;
+                selectedMonster.stats.energy.add(10);
+                addStackToCharacter(STACKTYPE.Cure, 1, selectedMonster, null, this);
+                addStackToCharacter(STACKTYPE.Dodge, 1, selectedMonster, null, this);
+                p.count--;
+            }
+        })
+        if(isItemUse) {
+            this.DoActionMonster()
         }
 
         // AI MONSTER MOVEMENT LOGIC
 
+        const nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
+        const nearTileId = GetNearestTileId(selectedMonster.currentTileId, this);
+        const obstacleTileIds = GetObstacleTileIds(selectedMonster.currentTileId, this);
+        console.log("near tile id: ", nearTileId)
+        
+        let isAjuacent = false;
+
+        if(nearCharcterId != "") {
+            const enemy = this.state.characters.get(nearCharcterId);
+            isAjuacent = IsEnemyAdjacent(selectedMonster, enemy, this);
+        }
+
+        if(nearTileId != "" && !isAjuacent) {
+            const { path, cost } = this.pathfinder.find(
+                selectedMonster.currentTileId,
+                nearTileId
+            );
+            console.log("ai move : ", path);
+
+            const energy = selectedMonster.stats.energy.current;
+            if(energy > 0 && path.length > 1) {
+                const pathArray = path.slice(0, Math.min(path.length, energy));
+                let monsterPath: any = pathArray;
+                for(let i = 0; i < pathArray.length; i++) {
+                    const p = pathArray[i];
+                    if(obstacleTileIds.indexOf(p.tileId) != -1) {
+                        monsterPath = pathArray.slice(0, i);
+                        break;
+                    }
+                }
+
+
+                fillPathWithCoords(monsterPath, this.state.map);
+
+                if(monsterPath.length > 1) {
+                    const characterMovedMessage: CharacterMovedMessage = {
+                        characterId: selectedMonster.id,
+                        path: monsterPath,
+                        left: -1,
+                        right: -1,
+                        top: -1,
+                        down: -1,
+                    };
+    
+                    selectedMonster.stats.energy.add(-Math.min(monsterPath.length, energy));
+            
+                    this.DoActionMonster()
+                    const destinationTile = this.state.map.tiles.get(monsterPath[monsterPath.length - 1].tileId);
+                    setTimeout(() => {
+                        selectedMonster.coordinates.x = destinationTile.coordinates.x;
+                        selectedMonster.coordinates.y = destinationTile.coordinates.y;
+                        selectedMonster.currentTileId = destinationTile.id;
+                    }, 4000)
+    
+                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
+        
+                    this.sendBroadcastStats(-Math.min(monsterPath.length, energy));
+
+                }
+            }
+        }
+
+
+        // AI MONSTER ATTACK
+        if(this.isMonsterActive && isAjuacent) {
+            // PUNCH
+            const {mana, melee} = getArrowBombCount(selectedMonster);
+            
+            if(selectedMonster.stats.energy.current > 2) {
+                const enemy = this.state.characters.get(nearCharcterId);
+                if(mana > 0) {
+                    this.DoActionMonster();                        
+                    selectedMonster.items.forEach(p => {
+                        if(p.id == ITEMTYPE.MANA) {
+                            p.count--;
+                        }
+                    })
+                    selectedMonster.stats.energy.add(-2);
+                    this.sendBroadcastStats(-2);
+
+                    // ATTACK 4 DICE ROLL
+                    const damage = getDiceCount(Math.random(), DICE_TYPE.DICE_4);
+                    enemy.stats.health.add(-damage);
+                
+                } else if(melee > 0) {
+                    this.DoActionMonster();                        
+                    selectedMonster.items.forEach(p => {
+                        if(p.id == ITEMTYPE.MELEE) {
+                            p.count--;
+                        }
+                    })
+                    selectedMonster.stats.energy.add(-2);
+                    this.sendBroadcastStats(-2);
+
+                    // ATTACK 4 DICE ROLL
+                    const damage = getDiceCount(Math.random(), DICE_TYPE.DICE_4);
+                    enemy.stats.health.add(-damage);
+                }
+            }
+        }
+
+        // AI MONSTER TURN
+        if(selectedMonster.stats.energy.current <= 1 || this.isMonsterActive) {
+            this.incrementTurn();
+        }
+
+    }
+
+    sendBroadcastStats(score : number, type: string = 'energy') {
+        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            score: score,
+            type: "energy"
+        })
+    }
+
+    DoActionMonster(delay : number = 4) {
+        this.isMonsterActive = false;
+        setTimeout(() => {
+            this.isMonsterActive = true;
+        }, delay * 1000);
     }
 
 }

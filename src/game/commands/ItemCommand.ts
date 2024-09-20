@@ -5,6 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
+import { addItemToCharacter } from "#game/helpers/map-helpers";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -81,21 +82,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // END TEST
 
-        const item : Item = character.items.find(item => item.id == message.itemId);
-        if(item == null) {
-            const newItem = new Item();
-            newItem.id = message.itemId;
-            newItem.count = 1;
-            newItem.name = ITEMDETAIL[newItem.id].name;
-            newItem.description = "description";
-            newItem.level = ITEMDETAIL[newItem.id].level;
-            newItem.cost = ITEMDETAIL[newItem.id].cost;
-            newItem.sell = ITEMDETAIL[newItem.id].sell;
-
-            character.items.push(newItem);
-        } else {
-            item.count++;
-        }
+        addItemToCharacter(message.itemId, 1, character);
 
         const power : Item = character.powers.find(p => p.id == message.powerId);
         if(power == null) {

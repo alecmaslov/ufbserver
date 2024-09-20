@@ -918,9 +918,9 @@ export const powermoves : any = [
             },
         ],
         result : {
-            health: -3
+            health: -1
         },
-        range: 5,
+        range: 4,
         light: 2,
         coin: 0,
     },
@@ -996,7 +996,7 @@ export const powermoves : any = [
             },
         ],
         result : {
-            health: -7,
+            health: -2,
             stacks: [
                 {
                     id: STACKTYPE.Slow,
@@ -1005,7 +1005,7 @@ export const powermoves : any = [
             ]
         },
         range: 8,
-        light: 8,
+        light: 4,
         coin: 0,
     },
     {
@@ -1048,10 +1048,10 @@ export const powermoves : any = [
             },
         ],
         result : {
-            health: -3
+            health: -1
         },
         range: 3,
-        light: 4,
+        light: 2,
         coin: 0,
     },
     {
@@ -1073,7 +1073,7 @@ export const powermoves : any = [
             },
         ],
         result : {
-            health: -4,
+            health: -2,
             perkId: PERKTYPE.Vampire,
             perkId1: PERKTYPE.Pull
         },
@@ -1190,7 +1190,7 @@ export const powermoves : any = [
             },
         ],
         result : {
-            health: -5,
+            health: -1,
             perkId: PERKTYPE.Push
         },
         range: 4,
@@ -1272,18 +1272,18 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 3
+                count: 1
             },
             {
                 id: ITEMTYPE.BOMB,
-                count: 3
+                count: 1
             },
         ],
         result : {
-            health: -10
+            health: -1
         },
-        range: 8,
-        light: 15,
+        range: 4,
+        light: 4,
         coin: 0,
     },
     {

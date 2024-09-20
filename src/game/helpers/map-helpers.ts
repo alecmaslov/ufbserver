@@ -97,26 +97,26 @@ export const getPathCost = (
     adjacencyList: MapSchema<AdjacencyListItemState, string>
 ) => {
     let cost = 0;
-    for (let i = 1; i < p.length; i++) {
-        const from = p[i - 1].id as string;
-        const to = p[i].id as string;
-        const edgeCollection = adjacencyList.get(from);
-        if (!edgeCollection) {
-            throw new Error(`no adjacency list for ${from}`);
-        }
-        let edge: { energyCost: number } | undefined;
-        for (const e of edgeCollection.edges) {
-            if (e.to === to) {
-                edge = e;
-                break;
-            }
-        }
-        // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
-        if (!edge) {
-            throw new Error(`no edge from ${from} to ${to}`);
-        }
-        cost += edge.energyCost;
-    }
+    // for (let i = 1; i < p.length; i++) {
+    //     const from = p[i - 1].id as string;
+    //     const to = p[i].id as string;
+    //     const edgeCollection = adjacencyList.get(from);
+    //     if (!edgeCollection) {
+    //         throw new Error(`no adjacency list for ${from}`);
+    //     }
+    //     let edge: { energyCost: number } | undefined;
+    //     for (const e of edgeCollection.edges) {
+    //         if (e.to === to) {
+    //             edge = e;
+    //             break;
+    //         }
+    //     }
+    //     // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+    //     if (!edge) {
+    //         throw new Error(`no edge from ${from} to ${to}`);
+    //     }
+    //     cost += edge.energyCost;
+    // }
     return cost;
 };
 
@@ -456,6 +456,9 @@ ${character.characterClass}`;
     coordinates.y = tile.y;
     character.coordinates = coordinates;
 
+    addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
+    addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
+
     characters.set(id, character);
 
     return character;
@@ -494,15 +497,14 @@ export function getDiceCount(percent : number, type : number) {
 
 export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
     const p = powermoves.find((pm : any) => pm.id == id);
-    const powermove = {
-        ...p,
-        result: {
-            ...p.result
-        },
-        costList: [...p.costList],
-    };
-    if(powermove != null) {
-
+    if(p != null) {
+        const powermove = {
+            ...p,
+            result: {
+                ...p.result
+            },
+            costList: [...p.costList],
+        };
         if(extraItemId > 0) {
 
             powermove.costList.push({
@@ -662,17 +664,25 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
 export function getArrowBombCount(character : CharacterState) {
     let arrowCount = 0;
     let bombCount = 0;
+    let meleeCount = 0;
+    let manaCount = 0;
     character.items.forEach(item => {
         if(IsArrowItem(item.id)) {
             arrowCount += item.count;
         } else if(IsBombItem(item.id)) {
             bombCount++;
+        } else if(item.id == ITEMTYPE.MELEE) {
+            meleeCount++;
+        } else if(item.id == ITEMTYPE.MANA) {
+            manaCount++;
         }
     });
 
     return {
         arrow : arrowCount,
-        bomb : bombCount
+        bomb : bombCount,
+        melee : meleeCount,
+        mana : manaCount
     }
 }
 
@@ -782,7 +792,7 @@ export function GetRealItemIdByDouble(id : number) {
 }
 
 export function addItemToCharacter(id: number, count : number, state: CharacterState) {
-    const {arrow, bomb} = getArrowBombCount(state);
+    const {arrow, bomb, mana, melee} = getArrowBombCount(state);
 
     const data = GetRealItemIdByDouble(id);
 
@@ -807,6 +817,26 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     if(count == 0) return;
 
     const it = state.items.find(ii => ii.id == id);
+
+    if(id == ITEMTYPE.MANA) {
+        const maxMana = state.stats.maxMana;
+        let addedCount = Math.max(0, mana + count - maxMana);
+        if(addedCount == count) {
+            state.stats.maxMana += addedCount;
+        } else {
+            count -= addedCount;
+        }
+        
+    } else if(id == ITEMTYPE.MELEE) {
+        const maxMelee = state.stats.maxMelee;
+        let addedCount = Math.max(0, mana + count - maxMelee);
+        if(addedCount == count) {
+            state.stats.maxMana += addedCount;
+        } else {
+            count -= addedCount;
+        }
+    }
+
     if(it != null) {
         it.count += count;
     } else {
@@ -822,7 +852,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     }
 }
 
-export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client) {
+export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
     const stack : Item = state.stacks.find(stack => stack.id == id);
     // ADD BAN STACK LOGIC
     if(!!BAN_STACKS[id]) {
@@ -830,25 +860,48 @@ export function addStackToCharacter(id: number, count : number, state: Character
         console.log("ban stack?", BAN_STACKS[id], id, banStack.count);
         if(banStack != null && banStack.count > 0) {
             if(banStack.count >= count) {
-                client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
-                    characterId : state.id,
-                    stack1 : id,
-                    stack2 : banStack.id,
-                    count1 : count,
-                    count2 : banStack.count
-                });
+                if(client != null) {
+                    client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
+                        characterId : state.id,
+                        stack1 : id,
+                        stack2 : banStack.id,
+                        count1 : count,
+                        count2 : banStack.count
+                    });
+                } else {
+                    room.broadcast(
+                        SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
+                            characterId : state.id,
+                            stack1 : id,
+                            stack2 : banStack.id,
+                            count1 : count,
+                            count2 : banStack.count
+                        }
+                    )
+                }
 
                 banStack.count -= count;
                 return;
             } else {
-                client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
-                    characterId : state.id,
-                    stack1 : id,
-                    stack2 : banStack.id,
-                    count1 : count,
-                    count2 : banStack.count
-                });
-
+                if(client != null) {
+                    client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
+                        characterId : state.id,
+                        stack1 : id,
+                        stack2 : banStack.id,
+                        count1 : count,
+                        count2 : banStack.count
+                    });
+                } else {
+                    room.broadcast(
+                        SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
+                            characterId : state.id,
+                            stack1 : id,
+                            stack2 : banStack.id,
+                            count1 : count,
+                            count2 : banStack.count
+                        }
+                    )
+                }
                 count -= banStack.count;
                 banStack.count = 0;
             }
@@ -976,6 +1029,11 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                     character.stacks[STACKTYPE.Revive].count--;
                     character.stats.health.add(1);
                     character.stats.isRevive = true;
+                    client.send(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
+                        characterId: character.id,
+                        endType : END_TYPE.DEFEAT
+                    })
+
                     return;
                 } else {
                     client.send(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
@@ -1006,4 +1064,47 @@ export function IsEnemyAdjacent(character: CharacterState, enemy : CharacterStat
     const enemyTile = room.state.map.tiles.get(enemy.currentTileId);
     const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
     return r == 1;
+}
+
+export function GetNearestPlayerId( currentTileId: string, room: UfbRoom) {
+    const currentTile = room.state.map.tiles.get(currentTileId);
+
+    let id = "";
+    let range = 100;
+    room.state.characters.forEach(character => {
+        if(character.type == USER_TYPE.USER && character.stats.health.current > 0) {
+            const enemyTile = room.state.map.tiles.get(character.currentTileId);
+            const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
+            if(range > r) {
+                range = r;
+                id = character.id;
+            }
+        }
+    })
+
+    return id;
+}
+
+export function GetNearestTileId( currentTileId: string, room: UfbRoom) {
+    const id = GetNearestPlayerId(currentTileId, room);
+    console.log("near : ", id)
+    if(id != "") {
+        const directs = ['top', 'down', 'left', 'right'];
+        const dirt = directs[Math.ceil(Math.random() * 100) % directs.length];
+        const tile = room.state.map.tiles.get(room.state.characters.get(id).currentTileId);
+        console.log("near : ", dirt, tile.coordinates.x, room.state.characters.get(id).currentTileId, dirt)
+        return getTileIdByDirection(room.state.map.tiles, tile.coordinates, dirt);
+    } else {
+        return id;
+    }
+}
+
+export function GetObstacleTileIds(currentTileId: string, room: UfbRoom) {
+    let tileIds: any = [];
+    room.state.characters.forEach(character => {
+        if(currentTileId != character.currentTileId) {
+            tileIds.push(character.currentTileId);
+        }
+    });
+    return tileIds;
 }

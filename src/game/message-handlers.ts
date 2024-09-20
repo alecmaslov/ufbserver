@@ -826,6 +826,15 @@ export const messageHandlers: MessageHandlers = {
         );
     },
 
+    testHealth: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        setCharacterHealth(character, -4, room, client, "heart");
+        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            score: -4,
+            type: "heart",
+        });
+    },
+
     [CLIENT_SERVER_MESSAGE.GET_HIGHLIGHT_RECT] : (room, client, message) => {
         console.log("-----power move message - test range")
         const character = getCharacterById(room, message.characterId);
@@ -958,6 +967,12 @@ export const messageHandlers: MessageHandlers = {
 
     [CLIENT_SERVER_MESSAGE.GET_STACK_ON_TURN_START]: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
+
+        if(character.stats.isRevive) {
+            character.stats.isRevive = false;
+            return;
+        }
+
         let stackList: any[] = [];
         character.stacks.forEach(stack => {
             if(

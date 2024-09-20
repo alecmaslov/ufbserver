@@ -51,6 +51,8 @@ export class CharacterStatsState extends Schema {
     @type("int32") bags: number = 0;
     @type("int16") arrowLimit: number = 3;
     @type("int16") bombLimit: number = 3;
+    @type("int8") maxMelee: number = 2;
+    @type("int8") maxMana: number = 2;
 }
 
 export class CoordinatesState extends Schema {
