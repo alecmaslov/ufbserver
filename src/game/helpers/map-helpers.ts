@@ -1,4 +1,4 @@
-import { BAN_STACKS, DICE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
@@ -464,6 +464,44 @@ ${character.characterClass}`;
     return character;
 }
 
+export function spawnMonster(
+    characters: MapSchema<CharacterState>,
+    sessionId: string,
+    tileId: string,
+    x: number,
+    y: number,
+    characterClass: string,
+    type?: number,
+    monsterType?: number
+) : CharacterState {
+    const character = new CharacterState();
+    const id = createId();
+    character.id = id;
+    character.sessionId = sessionId;
+    character.characterClass = characterClass;
+    character.characterId = createId();
+    character.currentTileId = tileId;
+
+    if(!!type) {
+        character.type = type;
+    }
+
+    character.displayName = `<color="red"><size=50%>MONSTER</size></color>
+${MONSTERS[monsterType].name}`;
+
+    const coordinates = new CoordinatesState();
+    coordinates.x = x;
+    coordinates.y = y;
+    character.coordinates = coordinates;
+
+    addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
+    addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
+
+    characters.set(id, character);
+
+    return character;
+}
+
 export function getDiceCount(percent : number, type : number) {
     const p = percent * 100;
     if(type == DICE_TYPE.DICE_6) {
@@ -578,7 +616,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
             let arrowId = Math.abs(id + (id <= -100? 100 : 1));
             if(id <= -100) {
                 powermove = {
-                    id: 1000,
+                    id: id,
                     name: "Punch",
                     powerImageId: -1,
                     powerIds: [
@@ -600,7 +638,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                 }
             } else {
                 powermove = {
-                    id: 1000,
+                    id: id,
                     name: "Punch",
                     powerImageId: -1,
                     powerIds: [
@@ -670,11 +708,11 @@ export function getArrowBombCount(character : CharacterState) {
         if(IsArrowItem(item.id)) {
             arrowCount += item.count;
         } else if(IsBombItem(item.id)) {
-            bombCount++;
+            bombCount += item.count;
         } else if(item.id == ITEMTYPE.MELEE) {
-            meleeCount++;
+            meleeCount += item.count;
         } else if(item.id == ITEMTYPE.MANA) {
-            manaCount++;
+            manaCount += item.count;
         }
     });
 
@@ -718,10 +756,10 @@ export function GetRealItemIdByDouble(id : number) {
         realId = ITEMTYPE.HEART_PIECE;
         count = 2;
     } else if(id == ITEMTYPE.POTION2) {
-        realId = ITEMTYPE.POSITION;
+        realId = ITEMTYPE.POTION;
         count = 2;
     } else if(id == ITEMTYPE.POTION3) {
-        realId = ITEMTYPE.POSITION;
+        realId = ITEMTYPE.POTION;
         count = 3;
     } else if(id == ITEMTYPE.FEATHER2) {
         realId = ITEMTYPE.FEATHER;
@@ -829,9 +867,9 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
         
     } else if(id == ITEMTYPE.MELEE) {
         const maxMelee = state.stats.maxMelee;
-        let addedCount = Math.max(0, mana + count - maxMelee);
+        let addedCount = Math.max(0, melee + count - maxMelee);
         if(addedCount == count) {
-            state.stats.maxMana += addedCount;
+            state.stats.maxMelee += addedCount;
         } else {
             count -= addedCount;
         }
@@ -840,6 +878,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     if(it != null) {
         it.count += count;
     } else {
+        console.log("add new item: ", id, count, ITEMDETAIL[id])
         const newItem = new Item();
         newItem.id = id;
         newItem.count = count;
@@ -1017,29 +1056,56 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string) {
     if(type == "heart") {
         character.stats.health.add(amount);
-        character.stats.ultimate.add(2 * Math.abs(amount));
+        if(amount < 0) {
+            character.stats.ultimate.add(2 * Math.abs(amount));
+        }
 
         if(character.stats.health.current == 0) {
             if(character.type == USER_TYPE.MONSTER) {
-                
-
+                room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEAD_MONSTER, {characterId : character.id});                
+                room.RespawnMonster();
 
             } else if(character.type == USER_TYPE.USER) {
                 if(!!character.stacks[STACKTYPE.Revive] && character.stacks[STACKTYPE.Revive].count > 0) {
                     character.stacks[STACKTYPE.Revive].count--;
                     character.stats.health.add(1);
                     character.stats.isRevive = true;
-                    client.send(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
-                        characterId: character.id,
-                        endType : END_TYPE.DEFEAT
-                    })
-
+                    if(client == null) {
+                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
+                            characterId: character.id,
+                            endType : END_TYPE.DEFEAT
+                        })
+                    } else {
+                        client.send(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
+                            characterId: character.id,
+                            endType : END_TYPE.DEFEAT
+                        })
+                    }
                     return;
                 } else {
-                    client.send(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
-                        characterId: character.id,
-                        endType : END_TYPE.DEFEAT
+                    let aliveCount = 0;
+                    room.state.characters.forEach(p => {
+                        if(p.type == USER_TYPE.USER && p.stats.health.current > 0) {
+                            aliveCount++;
+                        }
                     })
+
+                    if(client == null) {
+                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
+                            characterId: character.id,
+                            endType : END_TYPE.DEFEAT
+                        })
+                    } else {
+                        client.send(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
+                            characterId: character.id,
+                            endType : END_TYPE.DEFEAT
+                        })
+                    }
+
+                    if(aliveCount == 0) {
+                        room.StopAIChecking();
+                    }
+
                 }
             }
         }
@@ -1072,7 +1138,7 @@ export function GetNearestPlayerId( currentTileId: string, room: UfbRoom) {
     let id = "";
     let range = 100;
     room.state.characters.forEach(character => {
-        if(character.type == USER_TYPE.USER && character.stats.health.current > 0) {
+        if(character.type == USER_TYPE.USER && character.stats.health.current > 0 && !character.stats.isRevive) {
             const enemyTile = room.state.map.tiles.get(character.currentTileId);
             const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
             if(range > r) {
@@ -1102,9 +1168,64 @@ export function GetNearestTileId( currentTileId: string, room: UfbRoom) {
 export function GetObstacleTileIds(currentTileId: string, room: UfbRoom) {
     let tileIds: any = [];
     room.state.characters.forEach(character => {
-        if(currentTileId != character.currentTileId) {
+        if(currentTileId != character.currentTileId && character.stats.health.current != 0) {
             tileIds.push(character.currentTileId);
         }
     });
     return tileIds;
+}
+
+export function GetMonsterDeadCount(room: UfbRoom) {
+    let blue = 0;
+    let blueLive = 0;
+    let green = 0;
+    let greenLive = 0;
+    let yellow = 0;
+    let yellowLive = 0;
+    room.state.characters.forEach(character => {
+        if(character.type == USER_TYPE.MONSTER) {
+            if(IsBlueMonster(character.characterClass)) {
+                if(character.stats.health.current == 0) {
+                    blue++;
+                } else {
+                    blueLive++;
+                }
+            } else if(IsGreenMonster(character.characterClass)) {
+                if(character.stats.health.current == 0) {
+                    green++;
+                } else {
+                    greenLive++;
+                }
+            } else if(IsYellowMonster(character.characterClass)) {
+                if(character.stats.health.current == 0) {
+                    yellow++;
+                } else {
+                    yellowLive++;
+                }
+            }
+        }
+    })
+
+    return {blue, green, yellow, blueLive, greenLive, yellowLive};
+}
+
+export function IsBlueMonster(key: string) {
+    return key == MONSTERS[MONSTER_TYPE.WASP_BLUE].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.EARWIG_BLUE].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.SPIDER_BLUE].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.CENTIPEDE_BLUE].characterClass; 
+}
+
+export function IsGreenMonster(key: string) {
+    return key == MONSTERS[MONSTER_TYPE.WASP_GREEN].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.EARWIG_GREEN].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.SPIDER_GREEN].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.CENTIPEDE_GREEN].characterClass; 
+}
+
+export function IsYellowMonster(key: string) {
+    return key == MONSTERS[MONSTER_TYPE.WASP_YELLOW].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.EARWIG_YELLOW].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.SPIDER_YELLOW].characterClass ||
+    key == MONSTERS[MONSTER_TYPE.CENTIPEDE_YELLOW].characterClass; 
 }

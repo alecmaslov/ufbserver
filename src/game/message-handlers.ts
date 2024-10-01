@@ -410,7 +410,6 @@ export const messageHandlers: MessageHandlers = {
             if(message.stackId == STACKTYPE.Revenge) {
                 enemy.stacks[STACKTYPE.Revenge].count--;
                 setCharacterHealth(character, -enemyDiceCount, room, client, "heart");
-
                 enemy.stats.ultimate.add(enemyDiceCount);
 
                 deltaCount += enemyDiceCount;
@@ -432,12 +431,22 @@ export const messageHandlers: MessageHandlers = {
         }
 
         if(deltaCount > 0) {
-            setCharacterHealth(character, -deltaCount, room, client, "heart");
-            enemy.stats.ultimate.add(deltaCount);
+            setCharacterHealth(enemy, -deltaCount, room, client, "heart");
+            character.stats.ultimate.add(deltaCount);
+
+            if(enemy.stats.health.current == 0) {
+                console.log("----reward.. monster")
+                room.RewardFromMonster(character, enemy, client);
+            }
 
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "heart_e",
+            });
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -deltaCount,
+                type: "ultimate_e",
             });
             if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {

@@ -116,6 +116,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             if(key == "health") {
                 setCharacterHealth(target, powermove.result.health, this.room, client, "heart");
 
+                if(target == enemy && target.stats.health.current == 0) {
+                    this.room.RewardFromMonster(character, target, client);
+                }
+
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.health,
                     type: target == character? "heart" : "heart_e",
@@ -166,6 +170,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         if(result.desTileId == "") {
                             setCharacterHealth(target, -1, this.room, client, "heart");
 
+                            if(target == enemy && target.stats.health.current == 0) {
+                                this.room.RewardFromMonster(character, target, client);
+                            }
+
                             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                 score: -1,
                                 type: "heart_e",
@@ -206,6 +214,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                 } else {
                                     setCharacterHealth(target, -1, this.room, client, "heart");
         
+                                    if(target == enemy && target.stats.health.current == 0) {
+                                        this.room.RewardFromMonster(character, target, client);
+                                    }
+
                                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -1,
                                         type: "heart_e",
@@ -215,6 +227,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                             } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR) {
                                 setCharacterHealth(target, -1, this.room, client, "heart");
         
+                                if(target == enemy && target.stats.health.current == 0) {
+                                    this.room.RewardFromMonster(character, target, client);
+                                }
+
                                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -1,
                                     type: "heart_e",
@@ -247,6 +263,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         
                                 setCharacterHealth(target, -1, this.room, client, "heart");
 
+                                if(target == enemy && target.stats.health.current == 0) {
+                                    this.room.RewardFromMonster(character, target, client);
+                                }
+
                                 // CHANGE POSITION
                                 if(isEmptyTile) {
                                     target.coordinates.x = result.desCoodinate.x;
@@ -270,6 +290,11 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         
                             } else if(result.wallType == EDGE_TYPE.VOID) {
                                 setCharacterHealth(target, -2, this.room, client, "heart");
+
+                                if(target == enemy && target.stats.health.current == 0) {
+                                    this.room.RewardFromMonster(character, target, client);
+                                }
+
                                 addStackToCharacter(STACKTYPE.Void, 1, target, client);
                                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -2,
@@ -364,6 +389,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
                     } else {
                         setCharacterHealth(enemy, -message.diceCount, this.room, client, "heart");
+
+                        if(target == enemy && target.stats.health.current == 0) {
+                            this.room.RewardFromMonster(character, target, client);
+                        }
 
                         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -message.diceCount,

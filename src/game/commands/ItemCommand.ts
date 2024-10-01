@@ -50,7 +50,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
                 console.log(STACKTYPE[key])
                 const newStack = new Item();
                 newStack.id = STACKTYPE[key];
-                newStack.count = 5;
+                newStack.count = 1;
                 newStack.name = key;
                 newStack.description = stacks[STACKTYPE[key]].description;
                 newStack.level = stacks[STACKTYPE[key]].level;

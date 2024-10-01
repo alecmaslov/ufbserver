@@ -3,7 +3,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { fillPathWithCoords, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
+import { fillPathWithCoords, GetObstacleTileIds, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
@@ -26,6 +26,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         console.log("move message execute")
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
+            return;
         }
 
         // if (!force && character.id !== this.state.currentCharacterId) {
@@ -35,6 +36,13 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
 
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);
+
+        const obstacleTileIds = GetObstacleTileIds(currentTile.id, this.room);
+
+        if(obstacleTileIds.indexOf(destinationTile.id) != -1) {
+            this.room.notify(client, "You can't move this tile!", "error");
+            return;
+        }
 
         let directionData = {
             left: 1,
