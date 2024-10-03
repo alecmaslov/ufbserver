@@ -361,7 +361,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         });
 
                     } else {
-                        console.log("add charcter stack....", stack.id)
+                        console.log("add charcter stack....", stack.id, stack)
 
                         addStackToCharacter(stack.id, stack.count, target, client);
                     }

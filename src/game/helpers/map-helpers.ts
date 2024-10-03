@@ -893,10 +893,10 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
     const stack : Item = state.stacks.find(stack => stack.id == id);
+    console.log("add stack: ", stack);
     // ADD BAN STACK LOGIC
     if(!!BAN_STACKS[id]) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
-        console.log("ban stack?", BAN_STACKS[id], id, banStack.count);
         if(banStack != null && banStack.count > 0) {
             if(banStack.count >= count) {
                 if(client != null) {
