@@ -18,6 +18,7 @@ model Client {
   player           Player[]
 
   @@index([userId], map: "Client_userId_fkey")
+  @@map("client")
 }
 
 model User {
@@ -29,6 +30,7 @@ model User {
   createdAt       DateTime    @default(now())
   client          Client[]
   character       Character[]
+  @@map("user")
 }
 
 model GameSession {
@@ -40,6 +42,7 @@ model GameSession {
   player           Player[]
 
   @@index([hostClientId], map: "GameSession_hostClientId_fkey")
+  @@map("gamesession")
 }
 
 model Player {
@@ -53,6 +56,7 @@ model Player {
 
   @@index([clientId], map: "Player_clientId_fkey")
   @@index([gameSessionId], map: "Player_gameSessionId_fkey")
+  @@map("player")
 }
 
 model PlayerGameState {
@@ -63,6 +67,7 @@ model PlayerGameState {
   player   Player @relation(fields: [playerId], references: [id])
 
   @@index([playerId], map: "PlayerGameState_playerId_fkey")
+  @@map("playergamestate")
 }
 
 model GameSessionState {
@@ -71,6 +76,7 @@ model GameSessionState {
   gameSession   GameSession @relation(fields: [gameSessionId], references: [id])
 
   @@index([gameSessionId], map: "GameSessionState_gameSessionId_fkey")
+  @@map("gamesessionstate")
 }
 
 model Asset {
@@ -78,6 +84,7 @@ model Asset {
   bucketName  String
   region      String
   bundleAsset BundleAsset[]
+  @@map("asset")
 }
 
 model BundleAsset {
@@ -87,6 +94,7 @@ model BundleAsset {
   asset   Asset  @relation(fields: [assetId], references: [objectKey])
 
   @@index([assetId], map: "BundleAsset_assetId_fkey")
+  @@map("bundleasset")
 }
 
 model UfbMap {
@@ -100,6 +108,7 @@ model UfbMap {
   resourceAddress String?
   isPublished     Boolean @default(false)
   tiles           Tile[]
+  @@map("ufbmap")
 }
 
 model Tile {
@@ -120,6 +129,7 @@ model Tile {
   // @@unique([tileCode, mapId])
   // @@unique([x, y, mapId])
   @@index([mapId], map: "Tile_mapId_fkey")
+  @@map("tile")
 }
 
 model SpawnZone {
@@ -128,6 +138,7 @@ model SpawnZone {
   seedId Int
   tileId String        @unique
   tile   Tile          @relation(fields: [tileId], references: [id], onDelete: Cascade)
+  @@map("spawnzone")
 }
 
 model TileAdjacency {
@@ -144,6 +155,7 @@ model TileAdjacency {
   @@unique([fromId, toId])
   @@index([tileId], map: "TileAdjacency_tileId_fkey")
   @@index([toId], map: "TileAdjacency_toId_fkey")
+  @@map("tileadjacency")
 }
 
 model ConnectedBrowser {
@@ -154,6 +166,7 @@ model ConnectedBrowser {
   client         Client    @relation(fields: [clientId], references: [id])
 
   @@index([clientId], map: "ConnectedBrowser_clientId_fkey")
+  @@map("connectedbrowser")
 }
 
 model CharacterClass {
@@ -207,6 +220,7 @@ model CharacterTest {
 
   @@index([className], map: "character_token_className_fkey")
   @@index([ownerId], map: "character_token_ownerId_fkey")
+  @@map("charactertest")
 }
 
 model Nft {
@@ -266,6 +280,7 @@ model Item {
 
 model ItemBehavior {
   id String @id @default(cuid())
+  @@map("itembehavior")
 }
 
 enum Platform {
