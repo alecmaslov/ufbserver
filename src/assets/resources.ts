@@ -335,27 +335,6 @@ export const POWERTYPE : {[key : string] : number} = {
 }
 
 export const powermoves : any = [
-    // {
-    //     // SWORD1
-    //     id: 1,
-    //     name: "Sword Strike",
-    //     powerImageId: 0,
-    //     powerIds: [
-    //         0, 12, 24
-    //     ],
-    //     costList: [
-    //         {
-    //             id: ITEMTYPE.MELEE,
-    //             count: 8
-    //         },
-    //     ],
-    //     result: {
-    //         dice: DICE_TYPE.DICE_6,
-    //     },
-    //     range: 1,
-    //     light: 3,
-    //     coin: 0,
-    // },
     {
         // SWORD1
         id: 1,
@@ -367,17 +346,38 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 0
+                count: 8
             },
         ],
         result: {
             dice: DICE_TYPE.DICE_6,
-            health: -20
         },
-        range: 4,
-        light: 1,
+        range: 1,
+        light: 3,
         coin: 0,
     },
+    // {
+    //     // SWORD1
+    //     id: 1,
+    //     name: "Sword Strike",
+    //     powerImageId: 0,
+    //     powerIds: [
+    //         0, 12, 24
+    //     ],
+    //     costList: [
+    //         {
+    //             id: ITEMTYPE.MELEE,
+    //             count: 0
+    //         },
+    //     ],
+    //     result: {
+    //         dice: DICE_TYPE.DICE_6,
+    //         health: -20
+    //     },
+    //     range: 4,
+    //     light: 1,
+    //     coin: 0,
+    // },
     {
         // SWORD2
         id: 2,

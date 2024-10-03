@@ -41,25 +41,25 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             } else {
                 testItem.count++;
             }
-        })
+        });
 
         // ADD STACKS
-        Object.keys(STACKTYPE).forEach(key => {
-            const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
-            if(testStack == null) {
-                console.log(STACKTYPE[key])
-                const newStack = new Item();
-                newStack.id = STACKTYPE[key];
-                newStack.count = 1;
-                newStack.name = key;
-                newStack.description = stacks[STACKTYPE[key]].description;
-                newStack.level = stacks[STACKTYPE[key]].level;
-                newStack.cost = stacks[STACKTYPE[key]].cost;
-                newStack.sell = stacks[STACKTYPE[key]].sell;
+        // Object.keys(STACKTYPE).forEach(key => {
+        //     const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
+        //     if(testStack == null) {
+        //         console.log(STACKTYPE[key])
+        //         const newStack = new Item();
+        //         newStack.id = STACKTYPE[key];
+        //         newStack.count = 1;
+        //         newStack.name = key;
+        //         newStack.description = stacks[STACKTYPE[key]].description;
+        //         newStack.level = stacks[STACKTYPE[key]].level;
+        //         newStack.cost = stacks[STACKTYPE[key]].cost;
+        //         newStack.sell = stacks[STACKTYPE[key]].sell;
 
-                character.stacks.push(newStack);
-            }
-        });
+        //         character.stacks.push(newStack);
+        //     }
+        // });
 
         // ADD POWER for MOVE ITEM
         [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear2, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {

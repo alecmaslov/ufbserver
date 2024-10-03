@@ -276,6 +276,7 @@ model Item {
   category    String
   description String?
   nftId       String? @unique
+  @@map("item")
 }
 
 model ItemBehavior {

@@ -249,20 +249,20 @@ export class UfbRoom extends Room<UfbRoomState> {
                     // );
 
                     // TEST:::
-                    Object.keys(STACKTYPE).forEach(key => {
-                        const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
-                        if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
-                            const newStack = new Item();
-                            newStack.id = STACKTYPE[key];
-                            newStack.count = 5;
-                            newStack.name = key;
-                            newStack.description = stacks[STACKTYPE[key]].description;
-                            newStack.level = stacks[STACKTYPE[key]].level;
-                            newStack.cost = stacks[STACKTYPE[key]].cost;
-                            newStack.sell = stacks[STACKTYPE[key]].sell;
-                            monster.stacks.push(newStack);
-                        }
-                    });                    
+                    // Object.keys(STACKTYPE).forEach(key => {
+                    //     const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
+                    //     if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
+                    //         const newStack = new Item();
+                    //         newStack.id = STACKTYPE[key];
+                    //         newStack.count = 5;
+                    //         newStack.name = key;
+                    //         newStack.description = stacks[STACKTYPE[key]].description;
+                    //         newStack.level = stacks[STACKTYPE[key]].level;
+                    //         newStack.cost = stacks[STACKTYPE[key]].cost;
+                    //         newStack.sell = stacks[STACKTYPE[key]].sell;
+                    //         monster.stacks.push(newStack);
+                    //     }
+                    // });                    
                     // END TEST:::
                     console.log("init monster")
                     // AI MONSTER EQUIP all POWERS AND INIT ITEM...
@@ -333,8 +333,6 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                         monster.stats.coin = 15 + Math.ceil(Math.random() * 6);
                     }
-
-                    console.log("init end monster")
 
                     // END EQUIP ALL ITEM, POWERS
 
