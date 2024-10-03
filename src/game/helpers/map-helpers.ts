@@ -1009,25 +1009,25 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
 
     const xDir = x1 - x;
     const yDir = y1 - y;
-    if(xDir == 1) {
+    if(xDir >= 1) {
         return {
             wallType: enemyTile.walls[WALL_DIRECT.RIGHT],
             desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
             desCoodinate: desCoodinate
         };
-    } else if(xDir == -1) {
+    } else if(xDir <= -1) {
         return {
             wallType: enemyTile.walls[WALL_DIRECT.LEFT],
             desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
             desCoodinate: desCoodinate
         };
-    } else if(yDir == 1) {
+    } else if(yDir >= 1) {
         return {
             wallType: enemyTile.walls[WALL_DIRECT.TOP],
             desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
             desCoodinate: desCoodinate
         };
-    } else if(yDir == -1) {
+    } else if(yDir <= -1) {
         return {
             wallType: enemyTile.walls[WALL_DIRECT.DOWN],
             desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
