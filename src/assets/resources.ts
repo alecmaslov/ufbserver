@@ -3,11 +3,23 @@ export const USER_TYPE : {[key : string] : number} = {
     MONSTER : 2
 }
 
-export const DICE_TYPE = {
+export const END_TYPE : {[key : string] : number} = {
+    VICTORY : 1,
+    DEFEAT : 2
+}
+
+export const DICE_TYPE : {[key : string] : number} = {
     DICE_6 : 1,
     DICE_4 : 2,
     DICE_6_6 : 3,
     DICE_6_4 : 4
+}
+
+export const WALL_DIRECT : {[key : string] : number} = {
+    TOP: 0,
+    RIGHT: 1,
+    DOWN: 2,
+    LEFT: 3
 }
 
 export const MONSTER_TYPE : {[key : string] : number} = {
@@ -183,7 +195,7 @@ export const EDGE_TYPE : {[key: string] : number} = {
     STAIR: 6,
 }
 
-export const ITEMTYPE: any = {
+export const ITEMTYPE: {[key : string] : number} = {
     HEART_PIECE: 0,
     ENERGY_SHARD: 1,
     POTION: 2,
@@ -239,7 +251,7 @@ export const ITEMTYPE: any = {
     CALTROP_BOMB2 : 50,
 }
 
-export const STACKTYPE: any = {
+export const STACKTYPE: {[key : string] : number} = {
     Cure : 0,
     Block : 1,
     Steady : 2,
@@ -322,7 +334,7 @@ export const POWERTYPE : {[key : string] : number} = {
     Void3 : 35,
 }
 
-export const powermoves = [
+export const powermoves : any = [
     {
         // SWORD1
         id: 1,
@@ -333,17 +345,39 @@ export const powermoves = [
         ],
         costList: [
             {
-                id: 8,
-                count: ITEMTYPE.MELEE
+                id: ITEMTYPE.MELEE,
+                count: 8
             },
         ],
         result: {
-            dice: DICE_TYPE.DICE_6
+            dice: DICE_TYPE.DICE_6,
         },
         range: 1,
         light: 3,
         coin: 0,
     },
+    // {
+    //     // SWORD1
+    //     id: 1,
+    //     name: "Sword Strike",
+    //     powerImageId: 0,
+    //     powerIds: [
+    //         0, 12, 24
+    //     ],
+    //     costList: [
+    //         {
+    //             id: ITEMTYPE.MELEE,
+    //             count: 0
+    //         },
+    //     ],
+    //     result: {
+    //         dice: DICE_TYPE.DICE_6,
+    //         health: -20
+    //     },
+    //     range: 4,
+    //     light: 1,
+    //     coin: 0,
+    // },
     {
         // SWORD2
         id: 2,
@@ -508,17 +542,13 @@ export const powermoves = [
         ],
         result : {
             dice: DICE_TYPE.DICE_6,
-            perkId: PERKTYPE.Push,
+            perkId: PERKTYPE.Vampire,
             stacks: [
                 {
                     id : STACKTYPE.Void,
                     count : 1
                 },
-                {
-                    id : STACKTYPE.Slow,
-                    count : 1
-                },
-            ]
+            ],
         },
         range: 1,
         light: 8,
@@ -569,6 +599,7 @@ export const powermoves = [
             },
         ],
         result : {
+            perkId: PERKTYPE.AreaOfEffect,
             dice: DICE_TYPE.DICE_6_6
         },
         range: 1,
@@ -617,7 +648,8 @@ export const powermoves = [
             },
         ],
         result : {
-            dice: DICE_TYPE.DICE_6
+            dice: DICE_TYPE.DICE_6,
+            perkId: PERKTYPE.Push
         },
         range: 1,
         light: 5,
@@ -648,7 +680,8 @@ export const powermoves = [
                     id : STACKTYPE.Freeze,
                     count : 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Push
         },
         range: 1,
         light: 4,
@@ -669,7 +702,8 @@ export const powermoves = [
             },
         ],
         result : {
-            dice: DICE_TYPE.DICE_6
+            dice: DICE_TYPE.DICE_6,
+            perkId: PERKTYPE.Pull
         },
         range: 3,
         light: 8,
@@ -730,7 +764,8 @@ export const powermoves = [
                     id : STACKTYPE.Charge,
                     count : 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Push
         },
         range: 1,
         light: 7,
@@ -905,9 +940,9 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -3
+            health: -1
         },
-        range: 5,
+        range: 4,
         light: 2,
         coin: 0,
     },
@@ -983,7 +1018,7 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -7,
+            health: -2,
             stacks: [
                 {
                     id: STACKTYPE.Slow,
@@ -992,7 +1027,7 @@ export const powermoves = [
             ]
         },
         range: 8,
-        light: 8,
+        light: 4,
         coin: 0,
     },
     {
@@ -1035,10 +1070,10 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -3
+            health: -1
         },
         range: 3,
-        light: 4,
+        light: 2,
         coin: 0,
     },
     {
@@ -1060,7 +1095,9 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -4
+            health: -2,
+            perkId: PERKTYPE.Vampire,
+            perkId1: PERKTYPE.Pull
         },
         range: 3,
         light: 4,
@@ -1163,7 +1200,7 @@ export const powermoves = [
     {
         // Cannon1
         id: 31,
-        name: "Cannoball",
+        name: "Cannonball",
         powerImageId: 6,
         powerIds: [
             6, 18, 30
@@ -1175,7 +1212,8 @@ export const powermoves = [
             },
         ],
         result : {
-            health: -5
+            health: -1,
+            perkId: PERKTYPE.Push
         },
         range: 4,
         light: 5,
@@ -1248,7 +1286,7 @@ export const powermoves = [
     {
         // Cannon3
         id: 34,
-        name: "Artillery Strike",
+        name: "Remote Bomb",
         powerImageId: 30,
         powerIds: [
             30
@@ -1256,18 +1294,18 @@ export const powermoves = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 3
+                count: 1
             },
             {
                 id: ITEMTYPE.BOMB,
-                count: 3
+                count: 1
             },
         ],
         result : {
-            health: -10
+            health: -1
         },
-        range: 8,
-        light: 15,
+        range: 4,
+        light: 4,
         coin: 0,
     },
     {
@@ -1472,7 +1510,8 @@ export const powermoves = [
                     id: STACKTYPE.Burn,
                     count: 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Push
         },
         range: 4,
         light: 9,
@@ -1563,7 +1602,8 @@ export const powermoves = [
                     id: STACKTYPE.Burn,
                     count: 2
                 }
-            ]
+            ],
+            perkId: PERKTYPE.AreaOfEffect
         },
         range: 0,
         light: 15,
@@ -1712,7 +1752,8 @@ export const powermoves = [
                     id: STACKTYPE.Freeze,
                     count: 2
                 }
-            ]
+            ],
+            perkId: PERKTYPE.AreaOfEffect
         },
         range: 0,
         light: 15,
@@ -1937,7 +1978,8 @@ export const powermoves = [
                     id: STACKTYPE.Void,
                     count : 1
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Vampire
         },
         range: 1,
         light: 4,
@@ -2058,13 +2100,26 @@ export const powermoves = [
                     id: STACKTYPE.Void,
                     count: 2
                 }
-            ]
+            ],
+            perkId: PERKTYPE.Vampire,
+            perkId1: PERKTYPE.Pull
         },
         range: 3,
         light: 6,
         coin: 0,
     },
 ]
+
+export const MONSTER_BAN_TIEM : {[key : number] : number} = {
+    [ITEMTYPE.HEART_PIECE] : 1,
+    [ITEMTYPE.HEART_CRYSTAL] : 1,
+    [ITEMTYPE.MELEE] : 1,
+    [ITEMTYPE.MANA] : 1,
+    [ITEMTYPE.ENERGY_SHARD] : 1,
+    [ITEMTYPE.ENERGY_CRYSTAL] : 1,
+    [ITEMTYPE.QUIVER] : 1,
+    [ITEMTYPE.BOMB_BAG] : 1,
+}
 
 export const stacks : { [key: number]: { level: number, name: string, description: string, cost: number, sell: number, anti: number } } = {
     [STACKTYPE.Dodge] : {
@@ -2441,7 +2496,7 @@ export const itemResults: {[key: number]: {heart?: number, energy?: number, ulti
     }
 }
 
-export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string, percent: number}} = {
+export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: number, name: string, percent: number, isDouble?: boolean}} = {
     [ITEMTYPE.HEART_PIECE]: {
         level: 1,
         cost: 4,
@@ -2531,7 +2586,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         cost: 8,
         sell: -1,
         name: "Quiver",
-        percent: 5
+        percent: 5,
     },
     [ITEMTYPE.BOMB_BAG]: {
         level: 2,
@@ -2608,98 +2663,111 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         cost: 2,
         sell: 1,
         name: "Flame Chili",
-        percent: 7
+        percent: 7,
     },
     [ITEMTYPE.FLAME_CHILI2]: {
         level: 1,
         cost: 3,
         sell: -1,
         name: "Flame Chili2",
-        percent: 5
+        percent: 5,
+        isDouble: true
     },
     [ITEMTYPE.FLAME_CHILI3]: {
         level: 1,
         cost: 4,
         sell: -1,
         name: "Flame Chili3",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.ICE_TEA2]: {
         level: 1,
         cost: 3,
         sell: -1,
         name: "Ice Tea2",
-        percent: 5
+        percent: 5,
+        isDouble: true
     },
     [ITEMTYPE.ICE_TEA3]: {
         level: 1,
         cost: 4,
         sell: -1,
         name: "Ice Tea3",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.HEART_PIECE2]: {
         level: 1,
         cost: 7,
         sell: -1,
         name: "Heart Piece3",
-        percent: 1
+        percent: 1,
+        isDouble: true
     },
     [ITEMTYPE.POTION2]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Potion2",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.POTION3]: {
         level: 1,
         cost: 15,
         sell: -1,
         name: "Potion3",
-        percent: 1.5
+        percent: 1.5,
+        isDouble: true
     },
     [ITEMTYPE.FEATHER2]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Feather2",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.FEATHER3]: {
         level: 1,
         cost: 14,
         sell: -1,
         name: "Feather3",
-        percent: 1.5
+        percent: 1.5,
+        isDouble: true
     },
     [ITEMTYPE.ARROW2]: {
         level: 1,
         cost: 7,
         sell: -1,
         name: "Arrow2",
-        percent: 5.1
+        percent: 5.1,
+        isDouble: true
     },
     [ITEMTYPE.ARROW3]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Arrow3",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.BOMB2]: {
         level: 1,
         cost: 10,
         sell: -1,
         name: "Bomb 2",
-        percent: 3
+        percent: 3,
+        isDouble: true
     },
     [ITEMTYPE.BOMB3]: {
         level: 1,
         cost: 14,
         sell: -1,
         name: "Bomb 3",
-        percent: 1.5
+        percent: 1.5,
+        isDouble: true
     },
 
     [ITEMTYPE.MELEE2]: {
@@ -2707,98 +2775,112 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         cost: 15,
         sell: -1,
         name: "Melee + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.MANA2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Mana + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.QUIVER2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Arrow + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.BOMB_BAG2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "BOMB + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.ELIXIR2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Elixir + 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.WARP_CRYSTAL2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Warp Crystal 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.BOMB_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Bomb Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.FIRE_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Fire Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.ICE_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Ice Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.VOID_ARROW2]: {
         level: 2,
         cost: 15,
         sell: -1,
         name: "Void Arrow 2",
-        percent: 2.4
+        percent: 2.4,
+        isDouble: true
     },
     [ITEMTYPE.CALTROP_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Caltrop Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.FIRE_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Fire Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.ICE_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Ice Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
     [ITEMTYPE.VOID_BOMB2]: {
         level: 2,
         cost: 17,
         sell: -1,
         name: "Void Bomb 2",
-        percent: 1.2
+        percent: 1.2,
+        isDouble: true
     },
 }
 
@@ -2952,4 +3034,221 @@ export const DICE_FOUR_PERCENT: {[key: number] : number} = {
     [4] : 18,
 }
 
-export const TURN_TIME = 200;
+export const EQUIP_TURN_BONUS = {
+    [POWERTYPE.Sword3] : {
+        stacks: [
+            {
+                id: STACKTYPE.Revenge,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Axe3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Spear3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Charge,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Shield2]: {
+        stacks: [
+            {
+                id: STACKTYPE.Reflect,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Shield3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count : 1
+            },
+            {
+                id: STACKTYPE.Dodge,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Armor3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Block,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Fire3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Burn,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Ice3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Freeze,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Holy3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Cure,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Void3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Void,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Bow1]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Bow2]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 2
+            }
+        ]
+    },
+    [POWERTYPE.Bow3]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 3
+            }
+        ]
+    },
+    [POWERTYPE.CrossBow1]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.CrossBow2]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.CrossBow3]: {
+        items: [
+            {
+                id: ITEMTYPE.ARROW,
+                count : 1
+            }
+        ],
+        randomItems: [
+            {
+                id: ITEMTYPE.FIRE_ARROW,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.ICE_ARROW,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.VOID_ARROW,
+                count: 1
+            },
+        ]
+    },
+    [POWERTYPE.Cannon1]: {
+        items: [
+            {
+                id: ITEMTYPE.BOMB,
+                count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Cannon2]: {
+        items: [
+            {
+                id: ITEMTYPE.BOMB,
+                count : 1
+            }
+        ],
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count: 1
+            }
+        ]
+    },
+    [POWERTYPE.Cannon3]: {
+        items: [
+            {
+                id: ITEMTYPE.BOMB,
+                count : 1
+            }
+        ],
+        stacks: [
+            {
+                id: STACKTYPE.Steady,
+                count: 1
+            }
+        ],
+        randomItems: [
+            {
+                id: ITEMTYPE.FIRE_BOMB,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.ICE_BOMB,
+                count: 1
+            },
+            {
+                id: ITEMTYPE.VOID_BOMB,
+                count: 1
+            },
+        ]
+    },
+    [POWERTYPE.Holy2]: {
+        stacks: [
+            {
+                id: STACKTYPE.Cure,
+                count : 1
+            }
+        ]
+    },
+}
+
+export const BAN_STACKS = {
+    [STACKTYPE.Cure] : STACKTYPE.Void,
+    [STACKTYPE.Void] : STACKTYPE.Cure,
+    [STACKTYPE.Burn] : STACKTYPE.Freeze,
+    [STACKTYPE.Freeze] : STACKTYPE.Burn,
+    [STACKTYPE.Charge] : STACKTYPE.Slow,
+    [STACKTYPE.Slow] : STACKTYPE.Charge,
+
+}
+
+export const TURN_TIME = 180;

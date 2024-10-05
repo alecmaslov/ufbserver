@@ -28,21 +28,22 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         const powerId = message.powerId;
         
         // REMOVE POWER in Array
-        const pIdx = character.powers.findIndex(p => p.id == powerId);
         const power : Item = character.powers.find(p => p.id == powerId);
         if(power == null || power.count == 0) {
             console.log("count issue");
             return;
         }
         power.count--;
-        console.log("power count: ", character.powers[pIdx].count);
+
+        // ADD EQUIP SLOTS
+        character.equipSlots.push(power);
 
         character.stats.energy.add(-1);
         // SEND POWER MOVES
         let clientMessage: PowerMoveListMessage = {
             powermoves: []
         }
-        powermoves.forEach(move => {
+        powermoves.forEach((move : any) => {
             if(move.powerIds.indexOf(powerId) > -1) {
                 const powermove : PowerMove = {
                     id : move.id,
@@ -56,10 +57,10 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     result: move.result
                 };
 
-                move.powerIds.forEach(pid => {
+                move.powerIds.forEach((pid : number) => {
                     powermove.powerIds.push(pid);
                 })
-                move.costList.forEach(cost => {
+                move.costList.forEach((cost : any) => {
                     const item = new Item();
                     item.id = cost.id;
                     item.count = cost.count;
@@ -67,7 +68,6 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                         item
                     )
                 })
-                console.log(powermove);
                 clientMessage.powermoves.push(powermove);
             }
         })

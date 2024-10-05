@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { coordToGameId, fillPathWithCoords, getDiceCount, getTileIdByDirection } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -104,7 +104,7 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    endTurn: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.END_TURN]: (room, client, message) => {
         // const playerId = room.sessionIdToPlayerId.get(client.sessionId);
         const playerId = message.characterId;
         const player = room.state.characters.get(playerId);
@@ -113,6 +113,10 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
         room.incrementTurn();
+
+        // END TURN,,, remain energy will convert ultimate value
+        player.stats.ultimate.add(player.stats.energy.current);
+
 
         ////
         // const fromTileId = coordToGameId(message.from);
@@ -178,20 +182,23 @@ export const messageHandlers: MessageHandlers = {
         });
     },
 
-    getPowerMoveList: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.EQUIP_POWER]: (room, client, message) => {
         room.dispatcher.dispatch(new EquipCommand(), {
             client,
             message
         });        
     },
 
-    equipPower: (room, client, message) => {
-
-    },
-
-    unEquipPower: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.UN_EQUIP_POWER]: (room, client, message) => {
         const powerId = message.powerId;
         const character = getCharacterById(room, message.characterId);
+
+        if(character.stats.energy.current <= 2) {
+            console.log("energy less");
+            room.notify(client, "You are not enough in energy!", "error");
+            return;
+        }
+
         character.stats.energy.add(-2);
         
         const power : Item = character.powers.find(p => p.id == powerId);
@@ -202,13 +209,18 @@ export const messageHandlers: MessageHandlers = {
             newPower.name = powers[powerId].name;
             newPower.description = "description";
             newPower.level = powers[powerId].level;
-            newPower.cost = POWERCOSTS[newPower.id].cost;
-            newPower.sell = POWERCOSTS[newPower.id].sell;
+            newPower.cost = POWERCOSTS[newPower.level].cost;
+            newPower.sell = POWERCOSTS[newPower.level].sell;
 
             character.powers.push(newPower);
         } else {
             power.count++;
         }
+
+        // DELETE SLOTS SYSTEM
+        const idx = character.equipSlots.findIndex(p => p.id == power.id);
+        character.equipSlots.deleteAt(idx);
+
         client.send(SERVER_TO_CLIENT_MESSAGE.UNEQUIP_POWER_RECEIVED, {playerId: character.id});
     },
 
@@ -315,7 +327,11 @@ export const messageHandlers: MessageHandlers = {
 
             character.stats.energy.add(-1);
         } else if(itemId == ITEMTYPE.POTION) {
-            character.stats.health.add(5);
+            let extra = character.stats.health.add(5);
+            if(extra > 0) {
+                character.stats.coin += extra;
+            }
+
         } else if(itemId == ITEMTYPE.ELIXIR) {
             character.stats.energy.add(10);
 
@@ -352,8 +368,6 @@ export const messageHandlers: MessageHandlers = {
             }
         } else if(itemId == ITEMTYPE.FEATHER) {
         } else if(itemId == ITEMTYPE.WARP_CRYSTAL) {
-            console.log("WARP CRYSTAL: walls", desTile.walls);
-
             if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
                 message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
             } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
@@ -364,8 +378,6 @@ export const messageHandlers: MessageHandlers = {
                 message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
             }
         } 
-
-        console.log("feather : ", message.tileId);
 
         const setmoveitemMessage : SetMoveItemMessage = {
             itemId: itemId,
@@ -384,19 +396,69 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.END_POWER_MOVE_ITEM]: (room, client, message) => {
-        const {enemyId, characterId, powerMoveId, diceCount, enemyDiceCount} = message;
+        const {enemyId, characterId, powerMoveId, diceCount, enemyDiceCount, extraItemId} = message;
 
         const enemy = getCharacterById(room, enemyId);
         const character = getCharacterById(room, characterId);
+        const pm = getPowerMoveFromId(powerMoveId, extraItemId);
+        const health = !!pm.result.health? pm.result.health : 0;
 
-        const deltaCount = diceCount - enemyDiceCount;
-        if(diceCount > 0) {
-            enemy.stats.health.add(-deltaCount);
-            client.send("addExtraScore", {
+        let deltaCount = diceCount - health - enemyDiceCount;
+
+        // REVENGE STACK ACTIVE
+        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, room)) {
+            if(message.stackId == STACKTYPE.Revenge) {
+                enemy.stacks[STACKTYPE.Revenge].count--;
+                setCharacterHealth(character, -enemyDiceCount, room, client, "heart");
+                enemy.stats.ultimate.add(enemyDiceCount);
+
+                deltaCount += enemyDiceCount;
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: -enemyDiceCount,
+                    type: "heart",
+                });
+            } else {
+                client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
+                    enemyId: enemy.id,
+                    characterId: character.id,
+                    powerMoveId: powerMoveId,
+                    stackId: STACKTYPE.Revenge,
+                    diceCount: 0,
+                    enemyDiceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                });
+            }
+
+        }
+
+        if(deltaCount > 0) {
+            setCharacterHealth(enemy, -deltaCount, room, client, "heart");
+            character.stats.ultimate.add(deltaCount);
+
+            if(enemy.stats.health.current == 0) {
+                console.log("----reward.. monster")
+                room.RewardFromMonster(character, enemy, client);
+            }
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "heart_e",
             });
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -deltaCount,
+                type: "ultimate_e",
+            });
+            if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: 1,
+                    type: "stack_e",
+                });
+            }
         }
+
+    },
+
+    [CLIENT_SERVER_MESSAGE.END_REVENGER_STACK]: (room, client, message) => {
 
     },
 
@@ -773,36 +835,38 @@ export const messageHandlers: MessageHandlers = {
         );
     },
 
-    getDiceValue: (room, client, message) => {
+    testHealth: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
-
-        const random = Math.random() * 100;
-        const diceCount = getDiceCount(random, message.diceType);
-
-        client.send("setDiceCount", {diceCount});
+        setCharacterHealth(character, -4, room, client, "heart");
+        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            score: -4,
+            type: "heart",
+        });
     },
 
     [CLIENT_SERVER_MESSAGE.GET_HIGHLIGHT_RECT] : (room, client, message) => {
         console.log("-----power move message - test range")
         const character = getCharacterById(room, message.characterId);
         
-        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+        const powermove = powermoves.find((pm : any) => pm.id == message.powerMoveId);
 
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
-            tileIds : getHighLightTileIds(room, character.currentTileId, powermove.range)
+            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? powermove.range : 1)
         });
     },
 
     [CLIENT_SERVER_MESSAGE.SET_DICE_ROLL]: (room, client, message) => {
-        console.log(CLIENT_SERVER_MESSAGE.SET_DICE_ROLL);
-
         const character = getCharacterById(room, message.characterId);
-        const powermove = powermoves.find(pm => pm.id == message.powerMoveId);
+        const powermove = getPowerMoveFromId(message.powerMoveId, message.extraItemId);
 
-        if(!!powermove.result.dice) {
-            const setDiceRollMessage: any = {
-                diceData : []
-            }
+        if(powermove == null) {
+            return;
+        }
+        const setDiceRollMessage: any = {
+            diceData : []
+        }
+        if(!!powermove.result.dice && message.diceTimes == 1) {
+
             if(powermove.result.dice == DICE_TYPE.DICE_4 || powermove.result.dice == DICE_TYPE.DICE_6) {
                 setDiceRollMessage.diceData.push({
                     type: powermove.result.dice,
@@ -828,10 +892,197 @@ export const messageHandlers: MessageHandlers = {
                 })
             }
 
-            client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        }
+        
+        if(!!powermove.result.perkId && powermove.result.perkId == PERKTYPE.Vampire) {
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_6,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+            })
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_4,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+            })
         }
 
+        client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
     },
+
+    [CLIENT_SERVER_MESSAGE.SET_DICE_STACK_TURN_ROLL]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        const diceType = message.diceType;
+        
+        const setDiceRollMessage: any = {
+            diceData : []
+        }
+        if(diceType == DICE_TYPE.DICE_6_4) {
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_6,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+            })
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_4,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+            })
+        } else if(diceType == DICE_TYPE.DICE_4) {
+            setDiceRollMessage.diceData.push({
+                type: DICE_TYPE.DICE_4,
+                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+            })
+        }
+
+        client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+    },
+
+    [CLIENT_SERVER_MESSAGE.TURN_START_EQUIP]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        if(room.state.currentCharacterId == character.id) {
+            let bonuses: any = [];
+            character.equipSlots.forEach(slot => {
+                // ADD BONUS in CHARACTER..
+                const bonus = {
+                    ...EQUIP_TURN_BONUS[slot.id],
+                    id: slot.id,
+                }
+
+                if(!!bonus.items) {
+                    bonus.items.forEach(item => {
+                        addItemToCharacter(item.id, item.count, character);
+                    })
+                }
+
+                if(!!bonus.stacks) {
+                    bonus.stacks.forEach(stack => {
+                        addStackToCharacter(stack.id, stack.count, character, client);
+                    });
+                }
+
+                if(!!bonus.randomItems) {
+                    const idx = Math.floor(bonus.randomItems.length * Math.random())
+                    const item = bonus.randomItems[idx];
+                    delete bonus.randomItems;
+                    bonus.items.push(item);
+                    addItemToCharacter(item.id, item.count, character);
+                }
+
+                bonuses.push(bonus);
+            })
+
+            if(bonuses.length > 0) {
+                client.send( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
+            }
+        }
+    },
+
+    [CLIENT_SERVER_MESSAGE.GET_STACK_ON_TURN_START]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+
+        if(character.stats.isRevive) {
+            character.stats.isRevive = false;
+            return;
+        }
+
+        let stackList: any[] = [];
+        character.stacks.forEach(stack => {
+            if(
+                (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Void2) && !IsEquipPower(character, POWERTYPE.Void3)) ||
+                (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Fire2) && !IsEquipPower(character, POWERTYPE.Fire3)) ||
+                (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Ice2) && !IsEquipPower(character, POWERTYPE.Ice3)) ||
+                (stack.id == STACKTYPE.Cure && stack.count > 0) ||
+                (stack.id == STACKTYPE.Slow && stack.count > 0)
+            
+            ) {
+                stackList.push({
+                    id : stack.id,
+                    count: 1
+                });
+            }
+        });
+
+        client.send( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
+            characterId : character.id,
+            stackList: stackList
+        });
+
+    },
+
+    [CLIENT_SERVER_MESSAGE.SET_STACK_ON_START]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        const stackId = message.stackId;
+        const diceData = message.diceData;
+
+        character.stacks.forEach(stack => {
+            if(stack.id == stackId) {
+                stack.count--;
+            }
+        });
+
+        if(stackId == STACKTYPE.Cure) {
+            
+            let extra = character.stats.health.add(diceData[0].diceCount);
+            if(extra > 0) {
+                character.stats.coin += extra;
+            }
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: diceData[0].diceCount,
+                type: "heart"
+            });
+
+        } else if(stackId == STACKTYPE.Void) {
+            setCharacterHealth(character, -diceData[1].diceCount, room, client, "heart");
+            character.stats.ultimate.add(-diceData[0].diceCount);
+            
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[1].diceCount,
+                type: "heart"
+            });
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "ultimate"
+            });
+
+        } else if(stackId == STACKTYPE.Burn) {
+            setCharacterHealth(character, -diceData[0].diceCount, room, client, "heart");
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "heart"
+            });
+
+        } else if(stackId == STACKTYPE.Freeze) {
+
+            character.stats.energy.add(diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: diceData[0].diceCount,
+                type: "energy"
+            });
+
+        } else if(stackId == STACKTYPE.Charge) {
+
+            character.stats.energy.add(-diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "energy"
+            });
+            
+        } else if(stackId == STACKTYPE.Slow) {
+
+            character.stats.energy.add(-diceData[1].diceCount);
+            character.stats.ultimate.add(-diceData[0].diceCount);
+            
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[1].diceCount,
+                type: "energy"
+            });
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "ultimate"
+            });
+
+        }
+    }
+
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

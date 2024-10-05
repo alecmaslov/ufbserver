@@ -5,6 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
+import { addItemToCharacter } from "#game/helpers/map-helpers";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -40,28 +41,28 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             } else {
                 testItem.count++;
             }
-        })
-
-        // ADD STACKS
-        Object.keys(STACKTYPE).forEach(key => {
-            const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
-            if(testStack == null) {
-                console.log(STACKTYPE[key])
-                const newStack = new Item();
-                newStack.id = STACKTYPE[key];
-                newStack.count = 5;
-                newStack.name = key;
-                newStack.description = stacks[STACKTYPE[key]].description;
-                newStack.level = stacks[STACKTYPE[key]].level;
-                newStack.cost = stacks[STACKTYPE[key]].cost;
-                newStack.sell = stacks[STACKTYPE[key]].sell;
-
-                character.stacks.push(newStack);
-            }
         });
 
+        // ADD STACKS
+        // Object.keys(STACKTYPE).forEach(key => {
+        //     const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
+        //     if(testStack == null) {
+        //         console.log(STACKTYPE[key])
+        //         const newStack = new Item();
+        //         newStack.id = STACKTYPE[key];
+        //         newStack.count = 1;
+        //         newStack.name = key;
+        //         newStack.description = stacks[STACKTYPE[key]].description;
+        //         newStack.level = stacks[STACKTYPE[key]].level;
+        //         newStack.cost = stacks[STACKTYPE[key]].cost;
+        //         newStack.sell = stacks[STACKTYPE[key]].sell;
+
+        //         character.stacks.push(newStack);
+        //     }
+        // });
+
         // ADD POWER for MOVE ITEM
-        [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3].forEach(key => {
+        [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear2, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {
             const testPower : Item = character.powers.find(power => power.id == key);
             if(testPower == null) {
                 const newPower = new Item();
@@ -81,21 +82,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // END TEST
 
-        const item : Item = character.items.find(item => item.id == message.itemId);
-        if(item == null) {
-            const newItem = new Item();
-            newItem.id = message.itemId;
-            newItem.count = 1;
-            newItem.name = ITEMDETAIL[newItem.id].name;
-            newItem.description = "description";
-            newItem.level = ITEMDETAIL[newItem.id].level;
-            newItem.cost = ITEMDETAIL[newItem.id].cost;
-            newItem.sell = ITEMDETAIL[newItem.id].sell;
-
-            character.items.push(newItem);
-        } else {
-            item.count++;
-        }
+        addItemToCharacter(message.itemId, 1, character);
 
         const power : Item = character.powers.find(p => p.id == message.powerId);
         if(power == null) {
@@ -122,7 +109,10 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         character.stats.energy.setMaxValue(character.stats.energy.max + count);
         character.stats.health.setMaxValue(character.stats.health.max + count);
         character.stats.energy.add(count);
-        character.stats.health.add(count);
+        let extra = character.stats.health.add(count);
+        if(extra > 0) {
+            character.stats.coin += extra;
+        }
         character.stats.coin += message.coinCount;
         character.stats.bags++;
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
