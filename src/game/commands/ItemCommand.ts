@@ -24,24 +24,24 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        Object.keys(ITEMTYPE).forEach(key => {
-            const id = ITEMTYPE[key];
-            const testItem : Item = character.items.find(item => item.id == id);
-            if(testItem == null) {
-                const newItem = new Item();
-                newItem.id = id;
-                newItem.count = 30;
-                newItem.name = ITEMDETAIL[id].name;
-                newItem.description = "description";
-                newItem.level = ITEMDETAIL[id].level;
-                newItem.cost = ITEMDETAIL[id].cost;
-                newItem.sell = ITEMDETAIL[id].sell;
+        // Object.keys(ITEMTYPE).forEach(key => {
+        //     const id = ITEMTYPE[key];
+        //     const testItem : Item = character.items.find(item => item.id == id);
+        //     if(testItem == null) {
+        //         const newItem = new Item();
+        //         newItem.id = id;
+        //         newItem.count = 30;
+        //         newItem.name = ITEMDETAIL[id].name;
+        //         newItem.description = "description";
+        //         newItem.level = ITEMDETAIL[id].level;
+        //         newItem.cost = ITEMDETAIL[id].cost;
+        //         newItem.sell = ITEMDETAIL[id].sell;
     
-                character.items.push(newItem);
-            } else {
-                testItem.count++;
-            }
-        });
+        //         character.items.push(newItem);
+        //     } else {
+        //         testItem.count++;
+        //     }
+        // });
 
         // ADD STACKS
         // Object.keys(STACKTYPE).forEach(key => {
@@ -62,23 +62,23 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // });
 
         // ADD POWER for MOVE ITEM
-        [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear2, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {
-            const testPower : Item = character.powers.find(power => power.id == key);
-            if(testPower == null) {
-                const newPower = new Item();
-                newPower.id = key;
-                newPower.name = powers[key].name;
-                newPower.count = 1;
-                newPower.description = "";
-                newPower.level = powers[key].level;
-                newPower.cost = POWERCOSTS[powers[key].level].cost;
-                newPower.sell = POWERCOSTS[powers[key].level].sell;
+        // [POWERTYPE.Sword3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear2, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {
+        //     const testPower : Item = character.powers.find(power => power.id == key);
+        //     if(testPower == null) {
+        //         const newPower = new Item();
+        //         newPower.id = key;
+        //         newPower.name = powers[key].name;
+        //         newPower.count = 1;
+        //         newPower.description = "";
+        //         newPower.level = powers[key].level;
+        //         newPower.cost = POWERCOSTS[powers[key].level].cost;
+        //         newPower.sell = POWERCOSTS[powers[key].level].sell;
 
-                character.powers.push(newPower);
-            } else {
-                testPower.count++;
-            }
-        })
+        //         character.powers.push(newPower);
+        //     } else {
+        //         testPower.count++;
+        //     }
+        // })
 
         // END TEST
 
