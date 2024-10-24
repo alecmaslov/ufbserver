@@ -2121,6 +2121,17 @@ export const MONSTER_BAN_TIEM : {[key : number] : number} = {
     [ITEMTYPE.BOMB_BAG] : 1,
 }
 
+export const GOOD_STACKS: number[] = [
+    STACKTYPE.Dodge,
+    STACKTYPE.Cure,
+    STACKTYPE.Steady,
+    STACKTYPE.Charge,
+    STACKTYPE.Revenge,
+    STACKTYPE.Block,
+    STACKTYPE.Reflect,
+    STACKTYPE.Revive
+]
+
 export const stacks : { [key: number]: { level: number, name: string, description: string, cost: number, sell: number, anti: number } } = {
     [STACKTYPE.Dodge] : {
         level : 1,

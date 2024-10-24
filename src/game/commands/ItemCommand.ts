@@ -5,7 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter } from "#game/helpers/map-helpers";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -84,26 +84,12 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         addItemToCharacter(message.itemId, 1, character);
 
-        const power : Item = character.powers.find(p => p.id == message.powerId);
-        if(power == null) {
-            const newPower = new Item();
-            const id : number = message.powerId;
-            newPower.id = id;
-            newPower.count = 1;
-            newPower.name = powers[id].name;
-            newPower.description = "description";
-            newPower.level = powers[id].level;
-            newPower.cost = POWERCOSTS[newPower.level].cost;
-            newPower.sell = POWERCOSTS[newPower.level].sell;
-
-            character.powers.push(newPower);
-        } else {
-            power.count++;
-        }
-
         let count = 3;
         if(message.spawnId != "default") {
             count = 2;
+            addStackToCharacter(message.powerId, 1, character, client);
+        } else {
+            addPowerToCharacter(message.powerId, 1, character);
         }
 
         character.stats.energy.setMaxValue(character.stats.energy.max + count);

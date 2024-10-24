@@ -1,6 +1,6 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
-import { getCharacterById, getClientCharacter, getHighLightTileIds } from "./helpers/room-helpers";
+import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -139,14 +139,24 @@ export const messageHandlers: MessageHandlers = {
 
         let coinCount = 2 + Math.round(4 * ( Math.random()));
 
-        let itemId = 0 + Math.round(5 * (Math.random()));
-        let powerId = 0 + Math.round(11 * (Math.random()));
+        const lvl1Items = getItemIdsByLevel(1, false);
+        const lvl1Powers = getPowerIdsByLevel(1, false);
+
+        const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
+        const idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
+
+        let itemId = lvl1Items[idxItem].id;
+        let powerId = lvl1Powers[idxPower].id;
 
         if(message.isItemBag) {
             coinCount = 2 + Math.round(4 * ( Math.random()));
 
-            itemId = 6 + Math.round(13 * (Math.random()));
-            powerId = 12 + Math.round(22 * (Math.random()));
+            const lvl2Items = getItemIdsByLevel(2, false);
+            const idx2 = Math.ceil(Math.random() * lvl2Items.length) % lvl2Items.length;
+            itemId = lvl2Items[idx2].id;
+
+            const idx = Math.ceil(Math.random() * GOOD_STACKS.length) % GOOD_STACKS.length;
+            powerId = GOOD_STACKS[idx];
         }
 
         const spawnMessage : SpawnInitMessage = {

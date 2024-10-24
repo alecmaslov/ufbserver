@@ -21,7 +21,7 @@ import { readFile } from "fs/promises";
 import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { DICE_TYPE, EDGE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, END_TYPE, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -270,8 +270,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                         const lvl1Items = getItemIdsByLevel(1, true);
                         const lvl1Powers = getPowerIdsByLevel(1, true);
 
-                        const idxItem = Math.ceil(Math.random() * lvl1Items.length);
-                        const idxPower = Math.ceil(Math.random() * lvl1Powers.length);
+                        const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
+                        const idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
 
                         addItemToCharacter(lvl1Items[idxItem].id, 1, monster);
                         addPowerToCharacter(lvl1Powers[idxPower].id, 1, monster);
@@ -286,8 +286,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                         const lvl1Items = getItemIdsByLevel(1, true);
                         const lvl1Powers = getPowerIdsByLevel(1, true);
 
-                        let idxItem = Math.ceil(Math.random() * lvl1Items.length);
-                        let idxPower = Math.ceil(Math.random() * lvl1Powers.length);
+                        let idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
+                        let idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
 
                         addItemToCharacter(lvl1Items[idxItem].id, 1, monster);
                         addPowerToCharacter(lvl1Powers[idxPower].id, 1, monster);
@@ -295,8 +295,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                         const lvl2Items = getItemIdsByLevel(2, true);
                         const lvl2Powers = getPowerIdsByLevel(2, true);
 
-                        idxItem = Math.ceil(Math.random() * lvl2Items.length);
-                        idxPower = Math.ceil(Math.random() * lvl2Powers.length);
+                        idxItem = Math.ceil(Math.random() * lvl2Items.length) % lvl2Items.length;
+                        idxPower = Math.ceil(Math.random() * lvl2Powers.length) % lvl2Powers.length;
 
                         addItemToCharacter(lvl2Items[idxItem].id, 1, monster);
                         addPowerToCharacter(lvl2Powers[idxPower].id, 1, monster);
@@ -315,14 +315,14 @@ export class UfbRoom extends Room<UfbRoomState> {
                         const lvl2Powers = getPowerIdsByLevel(2, true);
 
                         for(let i = 0; i < 2; i++) {
-                            const idx1 = Math.ceil(Math.random() * lvl1Items.length);
-                            const idx2 = Math.ceil(Math.random() * lvl2Items.length);
+                            const idx1 = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
+                            const idx2 = Math.ceil(Math.random() * lvl2Items.length) % lvl2Items.length;
                             addItemToCharacter(lvl1Items[idx1].id, 1, monster);
                             addItemToCharacter(lvl2Items[idx2].id, 1, monster);
                         }
 
                         for(let i = 0; i < 3; i++) {
-                            const idx = Math.ceil(Math.random() * lvl2Powers.length);
+                            const idx = Math.ceil(Math.random() * lvl2Powers.length) % lvl2Powers.length;
                             addPowerToCharacter(lvl2Powers[idx].id, 1, monster);
                         }
 
@@ -1295,7 +1295,8 @@ export class UfbRoom extends Room<UfbRoomState> {
             addItemToCharacter(lvl2Items[idxItem1].id, 1, character);
 
             // ADD GOOD STACK need to develop...
-            addStackToCharacter(STACKTYPE.Cure, 1, character, client, this);
+            const idx = Math.ceil(Math.random() * GOOD_STACKS.length);
+            addStackToCharacter(GOOD_STACKS[idx], 1, character, client, this);
             if(Math.random() > 0.5) {
                 character.stats.arrowLimit++;
             } else {
@@ -1319,7 +1320,8 @@ export class UfbRoom extends Room<UfbRoomState> {
             addItemToCharacter(lvl2Items[idxItem1].id, 1, character);
 
             // ADD GOOD STACK ....
-            addStackToCharacter(STACKTYPE.Cure, 2, character, client, this);
+            const idx = Math.ceil(Math.random() * GOOD_STACKS.length);
+            addStackToCharacter(GOOD_STACKS[idx], 2, character, client, this);
             if(Math.random() > 0.5) {
                 character.stats.arrowLimit += 2;
             } else {

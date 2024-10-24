@@ -494,8 +494,8 @@ ${MONSTERS[monsterType].name}`;
     coordinates.y = y;
     character.coordinates = coordinates;
 
-    addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
-    addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
+    // addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
+    // addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
 
     characters.set(id, character);
 
