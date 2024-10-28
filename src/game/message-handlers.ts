@@ -550,7 +550,7 @@ export const messageHandlers: MessageHandlers = {
         client.send(SERVER_TO_CLIENT_MESSAGE.GET_MERCHANT_DATA, getMerchantDataDataMessage)
     },
 
-    buyItem: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.MERCHANT_BUY_ITEM]: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
 
         const type = message.type;
@@ -640,7 +640,7 @@ export const messageHandlers: MessageHandlers = {
         }
     },
 
-    sellItem: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.MERCHANT_SELL_ITEM]: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
 
         const type = message.type;
@@ -725,7 +725,7 @@ export const messageHandlers: MessageHandlers = {
 
     },
 
-    addCraftItem: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.MERCHANT_ADDCRAFTITEM]: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
         const type = message.type;
         const idx1 = message.idx1;

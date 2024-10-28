@@ -3,7 +3,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { fillPathWithCoords, GetObstacleTileIds, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
+import { fillPathWithCoords, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
@@ -33,6 +33,17 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     this.room.notify(client, "It's not your turn!", "error");
         //     return;
         // }
+
+        this.state.map.spawnEntities.forEach(entity => {
+            if(entity.tileId == message.tileId && entity.type == "Portal") {
+                message.tileId = getPortalPosition(entity, this.room);
+            }
+        })
+
+        if( message.tileId == "" ) {
+            this.room.notify(client, "You can not move there.", "error");
+            return;
+        }
 
         const currentTile = this.state.map.tiles.get(character.currentTileId);
         const destinationTile = this.room.state.map.tiles.get(message.tileId);

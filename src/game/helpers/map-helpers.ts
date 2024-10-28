@@ -1,4 +1,4 @@
-import { BAN_STACKS, DICE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
@@ -975,6 +975,8 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
         newPower.level = powers[id].level;
         newPower.cost = POWERCOSTS[powers[id].level].cost;
         newPower.sell = POWERCOSTS[powers[id].level].sell;
+
+        state.powers.push(newPower);
     } else {
         power.count += count;
     }
@@ -1228,4 +1230,47 @@ export function IsYellowMonster(key: string) {
     key == MONSTERS[MONSTER_TYPE.EARWIG_YELLOW].characterClass ||
     key == MONSTERS[MONSTER_TYPE.SPIDER_YELLOW].characterClass ||
     key == MONSTERS[MONSTER_TYPE.CENTIPEDE_YELLOW].characterClass; 
+}
+
+export function getPortalPosition(data: SpawnEntity, room: UfbRoom) {
+    let tileId = "";
+
+    // const parameters: PortalEntityParameters = {
+    //     seedId: zone.seedId,
+    //     portalGroup: i,
+    //     portalIndex: n % 2,
+    // };
+
+    const parameters: PortalEntityParameters = JSON.parse(data.parameters);
+
+    room.state.map.spawnEntities.forEach(entity => {
+        if(entity.type == "Portal") {
+            const entityParams: PortalEntityParameters = JSON.parse(entity.parameters);
+
+            console.log("entityParams: ", tileId, entity.parameters, entityParams);
+
+
+            if(entityParams.portalGroup != parameters.portalGroup && entityParams.portalIndex == parameters.portalIndex) {
+                tileId = entity.tileId;
+            }
+        }
+    });
+
+    console.log("desTile: ", tileId, data.parameters, parameters);
+
+    if(tileId != "") {
+        const desTile = room.state.map.tiles.get(tileId);
+        console.log("desTile data: ", desTile);
+
+        if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
+            tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
+        } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
+            tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "right");
+        } else if(desTile.walls[2] == EDGE_TYPE.BASIC) {   //DOWN
+            tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "down");
+        } else if(desTile.walls[3] == EDGE_TYPE.BASIC) {   //LEFT
+            tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
+        }
+    }
+    return tileId;
 }

@@ -84,6 +84,8 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         addItemToCharacter(message.itemId, 1, character);
 
+        console.log("item command: ", message)
+
         let count = 3;
         if(message.spawnId != "default") {
             count = 2;
@@ -97,7 +99,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         character.stats.energy.add(count);
         let extra = character.stats.health.add(count);
         if(extra > 0) {
-            character.stats.coin += extra;
+            //character.stats.coin += extra;
         }
         character.stats.coin += message.coinCount;
         character.stats.bags++;
