@@ -99,13 +99,20 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     )} -> ${coordToGameId(destinationTile.coordinates)}`
         // );
 
-        // const { path, cost } = this.room.pathfinder.find(
-        //     character.currentTileId,
-        //     message.tileId
-        // );
-        const path: PathStep[] = [{
+        let path: PathStep[] = [{
             tileId: message.tileId
         }];
+        let cost = currentTile.id == destinationTile.id? 0 : -1;
+
+        if(message.isPath) {
+            const route_path = this.room.pathfinder.find(
+                character.currentTileId,
+                message.tileId
+            );
+            path = route_path.path;
+            cost = -route_path.path.length;
+        }
+
 
         if (!force && character.stats.energy.current < 1) {
             this.room.notify(
@@ -180,7 +187,6 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             // const cost = currentTile.id == destinationTile.id? 0 : -(
             //     Math.abs(currentTile.coordinates.x - destinationTile.coordinates.x) + Math.abs(currentTile.coordinates.y - destinationTile.coordinates.y)
             // );
-            const cost = currentTile.id == destinationTile.id? 0 : -1;
             let energy = cost;
             if(force) {
                 const originEnergy = message.originEnergy;

@@ -398,6 +398,32 @@ export const messageHandlers: MessageHandlers = {
 
     },
 
+    [CLIENT_SERVER_MESSAGE.SET_MOVE_POINT] : (room, client, message) => {
+        const tileId = message.tileId;
+        const character = getCharacterById(room, message.characterId);
+        const desTile = room.state.map.tiles.get(message.tileId);
+
+        if(character.stats.energy.current == 0) {
+            room.notify(
+                client,
+                "You don't have enough energy to move there!",
+                "error"
+            );
+            return;
+        }
+
+        const { path, cost } = room.pathfinder.find(
+            character.currentTileId,
+            tileId
+        );
+        console.log("ai move : ", path.length);
+
+        client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVE_POINT, {
+            characterId: character.id,
+            path: path
+        });
+    },
+
     [CLIENT_SERVER_MESSAGE.SET_POWER_MOVE_ITEM]: (room, client, message) => {
         room.dispatcher.dispatch(new PowerMoveCommand(), {
             client,
