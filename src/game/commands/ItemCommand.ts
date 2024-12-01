@@ -24,24 +24,24 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        // Object.keys(ITEMTYPE).forEach(key => {
-        //     const id = ITEMTYPE[key];
-        //     const testItem : Item = character.items.find(item => item.id == id);
-        //     if(testItem == null) {
-        //         const newItem = new Item();
-        //         newItem.id = id;
-        //         newItem.count = 30;
-        //         newItem.name = ITEMDETAIL[id].name;
-        //         newItem.description = "description";
-        //         newItem.level = ITEMDETAIL[id].level;
-        //         newItem.cost = ITEMDETAIL[id].cost;
-        //         newItem.sell = ITEMDETAIL[id].sell;
+        Object.keys(ITEMTYPE).forEach(key => {
+            const id = ITEMTYPE[key];
+            const testItem : Item = character.items.find(item => item.id == id);
+            if(testItem == null) {
+                const newItem = new Item();
+                newItem.id = id;
+                newItem.count = 30;
+                newItem.name = ITEMDETAIL[id].name;
+                newItem.description = "description";
+                newItem.level = ITEMDETAIL[id].level;
+                newItem.cost = ITEMDETAIL[id].cost;
+                newItem.sell = ITEMDETAIL[id].sell;
     
-        //         character.items.push(newItem);
-        //     } else {
-        //         testItem.count++;
-        //     }
-        // });
+                character.items.push(newItem);
+            } else {
+                testItem.count++;
+            }
+        });
 
         // ADD STACKS
         // Object.keys(STACKTYPE).forEach(key => {

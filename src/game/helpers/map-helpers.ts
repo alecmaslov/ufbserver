@@ -221,7 +221,7 @@ export function initializeSpawnEntities(
     }
     if (
         totalSpawnZones <
-        config.chests + config.portals * 2 + config.merchants
+        config.chests + config.portals * 2 + config.merchants + config.itemBags
     ) {
         throw new Error("config provided has too many spawn zones for map");
     }
@@ -277,18 +277,24 @@ export function initializeSpawnEntities(
     let n = 0;
     zones.forEach((zone, i) => {
         if(n < config.chests) {
-
-            const isItemBag = Math.random() < 0.5? true: false;
-            
             const chestEntity = new SpawnEntity();
             chestEntity.id = zone.id;
             chestEntity.gameId = `chest_${i}`;
-            chestEntity.prefabAddress = isItemBag? `${entitiesRootAddress}ItemBag` : `${entitiesRootAddress}chest`;
+            chestEntity.prefabAddress = `${entitiesRootAddress}chest`;
             chestEntity.tileId = zone.tileId;
             chestEntity.type = "Chest";
             chestEntity.parameters = `{"seedId" : "${zone.seedId}"}`;
             spawnEntities.push(chestEntity);
-        } else if(n < config.chests + config.merchants) {
+        } else if(n < config.chests + config.itemBags) {
+            const chestEntity = new SpawnEntity();
+            chestEntity.id = zone.id;
+            chestEntity.gameId = `chest_${i}`;
+            chestEntity.prefabAddress = `${entitiesRootAddress}ItemBag`;
+            chestEntity.tileId = zone.tileId;
+            chestEntity.type = "Chest";
+            chestEntity.parameters = `{"seedId" : "${zone.seedId}"}`;
+            spawnEntities.push(chestEntity);
+        } else if(n < config.chests + config.itemBags + config.merchants) {
             const parameters: MerchantEntityParameters = {
                 seedId: zone.seedId,
                 merchantIndex: i,
@@ -305,7 +311,7 @@ export function initializeSpawnEntities(
             merchantEntity.parameters = JSON.stringify(parameters);
             // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
             spawnEntities.push(merchantEntity);
-        } else if(n < config.chests + config.merchants + config.portals * 2) {
+        } else if(n < config.chests + config.itemBags + config.merchants + config.portals * 2) {
             const parameters: PortalEntityParameters = {
                 seedId: zone.seedId,
                 portalGroup: i,

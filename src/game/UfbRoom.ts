@@ -31,9 +31,10 @@ import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
-    merchants: 4,
+    itemBags: 8,
+    merchants: 2,
     portals: 2,
-    monsters: 4,
+    monsters: 2,
 };
 
 export class UfbRoom extends Room<UfbRoomState> {
