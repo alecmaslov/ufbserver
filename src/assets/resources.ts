@@ -891,7 +891,7 @@ export const powermoves : any = [
                 }
             ]
         },
-        range: 1,
+        range: 0,
         light: 4,
         coin: 0,
     },
@@ -921,7 +921,7 @@ export const powermoves : any = [
                 }
             ]
         },
-        range: 1,
+        range: 0,
         light: 20,
         coin: 0,
     },
