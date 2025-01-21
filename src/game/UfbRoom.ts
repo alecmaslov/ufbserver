@@ -981,6 +981,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         });
 
                         if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
+                            enemy.stacks[STACKTYPE.Revenge].count--;
                             const msg = {
                                 enemyId: enemy.id,
                                 characterId: character.id,

@@ -3039,10 +3039,10 @@ export const DICE_SIX_PERCENT: {[key: number] : number} = {
 }
 
 export const DICE_FOUR_PERCENT: {[key: number] : number} = {
-    [1] : 2,
-    [2] : 40,
-    [3] : 40,
-    [4] : 18,
+    [1] : 10,
+    [2] : 60,
+    [3] : 25,
+    [4] : 5,
 }
 
 export const EQUIP_TURN_BONUS = {

@@ -166,8 +166,8 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
                     } else {
                         const result = getPerkEffectDamage(character, enemy, this.room, powermove.result[key]);
-                        console.log(result);
-                        if(result.desTileId == "") {
+                        console.log("perk: ", result);
+                        if(result == null || result.desTileId == "") {
                             setCharacterHealth(target, -1, this.room, client, "heart");
 
                             if(target == enemy && target.stats.health.current == 0) {
