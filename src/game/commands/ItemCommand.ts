@@ -24,42 +24,42 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        // Object.keys(ITEMTYPE).forEach(key => {
-        //     const id = ITEMTYPE[key];
-        //     const testItem : Item = character.items.find(item => item.id == id);
-        //     if(testItem == null) {
-        //         const newItem = new Item();
-        //         newItem.id = id;
-        //         newItem.count = 30;
-        //         newItem.name = ITEMDETAIL[id].name;
-        //         newItem.description = "description";
-        //         newItem.level = ITEMDETAIL[id].level;
-        //         newItem.cost = ITEMDETAIL[id].cost;
-        //         newItem.sell = ITEMDETAIL[id].sell;
+        Object.keys(ITEMTYPE).forEach(key => {
+            const id = ITEMTYPE[key];
+            const testItem : Item = character.items.find(item => item.id == id);
+            if(testItem == null) {
+                const newItem = new Item();
+                newItem.id = id;
+                newItem.count = 30;
+                newItem.name = ITEMDETAIL[id].name;
+                newItem.description = "description";
+                newItem.level = ITEMDETAIL[id].level;
+                newItem.cost = ITEMDETAIL[id].cost;
+                newItem.sell = ITEMDETAIL[id].sell;
     
-        //         character.items.push(newItem);
-        //     } else {
-        //         testItem.count++;
-        //     }
-        // });
+                character.items.push(newItem);
+            } else {
+                testItem.count++;
+            }
+        });
 
         // ADD STACKS
-        // Object.keys(STACKTYPE).forEach(key => {
-        //     const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
-        //     if(testStack == null) {
-        //         console.log(STACKTYPE[key])
-        //         const newStack = new Item();
-        //         newStack.id = STACKTYPE[key];
-        //         newStack.count = 1;
-        //         newStack.name = key;
-        //         newStack.description = stacks[STACKTYPE[key]].description;
-        //         newStack.level = stacks[STACKTYPE[key]].level;
-        //         newStack.cost = stacks[STACKTYPE[key]].cost;
-        //         newStack.sell = stacks[STACKTYPE[key]].sell;
+        Object.keys(STACKTYPE).forEach(key => {
+            const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
+            if(testStack == null) {
+                console.log(STACKTYPE[key])
+                const newStack = new Item();
+                newStack.id = STACKTYPE[key];
+                newStack.count = 1;
+                newStack.name = key;
+                newStack.description = stacks[STACKTYPE[key]].description;
+                newStack.level = stacks[STACKTYPE[key]].level;
+                newStack.cost = stacks[STACKTYPE[key]].cost;
+                newStack.sell = stacks[STACKTYPE[key]].sell;
 
-        //         character.stacks.push(newStack);
-        //     }
-        // });
+                character.stacks.push(newStack);
+            }
+        });
 
         // ADD POWER for MOVE ITEM
         [POWERTYPE.Shield3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear2, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {
