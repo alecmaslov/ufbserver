@@ -1,5 +1,6 @@
 import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { NavGraphLinkData } from "#game/Pathfinder";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
@@ -11,7 +12,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, Tile } from "@prisma/client";
 import { ok } from "assert";
 import { Client } from "colyseus";
-import { Node } from "ngraph.graph";
+import { Graph, Node } from "ngraph.graph";
 
 const TILE_LETTERS = [
     "A",
@@ -94,29 +95,41 @@ export const gameIdToCoord = (tileId: string): CoordinatesState => {
 
 export const getPathCost = (
     p: Node<any>[],
-    adjacencyList: MapSchema<AdjacencyListItemState, string>
+    graph: Graph<any, NavGraphLinkData>
 ) => {
     let cost = 0;
-    // for (let i = 1; i < p.length; i++) {
-    //     const from = p[i - 1].id as string;
-    //     const to = p[i].id as string;
-    //     const edgeCollection = adjacencyList.get(from);
-    //     if (!edgeCollection) {
-    //         throw new Error(`no adjacency list for ${from}`);
-    //     }
-    //     let edge: { energyCost: number } | undefined;
-    //     for (const e of edgeCollection.edges) {
-    //         if (e.to === to) {
-    //             edge = e;
-    //             break;
-    //         }
-    //     }
-    //     // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
-    //     if (!edge) {
-    //         throw new Error(`no edge from ${from} to ${to}`);
-    //     }
-    //     cost += edge.energyCost;
-    // }
+
+    for (let i = 1; i < p.length; i++) {
+        const from = p[i - 1].id as string;
+        const to = p[i].id as string;
+
+        graph.forEachLink(link => {
+            if(link.fromId == from && link.toId == to) {
+                cost += link.data.energyCost;
+                return;
+            }
+        })
+
+        // if(!link) {
+        //     throw new Error(`no edge from ${from} to ${to}`);
+        // }
+
+        // const edgeCollection = adjacencyList.get(from);
+        // if (!edgeCollection) {
+        //     throw new Error(`no adjacency list for ${from}`);
+        // }
+        // let edge: { energyCost: number } | undefined;
+        // for (const e of edgeCollection.edges) {
+        //     if (e.to === to) {
+        //         edge = e;
+        //         break;
+        //     }
+        // }
+        // // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+        // if (!edge) {
+        //     throw new Error(`no edge from ${from} to ${to}`);
+        // }
+    }
     return cost;
 };
 
@@ -448,11 +461,9 @@ export function spawnCharacter(
     } else {
         let defaultName;
         if (!playerId) {
-            defaultName = character.type == USER_TYPE.USER? `NPC (${character.characterClass})` : `<color="red"><size=50%>MONSTER</size></color>
-${MONSTERS[monsterType].name}`;
+            defaultName = character.type == USER_TYPE.USER? `NPC (${character.characterClass})` : `${MONSTERS[monsterType].name}`;
         } else {
-            defaultName = `<size=50%>Player</size>
-${character.characterClass}`;
+            defaultName = `${character.characterClass}`;
         }
         character.displayName = defaultName;
     }
@@ -492,8 +503,7 @@ export function spawnMonster(
         character.type = type;
     }
 
-    character.displayName = `<color="red"><size=50%>MONSTER</size></color>
-${MONSTERS[monsterType].name}`;
+    character.displayName = `${MONSTERS[monsterType].name}`;
 
     const coordinates = new CoordinatesState();
     coordinates.x = x;

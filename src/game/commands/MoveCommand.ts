@@ -105,16 +105,16 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         let cost = currentTile.id == destinationTile.id? 0 : -1;
 
         if(message.isPath) {
-            const route_path = this.room.pathfinder.find(
+            const route_path = this.room.getPathFinder().find(
                 character.currentTileId,
                 message.tileId
             );
             path = route_path.path;
-            cost = -route_path.path.length;
+            cost = -route_path.cost;
         }
 
 
-        if (!force && character.stats.energy.current < 1) {
+        if (!force && character.stats.energy.current < cost) {
             this.room.notify(
                 client,
                 "You don't have enough energy to move there!",

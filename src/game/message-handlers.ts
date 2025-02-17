@@ -89,7 +89,7 @@ export const messageHandlers: MessageHandlers = {
         const fromTileId = coordToGameId(message.from);
         const toTileId = coordToGameId(message.to);
 
-        const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
+        const { path, cost } = room.getPathFinder().find(fromTileId, toTileId);
 
         if (!path || path.length === 0) {
             room.notify(client, "No path found", "error");
@@ -412,7 +412,7 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        const { path, cost } = room.pathfinder.find(
+        const { path, cost } = room.getPathFinder().find(
             character.currentTileId,
             tileId
         );
@@ -420,7 +420,8 @@ export const messageHandlers: MessageHandlers = {
 
         client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVE_POINT, {
             characterId: character.id,
-            path: path
+            path: path,
+            cost
         });
     },
 
