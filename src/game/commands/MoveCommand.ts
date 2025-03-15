@@ -3,7 +3,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { fillPathWithCoords, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
@@ -33,7 +33,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     this.room.notify(client, "It's not your turn!", "error");
         //     return;
         // }
-
+        let desTileId = message.tileId;
         this.state.map.spawnEntities.forEach(entity => {
             if(entity.tileId == message.tileId && entity.type == "Portal") {
                 message.tileId = getPortalPosition(entity, this.room);
@@ -100,17 +100,19 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         // );
 
         let path: PathStep[] = [{
-            tileId: message.tileId
+            tileId: desTileId
         }];
         let cost = currentTile.id == destinationTile.id? 0 : -1;
+        let featherCost = 0;
 
         if(message.isPath) {
-            const route_path = this.room.getPathFinder().find(
+            const route_path = this.room.getPathFinder(message.isFeather).find(
                 character.currentTileId,
-                message.tileId
+                desTileId
             );
             path = route_path.path;
-            cost = -route_path.cost;
+            cost = -(route_path.cost - 5 * route_path.featherCount);
+            featherCost = -route_path.featherCount;
         }
 
 
@@ -123,87 +125,84 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             return;
         }
 
-        const idx = this.room.state.map.moveItemEntities.findIndex(
-            mItem => mItem.tileId == destinationTile.id && 
-            (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
-        if(idx != -1) {
-            const moveEntity: MoveItemEntity = this.room.state.map.moveItemEntities[idx];
-            const result = itemResults[moveEntity.itemId];
-            if(!!result.energy) {
-                character.stats.energy.add(result.energy);
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: result.energy,
-                    type: "energy"
-                });
-            }
-            if(!!result.heart) {
-                setCharacterHealth(character, result.heart, this.room, client, "heart");
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: result.heart,
-                    type: "heart"
-                });
-            }
-            if(!!result.ultimate) {
-                character.stats.ultimate.add(result.ultimate);
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: result.ultimate,
-                    type: "ultimate"
-                });
-            }
-
-            if(!!result.stackId) {
-                const stack = character.stacks.find(stack => stack.id == result.stackId);
-                if(stack == null) {
-                    const newStack = new Item();
-                    newStack.id = result.stackId;
-                    newStack.count = 1;
-                    newStack.name = stacks[result.stackId].name;
-                    newStack.description = stacks[result.stackId].description;
-                    newStack.level = stacks[result.stackId].level;
-                    newStack.cost = stacks[result.stackId].cost;
-                    newStack.sell = stacks[result.stackId].sell;
-    
-                    character.stacks.push(newStack);
-                }
-                else 
-                {
-                    stack.count++;
-                }
-
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: 1,
-                    type: "stack",
-                    stackId: result.stackId
-                });
-            }
-
-            client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
-                playerId: moveEntity.playerId,
-                itemResult: result
-            });
-            this.room.state.map.moveItemEntities.deleteAt(idx);
-
-        } else {
-            // const cost = currentTile.id == destinationTile.id? 0 : -(
-            //     Math.abs(currentTile.coordinates.x - destinationTile.coordinates.x) + Math.abs(currentTile.coordinates.y - destinationTile.coordinates.y)
-            // );
-            let energy = cost;
-            if(force) {
-                const originEnergy = message.originEnergy;
-                energy = originEnergy - character.stats.energy.current;
-                character.stats.energy.add(originEnergy - character.stats.energy.current);
-            } else {
-                character.stats.energy.add(cost);
-            }
-            if(energy != 0) {
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: energy,
-                    type: "energy"
-                });
-            }
-
+        if(!force && !character.items[ITEMTYPE.FEATHER] && character.items[ITEMTYPE.FEATHER].count >= featherCost) {
+            this.room.notify(
+                client,
+                "You don't have enough feather to move there!",
+                "error"
+            );
+            return;
         }
 
+        path.forEach(p => {
+            const idx = this.room.state.map.moveItemEntities.findIndex(
+                mItem => mItem.tileId == p.tileId && 
+                (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
+            if(idx != -1) {
+                const moveEntity: MoveItemEntity = this.room.state.map.moveItemEntities[idx];
+                const result = itemResults[moveEntity.itemId];
+                if(!!result.energy) {
+                    character.stats.energy.add(result.energy);
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: result.energy,
+                        type: "energy"
+                    });
+                }
+                if(!!result.heart) {
+                    setCharacterHealth(character, result.heart, this.room, client, "heart");
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: result.heart,
+                        type: "heart"
+                    });
+                }
+                if(!!result.ultimate) {
+                    character.stats.ultimate.add(result.ultimate);
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: result.ultimate,
+                        type: "ultimate"
+                    });
+                }
+    
+                if(!!result.stackId) {
+                    addStackToCharacter(result.stackId, 1, character, client);
+    
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: 1,
+                        type: "stack",
+                        stackId: result.stackId
+                    });
+                }
+    
+                client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
+                    playerId: moveEntity.playerId,
+                    itemResult: result
+                });
+                this.room.state.map.moveItemEntities.deleteAt(idx);
+    
+            }
+        })
+
+        let energy = cost;
+        if(force) {
+            const originEnergy = message.originEnergy;
+            energy = originEnergy - character.stats.energy.current;
+            character.stats.energy.add(originEnergy - character.stats.energy.current);
+        } else {
+            character.stats.energy.add(cost);
+            addItemToCharacter(ITEMTYPE.FEATHER, featherCost, character);
+        }
+        if(energy != 0) {
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: energy,
+                type: "energy"
+            });
+        }
+
+        if(desTileId != message.tileId) {
+            path.push({
+                tileId: message.tileId
+            });
+        }
 
         character.coordinates.x = destinationTile.coordinates.x;
         character.coordinates.y = destinationTile.coordinates.y;

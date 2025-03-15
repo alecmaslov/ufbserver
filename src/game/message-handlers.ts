@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -311,17 +311,19 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        const idx = character.items.findIndex(it => it.id == itemId && it.count > 0);
-        if(idx != -1) {
-            character.items[idx].count--;
-        } else {
-            room.notify(
-                client,
-                "Your item is not enough!",
-                "error"
-            );
-            return;
-        }
+        addItemToCharacter(itemId, -1, character);
+
+        // const idx = character.items.findIndex(it => it.id == itemId && it.count > 0);
+        // if(idx != -1) {
+        //     character.items[idx].count--;
+        // } else {
+        //     room.notify(
+        //         client,
+        //         "Your item is not enough!",
+        //         "error"
+        //     );
+        //     return;
+        // }
 
         if(itemId == ITEMTYPE.BOMB || itemId == ITEMTYPE.ICE_BOMB || itemId == ITEMTYPE.FIRE_BOMB || itemId == ITEMTYPE.VOID_BOMB || itemId == ITEMTYPE.CALTROP_BOMB) {
             const idx = room.state.map.moveItemEntities.findIndex(mItem => mItem.tileId == tileId)
@@ -344,49 +346,16 @@ export const messageHandlers: MessageHandlers = {
 
         } else if(itemId == ITEMTYPE.ELIXIR) {
             character.stats.energy.add(10);
+            addStackToCharacter(STACKTYPE.Cure, 1, character, client, room)
+            addStackToCharacter(STACKTYPE.Dodge, 1, character, client, room)
 
-            const CureStack : Item = character.stacks.find(stack => stack.id == STACKTYPE.Cure);
-            if(CureStack == null) {
-                const newStack = new Item();
-                newStack.id = STACKTYPE.Cure;
-                newStack.count = 1;
-                newStack.name = stacks[STACKTYPE.Cure].name;
-                newStack.description = stacks[STACKTYPE.Cure].description;
-                newStack.level = stacks[STACKTYPE.Cure].level;
-                newStack.cost = stacks[STACKTYPE.Cure].cost;
-                newStack.sell = stacks[STACKTYPE.Cure].sell;
-
-                character.stacks.push(newStack);
-            } else {
-                CureStack.count++;
-            }
-
-            const DodgeStack : Item = character.stacks.find(stack => stack.id == STACKTYPE.Dodge);
-            if(DodgeStack == null) {
-                const newStack = new Item();
-                newStack.id = STACKTYPE.Dodge;
-                newStack.count = 1;
-                newStack.name = stacks[STACKTYPE.Dodge].name;
-                newStack.description = stacks[STACKTYPE.Dodge].description;
-                newStack.level = stacks[STACKTYPE.Dodge].level;
-                newStack.cost = stacks[STACKTYPE.Dodge].cost;
-                newStack.sell = stacks[STACKTYPE.Dodge].sell;
-
-                character.stacks.push(newStack);
-            } else {
-                DodgeStack.count++;
-            }
         } else if(itemId == ITEMTYPE.FEATHER) {
         } else if(itemId == ITEMTYPE.WARP_CRYSTAL) {
-            if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
-                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
-            } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
-                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "right");
-            } else if(desTile.walls[2] == EDGE_TYPE.BASIC) {   //DOWN
-                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "down");
-            } else if(desTile.walls[3] == EDGE_TYPE.BASIC) {   //LEFT
-                message.tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
-            }
+            room.state.map.spawnEntities.forEach(entity => {
+                if(entity.tileId == message.tileId && entity.type == "Portal") {
+                    message.tileId = getOpenTilePosition(entity.tileId, room);
+                }
+            })
         } 
 
         const setmoveitemMessage : SetMoveItemMessage = {
@@ -403,6 +372,14 @@ export const messageHandlers: MessageHandlers = {
         const character = getCharacterById(room, message.characterId);
         const desTile = room.state.map.tiles.get(message.tileId);
 
+        let portalNextTileId = "";
+
+        room.state.map.spawnEntities.forEach(entity => {
+            if(entity.tileId == desTile.id && entity.type == "Portal") {
+                portalNextTileId = getNextPortalTilePosition(entity, room);
+            }
+        })
+
         if(character.stats.energy.current == 0) {
             room.notify(
                 client,
@@ -412,16 +389,18 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        const { path, cost } = room.getPathFinder().find(
+        const { path, cost, featherCount } = room.getPathFinder(message.isFeather).find(
             character.currentTileId,
             tileId
         );
-        console.log("ai move : ", path.length);
+        console.log("ai move : ", path.length, cost, featherCount);
 
         client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVE_POINT, {
             characterId: character.id,
-            path: path,
-            cost
+            path,
+            cost: cost - 5 * featherCount,
+            featherCount,
+            portalNextTileId
         });
     },
 
@@ -1118,8 +1097,62 @@ export const messageHandlers: MessageHandlers = {
             });
 
         }
-    }
+    },
 
+    [CLIENT_SERVER_MESSAGE.GET_EQUIP_SLOT_LIST]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+
+        let clientMessage: any = {
+            data: []
+            // data: [
+            //     {
+            //         power: power,
+            //         powermoves: []
+            //     }
+            // ]
+        }
+
+
+        character.equipSlots.forEach(slot => {
+            const slotData : any = {};
+            slotData.power = slot;
+            slotData.powermoves = [];
+
+            powermoves.forEach((move : any) => {
+                if(move.powerIds.indexOf(slot.id) > -1) {
+                    const powermove : PowerMove = {
+                        id : move.id,
+                        name : move.name,
+                        powerImageId : move.powerImageId,
+                        light : move.light,
+                        range : move.range,
+                        coin : move.coin,
+                        powerIds: [],
+                        costList: [],
+                        result: move.result
+                    };
+    
+                    move.powerIds.forEach((pid : number) => {
+                        powermove.powerIds.push(pid);
+                    })
+                    move.costList.forEach((cost : any) => {
+                        const item = new Item();
+                        item.id = cost.id;
+                        item.count = cost.count;
+                        powermove.costList.push(
+                            item
+                        )
+                    })
+                    slotData.powermoves.push(powermove);
+                }
+            })
+
+            clientMessage.data.push(slotData);
+        })
+
+
+        client.send(SERVER_TO_CLIENT_MESSAGE.GET_EQUIP_SLOT_LIST, clientMessage);
+    },
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

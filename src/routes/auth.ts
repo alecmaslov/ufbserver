@@ -9,6 +9,7 @@ import { body } from "express-validator";
 
 interface RegisterClientPayload {
     platform: Platform;
+    userId: string
 }
 
 interface RegisterClientResponse {
@@ -17,12 +18,17 @@ interface RegisterClientResponse {
 
 const registerClientHandler: Handler = async (req:any, res: any) => {
     const {
-        platform
+        platform,
+        userId
     } = req.body as RegisterClientPayload;
+    
+    console.log("register", platform, userId);
+
     const newClient = await db.client.create({
         data: {
             id: createId(),
-            platform
+            platform,
+            userId
         }
     });
     const response: RegisterClientResponse = {
@@ -74,7 +80,6 @@ const router: Router = Router();
 export default router;
 
 router.post("/register-client",
-    body("platform").isIn(Object.values(Platform)).withMessage("Invalid platform"),
     validate,
     safetyNet(registerClientHandler)
 );

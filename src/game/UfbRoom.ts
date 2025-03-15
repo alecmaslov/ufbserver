@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsGreenMonster, IsYellowMonster, setCharacterHealth, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsGreenMonster, IsYellowMonster, setCharacterHealth, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -176,7 +176,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         mana.count = currentCharacter.stats.maxMana;
         melee.count = currentCharacter.stats.maxMelee;
 
-        console.log("turn orders:", this.state.turnOrder, n, this.state.currentCharacterId);
+        console.log("turn orders:", n, this.state.currentCharacterId);
 
         this.broadcast(
             SERVER_TO_CLIENT_MESSAGE.TURN_CHANGED,
@@ -408,8 +408,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.resetTurn();
     }
 
-    getPathFinder() {
-        return Pathfinder.fromMapState(this.state);
+    getPathFinder(isFeather = false) {
+        return Pathfinder.fromMapState(this.state, isFeather);
     }
 
     // @amin - AI Monsters checking..
@@ -444,21 +444,24 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
 
         // AI MONSTER MOVEMENT LOGIC
+        let nearTileId = "";
+        let isAjuacent = false;
 
         const nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
-        let nearTileId = GetNearestTileId(selectedMonster.currentTileId, this);
         const obstacleTileIds = GetObstacleTileIds(selectedMonster.currentTileId, this);
-        console.log("near tile id: ", nearTileId)
-        
-        let isAjuacent = false;
+        console.log("near character id: ", nearCharcterId);
 
         if(nearCharcterId != "") {
             const enemy = this.state.characters.get(nearCharcterId);
+            nearTileId = getOpenTilePosition(enemy.currentTileId, this);
             isAjuacent = IsEnemyAdjacent(selectedMonster, enemy, this);
-            nearTileId = enemy.currentTileId;
+            // nearTileId = enemy.currentTileId;
         }
 
-        if(nearTileId != "" && !isAjuacent) {
+        console.log("near tile id: ", nearTileId);
+
+
+        if(!isAjuacent && nearTileId != "") {
             const { path, cost } = this.getPathFinder().find(
                 selectedMonster.currentTileId,
                 nearTileId

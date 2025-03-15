@@ -1,4 +1,4 @@
-import { EDGE_TYPE, WALL_DIRECT } from "#assets/resources";
+import { EDGE_TYPE, ITEMTYPE, WALL_DIRECT } from "#assets/resources";
 import { getPathCost, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { MapState, TileState } from "#game/schema/MapState";
 import { PathStep } from "#shared-types";
@@ -10,11 +10,13 @@ import { UfbRoomState } from "./schema/UfbRoomState";
 export type NavGraphLinkData = {
   energyCost: number;
   blocked: boolean;
+  featherCost: number
 };
 
 export interface FindPathResult {
   foundPath: boolean;
   cost: number;
+  featherCount: number
   path: PathStep[];
 }
 
@@ -23,11 +25,11 @@ export class Pathfinder {
   private _navGraph: Graph<any, NavGraphLinkData> = null;
   private _pathFinder: NGraphPathFinder<any> = null;
 
-  static fromMapState(room: UfbRoomState): Pathfinder {
+  static fromMapState(room: UfbRoomState, isFeather = false): Pathfinder {
 
     const p = new Pathfinder();
     p._mapState = room.map;
-    p._navGraph = p.getGraph(room);
+    p._navGraph = p.getGraph(room, isFeather);
     p._pathFinder = aStar(p._navGraph, {
       distance(fromNode, toNode, link) {
         return link.data.energyCost;
@@ -42,7 +44,7 @@ export class Pathfinder {
   find(from: string, to: string): FindPathResult {
     const _path = this._pathFinder.find(from, to);
     try {
-      const cost = getPathCost(_path, this._navGraph);
+      const {cost, featherCount} = getPathCost(_path, this._navGraph);
       const path: PathStep[] = _path.map((node) => {
         return {
           tileId: node.id as string,
@@ -53,6 +55,7 @@ export class Pathfinder {
       return {
         foundPath: true,
         cost,
+        featherCount,
         path,
       };
     } catch (e) {
@@ -60,6 +63,7 @@ export class Pathfinder {
       return {
         foundPath: false,
         cost: 0,
+        featherCount: 0,
         path: [],
       };
     }
@@ -118,7 +122,7 @@ export class Pathfinder {
   }
 
   
-  getGraph(room: UfbRoomState): Graph<any, NavGraphLinkData> {
+  getGraph(room: UfbRoomState, isFeather = false): Graph<any, NavGraphLinkData> {
     const mapState: MapState = room.map;
     var characters = room.characters;
 
@@ -127,7 +131,8 @@ export class Pathfinder {
       if(character.id != room.currentCharacterId) {
         banTileIds.push(character.currentTileId);
       }
-    })
+    });
+
     console.log(banTileIds, room.currentCharacterId);
     // build nav graph
     const graph = createGraph<any, NavGraphLinkData>();
@@ -161,10 +166,11 @@ export class Pathfinder {
           if (id != "") {
               const state = mapState.tiles.get(id);
 
-              if ( edgeType == EDGE_TYPE.BASIC || edgeType == EDGE_TYPE.STAIR ) {
+              if ( edgeType == EDGE_TYPE.BASIC ) {
                   graph.addLink(tile.id, id, {
-                      energyCost: (banTileIds.indexOf(id) == -1 || banTileIds.indexOf(tile.id) == -1)? 1 : 3,
+                      energyCost: 1,
                       blocked: banTileIds.indexOf(id) != -1 || banTileIds.indexOf(tile.id) != -1,
+                      featherCost: 0
                   });
               } else if( edgeType == EDGE_TYPE.BRIDGE ) {
 
@@ -176,8 +182,9 @@ export class Pathfinder {
                   // if(banTileIds.indexOf(id1) == -1) {
                     if(state.type == TileType.DoubleBridge || state.type == TileType.HorizontalBridge || state.type == TileType.VerticalBridge) {
                         graph.addLink(tile.id, id1, {
-                            energyCost: 2,
-                            blocked: banTileIds.indexOf(id1) != -1
+                          energyCost: 2,
+                          blocked: banTileIds.indexOf(id1) != -1,
+                          featherCost: 0
                         });
                     }
                   // }
@@ -195,11 +202,18 @@ export class Pathfinder {
                         ((state.type == TileType.StairsNS || state.type == TileType.StairsSN) && (i == WALL_DIRECT.TOP || i == WALL_DIRECT.DOWN))
                     ) {
                         graph.addLink(tile.id, id1, {
-                            energyCost: 2,
-                            blocked: banTileIds.indexOf(id1) != -1
+                          energyCost: 2,
+                          blocked: banTileIds.indexOf(id1) != -1,
+                          featherCost: 0
                         });
                     }
                   // }
+              } else if((edgeType == EDGE_TYPE.WALL || edgeType == EDGE_TYPE.CLIFF) && isFeather) {
+                graph.addLink(tile.id, id, {
+                  energyCost: 5,
+                  blocked: banTileIds.indexOf(id) != -1 || banTileIds.indexOf(tile.id) != -1,
+                  featherCost: 1
+                });
               }
           }
         // } 

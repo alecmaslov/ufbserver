@@ -199,7 +199,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     const path: PathStep[] = [{
                                         tileId: result.desTileId
                                     }];
-        
+                                    console.log("move tile")
                                     this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
                                         characterId : target.id,
                                         path
@@ -224,7 +224,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     });
                                 }
         
-                            } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR) {
+                            } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
                                 setCharacterHealth(target, -1, this.room, client, "heart");
         
                                 if(target == enemy && target.stats.health.current == 0) {
