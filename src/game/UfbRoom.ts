@@ -7,7 +7,6 @@ import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathW
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
-    TileEdgeState,
     TileState,
 } from "#game/schema/MapState";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
@@ -17,8 +16,6 @@ import { Client, Room } from "@colyseus/core";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, TileType } from "@prisma/client";
-import { readFile } from "fs/promises";
-import { join as pathJoin } from "path";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
 import { DICE_TYPE, EDGE_TYPE, END_TYPE, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
@@ -27,7 +24,6 @@ import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpe
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
-import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -121,9 +117,38 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.notify(client, "Welcome to the game, " + playerId + "!");
     }
 
-    onLeave(client: Client, consented: boolean) {
-        console.log(client.sessionId, "left!");
+    async onLeave(client: Client, consented: boolean) {
+        console.log(client.sessionId, "left! after 30s: ", this.roomId);
+
+        const playerId = this.sessionIdToPlayerId.get(client.sessionId);
+        const player = this.state.characters.get(playerId);
+
+        player.connected = false;
+ 
+        try {
+            if (consented) {
+                throw new Error("consented leave");
+            }
+     
+            console.log(client.sessionId, "wait for ... onLeave");
+
+
+            // allow disconnected client to reconnect into this room until 20 seconds
+            await this.allowReconnection(client, 30);
+     
+            console.log("connect failed");
+            // client returned! let's re-activate it.
+            player.connected = true;
+     
+        } catch (e) {
+     
+            // 20 seconds expired. let's remove the client.
+            this.state.characters.delete(playerId);
+            this.sessionIdToPlayerId.delete(client.sessionId);
+        }
     }
+
+
 
     onDispose() {
         console.log("room", this.roomId, "disposing...");

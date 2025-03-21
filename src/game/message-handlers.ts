@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, TURN_TIME, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -116,18 +116,6 @@ export const messageHandlers: MessageHandlers = {
 
         // END TURN,,, remain energy will convert ultimate value
         player.stats.ultimate.add(player.stats.energy.current);
-
-
-        ////
-        // const fromTileId = coordToGameId(message.from);
-        // const toTileId = coordToGameId(message.to);
-        // const { path, cost } = room.pathfinder.find(fromTileId, toTileId);
-        // client.send("foundPath", {
-        //     from: message.from,
-        //     to: message.to,
-        //     path,
-        //     cost,
-        // });
     },
 
     changeMap: async (room, client, message) => {
@@ -346,10 +334,21 @@ export const messageHandlers: MessageHandlers = {
 
         } else if(itemId == ITEMTYPE.ELIXIR) {
             character.stats.energy.add(10);
+            character.stats.ultimate.add(10);
             addStackToCharacter(STACKTYPE.Cure, 1, character, client, room)
             addStackToCharacter(STACKTYPE.Dodge, 1, character, client, room)
 
+        } else if(itemId == ITEMTYPE.FLAME_CHILI) {
+            character.stats.ultimate.add(10);
+            addStackToCharacter(STACKTYPE.Burn, 1, character, client, room);
+            
+        } else if(itemId == ITEMTYPE.ICE_TEA) {
+
+            character.stats.ultimate.add(10);
+            addStackToCharacter(STACKTYPE.Freeze, 1, character, client, room);
+
         } else if(itemId == ITEMTYPE.FEATHER) {
+
         } else if(itemId == ITEMTYPE.WARP_CRYSTAL) {
             room.state.map.spawnEntities.forEach(entity => {
                 if(entity.tileId == message.tileId && entity.type == "Portal") {
@@ -858,6 +857,17 @@ export const messageHandlers: MessageHandlers = {
             score: -4,
             type: "heart",
         });
+    },
+
+    [CLIENT_SERVER_MESSAGE.GET_ROOM_DATA] : (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+
+        if(character != null) {
+            client.send(
+                SERVER_TO_CLIENT_MESSAGE.RECONNECT_ROOM,
+                { turn: room.state.turn, characterId: room.state.currentCharacterId, curTime : TURN_TIME },
+            );
+        }
     },
 
     [CLIENT_SERVER_MESSAGE.GET_HIGHLIGHT_RECT] : (room, client, message) => {
