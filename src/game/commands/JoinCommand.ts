@@ -2,7 +2,7 @@ import { Command } from "@colyseus/command";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
 import { UfbRoom } from "#game/UfbRoom";
 import { Client } from "@colyseus/core";
-import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
+import { getCharacterById, getClientCharacter, getItemIdsByLevel, getPowerIdsByLevel } from "#game/helpers/room-helpers";
 import { SpawnInitMessage } from "#game/message-types";
 import { TURN_TIME } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -25,8 +25,14 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
 
         let coinCount = 2 + Math.round(4 * (Math.random()));
 
-        let itemId = 0 + Math.round(5 * (Math.random()));
-        let powerId = 0 + Math.round(11 * (Math.random()));
+        const lvl1Items = getItemIdsByLevel(1, false);
+        const lvl1Powers = getPowerIdsByLevel(1, false);
+
+        const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
+        const idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
+
+        let itemId = lvl1Items[idxItem].id;
+        let powerId = lvl1Powers[idxPower].id;
 
         const spawnMessage : SpawnInitMessage = {
             characterId: message.playerId,

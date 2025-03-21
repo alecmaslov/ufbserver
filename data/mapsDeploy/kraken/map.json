@@ -4617,7 +4617,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "cliff"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Bottom",
@@ -4636,7 +4636,7 @@
         "x": 2,
         "y": 6
       },
-      "type": "Upper",
+      "type": "Lower",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -5394,7 +5394,7 @@
         "x": 2,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [

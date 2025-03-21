@@ -11,6 +11,9 @@ import dev from "#routes/dev";
 import maps from "#routes/maps";
 import character from "#routes/character";
 import nft from "#routes/nft";
+import user from "#routes/user";
+
+
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import cors from "cors";
@@ -35,6 +38,7 @@ app.use("/assets", assets);
 app.use("/maps", maps);
 app.use("/character", character);
 app.use("/nft", nft);
+app.use("/user", user);
 
 if (DEV_MODE) {
     console.log("🚧🚧 Warning: DEV_MODE is enabled! 🚧🚧");

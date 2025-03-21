@@ -50,4 +50,5 @@ export interface SpawnEntityConfig {
     merchants: number;
     portals: number; // 2 portals for each
     monsters: number;
+    itemBags: number;
 }

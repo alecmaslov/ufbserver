@@ -33,3 +33,11 @@ export interface PowerMove {
         energy?: number;
     } 
 }
+
+export const RESPONSE_TYPE = {
+    ERROR: "ERROR",
+    SUCCESS: "SUCCESS",
+    ALREADY_EXIST: "ALREADY_EXIST",
+    NOT_EXIST: "NOT_EXIST",
+    WRONG_PASSWORD: "WRONG_PASSWORD"
+}

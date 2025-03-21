@@ -1,5 +1,6 @@
-import { BAN_STACKS, DICE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { NavGraphLinkData } from "#game/Pathfinder";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
@@ -11,7 +12,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, Tile } from "@prisma/client";
 import { ok } from "assert";
 import { Client } from "colyseus";
-import { Node } from "ngraph.graph";
+import { Graph, Node } from "ngraph.graph";
 
 const TILE_LETTERS = [
     "A",
@@ -94,30 +95,43 @@ export const gameIdToCoord = (tileId: string): CoordinatesState => {
 
 export const getPathCost = (
     p: Node<any>[],
-    adjacencyList: MapSchema<AdjacencyListItemState, string>
+    graph: Graph<any, NavGraphLinkData>
 ) => {
     let cost = 0;
-    // for (let i = 1; i < p.length; i++) {
-    //     const from = p[i - 1].id as string;
-    //     const to = p[i].id as string;
-    //     const edgeCollection = adjacencyList.get(from);
-    //     if (!edgeCollection) {
-    //         throw new Error(`no adjacency list for ${from}`);
-    //     }
-    //     let edge: { energyCost: number } | undefined;
-    //     for (const e of edgeCollection.edges) {
-    //         if (e.to === to) {
-    //             edge = e;
-    //             break;
-    //         }
-    //     }
-    //     // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
-    //     if (!edge) {
-    //         throw new Error(`no edge from ${from} to ${to}`);
-    //     }
-    //     cost += edge.energyCost;
-    // }
-    return cost;
+    let featherCount = 0;
+    for (let i = 1; i < p.length; i++) {
+        const from = p[i - 1].id as string;
+        const to = p[i].id as string;
+
+        graph.forEachLink(link => {
+            if(link.fromId == from && link.toId == to) {
+                cost += link.data.energyCost;
+                featherCount += link.data.featherCost
+                return;
+            }
+        })
+
+        // if(!link) {
+        //     throw new Error(`no edge from ${from} to ${to}`);
+        // }
+
+        // const edgeCollection = adjacencyList.get(from);
+        // if (!edgeCollection) {
+        //     throw new Error(`no adjacency list for ${from}`);
+        // }
+        // let edge: { energyCost: number } | undefined;
+        // for (const e of edgeCollection.edges) {
+        //     if (e.to === to) {
+        //         edge = e;
+        //         break;
+        //     }
+        // }
+        // // console.log(`edge from ${from} to ${to} is ${JSON.stringify(edge)}`);
+        // if (!edge) {
+        //     throw new Error(`no edge from ${from} to ${to}`);
+        // }
+    }
+    return {cost, featherCount};
 };
 
 ////
@@ -221,7 +235,7 @@ export function initializeSpawnEntities(
     }
     if (
         totalSpawnZones <
-        config.chests + config.portals * 2 + config.merchants
+        config.chests + config.portals * 2 + config.merchants + config.itemBags
     ) {
         throw new Error("config provided has too many spawn zones for map");
     }
@@ -277,18 +291,24 @@ export function initializeSpawnEntities(
     let n = 0;
     zones.forEach((zone, i) => {
         if(n < config.chests) {
-
-            const isItemBag = Math.random() < 0.5? true: false;
-            
             const chestEntity = new SpawnEntity();
             chestEntity.id = zone.id;
             chestEntity.gameId = `chest_${i}`;
-            chestEntity.prefabAddress = isItemBag? `${entitiesRootAddress}ItemBag` : `${entitiesRootAddress}chest`;
+            chestEntity.prefabAddress = `${entitiesRootAddress}chest`;
             chestEntity.tileId = zone.tileId;
             chestEntity.type = "Chest";
             chestEntity.parameters = `{"seedId" : "${zone.seedId}"}`;
             spawnEntities.push(chestEntity);
-        } else if(n < config.chests + config.merchants) {
+        } else if(n < config.chests + config.itemBags) {
+            const chestEntity = new SpawnEntity();
+            chestEntity.id = zone.id;
+            chestEntity.gameId = `chest_${i}`;
+            chestEntity.prefabAddress = `${entitiesRootAddress}ItemBag`;
+            chestEntity.tileId = zone.tileId;
+            chestEntity.type = "Chest";
+            chestEntity.parameters = `{"seedId" : "${zone.seedId}"}`;
+            spawnEntities.push(chestEntity);
+        } else if(n < config.chests + config.itemBags + config.merchants) {
             const parameters: MerchantEntityParameters = {
                 seedId: zone.seedId,
                 merchantIndex: i,
@@ -305,7 +325,7 @@ export function initializeSpawnEntities(
             merchantEntity.parameters = JSON.stringify(parameters);
             // merchantEntity.parameters = `{"seedId" : "${zone.seedId}", "merchantIndex" : "${i}", "merchantName" : "Merchant ${i}", "inventory" : []}`;
             spawnEntities.push(merchantEntity);
-        } else if(n < config.chests + config.merchants + config.portals * 2) {
+        } else if(n < config.chests + config.itemBags + config.merchants + config.portals * 2) {
             const parameters: PortalEntityParameters = {
                 seedId: zone.seedId,
                 portalGroup: i,
@@ -442,11 +462,9 @@ export function spawnCharacter(
     } else {
         let defaultName;
         if (!playerId) {
-            defaultName = character.type == USER_TYPE.USER? `NPC (${character.characterClass})` : `<color="red"><size=50%>MONSTER</size></color>
-${MONSTERS[monsterType].name}`;
+            defaultName = character.type == USER_TYPE.USER? `NPC (${character.characterClass})` : `${MONSTERS[monsterType].name}`;
         } else {
-            defaultName = `<size=50%>Player</size>
-${character.characterClass}`;
+            defaultName = `${character.characterClass}`;
         }
         character.displayName = defaultName;
     }
@@ -486,16 +504,15 @@ export function spawnMonster(
         character.type = type;
     }
 
-    character.displayName = `<color="red"><size=50%>MONSTER</size></color>
-${MONSTERS[monsterType].name}`;
+    character.displayName = `${MONSTERS[monsterType].name}`;
 
     const coordinates = new CoordinatesState();
     coordinates.x = x;
     coordinates.y = y;
     character.coordinates = coordinates;
 
-    addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
-    addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
+    // addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
+    // addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
 
     characters.set(id, character);
 
@@ -893,7 +910,6 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
     const stack : Item = state.stacks.find(stack => stack.id == id);
-    console.log("add stack: ", stack);
     // ADD BAN STACK LOGIC
     if(!!BAN_STACKS[id]) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
@@ -975,6 +991,8 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
         newPower.level = powers[id].level;
         newPower.cost = POWERCOSTS[powers[id].level].cost;
         newPower.sell = POWERCOSTS[powers[id].level].sell;
+
+        state.powers.push(newPower);
     } else {
         power.count += count;
     }
@@ -992,49 +1010,57 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
 
     let step = type == PERKTYPE.Push? 1 : -1;
 
-    if(x > y || (x == y && Math.random() < 0.5)) {
-        y1 = y;
-        x1 = (Math.abs(x) + step) * Math.sign(x);
-    } else if(x < y) {
-        x1 = x;
-        y1 = (Math.abs(y) + step) * Math.sign(y);
-    } else {
-        x1 = x;
-        y1 = (Math.abs(y) + step) * Math.sign(y);
+    if(y != 0) {
+        y1 = y + step * Math.sign(y);
+    } else if (x != 0) {
+        x1 = x + step * Math.sign(x);
+    }
+    else {
+        // error
     }
 
     const desCoodinate = new CoordinatesState();
     desCoodinate.x = currentTile.coordinates.x + x1;
     desCoodinate.y = currentTile.coordinates.y + y1;
 
-    const xDir = x1 - x;
-    const yDir = y1 - y;
-    if(xDir >= 1) {
-        return {
-            wallType: enemyTile.walls[WALL_DIRECT.RIGHT],
-            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
-            desCoodinate: desCoodinate
-        };
-    } else if(xDir <= -1) {
-        return {
-            wallType: enemyTile.walls[WALL_DIRECT.LEFT],
-            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
-            desCoodinate: desCoodinate
-        };
-    } else if(yDir >= 1) {
-        return {
-            wallType: enemyTile.walls[WALL_DIRECT.TOP],
-            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
-            desCoodinate: desCoodinate
-        };
-    } else if(yDir <= -1) {
-        return {
-            wallType: enemyTile.walls[WALL_DIRECT.DOWN],
-            desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
-            desCoodinate: desCoodinate
-        };
-    }
+    return {
+        wallType: enemyTile.walls[getDirectFromCoord(x1, y1)],
+        desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+        desCoodinate: desCoodinate
+    };
 
+    // const xDir = x1 - x;
+    // const yDir = y1 - y;
+    // if(xDir >= 1) {
+    //     return {
+    //         wallType: enemyTile.walls[WALL_DIRECT.RIGHT],
+    //         desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+    //         desCoodinate: desCoodinate
+    //     };
+    // } else if(xDir <= -1) {
+    //     return {
+    //         wallType: enemyTile.walls[WALL_DIRECT.LEFT],
+    //         desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+    //         desCoodinate: desCoodinate
+    //     };
+    // } else if(yDir >= 1) {
+    //     return {
+    //         wallType: enemyTile.walls[WALL_DIRECT.TOP],
+    //         desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+    //         desCoodinate: desCoodinate
+    //     };
+    // } else if(yDir <= -1) {
+    //     return {
+    //         wallType: enemyTile.walls[WALL_DIRECT.DOWN],
+    //         desTileId: coordToTileId(room.state.map.tiles, desCoodinate),
+    //         desCoodinate: desCoodinate
+    //     };
+    // }
+
+}
+
+function getDirectFromCoord(x: number, y: number) : number {
+    return (1 - y) * (x == 0? 0 : 1) + (2 - x) * (y == 0? 0 : 1);
 }
 
 export function getCharacterIdsInArea(character: CharacterState, range: number, room : UfbRoom) : string[] {
@@ -1228,4 +1254,46 @@ export function IsYellowMonster(key: string) {
     key == MONSTERS[MONSTER_TYPE.EARWIG_YELLOW].characterClass ||
     key == MONSTERS[MONSTER_TYPE.SPIDER_YELLOW].characterClass ||
     key == MONSTERS[MONSTER_TYPE.CENTIPEDE_YELLOW].characterClass; 
+}
+
+export function getPortalPosition(data: SpawnEntity, room: UfbRoom) {
+    
+    let tileId = getNextPortalTilePosition(data, room);
+
+    if(tileId != "") {
+        tileId = getOpenTilePosition(tileId, room);
+    }
+    return tileId;
+}
+
+export function getNextPortalTilePosition(data: SpawnEntity, room: UfbRoom): string {
+    let tileId = "";
+    const parameters: PortalEntityParameters = JSON.parse(data.parameters);
+
+    room.state.map.spawnEntities.forEach(entity => {
+        if(entity.type == "Portal") {
+            const entityParams: PortalEntityParameters = JSON.parse(entity.parameters);
+            console.log("entityParams: ", tileId, entity.parameters, entityParams);
+            if(entityParams.portalGroup != parameters.portalGroup && entityParams.portalIndex == parameters.portalIndex) {
+                tileId = entity.tileId;
+            }
+        }
+    });
+    return tileId;
+}
+
+export function getOpenTilePosition(tileId: string, room: UfbRoom) : string {
+    
+    const desTile = room.state.map.tiles.get(tileId);
+
+    if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
+        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
+    } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
+        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "right");
+    } else if(desTile.walls[2] == EDGE_TYPE.BASIC) {   //DOWN
+        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "down");
+    } else if(desTile.walls[3] == EDGE_TYPE.BASIC) {   //LEFT
+        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
+    }
+    return tileId;
 }
