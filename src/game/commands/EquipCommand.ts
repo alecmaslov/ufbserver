@@ -5,7 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { PowerMoveListMessage } from "#game/message-types";
-import { powermoves } from "#assets/resources";
+import { powermoves, POWERTYPE } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 
@@ -33,6 +33,24 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
             console.log("count issue");
             return;
         }
+
+        // BAN EQUIP POWER
+        let isBan = false;
+
+        character.equipSlots.forEach(slot => {
+            if( 
+                ([POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(slot.id) != -1 && [POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(power.id) != -1) || 
+                ([POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(slot.id) != -1 && [POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(power.id) != -1)
+            ){
+                isBan = true;
+            }
+        });
+
+        if(isBan) {
+            this.room.notify(client, "You can not equip this power because of ban power", "error");
+            return;
+        }
+
         power.count--;
 
         // ADD EQUIP SLOTS
