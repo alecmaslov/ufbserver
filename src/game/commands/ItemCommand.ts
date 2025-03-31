@@ -6,6 +6,7 @@ import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
 import { addItemToCharacter, addPowerToCharacter, addStackToCharacter } from "#game/helpers/map-helpers";
+import { SpawnEntity } from "#game/schema/MapState";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -104,5 +105,16 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         character.stats.coin += message.coinCount;
         character.stats.bags++;
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
+
+        let idx = -1;
+        this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
+            if(entity.tileId == message.tileId) {
+                idx = id;
+            }
+        });
+
+        if(idx != -1) {
+            this.room.state.map.spawnEntities.deleteAt(idx);
+        }
     }
 }

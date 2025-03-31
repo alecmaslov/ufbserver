@@ -10,7 +10,7 @@ import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
 import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, TURN_TIME, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
-import { MoveItemEntity } from "./schema/MapState";
+import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
 import { Dictionary } from "@prisma/client/runtime/library";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
@@ -708,7 +708,14 @@ export const messageHandlers: MessageHandlers = {
         room.broadcast(SERVER_TO_CLIENT_MESSAGE.RESPAWN_MERCHANT, {
             tileId : tileId,
             oldTileId : message.tileId
-        })
+        });
+
+        // CHANGE ENTITY POSITION.
+        room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
+            if(entity.tileId == message.tileId) {
+                entity.tileId = tileId;
+            }
+        });
     },
 
     setActiveQuest: (room, client, message) => {

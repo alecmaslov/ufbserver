@@ -6,6 +6,7 @@ import { getCharacterById, getClientCharacter, getItemIdsByLevel, getPowerIdsByL
 import { SpawnInitMessage } from "#game/message-types";
 import { TURN_TIME } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { SpawnEntity } from "#game/schema/MapState";
 
 type Payload = { client: Client; message: any;};
 
@@ -56,5 +57,16 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
         character.coordinates.x = message.destination.x;
         character.coordinates.y = message.destination.y;
         character.currentTileId = message.tileId;
+
+        let idx = -1;
+        this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
+            if(entity.tileId == message.tileId) {
+                idx = id;
+            }
+        });
+
+        if(idx != -1) {
+            this.room.state.map.spawnEntities.deleteAt(idx);
+        }
     }
 }

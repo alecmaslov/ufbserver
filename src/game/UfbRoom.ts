@@ -134,7 +134,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
 
             // allow disconnected client to reconnect into this room until 20 seconds
-            await this.allowReconnection(client, 200);
+            await this.allowReconnection(client, 30);
      
             console.log("connect failed");
             // client returned! let's re-activate it.

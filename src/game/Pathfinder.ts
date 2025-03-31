@@ -68,59 +68,6 @@ export class Pathfinder {
       };
     }
   }
-
-  getTilesData(mapState: MapState) {
-    let data : any = {};
-
-    mapState.tiles.forEach((tile) => {
-        if(tile.type == TileType.DoubleBridge || tile.type == TileType.VerticalBridge || tile.type == TileType.HorizontalBridge) return;
-        
-        data[tile.id] = [];
-        tile.walls.forEach((edgeType, i) => {
-            let direct = "";
-            if (i == WALL_DIRECT.TOP) {
-                direct = "top";
-            } else if (i == WALL_DIRECT.DOWN) {
-                direct = "down";
-            } else if (i == WALL_DIRECT.LEFT) {
-                direct = "left";
-            } else if (i == WALL_DIRECT.RIGHT) {
-                direct = "right";
-            }
-            const id = getTileIdByDirection(
-                mapState.tiles,
-                tile.coordinates,
-                direct
-            );
-            if (id != "") {
-                const state = mapState.tiles.get(id);
-                
-                if ( edgeType == EDGE_TYPE.BASIC || edgeType == EDGE_TYPE.CLIFF || edgeType == EDGE_TYPE.STAIR ) {
-                    data[tile.id].push({ id, energyCost: 1 });
-                } else if( edgeType == EDGE_TYPE.BRIDGE ) {
-
-                    const id1 = getTileIdByDirection(
-                        mapState.tiles,
-                        state.coordinates,
-                        direct
-                    );
-                    if(id1 != "") {
-                        if(state.type == TileType.DoubleBridge) {
-                            data[tile.id].push({ id1, energyCost: 2 });
-                        } else if(state.type == TileType.HorizontalBridge && (i == WALL_DIRECT.RIGHT || i == WALL_DIRECT.LEFT)) {
-                            data[tile.id].push({ id1, energyCost: 2 });
-                        } else if(state.type == TileType.VerticalBridge && (i == WALL_DIRECT.RIGHT || i == WALL_DIRECT.LEFT)) {
-                            data[tile.id].push({ id1, energyCost: 2 });
-                        }
-                    }
-                }
-            }
-      });
-    });
-
-    return data;
-  }
-
   
   getGraph(room: UfbRoomState, isFeather = false): Graph<any, NavGraphLinkData> {
     const mapState: MapState = room.map;
@@ -210,7 +157,7 @@ export class Pathfinder {
                   // }
               } else if((edgeType == EDGE_TYPE.WALL || edgeType == EDGE_TYPE.CLIFF) && isFeather) {
                 graph.addLink(tile.id, id, {
-                  energyCost: 5,
+                  energyCost: 10,
                   blocked: banTileIds.indexOf(id) != -1 || banTileIds.indexOf(tile.id) != -1,
                   featherCost: 1
                 });

@@ -115,6 +115,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             featherCost = -route_path.featherCount;
         }
 
+        console.log("---check find path");
+
 
         if (!force && character.stats.energy.current < cost) {
             this.room.notify(
@@ -125,7 +127,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             return;
         }
 
-        if(!force && !character.items[ITEMTYPE.FEATHER] && character.items[ITEMTYPE.FEATHER].count >= featherCost) {
+        if(!force && (featherCost != 0 && !!character.items[ITEMTYPE.FEATHER] && character.items[ITEMTYPE.FEATHER].count >= featherCost)) 
+        {
             this.room.notify(
                 client,
                 "You don't have enough feather to move there!",
@@ -133,6 +136,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             );
             return;
         }
+        console.log("---check path");
 
         path.forEach(p => {
             const idx = this.room.state.map.moveItemEntities.findIndex(
@@ -203,6 +207,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 tileId: message.tileId
             });
         }
+
+        console.log("---send find path");
+
 
         character.coordinates.x = destinationTile.coordinates.x;
         character.coordinates.y = destinationTile.coordinates.y;
