@@ -998,6 +998,7 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
         state.powers.deleteAt(pIdx);
 
         const newPower = new Item();
+        newPower.id = id;
         newPower.name = powers[id].name;
         newPower.count = oldCount + count;
         newPower.description = "";
