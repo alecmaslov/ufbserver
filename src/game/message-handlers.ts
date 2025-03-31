@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -16,6 +16,7 @@ import { Dictionary } from "@prisma/client/runtime/library";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 import { getRandomElements } from "#utils/collections";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { UnEquipCommand } from "./commands/UnEquipCommand";
 
 
 type MessageHandler<TMessage> = (
@@ -188,38 +189,10 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.UN_EQUIP_POWER]: (room, client, message) => {
-        const powerId = message.powerId;
-        const character = getCharacterById(room, message.characterId);
-
-        if(character.stats.energy.current <= 2) {
-            console.log("energy less");
-            room.notify(client, "You are not enough in energy!", "error");
-            return;
-        }
-
-        character.stats.energy.add(-2);
-        
-        const power : Item = character.powers.find(p => p.id == powerId);
-        if(power == null) {
-            const newPower = new Item();
-            newPower.id = powerId;
-            newPower.count = 1;
-            newPower.name = powers[powerId].name;
-            newPower.description = "description";
-            newPower.level = powers[powerId].level;
-            newPower.cost = POWERCOSTS[newPower.level].cost;
-            newPower.sell = POWERCOSTS[newPower.level].sell;
-
-            character.powers.push(newPower);
-        } else {
-            power.count++;
-        }
-
-        // DELETE SLOTS SYSTEM
-        const idx = character.equipSlots.findIndex(p => p.id == power.id);
-        character.equipSlots.deleteAt(idx);
-
-        client.send(SERVER_TO_CLIENT_MESSAGE.UNEQUIP_POWER_RECEIVED, {playerId: character.id});
+        room.dispatcher.dispatch(new UnEquipCommand(), {
+            client,
+            message
+        });
     },
 
     // MOVE DETAIL INFO

@@ -981,8 +981,8 @@ export function addStackToCharacter(id: number, count : number, state: Character
 }
 
 export function addPowerToCharacter(id: number, count: number, state: CharacterState) {
-    const power : Item = state.powers.find(p => p.id == id);
-    if(power == null) {
+    const pIdx : number = state.powers.findIndex(p => p.id == id);
+    if(pIdx == -1) {
         const newPower = new Item();
         newPower.id = id;
         newPower.name = powers[id].name;
@@ -994,7 +994,18 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
 
         state.powers.push(newPower);
     } else {
-        power.count += count;
+        let oldCount = state.powers[pIdx].count;
+        state.powers.deleteAt(pIdx);
+
+        const newPower = new Item();
+        newPower.name = powers[id].name;
+        newPower.count = oldCount + count;
+        newPower.description = "";
+        newPower.level = powers[id].level;
+        newPower.cost = POWERCOSTS[powers[id].level].cost;
+        newPower.sell = POWERCOSTS[powers[id].level].sell;
+
+        state.powers.push(newPower);
     }
 }
 
