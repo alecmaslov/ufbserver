@@ -871,8 +871,6 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 
     if(count == 0) return;
 
-    const it = state.items.find(ii => ii.id == id);
-
     if(id == ITEMTYPE.MANA) {
         const maxMana = state.stats.maxMana;
         let addedCount = Math.max(0, mana + count - maxMana);
@@ -892,10 +890,15 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
         }
     }
 
-    if(it != null) {
+    const itemIdx = state.items.findIndex(ii => ii.id == id);
+
+    if(itemIdx != -1) {
+        const it = state.items.find(ii => ii.id == id);
         it.count += count;
+        state.items.deleteAt(itemIdx);
+        state.items.push(it);
     } else {
-        console.log("add new item: ", id, count, ITEMDETAIL[id])
+        
         const newItem = new Item();
         newItem.id = id;
         newItem.count = count;
@@ -913,6 +916,7 @@ export function addStackToCharacter(id: number, count : number, state: Character
     // ADD BAN STACK LOGIC
     if(!!BAN_STACKS[id]) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
+        const banIdx = state.stacks.findIndex(st => st.id == BAN_STACKS[id]);
         if(banStack != null && banStack.count > 0) {
             if(banStack.count >= count) {
                 if(client != null) {
@@ -934,7 +938,6 @@ export function addStackToCharacter(id: number, count : number, state: Character
                         }
                     )
                 }
-
                 banStack.count -= count;
                 return;
             } else {
@@ -960,7 +963,8 @@ export function addStackToCharacter(id: number, count : number, state: Character
                 count -= banStack.count;
                 banStack.count = 0;
             }
-
+            state.stacks.deleteAt(banIdx);
+            state.stacks.push(banStack);
         }
     }
 
@@ -976,7 +980,10 @@ export function addStackToCharacter(id: number, count : number, state: Character
 
         state.stacks.push(newStack);
     } else {
+        const stackIdx = state.stacks.findIndex(st => st.id == id);
         stack.count += count;
+        state.stacks.deleteAt(stackIdx);
+        state.stacks.push(stack);
     }
 }
 
@@ -994,19 +1001,10 @@ export function addPowerToCharacter(id: number, count: number, state: CharacterS
 
         state.powers.push(newPower);
     } else {
-        let oldCount = state.powers[pIdx].count;
+        let oldPower = state.powers[pIdx];
+        oldPower.count += count;
         state.powers.deleteAt(pIdx);
-
-        const newPower = new Item();
-        newPower.id = id;
-        newPower.name = powers[id].name;
-        newPower.count = oldCount + count;
-        newPower.description = "";
-        newPower.level = powers[id].level;
-        newPower.cost = POWERCOSTS[powers[id].level].cost;
-        newPower.sell = POWERCOSTS[powers[id].level].sell;
-
-        state.powers.push(newPower);
+        state.powers.push(oldPower);
     }
 }
 
@@ -1105,7 +1103,7 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
 
             } else if(character.type == USER_TYPE.USER) {
                 if(!!character.stacks[STACKTYPE.Revive] && character.stacks[STACKTYPE.Revive].count > 0) {
-                    character.stacks[STACKTYPE.Revive].count--;
+                    addStackToCharacter(STACKTYPE.Revive, -1, character, client, room);
                     character.stats.health.add(1);
                     character.stats.isRevive = true;
                     if(client == null) {
@@ -1191,12 +1189,10 @@ export function GetNearestPlayerId( currentTileId: string, room: UfbRoom) {
 
 export function GetNearestTileId( currentTileId: string, room: UfbRoom) {
     const id = GetNearestPlayerId(currentTileId, room);
-    console.log("near : ", id)
     if(id != "") {
         const directs = ['top', 'down', 'left', 'right'];
         const dirt = directs[Math.ceil(Math.random() * 100) % directs.length];
         const tile = room.state.map.tiles.get(room.state.characters.get(id).currentTileId);
-        console.log("near : ", dirt, tile.coordinates.x, room.state.characters.get(id).currentTileId, dirt)
         return getTileIdByDirection(room.state.map.tiles, tile.coordinates, dirt);
     } else {
         return id;
@@ -1285,7 +1281,6 @@ export function getNextPortalTilePosition(data: SpawnEntity, room: UfbRoom): str
     room.state.map.spawnEntities.forEach(entity => {
         if(entity.type == "Portal") {
             const entityParams: PortalEntityParameters = JSON.parse(entity.parameters);
-            console.log("entityParams: ", tileId, entity.parameters, entityParams);
             if(entityParams.portalGroup != parameters.portalGroup && entityParams.portalIndex == parameters.portalIndex) {
                 tileId = entity.tileId;
             }

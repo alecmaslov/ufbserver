@@ -396,7 +396,7 @@ export const messageHandlers: MessageHandlers = {
         // REVENGE STACK ACTIVE
         if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, room)) {
             if(message.stackId == STACKTYPE.Revenge) {
-                enemy.stacks[STACKTYPE.Revenge].count--;
+                addStackToCharacter(STACKTYPE.Revenge, -1, enemy, client, room);
                 setCharacterHealth(character, -enemyDiceCount, room, client, "heart");
                 enemy.stats.ultimate.add(enemyDiceCount);
 
@@ -635,7 +635,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                item.count--;
+                addItemToCharacter(id, -1, character);
             }
         } else if(type == "power"){
             character.stats.coin += POWERCOSTS[id].sell;
@@ -649,7 +649,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                power.count--;
+                addPowerToCharacter(power.id, -1, character);
             }
 
         } else if(type == "stack"){
@@ -664,7 +664,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                stack.count--;
+                addStackToCharacter(stack.id, -1, character, client, room);
             }
         }
     },
@@ -731,7 +731,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                it1.count--;
+                addItemToCharacter(idx1, -1, character);
             }
 
             if(it2 == null || it2.count == 0) {
@@ -742,7 +742,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                it2.count--;
+                addItemToCharacter(idx2, -1, character);
             }
 
             if(it3 == null) {
@@ -756,7 +756,7 @@ export const messageHandlers: MessageHandlers = {
 
                 character.items.push(newIt);
             } else {
-                it3.count++;
+                addItemToCharacter(idx3, 1, character);
             }
 
             if(remainCoin >= coin) {
@@ -783,7 +783,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                it1.count--;
+                addPowerToCharacter(idx1, -1, character);
             }
 
             if(it2 == null || it2.count == 0) {
@@ -794,7 +794,7 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                it2.count--;
+                addPowerToCharacter(idx2, -1, character);
             }
 
             if(it3 == null) {
@@ -808,7 +808,7 @@ export const messageHandlers: MessageHandlers = {
 
                 character.powers.push(newIt);
             } else {
-                it3.count++;
+                addPowerToCharacter(idx3, 1, character);
             }
 
             if(remainCoin >= coin) {
@@ -971,11 +971,39 @@ export const messageHandlers: MessageHandlers = {
                     addItemToCharacter(item.id, item.count, character);
                 }
 
-                bonuses.push(bonus);
+                if(EQUIP_TURN_BONUS[slot.id] != null) {
+                    bonuses.push(bonus);
+                }
             })
 
             if(bonuses.length > 0) {
                 client.send( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
+            }
+        }
+    },
+
+    
+    [CLIENT_SERVER_MESSAGE.EQUIP_BONUS_LIST]: (room, client, message) => {
+
+        const character = getCharacterById(room, message.characterId);
+        if(room.state.currentCharacterId == character.id) {
+            const powerId = message.powerId;
+            let bonuses: any = [];
+            character.equipSlots.forEach(slot => {
+                if(slot.id == powerId) {
+                    // ADD BONUS in CHARACTER..
+                    if(EQUIP_TURN_BONUS[slot.id] != null) {
+                        const bonus = {
+                            ...EQUIP_TURN_BONUS[slot.id],
+                            id: slot.id,
+                        }
+                        bonuses.push(bonus);
+                    } 
+                }
+            })
+
+            if(bonuses.length > 0) {
+                client.send( SERVER_TO_CLIENT_MESSAGE.EQUIP_BONUS_LIST, { bonuses });
             }
         }
     },
@@ -1019,7 +1047,7 @@ export const messageHandlers: MessageHandlers = {
 
         character.stacks.forEach(stack => {
             if(stack.id == stackId) {
-                stack.count--;
+                addStackToCharacter(stack.id, -1, character, client, room);
             }
         });
 

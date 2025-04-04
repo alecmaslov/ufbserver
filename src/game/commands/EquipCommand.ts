@@ -8,6 +8,7 @@ import { PowerMoveListMessage } from "#game/message-types";
 import { powermoves, POWERTYPE } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { addPowerToCharacter } from "#game/helpers/map-helpers";
 
 type OnEquipCommandPayload = {
     client: Client;
@@ -51,7 +52,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
             return;
         }
 
-        power.count--;
+        addPowerToCharacter(power.id, -1, character);
 
         // ADD EQUIP SLOTS
         character.equipSlots.push(power);

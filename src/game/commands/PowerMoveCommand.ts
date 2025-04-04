@@ -162,7 +162,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                             count : enemy.stacks[STACKTYPE.Steady].count,
                         });
 
-                        enemy.stacks[STACKTYPE.Steady].count--;
+                        addStackToCharacter(STACKTYPE.Steady, -1, enemy, client, this.room);
 
                     } else {
                         const result = getPerkEffectDamage(character, enemy, this.room, powermove.result[key]);
@@ -311,7 +311,8 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                     const id = item.id;
 
                     if(target == enemy && !!enemy.stacks[STACKTYPE.Dodge] && enemy.stacks[STACKTYPE.Dodge].count > 0) {
-                        enemy.stacks[STACKTYPE.Dodge].count--;
+
+                        addStackToCharacter(STACKTYPE.Dodge, -1, enemy, client, this.room);
 
                         // DODGE STACK ... remove Item effect
                         client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_ITEM_TOAST, {
@@ -377,7 +378,8 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             } else if(key == "dice") {
                 if(target == enemy) {
                     if(!!enemy.stacks[STACKTYPE.Block] && enemy.stacks[STACKTYPE.Block].count > 0) {
-                        enemy.stacks[STACKTYPE.Block].count--;
+                        addStackToCharacter(STACKTYPE.Block, -1, enemy, client, this.room);
+                        
                         client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
                             enemyId: enemy.id,
                             characterId: character.id,
