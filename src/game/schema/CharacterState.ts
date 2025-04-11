@@ -49,8 +49,8 @@ export class CharacterStatsState extends Schema {
     @type("int32") coin: number = 0;
     @type("int32") range: number = 0;
     @type("int32") bags: number = 0;
-    @type("int16") arrowLimit: number = 3;
-    @type("int16") bombLimit: number = 3;
+    @type("int16") arrowLimit: number = 999;
+    @type("int16") bombLimit: number = 999;
     @type("int8") maxMelee: number = 2;
     @type("int8") maxMana: number = 2;
 }

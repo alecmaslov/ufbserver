@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, TURN_TIME, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
 import { Schema, type, ArraySchema } from "@colyseus/schema";
@@ -365,12 +365,12 @@ export const messageHandlers: MessageHandlers = {
             character.currentTileId,
             tileId
         );
-        console.log("ai move : ", path.length, cost, featherCount);
+        console.log("ai move : ", path.length, cost, featherCount, message.isFeather);
 
         client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVE_POINT, {
             characterId: character.id,
             path,
-            cost: cost - 5 * featherCount,
+            cost: cost - featherStep * featherCount,
             featherCount,
             portalNextTileId
         });
@@ -451,18 +451,28 @@ export const messageHandlers: MessageHandlers = {
     },
 
     getMerchantData: (room, client, message) => {
+        const itemData1 : Item[] = [];
+        const itemData2 : Item[] = [];
         const itemData : Item[] = [];
         Object.keys(ITEMTYPE).forEach(key => {
             const id: number = ITEMTYPE[key];
-            let item = new Item();
-            item.id = id;
-            item.name = ITEMDETAIL[id].name;
-            item.level = ITEMDETAIL[id].level;
-            item.cost = ITEMDETAIL[id].cost;
-            item.sell = ITEMDETAIL[id].sell;
-            itemData.push(item);
+            if(!!ITEMDETAIL[id]) {
+                let item = new Item();
+                item.id = id;
+                item.name = ITEMDETAIL[id].name;
+                item.level = ITEMDETAIL[id].level;
+                item.cost = ITEMDETAIL[id].cost;
+                item.sell = ITEMDETAIL[id].sell;
+                if(item.level == 1) {
+                    itemData1.push(item);
+                } else if(item.level == 2) {
+                    itemData2.push(item);
+                }
+                itemData.push(item);
+            }
         });
-        //const randomItem = getRandomElements(itemData, 3);
+        const randomItem1 = getRandomElements(itemData1, 3);
+        const randomItem2 = getRandomElements(itemData2, 3);
 
         const powerData : Item[] = [];
         Object.keys(powers).forEach(key => {
@@ -473,9 +483,11 @@ export const messageHandlers: MessageHandlers = {
             power.level = powers[id].level;
             power.cost = POWERCOSTS[power.level].cost;
             power.sell = POWERCOSTS[power.level].sell;
-            powerData.push(power);
+            if(power.level == 1) {
+                powerData.push(power);
+            }
         });
-        //const randomPower = getRandomElements(powerData, 3);
+        const randomPower = getRandomElements(powerData, 3);
 
         const stackData : Item[] = [];
         Object.keys(stacks).forEach(key => {
@@ -488,7 +500,7 @@ export const messageHandlers: MessageHandlers = {
             stack.sell = stacks[id].sell;
             stackData.push(stack);
         });
-        //const randomStack = getRandomElements(stackData, 3);
+        const randomStack = getRandomElements(stackData, 3);
 
         const questData : Quest[] = [];
         const Qarray = getRandomElements(Object.keys(QUESTS).map(key => QUESTS[Number(key)]), 3);
@@ -519,8 +531,10 @@ export const messageHandlers: MessageHandlers = {
 
         const getMerchantDataDataMessage = {
             items: itemData,
-            powers: powerData,
-            stacks: stackData,
+            items1: randomItem1,
+            items2: randomItem2,
+            powers: randomPower,
+            stacks: randomStack,
             quests: questData,
             tileId: message.tileId
         };

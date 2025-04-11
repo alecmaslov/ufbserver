@@ -846,6 +846,16 @@ export function GetRealItemIdByDouble(id : number) {
     }
 }
 
+export function getItemCountFromCharacter(id: number, state: CharacterState) {
+    let count = 0;
+
+    if(!!state.items[id]) {
+        count = state.items[id].count;
+    }
+
+    return count;
+}
+
 export function addItemToCharacter(id: number, count : number, state: CharacterState) {
     const {arrow, bomb, mana, melee} = getArrowBombCount(state);
 

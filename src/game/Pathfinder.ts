@@ -1,4 +1,4 @@
-import { EDGE_TYPE, ITEMTYPE, WALL_DIRECT } from "#assets/resources";
+import { EDGE_TYPE, featherStep, ITEMTYPE, WALL_DIRECT } from "#assets/resources";
 import { getPathCost, getTileIdByDirection } from "#game/helpers/map-helpers";
 import { MapState, TileState } from "#game/schema/MapState";
 import { PathStep } from "#shared-types";
@@ -157,7 +157,7 @@ export class Pathfinder {
                   // }
               } else if((edgeType == EDGE_TYPE.WALL || edgeType == EDGE_TYPE.CLIFF) && isFeather) {
                 graph.addLink(tile.id, id, {
-                  energyCost: 10,
+                  energyCost: featherStep,
                   blocked: banTileIds.indexOf(id) != -1 || banTileIds.indexOf(tile.id) != -1,
                   featherCost: 1
                 });

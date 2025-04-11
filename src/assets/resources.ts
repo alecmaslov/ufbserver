@@ -249,6 +249,10 @@ export const ITEMTYPE: {[key : string] : number} = {
     ICE_BOMB2 : 48,
     VOID_BOMB2 : 49,
     CALTROP_BOMB2 : 50,
+
+    //RANDOM ITEM
+    RandomArrow : 51,
+    RandomBomb : 52
 }
 
 export const STACKTYPE: {[key : string] : number} = {
@@ -930,7 +934,7 @@ export const powermoves : any = [
         ],
         costList: [
             {
-                id: ITEMTYPE.ARROW,
+                id: ITEMTYPE.RandomArrow,
                 count: 1
             },
         ],
@@ -1011,8 +1015,8 @@ export const powermoves : any = [
                 count: 1
             },
             {
-                id: ITEMTYPE.ARROW,
-                count: 2
+                id: ITEMTYPE.RandomArrow,
+                count: 1
             },
         ],
         result : {
@@ -1063,7 +1067,7 @@ export const powermoves : any = [
         ],
         costList: [
             {
-                id: ITEMTYPE.ARROW,
+                id: ITEMTYPE.RandomArrow,
                 count: 1
             },
         ],
@@ -1091,6 +1095,10 @@ export const powermoves : any = [
                 id: ITEMTYPE.MANA,
                 count: 1
             },
+            {
+                id: ITEMTYPE.RandomArrow,
+                count: 1
+            }
         ],
         result : {
             health: -2,
@@ -1209,7 +1217,7 @@ export const powermoves : any = [
         ],
         costList: [
             {
-                id: ITEMTYPE.BOMB,
+                id: ITEMTYPE.RandomBomb,
                 count: 1
             },
         ],
@@ -3288,3 +3296,5 @@ export const BAN_STACKS = {
 }
 
 export const TURN_TIME = 180;
+
+export const featherStep = 6;

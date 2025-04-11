@@ -40,18 +40,24 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             isResult = character.stats.energy.current >= powermove.light;
         }
         if(powermove["costList"].length > 0 && isResult) {
-            powermove.costList.forEach((item : any) => {
-                if(isResult) {
-                    const idx = character.items.findIndex(ii => ii.id == item.id);
-                    if(idx > -1) {
-                        isResult = character.items[idx].count >= item.count;
-                        if(!isResult) return;
+            for (let i = powermove.costList.length - 1; i >= 0; i--) {
+                const item = powermove.costList[i];
+                if (isResult) {
+                    if (!(item.id == ITEMTYPE.RandomArrow || item.id == ITEMTYPE.RandomBomb)) {
+                        const idx = character.items.findIndex(ii => ii.id == item.id);
+                        if (idx > -1) {
+                            isResult = character.items[idx].count >= item.count;
+                            if (!isResult) return;
+                        } else {
+                            isResult = false;
+                            return;
+                        }
                     } else {
-                        isResult = false;
-                        return;
+                        // Remove the item from costList
+                        powermove.costList.splice(i, 1);
                     }
                 }
-            });
+            }
         }
 
         console.log("------ check logic======", isResult)

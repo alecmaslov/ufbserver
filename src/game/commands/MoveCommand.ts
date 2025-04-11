@@ -3,10 +3,10 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, getItemCountFromCharacter, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
-import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
+import { EDGE_TYPE, ITEMTYPE, featherStep, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -127,7 +127,11 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             return;
         }
 
-        if(!force && (featherCost != 0 && !!character.items[ITEMTYPE.FEATHER] && character.items[ITEMTYPE.FEATHER].count >= featherCost)) 
+        let userFeatherCount = getItemCountFromCharacter(ITEMTYPE.FEATHER, character);
+
+        console.log("feather count: ", userFeatherCount, featherCost);
+
+        if(!force && (featherCost != 0 && userFeatherCount < featherCost)) 
         {
             this.room.notify(
                 client,
@@ -192,6 +196,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             energy = originEnergy - character.stats.energy.current;
             character.stats.energy.add(originEnergy - character.stats.energy.current);
         } else {
+            cost = cost - featherStep * featherCost;
             character.stats.energy.add(cost);
             addItemToCharacter(ITEMTYPE.FEATHER, featherCost, character);
         }
