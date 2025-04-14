@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -263,10 +263,21 @@ export const messageHandlers: MessageHandlers = {
         const character = getCharacterById(room, message.characterId);
         const desTile = room.state.map.tiles.get(message.tileId);
         
+        const itemCount = getItemCountFromCharacter(itemId, character);
+
         if(character.stats.energy.current == 0) {
             room.notify(
                 client,
-                "You don't have enough energy to move there!",
+                "You don't have enough energy",
+                "error"
+            );
+            return;
+        }
+
+        if(itemCount == 0) {
+            room.notify(
+                client,
+                "You don't have enough item to move there!",
                 "error"
             );
             return;
