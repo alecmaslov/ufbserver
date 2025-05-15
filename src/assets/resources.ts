@@ -1686,7 +1686,7 @@ export const powermoves : any = [
             },
         ],
         result : {
-            dice: DICE_TYPE.DICE_6_4,
+            dice: DICE_TYPE.DICE_6,
             stacks: [
                 {
                     id: STACKTYPE.Freeze,
@@ -2710,7 +2710,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         percent: 7,
     },
     [ITEMTYPE.FLAME_CHILI2]: {
-        level: 1,
+        level: 2,
         cost: 3,
         sell: -1,
         name: "Flame Chili2",
@@ -2718,7 +2718,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.FLAME_CHILI3]: {
-        level: 1,
+        level: 3,
         cost: 4,
         sell: -1,
         name: "Flame Chili3",
@@ -2726,7 +2726,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.ICE_TEA2]: {
-        level: 1,
+        level: 2,
         cost: 3,
         sell: -1,
         name: "Ice Tea2",
@@ -2734,7 +2734,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.ICE_TEA3]: {
-        level: 1,
+        level: 3,
         cost: 4,
         sell: -1,
         name: "Ice Tea3",
@@ -2742,7 +2742,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.HEART_PIECE2]: {
-        level: 1,
+        level: 2,
         cost: 7,
         sell: -1,
         name: "Heart Piece3",
@@ -2750,7 +2750,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.POTION2]: {
-        level: 1,
+        level: 2,
         cost: 10,
         sell: -1,
         name: "Potion2",
@@ -2758,7 +2758,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.POTION3]: {
-        level: 1,
+        level: 3,
         cost: 15,
         sell: -1,
         name: "Potion3",
@@ -2766,7 +2766,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.FEATHER2]: {
-        level: 1,
+        level: 2,
         cost: 10,
         sell: -1,
         name: "Feather2",
@@ -2774,7 +2774,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.FEATHER3]: {
-        level: 1,
+        level: 3,
         cost: 14,
         sell: -1,
         name: "Feather3",
@@ -2782,7 +2782,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.ARROW2]: {
-        level: 1,
+        level: 2,
         cost: 7,
         sell: -1,
         name: "Arrow2",
@@ -2790,7 +2790,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.ARROW3]: {
-        level: 1,
+        level: 3,
         cost: 10,
         sell: -1,
         name: "Arrow3",
@@ -2798,7 +2798,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.BOMB2]: {
-        level: 1,
+        level: 2,
         cost: 10,
         sell: -1,
         name: "Bomb 2",
@@ -2806,7 +2806,7 @@ export const ITEMDETAIL: {[key: number]: {level: number, cost: number, sell: num
         isDouble: true
     },
     [ITEMTYPE.BOMB3]: {
-        level: 1,
+        level: 3,
         cost: 14,
         sell: -1,
         name: "Bomb 3",

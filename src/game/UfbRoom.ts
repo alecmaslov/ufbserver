@@ -42,6 +42,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     isMonsterActive: boolean = true;
     aiInterval: any;
+    startTurnTime: number;
 
     spawnZoneArray: SpawnZone[];
 
@@ -208,6 +209,9 @@ export class UfbRoom extends Room<UfbRoomState> {
             { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime : TURN_TIME },
             { afterNextPatch: true }
         );
+
+        this.startTurnTime = Date.now();
+        console.log("turn time ", this.startTurnTime);
     }
 
     resetTurn() {
@@ -442,6 +446,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
 
         if(selectedMonster == null || selectedMonster.type == USER_TYPE.USER || !this.isMonsterActive) {
+            if(selectedMonster.type == USER_TYPE.USER)
+                this.checkUserTimer();
             return;
         }
 
@@ -559,6 +565,16 @@ export class UfbRoom extends Room<UfbRoomState> {
             setTimeout(this.incrementTurn.bind(this), 2000);
         }
 
+    }
+
+    checkUserTimer() {
+        if(this.startTurnTime > 0) {
+            const duration = (Date.now() - this.startTurnTime) / 1000;
+            console.log(duration, "check timer....")
+            if(duration > TURN_TIME){
+                this.incrementTurn();
+            }
+        }
     }
 
     sendBroadcastStats(score : number, type: string = 'energy') {
@@ -1175,20 +1191,20 @@ export class UfbRoom extends Room<UfbRoomState> {
         );
 
         // TEST:::
-        Object.keys(STACKTYPE).forEach(key => {
-            const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
-            if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
-                const newStack = new Item();
-                newStack.id = STACKTYPE[key];
-                newStack.count = 1;
-                newStack.name = key;
-                newStack.description = stacks[STACKTYPE[key]].description;
-                newStack.level = stacks[STACKTYPE[key]].level;
-                newStack.cost = stacks[STACKTYPE[key]].cost;
-                newStack.sell = stacks[STACKTYPE[key]].sell;
-                monster.stacks.push(newStack);
-            }
-        });                    
+        // Object.keys(STACKTYPE).forEach(key => {
+        //     const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
+        //     if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
+        //         const newStack = new Item();
+        //         newStack.id = STACKTYPE[key];
+        //         newStack.count = 1;
+        //         newStack.name = key;
+        //         newStack.description = stacks[STACKTYPE[key]].description;
+        //         newStack.level = stacks[STACKTYPE[key]].level;
+        //         newStack.cost = stacks[STACKTYPE[key]].cost;
+        //         newStack.sell = stacks[STACKTYPE[key]].sell;
+        //         monster.stacks.push(newStack);
+        //     }
+        // });                    
         // END TEST:::
         console.log("init monster")
         // AI MONSTER EQUIP all POWERS AND INIT ITEM...
@@ -1372,24 +1388,24 @@ export class UfbRoom extends Room<UfbRoomState> {
         character.stats.coin += enemy.stats.coin;
         let addItems: any = [];
         let addPowers: any = [];
-        enemy.items.forEach(item => {
-            if(item.count > 0) {
-                addItemToCharacter(item.id, item.count, character);
-                addItems.push({
-                    id: item.id,
-                    count: item.count
-                })
-            }
-        })
+        // enemy.items.forEach(item => {
+        //     if(item.count > 0) {
+        //         addItemToCharacter(item.id, item.count, character);
+        //         addItems.push({
+        //             id: item.id,
+        //             count: item.count
+        //         })
+        //     }
+        // })
 
-        enemy.powers.forEach(p => {
-            if(p.count > 0) {
-                addPowerToCharacter(p.id, p.count, character);
+        enemy.equipSlots.forEach(p => {
+            // if(p.count > 0) {
+                addPowerToCharacter(p.id, 1, character);
                 addPowers.push({
                     id: p.id,
-                    count: p.count
+                    count: 1
                 })
-            }
+            // }
         });
 
         return {items: addItems, powers: addPowers};

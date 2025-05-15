@@ -163,12 +163,12 @@ export const messageHandlers: MessageHandlers = {
         // character.coordinates.x = message.destination.x;
         // character.coordinates.y = message.destination.y;
         // character.currentTileId = message.tileId;
-
     },
 
     initSpawnMove: (room, client, message) => {
-        console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
-
+        console.log(`Init spawn Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
+        console.log("init spawn logic.....")
+        room.startTurnTime = Date.now();
         room.dispatcher.dispatch(new JoinCommand(), {
             client, message
         });
@@ -586,17 +586,20 @@ export const messageHandlers: MessageHandlers = {
                 return;
             }
         } else if(type == "power") {
-            if(character.stats.coin >= POWERCOSTS[id].cost) {
-                character.stats.coin -= POWERCOSTS[id].cost;
+
+            const lvl = powers[id].level;
+
+            if(character.stats.coin >= POWERCOSTS[lvl].cost) {
+                character.stats.coin -= POWERCOSTS[lvl].cost;
 
                 const power = character.powers.find(p => p.id == id);
                 if(power == null) {
                     const newIt = new Item();
                     newIt.id = id;
                     newIt.count = 1;
-                    newIt.cost = POWERCOSTS[id].cost;
+                    newIt.cost = POWERCOSTS[lvl].cost;
                     newIt.level = powers[id].level;
-                    newIt.sell = POWERCOSTS[id].sell;
+                    newIt.sell = POWERCOSTS[lvl].sell;
                     newIt.name = powers[id].name;
     
                     character.powers.push(newIt);
@@ -649,6 +652,8 @@ export const messageHandlers: MessageHandlers = {
         const type = message.type;
         const id = message.id;
 
+        console.log(type, id);
+
         if(type == "item") {
             character.stats.coin += ITEMDETAIL[id].sell;
             const item =  character.items.find(it => it.id == id);
@@ -663,9 +668,11 @@ export const messageHandlers: MessageHandlers = {
                 addItemToCharacter(id, -1, character);
             }
         } else if(type == "power"){
-            character.stats.coin += POWERCOSTS[id].sell;
-
+            
             const power = character.powers.find(p => p.id == id);
+
+            character.stats.coin += POWERCOSTS[power.level].sell;
+
             if(power == null || power.count == 0) {
                 room.notify(
                     client,
@@ -823,12 +830,13 @@ export const messageHandlers: MessageHandlers = {
             }
 
             if(it3 == null) {
+                const lvl = powers[idx3].level;
                 const newIt = new Item();
                 newIt.id = idx3;
                 newIt.count = 1;
-                newIt.cost = POWERCOSTS[idx3].cost;
+                newIt.cost = POWERCOSTS[lvl].cost;
                 newIt.level = powers[idx3].level;
-                newIt.sell = POWERCOSTS[idx3].sell;
+                newIt.sell = POWERCOSTS[lvl].sell;
                 newIt.name = powers[idx3].name;
 
                 character.powers.push(newIt);
@@ -868,9 +876,10 @@ export const messageHandlers: MessageHandlers = {
         const character = getCharacterById(room, message.characterId);
 
         if(character != null) {
+            console.log((Date.now() - room.startTurnTime) / 1000, " room time")
             client.send(
                 SERVER_TO_CLIENT_MESSAGE.RECONNECT_ROOM,
-                { turn: room.state.turn, characterId: room.state.currentCharacterId, curTime : TURN_TIME },
+                { turn: room.state.turn, characterId: room.state.currentCharacterId, curTime : TURN_TIME - (Date.now() - room.startTurnTime) / 1000 },
             );
         }
     },

@@ -398,6 +398,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                     } else {
                         setCharacterHealth(enemy, -message.diceCount, this.room, client, "heart");
 
+                        // if(powerMoveId == 46) { // ICICLE
+                        //     tar
+                        // }
+
                         if(target == enemy && target.stats.health.current == 0) {
                             this.room.RewardFromMonster(character, target, client);
                         }

@@ -183,7 +183,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
     
                 client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
                     playerId: moveEntity.playerId,
-                    itemResult: result
+                    itemResult: result,
+                    itemId: moveEntity.itemId
                 });
                 this.room.state.map.moveItemEntities.deleteAt(idx);
     
