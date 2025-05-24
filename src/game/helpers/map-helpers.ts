@@ -865,17 +865,17 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     count = data.count * count;
 
     // AUTOMATICALLY SELL ARROW BOMB ITEM BEGIN
-    if(IsArrowItem(id) && arrow < state.stats.arrowLimit) {
-        const addedCount = Math.min(state.stats.arrowLimit - arrow, count);
-        const shopCount = count - addedCount;
-        state.stats.coin += ITEMDETAIL[id].sell * shopCount;
-        count = addedCount;
-    } else if(IsBombItem(id) && bomb < state.stats.bombLimit) {
-        const addedCount = Math.min(state.stats.bombLimit - bomb, count);
-        const shopCount = count - addedCount;
-        state.stats.coin += ITEMDETAIL[id].sell * shopCount;
-        count = addedCount;
-    }
+    // if(IsArrowItem(id) && arrow < state.stats.arrowLimit) {
+    //     const addedCount = Math.min(state.stats.arrowLimit - arrow, count);
+    //     const shopCount = count - addedCount;
+    //     state.stats.coin += ITEMDETAIL[id].sell * shopCount;
+    //     count = addedCount;
+    // } else if(IsBombItem(id) && bomb < state.stats.bombLimit) {
+    //     const addedCount = Math.min(state.stats.bombLimit - bomb, count);
+    //     const shopCount = count - addedCount;
+    //     state.stats.coin += ITEMDETAIL[id].sell * shopCount;
+    //     count = addedCount;
+    // }
 
     // AUTOMATICALLY SELL ARROW BOMB ITEM END
 
@@ -979,19 +979,23 @@ export function addStackToCharacter(id: number, count : number, state: Character
     }
 
     if(stack == null) {
-        const newStack = new Item();
-        newStack.id = id;
-        newStack.count = count;
-        newStack.name = stacks[id].name;
-        newStack.description = stacks[id].description;
-        newStack.level = stacks[id].level;
-        newStack.cost = stacks[id].cost;
-        newStack.sell = stacks[id].sell;
+        if(count > 0) {
+            const newStack = new Item();
+            newStack.id = id;
+            newStack.count = count;
+            newStack.name = stacks[id].name;
+            newStack.description = stacks[id].description;
+            newStack.level = stacks[id].level;
+            newStack.cost = stacks[id].cost;
+            newStack.sell = stacks[id].sell;
+    
+            state.stacks.push(newStack);
+        }
 
-        state.stacks.push(newStack);
     } else {
         const stackIdx = state.stacks.findIndex(st => st.id == id);
         stack.count += count;
+        stack.count = Math.max(0, stack.count);
         state.stacks.deleteAt(stackIdx);
         state.stacks.push(stack);
     }
@@ -1000,19 +1004,21 @@ export function addStackToCharacter(id: number, count : number, state: Character
 export function addPowerToCharacter(id: number, count: number, state: CharacterState) {
     const pIdx : number = state.powers.findIndex(p => p.id == id);
     if(pIdx == -1) {
-        const newPower = new Item();
-        newPower.id = id;
-        newPower.name = powers[id].name;
-        newPower.count = count;
-        newPower.description = "";
-        newPower.level = powers[id].level;
-        newPower.cost = POWERCOSTS[powers[id].level].cost;
-        newPower.sell = POWERCOSTS[powers[id].level].sell;
-
-        state.powers.push(newPower);
+        if(count > 0){
+            const newPower = new Item();
+            newPower.id = id;
+            newPower.name = powers[id].name;
+            newPower.count = count;
+            newPower.description = "";
+            newPower.level = powers[id].level;
+            newPower.cost = POWERCOSTS[powers[id].level].cost;
+            newPower.sell = POWERCOSTS[powers[id].level].sell;
+            state.powers.push(newPower);
+        }
     } else {
         let oldPower = state.powers[pIdx];
         oldPower.count += count;
+        oldPower.count = Math.max(0, oldPower.count);
         state.powers.deleteAt(pIdx);
         state.powers.push(oldPower);
     }

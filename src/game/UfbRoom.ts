@@ -7,6 +7,7 @@ import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathW
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
+    MoveItemEntity,
     TileState,
 } from "#game/schema/MapState";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
@@ -18,7 +19,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, TileType } from "@prisma/client";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { DICE_TYPE, EDGE_TYPE, END_TYPE, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, END_TYPE, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -499,12 +500,26 @@ export class UfbRoom extends Room<UfbRoomState> {
             );
             console.log("ai move : ", path);
 
+            let isBomb = false;
+
             const energy = selectedMonster.stats.energy.current;
             if(energy > 0 && path.length > 1) {
                 const pathArray = path.slice(0, Math.min(path.length, energy));
                 let monsterPath: any = pathArray;
                 for(let i = 0; i < pathArray.length; i++) {
                     const p = pathArray[i];
+
+                    const idx = this.state.map.moveItemEntities.findIndex(
+                        mItem => mItem.tileId == p.tileId && 
+                        (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
+
+                    if(idx > -1) {
+                        this.checkBombPos(idx, selectedMonster);
+                        isBomb = true;
+                        monsterPath = pathArray.slice(0, i + 1);
+                        break;
+                    }
+
                     if(obstacleTileIds.indexOf(p.tileId) != -1) {
                         monsterPath = pathArray.slice(0, i);
                         break;
@@ -526,18 +541,27 @@ export class UfbRoom extends Room<UfbRoomState> {
     
                     selectedMonster.stats.energy.add(-Math.min(monsterPath.length, energy));
             
-                    this.DoActionMonster()
                     const destinationTile = this.state.map.tiles.get(monsterPath[monsterPath.length - 1].tileId);
                     selectedMonster.coordinates.x = destinationTile.coordinates.x;
                     selectedMonster.coordinates.y = destinationTile.coordinates.y;
                     selectedMonster.currentTileId = destinationTile.id;
-    
+                    
                     this.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
-        
+                    
                     this.sendBroadcastStats(-Math.min(monsterPath.length, energy));
-
+                    
+                    if(isBomb) {
+                        this.DoActionMonster(6);
+                        return;
+                    }
+                    else{
+                        this.DoActionMonster()
+                        return;
+                    }
                 }
             }
+
+
         }
 
 
@@ -565,6 +589,53 @@ export class UfbRoom extends Room<UfbRoomState> {
             setTimeout(this.incrementTurn.bind(this), 2000);
         }
 
+    }
+
+    checkBombPos(idx: any, monster: CharacterState){
+        
+        if(idx != -1) {
+            const moveEntity: MoveItemEntity = this.state.map.moveItemEntities[idx];
+            const result = itemResults[moveEntity.itemId];
+            if(!!result.energy) {
+                monster.stats.energy.add(result.energy);
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: result.energy,
+                    type: "energy"
+                });
+            }
+            if(!!result.heart) {
+                setCharacterHealth(monster, result.heart, this, null, "heart");
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: result.heart,
+                    type: "heart"
+                });
+            }
+            if(!!result.ultimate) {
+                monster.stats.ultimate.add(result.ultimate);
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: result.ultimate,
+                    type: "ultimate"
+                });
+            }
+
+            if(!!result.stackId) {
+                addStackToCharacter(result.stackId, 1, monster, null, this);
+
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: 1,
+                    type: "stack",
+                    stackId: result.stackId
+                });
+            }
+
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
+                playerId: moveEntity.playerId,
+                itemResult: result,
+                itemId: moveEntity.itemId
+            });
+            this.state.map.moveItemEntities.deleteAt(idx);
+
+        }
     }
 
     checkUserTimer() {

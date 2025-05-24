@@ -11,8 +11,6 @@ import { Item, Quest } from "#game/schema/CharacterState";
 import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
-import { Schema, type, ArraySchema } from "@colyseus/schema";
-import { Dictionary } from "@prisma/client/runtime/library";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 import { getRandomElements } from "#utils/collections";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -655,7 +653,6 @@ export const messageHandlers: MessageHandlers = {
         console.log(type, id);
 
         if(type == "item") {
-            character.stats.coin += ITEMDETAIL[id].sell;
             const item =  character.items.find(it => it.id == id);
             if(item == null || item.count == 0) {
                 room.notify(
@@ -666,13 +663,10 @@ export const messageHandlers: MessageHandlers = {
                 return;
             } else {
                 addItemToCharacter(id, -1, character);
+                character.stats.coin += ITEMDETAIL[id].sell;
             }
         } else if(type == "power"){
-            
             const power = character.powers.find(p => p.id == id);
-
-            character.stats.coin += POWERCOSTS[power.level].sell;
-
             if(power == null || power.count == 0) {
                 room.notify(
                     client,
@@ -682,11 +676,10 @@ export const messageHandlers: MessageHandlers = {
                 return;
             } else {
                 addPowerToCharacter(power.id, -1, character);
+                character.stats.coin += POWERCOSTS[power.level].sell;
             }
 
         } else if(type == "stack"){
-            character.stats.coin += stacks[id].sell;
-
             const stack = character.stacks.find(s => s.id == id);
             if(stack == null || stack.count == 0) {
                 room.notify(
@@ -697,6 +690,7 @@ export const messageHandlers: MessageHandlers = {
                 return;
             } else {
                 addStackToCharacter(stack.id, -1, character, client, room);
+                character.stats.coin += stacks[id].sell;
             }
         }
     },
