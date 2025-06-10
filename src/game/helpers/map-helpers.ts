@@ -924,7 +924,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
     const stack : Item = state.stacks.find(stack => stack.id == id);
     // ADD BAN STACK LOGIC
-    if(!!BAN_STACKS[id]) {
+    if(!!BAN_STACKS[id] && count > 0) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
         const banIdx = state.stacks.findIndex(st => st.id == BAN_STACKS[id]);
         if(banStack != null && banStack.count > 0) {
@@ -1319,4 +1319,17 @@ export function getOpenTilePosition(tileId: string, room: UfbRoom) : string {
         tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
     }
     return tileId;
+}
+
+export function getDiceTypeFromStack(stackId: number) : number {
+    if(stackId == STACKTYPE.Cure || stackId == STACKTYPE.Burn || stackId == STACKTYPE.Freeze || stackId == STACKTYPE.Charge){
+        return DICE_TYPE.DICE_4;
+    } else if(stackId == STACKTYPE.Void || stackId == STACKTYPE.Slow){
+        return DICE_TYPE.DICE_6_4
+    } else if(stackId == STACKTYPE.Pump){
+        return DICE_TYPE.DICE_6
+    }
+    else{
+        return DICE_TYPE.DICE_4;
+    }
 }

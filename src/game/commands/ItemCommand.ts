@@ -25,36 +25,37 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        Object.keys(ITEMTYPE).forEach(key => {
-            const id = ITEMTYPE[key];
-            if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb)) {
-                const testItem : Item = character.items.find(item => item.id == id);
-                if(testItem == null) {
-                    const newItem = new Item();
-                    newItem.id = id;
-                    newItem.count = 30;
-                    newItem.name = ITEMDETAIL[id].name;
-                    newItem.description = "description";
-                    newItem.level = ITEMDETAIL[id].level;
-                    newItem.cost = ITEMDETAIL[id].cost;
-                    newItem.sell = ITEMDETAIL[id].sell;
+        // Object.keys(ITEMTYPE).forEach(key => {
+        //     const id = ITEMTYPE[key];
+        //     if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb)) {
+        //         const testItem : Item = character.items.find(item => item.id == id);
+        //         if(testItem == null) {
+        //             const newItem = new Item();
+        //             newItem.id = id;
+        //             newItem.count = 30;
+        //             newItem.name = ITEMDETAIL[id].name;
+        //             newItem.description = "description";
+        //             newItem.level = ITEMDETAIL[id].level;
+        //             newItem.cost = ITEMDETAIL[id].cost;
+        //             newItem.sell = ITEMDETAIL[id].sell;
         
-                    character.items.push(newItem);
-                } else {
-                    testItem.count++;
-                }
-            }
+        //             character.items.push(newItem);
+        //         } else {
+        //             testItem.count++;
+        //         }
+        //     }
 
-        });
+        // });
 
         // // ADD STACKS
+        // let k = 0;
         // Object.keys(STACKTYPE).forEach(key => {
         //     const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
-        //     if(testStack == null) {
+        //     if(testStack == null && k < 10) {
         //         console.log(STACKTYPE[key])
         //         const newStack = new Item();
         //         newStack.id = STACKTYPE[key];
-        //         newStack.count = 1;
+        //         newStack.count = 10;
         //         newStack.name = key;
         //         newStack.description = stacks[STACKTYPE[key]].description;
         //         newStack.level = stacks[STACKTYPE[key]].level;
@@ -63,26 +64,28 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         //         character.stacks.push(newStack);
         //     }
+
+        //     k++;
         // });
 
-        // ADD POWER for MOVE ITEM
-        [POWERTYPE.Shield3, POWERTYPE.Bow3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
-            const testPower : Item = character.powers.find(power => power.id == key);
-            if(testPower == null) {
-                const newPower = new Item();
-                newPower.id = key;
-                newPower.name = powers[key].name;
-                newPower.count = 4;
-                newPower.description = "";
-                newPower.level = powers[key].level;
-                newPower.cost = POWERCOSTS[powers[key].level].cost;
-                newPower.sell = POWERCOSTS[powers[key].level].sell;
+        // // ADD POWER for MOVE ITEM
+        // [POWERTYPE.Shield3, POWERTYPE.Bow3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
+        //     const testPower : Item = character.powers.find(power => power.id == key);
+        //     if(testPower == null) {
+        //         const newPower = new Item();
+        //         newPower.id = key;
+        //         newPower.name = powers[key].name;
+        //         newPower.count = 4;
+        //         newPower.description = "";
+        //         newPower.level = powers[key].level;
+        //         newPower.cost = POWERCOSTS[powers[key].level].cost;
+        //         newPower.sell = POWERCOSTS[powers[key].level].sell;
 
-                character.powers.push(newPower);
-            } else {
-                testPower.count++;
-            }
-        })
+        //         character.powers.push(newPower);
+        //     } else {
+        //         testPower.count++;
+        //     }
+        // })
 
         // END TEST
 
@@ -106,7 +109,14 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             //character.stats.coin += extra;
         }
         character.stats.coin += message.coinCount;
-        character.stats.bags++;
+
+        if(message.spawnId == "itemBag") {
+            character.stats.bags++;
+        }
+        else{
+            character.stats.itemBox++;
+        }
+
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
         let idx = -1;

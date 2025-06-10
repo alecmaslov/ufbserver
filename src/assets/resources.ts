@@ -268,14 +268,15 @@ export const STACKTYPE: {[key : string] : number} = {
     Freeze : 9,
     Burn : 10,
     Void : 11,
+    Pump: 12,
 
-    Dodge2 : 12,
-    Cure2 : 13,
-    Charge2 : 14,
-    Barrier2 : 15,
-    Steady2 : 16,
-    Revenge2 : 17,
-    Block2 : 18
+    Dodge2 : 13,
+    Cure2 : 14,
+    Charge2 : 15,
+    Barrier2 : 16,
+    Steady2 : 17,
+    Revenge2 : 18,
+    Block2 : 19,
 }
 
 export const PERKTYPE : {[key : string] : number} = {
@@ -350,7 +351,7 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 8
+                count: 1
             },
         ],
         result: {
@@ -451,7 +452,7 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 1
+                count: 2
             },
             {
                 id: ITEMTYPE.MANA,
@@ -630,11 +631,15 @@ export const powermoves : any = [
                 {
                     id : STACKTYPE.Charge,
                     count : 1
+                },
+                {
+                    id : STACKTYPE.Pump,
+                    count : 1
                 }
             ]
         },
         range: 0,
-        light: 2,
+        light: 5,
         coin: 0,
     },
     {
@@ -688,7 +693,7 @@ export const powermoves : any = [
             perkId: PERKTYPE.Push
         },
         range: 1,
-        light: 4,
+        light: 5,
         coin: 0,
     },
     {
@@ -909,19 +914,19 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 2
+                count: 1
             },
         ],
         result : {
             stacks : [
                 {
-                    id : STACKTYPE.Revive,
+                    id : STACKTYPE.Pump,
                     count : 1
                 }
             ]
         },
         range: 0,
-        light: 20,
+        light: 5,
         coin: 0,
     },
     {
@@ -1042,7 +1047,7 @@ export const powermoves : any = [
         ],
         costList: [
             {
-                id: ITEMTYPE.ARROW,
+                id: ITEMTYPE.Arrow,
                 count: 1
             },
             {
@@ -1075,7 +1080,7 @@ export const powermoves : any = [
             health: -1
         },
         range: 3,
-        light: 2,
+        light: 4,
         coin: 0,
     },
     {
@@ -1133,10 +1138,14 @@ export const powermoves : any = [
                     id : STACKTYPE.Revenge,
                     count : 1
                 },
+                {
+                    id : STACKTYPE.Pump,
+                    count : 1
+                },
             ]
         },
         range: 0,
-        light: 2,
+        light: 4,
         coin: 0,
     },    
     {
@@ -2162,7 +2171,8 @@ export const GOOD_STACKS: number[] = [
     STACKTYPE.Revenge,
     STACKTYPE.Block,
     STACKTYPE.Reflect,
-    STACKTYPE.Revive
+    STACKTYPE.Revive,
+    STACKTYPE.Pump
 ]
 
 export const stacks : { [key: number]: { level: number, name: string, description: string, cost: number, sell: number, anti: number } } = {
@@ -2316,6 +2326,14 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
         description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
         cost: 7,
         sell: -1,
+        anti: -1
+    },
+    [STACKTYPE.Pump] : {
+        level : 1,
+        name : "Pump",
+        description: "At the beginning your turn, use 1 item to gain ultimate",
+        cost: 2,
+        sell: 1,
         anti: -1
     },
 }

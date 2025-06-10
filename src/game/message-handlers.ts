@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getDiceTypeFromStack, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -557,23 +557,26 @@ export const messageHandlers: MessageHandlers = {
         const type = message.type;
         const id = message.id;
         
+        let msg: any = {
+            items: [],
+            powers: [],
+            stacks: [],
+            coin: 0
+        }
+
         if(type == "item") {
             if(character.stats.coin >= ITEMDETAIL[id].cost) {
                 character.stats.coin -= ITEMDETAIL[id].cost;
+                addItemToCharacter(id, 1, character);
 
-                const item =  character.items.find(it => it.id == id);
-                if(item == null) {
-                    const newIt = new Item();
-                    newIt.id = id;
-                    newIt.count = 1;
-                    newIt.cost = ITEMDETAIL[id].cost;
-                    newIt.level = ITEMDETAIL[id].level;
-                    newIt.sell = ITEMDETAIL[id].sell;
-                    newIt.name = ITEMDETAIL[id].name;
-
-                    character.items.push(newIt);
-                } else {
-                    item.count++;
+                msg = {
+                    items: [{
+                        id : id,
+                        count : 1
+                    }],
+                    powers: [],
+                    stacks: [],
+                    coin: -ITEMDETAIL[id].cost
                 }
             } else {
                 room.notify(
@@ -589,22 +592,17 @@ export const messageHandlers: MessageHandlers = {
 
             if(character.stats.coin >= POWERCOSTS[lvl].cost) {
                 character.stats.coin -= POWERCOSTS[lvl].cost;
+                addPowerToCharacter(id, 1, character);
 
-                const power = character.powers.find(p => p.id == id);
-                if(power == null) {
-                    const newIt = new Item();
-                    newIt.id = id;
-                    newIt.count = 1;
-                    newIt.cost = POWERCOSTS[lvl].cost;
-                    newIt.level = powers[id].level;
-                    newIt.sell = POWERCOSTS[lvl].sell;
-                    newIt.name = powers[id].name;
-    
-                    character.powers.push(newIt);
-                } else {
-                    power.count++;
+                msg = {
+                    items: [],
+                    powers: [{
+                        id,
+                        count : 1
+                    }],
+                    stacks: [],
+                    coin: -POWERCOSTS[lvl].cost
                 }
-
             } else {
                 room.notify(
                     client,
@@ -616,23 +614,17 @@ export const messageHandlers: MessageHandlers = {
         } else if(type == "stack") {
             if(character.stats.coin >= stacks[id].cost) {
                 character.stats.coin -= stacks[id].cost;
+                addStackToCharacter(id, 1, character, client);
 
-                const stack = character.stacks.find(s => s.id == id);
-                if(stack == null) {
-                    const newIt = new Item();
-                    newIt.id = id;
-                    newIt.count = 1;
-                    newIt.cost = stacks[id].cost;
-                    newIt.level = stacks[id].level;
-                    newIt.sell = stacks[id].sell;
-                    newIt.name = stacks[id].name;
-                    newIt.description = stacks[id].description;
-    
-                    character.stacks.push(newIt);
-                } else {
-                    stack.count++;
+                msg = {
+                    items: [],
+                    powers: [],
+                    stacks: [{
+                        id,
+                        count : 1
+                    }],
+                    coin: -stacks[id].cost
                 }
-
             } else {
                 room.notify(
                     client,
@@ -642,6 +634,9 @@ export const messageHandlers: MessageHandlers = {
                 return;
             }
         }
+
+        client.send(SERVER_TO_CLIENT_MESSAGE.MERCHANT_RESULT, msg);
+
     },
 
     [CLIENT_SERVER_MESSAGE.MERCHANT_SELL_ITEM]: (room, client, message) => {
@@ -651,6 +646,12 @@ export const messageHandlers: MessageHandlers = {
         const id = message.id;
 
         console.log(type, id);
+        let msg: any = {
+            items: [],
+            powers: [],
+            stacks: [],
+            coin: 0
+        }
 
         if(type == "item") {
             const item =  character.items.find(it => it.id == id);
@@ -664,6 +665,16 @@ export const messageHandlers: MessageHandlers = {
             } else {
                 addItemToCharacter(id, -1, character);
                 character.stats.coin += ITEMDETAIL[id].sell;
+
+                msg = {
+                    items: [{
+                        id,
+                        count: -1
+                    }],
+                    powers: [],
+                    stacks: [],
+                    coin: ITEMDETAIL[id].sell
+                }
             }
         } else if(type == "power"){
             const power = character.powers.find(p => p.id == id);
@@ -675,8 +686,18 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                addPowerToCharacter(power.id, -1, character);
+                addPowerToCharacter(id, -1, character);
                 character.stats.coin += POWERCOSTS[power.level].sell;
+
+                msg = {
+                    items: [],
+                    powers: [{
+                        id,
+                        count: -1
+                    }],
+                    stacks: [],
+                    coin: POWERCOSTS[power.level].sell
+                }
             }
 
         } else if(type == "stack"){
@@ -689,10 +710,22 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                addStackToCharacter(stack.id, -1, character, client, room);
+                addStackToCharacter(id, -1, character, client, room);
                 character.stats.coin += stacks[id].sell;
+
+                msg = {
+                    items: [],
+                    powers: [],
+                    stacks: [{
+                        id,
+                        count: -1
+                    }],
+                    coin: stacks[id].sell
+                }
             }
         }
+
+        client.send(SERVER_TO_CLIENT_MESSAGE.MERCHANT_RESULT, msg);
     },
 
     leaveMerchant: (room, client, message) => {
@@ -744,64 +777,51 @@ export const messageHandlers: MessageHandlers = {
         const idx3 = message.idx3;
         const coin = message.coin;
 
+        let msg: any = {
+            items: [],
+            powers: [],
+            stacks: [],
+            coin: -coin
+        }
+
         if(type == "item") {
             const it1 = character.items.find(item => item.id == idx1);
             const it2 = character.items.find(item => item.id == idx2);
-            const it3 = character.items.find(item => item.id == idx3);
             const remainCoin = character.stats.coin;
-            if(it1 == null || it1.count == 0) {
+
+            if(remainCoin < coin || it1 == null || it1.count == 0 || it2 == null || it2.count == 0) {
                 room.notify(
                     client,
-                    "You don't have enough count to craft item!",
+                    `You don't have enough ${remainCoin < coin? "gold" : "count"} to craft item!`,
                     "error"
                 );
                 return;
             } else {
-                addItemToCharacter(idx1, -1, character);
-            }
-
-            if(it2 == null || it2.count == 0) {
-                room.notify(
-                    client,
-                    "You don't have enough count to craft item!",
-                    "error"
-                );
-                return;
-            } else {
-                addItemToCharacter(idx2, -1, character);
-            }
-
-            if(it3 == null) {
-                const newIt = new Item();
-                newIt.id = idx3;
-                newIt.count = 1;
-                newIt.cost = ITEMDETAIL[idx3].cost;
-                newIt.level = ITEMDETAIL[idx3].level;
-                newIt.sell = ITEMDETAIL[idx3].sell;
-                newIt.name = ITEMDETAIL[idx3].name;
-
-                character.items.push(newIt);
-            } else {
-                addItemToCharacter(idx3, 1, character);
-            }
-
-            if(remainCoin >= coin) {
                 character.stats.coin -= coin;
-            } else {
-                room.notify(
-                    client,
-                    "You don't have enough gold to craft item!",
-                    "error"
-                ); 
-                return;
+                addItemToCharacter(idx1, -1, character);
+                addItemToCharacter(idx2, -1, character);
+                addItemToCharacter(idx3, 1, character);
+                msg.items = [
+                    {
+                        id: idx1,
+                        count: -1
+                    },
+                    {
+                        id: idx2,
+                        count: -1
+                    },
+                    {
+                        id: idx3,
+                        count: 1
+                    },
+                ];
             }
 
         } else if(type == "power") {
             const it1 = character.powers.find(p => p.id == idx1);
             const it2 = character.powers.find(p => p.id == idx2);
-            const it3 = character.powers.find(p => p.id == idx3);
             const remainCoin = character.stats.coin;
-            if(it1 == null || it1.count == 0) {
+            if(remainCoin < coin || it1 == null || it1.count == 0 || it2 == null || it2.count == 0) {
                 room.notify(
                     client,
                     "You don't have enough count to craft item!",
@@ -809,45 +829,27 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
-                addPowerToCharacter(idx1, -1, character);
-            }
-
-            if(it2 == null || it2.count == 0) {
-                room.notify(
-                    client,
-                    "You don't have enough count to craft item!",
-                    "error"
-                );
-                return;
-            } else {
-                addPowerToCharacter(idx2, -1, character);
-            }
-
-            if(it3 == null) {
-                const lvl = powers[idx3].level;
-                const newIt = new Item();
-                newIt.id = idx3;
-                newIt.count = 1;
-                newIt.cost = POWERCOSTS[lvl].cost;
-                newIt.level = powers[idx3].level;
-                newIt.sell = POWERCOSTS[lvl].sell;
-                newIt.name = powers[idx3].name;
-
-                character.powers.push(newIt);
-            } else {
-                addPowerToCharacter(idx3, 1, character);
-            }
-
-            if(remainCoin >= coin) {
                 character.stats.coin -= coin;
-            } else {
-                room.notify(
-                    client,
-                    "You don't have enough gold to craft item!",
-                    "error"
-                ); 
-                return;
+                addPowerToCharacter(idx1, -1, character);
+                addPowerToCharacter(idx2, -1, character);
+                addPowerToCharacter(idx3, 1, character);
+
+                msg.powers = [
+                    {
+                        id: idx1,
+                        count: -1
+                    },
+                    {
+                        id: idx2,
+                        count: -1
+                    },
+                    {
+                        id: idx3,
+                        count: 1
+                    },
+                ];
             }
+
         }
 
         room.notify(
@@ -855,6 +857,8 @@ export const messageHandlers: MessageHandlers = {
             "Add Craft Item!",
             "success"
         );
+        
+        client.send(SERVER_TO_CLIENT_MESSAGE.MERCHANT_RESULT, msg);
     },
 
     testHealth: (room, client, message) => {
@@ -1045,25 +1049,50 @@ export const messageHandlers: MessageHandlers = {
         }
 
         let stackList: any[] = [];
+        let diceResult: any[] = [];
         character.stacks.forEach(stack => {
             if(
                 (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Void2) && !IsEquipPower(character, POWERTYPE.Void3)) ||
                 (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Fire2) && !IsEquipPower(character, POWERTYPE.Fire3)) ||
                 (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Ice2) && !IsEquipPower(character, POWERTYPE.Ice3)) ||
                 (stack.id == STACKTYPE.Cure && stack.count > 0) ||
-                (stack.id == STACKTYPE.Slow && stack.count > 0)
-            
+                (stack.id == STACKTYPE.Slow && stack.count > 0) || 
+                (stack.id == STACKTYPE.Pump && stack.count > 0)
             ) {
                 stackList.push({
                     id : stack.id,
                     count: 1
                 });
+
+                const diceType = getDiceTypeFromStack(stack.id);
+        
+                const dice: any = {
+                    diceData : []
+                }
+                if(diceType == DICE_TYPE.DICE_6_4) {
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_6,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                    })
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_4,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                    })
+                } else if(diceType == DICE_TYPE.DICE_4) {
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_4,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                    })
+                }
+                diceResult.push(dice);
             }
         });
 
+        
         client.send( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
             characterId : character.id,
-            stackList: stackList
+            stackList: stackList,
+            diceResult: diceResult
         });
 
     },
@@ -1141,7 +1170,12 @@ export const messageHandlers: MessageHandlers = {
                 score: -diceData[0].diceCount,
                 type: "ultimate"
             });
-
+        } else if(stackId == STACKTYPE.Pump) {
+            character.stats.ultimate.add(-diceData[0].diceCount);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -diceData[0].diceCount,
+                type: "ultimate"
+            });
         }
     },
 
