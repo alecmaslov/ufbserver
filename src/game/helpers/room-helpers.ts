@@ -2,7 +2,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { Client } from "@colyseus/core";
 import { coordToTileId } from "./map-helpers";
 import { CoordinatesState } from "#game/schema/CharacterState";
-import { ITEMDETAIL, MONSTER_BAN_TIEM, powers } from "#assets/resources";
+import { ITEMDETAIL, ITEMTYPE, MONSTER_BAN_TIEM, powers } from "#assets/resources";
 
 export const getClientCharacter = (room: UfbRoom, client: Client) => {
     const playerId = room.sessionIdToPlayerId.get(client.sessionId);
@@ -60,14 +60,14 @@ export const getPowerIdsByLevel = (level : number, isMonster? : boolean) => {
 
 export const getItemIdsByLevel = (level : number, isMonster? : boolean) => {
     if(isMonster) {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key]).map((k : any) => {
+        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key] && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER).map((k : any) => {
             return {
                 ...ITEMDETAIL[k],
                 id: Number(k)
             }
         });
     } else {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level).map((k : any) => {
+        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER).map((k : any) => {
             return {
                 ...ITEMDETAIL[k],
                 id: Number(k)

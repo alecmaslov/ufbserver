@@ -500,14 +500,17 @@ export const messageHandlers: MessageHandlers = {
 
         const stackData : Item[] = [];
         Object.keys(stacks).forEach(key => {
+
             const id: number = Number(key);
-            let stack = new Item();
-            stack.id = id;
-            stack.name = stacks[id].name;
-            stack.level = stacks[id].level;
-            stack.cost = stacks[id].cost;
-            stack.sell = stacks[id].sell;
-            stackData.push(stack);
+            if(id != STACKTYPE.Revive) {
+                let stack = new Item();
+                stack.id = id;
+                stack.name = stacks[id].name;
+                stack.level = stacks[id].level;
+                stack.cost = stacks[id].cost;
+                stack.sell = stacks[id].sell;
+                stackData.push(stack);
+            }
         });
         const randomStack = getRandomElements(stackData, 3);
 

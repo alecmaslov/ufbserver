@@ -562,6 +562,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
         };
         if(extraItemId > 0) {
 
+            console.log("extra item id: ", extraItemId);
             powermove.costList.push({
                 id: extraItemId,
                 count: 1

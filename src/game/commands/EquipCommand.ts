@@ -41,7 +41,9 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         character.equipSlots.forEach(slot => {
             if( 
                 ([POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(slot.id) != -1 && [POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(power.id) != -1) || 
-                ([POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(slot.id) != -1 && [POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(power.id) != -1)
+                ([POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(slot.id) != -1 && [POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(power.id) != -1) ||
+                ([POWERTYPE.Holy1, POWERTYPE.Holy2, POWERTYPE.Holy3].indexOf(slot.id) != -1 && [POWERTYPE.Void1, POWERTYPE.Void2, POWERTYPE.Void3].indexOf(power.id) != -1) ||
+                ([POWERTYPE.Void1, POWERTYPE.Void2, POWERTYPE.Void3].indexOf(slot.id) != -1 && [POWERTYPE.Holy1, POWERTYPE.Holy2, POWERTYPE.Holy3].indexOf(power.id) != -1)
             ){
                 isBan = true;
             }
