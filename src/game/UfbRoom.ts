@@ -641,7 +641,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     checkUserTimer() {
         if(this.startTurnTime > 0) {
             const duration = (Date.now() - this.startTurnTime) / 1000;
-            console.log(duration, "check timer....")
+            // console.log(duration, "check timer....")
             if(duration > TURN_TIME){
                 this.incrementTurn();
             }

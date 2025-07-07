@@ -173,141 +173,144 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                     } else {
                         const result = getPerkEffectDamage(character, enemy, this.room, powermove.result[key]);
                         console.log("perk: ", result);
-                        if(result == null || result.desTileId == "") {
-                            setCharacterHealth(target, -1, this.room, client, "heart");
-
-                            if(target == enemy && target.stats.health.current == 0) {
-                                this.room.RewardFromMonster(character, target, client);
-                            }
-
-                            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                score: -1,
-                                type: "heart_e",
-                            });
-                        } else {
-                            let isEmptyTile = true;
-                            this.room.state.characters.forEach(ct => {
-                                if(!isEmptyTile) return; 
-                                if(ct.currentTileId == result.desTileId) {
-                                    isEmptyTile = false;
-                                    return
-                                }
-                            })
-                            if(result.wallType == EDGE_TYPE.BASIC) {
-        
-                                if(isEmptyTile) {
-                                    // CHANGE POSITION
-        
-                                    target.coordinates.x = result.desCoodinate.x;
-                                    target.coordinates.y = result.desCoodinate.y;
-                                    target.currentTileId = result.desTileId;
-        
-                                    const path: PathStep[] = [{
-                                        tileId: result.desTileId
-                                    }];
-                                    console.log("move tile")
-                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                        characterId : target.id,
-                                        path
-                                    });
-    
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                        characterId : target.id,
-                                        perkId: powermove.result[key],
-                                        tileId: result.desTileId
-                                    });
-        
-                                } else {
-                                    setCharacterHealth(target, -1, this.room, client, "heart");
-        
-                                    if(target == enemy && target.stats.health.current == 0) {
-                                        this.room.RewardFromMonster(character, target, client);
-                                    }
-
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                        score: -1,
-                                        type: "heart_e",
-                                    });
-                                }
-        
-                            } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
+                        if(powermove.result[key] != PERKTYPE.Vampire){
+                            if(result == null || result.desTileId == "") {
                                 setCharacterHealth(target, -1, this.room, client, "heart");
-        
+    
                                 if(target == enemy && target.stats.health.current == 0) {
                                     this.room.RewardFromMonster(character, target, client);
                                 }
-
+    
                                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -1,
                                     type: "heart_e",
                                 });
-                            } else if(result.wallType == EDGE_TYPE.RAVINE) {
-                                addStackToCharacter(STACKTYPE.Slow, 1, target, client);
+                            } else {
+                                let isEmptyTile = true;
+                                this.room.state.characters.forEach(ct => {
+                                    if(!isEmptyTile) return; 
+                                    if(ct.currentTileId == result.desTileId) {
+                                        isEmptyTile = false;
+                                        return
+                                    }
+                                })
+                                if(result.wallType == EDGE_TYPE.BASIC) {
+            
+                                    if(isEmptyTile) {
+                                        // CHANGE POSITION
+            
+                                        target.coordinates.x = result.desCoodinate.x;
+                                        target.coordinates.y = result.desCoodinate.y;
+                                        target.currentTileId = result.desTileId;
+            
+                                        const path: PathStep[] = [{
+                                            tileId: result.desTileId
+                                        }];
+                                        console.log("move tile")
+                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
+                                            characterId : target.id,
+                                            path
+                                        });
         
-                                // CHANGE POSITION
-                                if(isEmptyTile) {
-                                    target.coordinates.x = result.desCoodinate.x;
-                                    target.coordinates.y = result.desCoodinate.y;
-                                    target.currentTileId = result.desTileId;
-        
-                                    const path: PathStep[] = [{
-                                        tileId: result.desTileId
-                                    }];
-                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                        characterId : target.id,
-                                        path
-                                    });
+                                        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                                            characterId : target.id,
+                                            perkId: powermove.result[key],
+                                            tileId: result.desTileId
+                                        });
+            
+                                    } else {
+                                        setCharacterHealth(target, -1, this.room, client, "heart");
+            
+                                        if(target == enemy && target.stats.health.current == 0) {
+                                            this.room.RewardFromMonster(character, target, client);
+                                        }
     
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                        characterId : target.id,
-                                        perkId: powermove.result[key],
-                                        tileId: result.desTileId
-                                    });
-                                }
-        
-                            } else if(result.wallType == EDGE_TYPE.CLIFF) {
-        
-                                setCharacterHealth(target, -1, this.room, client, "heart");
-
-                                if(target == enemy && target.stats.health.current == 0) {
-                                    this.room.RewardFromMonster(character, target, client);
-                                }
-
-                                // CHANGE POSITION
-                                if(isEmptyTile) {
-                                    target.coordinates.x = result.desCoodinate.x;
-                                    target.coordinates.y = result.desCoodinate.y;
-                                    target.currentTileId = result.desTileId;
-        
-                                    const path: PathStep[] = [{
-                                        tileId: result.desTileId
-                                    }];
-                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                        characterId : target.id,
-                                        path
-                                    });
+                                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                            score: -1,
+                                            type: "heart_e",
+                                        });
+                                    }
+            
+                                } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
+                                    setCharacterHealth(target, -1, this.room, client, "heart");
+            
+                                    if(target == enemy && target.stats.health.current == 0) {
+                                        this.room.RewardFromMonster(character, target, client);
+                                    }
     
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                        characterId : target.id,
-                                        perkId: powermove.result[key],
-                                        tileId: result.desTileId
+                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                        score: -1,
+                                        type: "heart_e",
+                                    });
+                                } else if(result.wallType == EDGE_TYPE.RAVINE) {
+                                    addStackToCharacter(STACKTYPE.Slow, 1, target, client);
+            
+                                    // CHANGE POSITION
+                                    if(isEmptyTile) {
+                                        target.coordinates.x = result.desCoodinate.x;
+                                        target.coordinates.y = result.desCoodinate.y;
+                                        target.currentTileId = result.desTileId;
+            
+                                        const path: PathStep[] = [{
+                                            tileId: result.desTileId
+                                        }];
+                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
+                                            characterId : target.id,
+                                            path
+                                        });
+        
+                                        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                                            characterId : target.id,
+                                            perkId: powermove.result[key],
+                                            tileId: result.desTileId
+                                        });
+                                    }
+            
+                                } else if(result.wallType == EDGE_TYPE.CLIFF) {
+            
+                                    setCharacterHealth(target, -1, this.room, client, "heart");
+    
+                                    if(target == enemy && target.stats.health.current == 0) {
+                                        this.room.RewardFromMonster(character, target, client);
+                                    }
+    
+                                    // CHANGE POSITION
+                                    if(isEmptyTile) {
+                                        target.coordinates.x = result.desCoodinate.x;
+                                        target.coordinates.y = result.desCoodinate.y;
+                                        target.currentTileId = result.desTileId;
+            
+                                        const path: PathStep[] = [{
+                                            tileId: result.desTileId
+                                        }];
+                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
+                                            characterId : target.id,
+                                            path
+                                        });
+        
+                                        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                                            characterId : target.id,
+                                            perkId: powermove.result[key],
+                                            tileId: result.desTileId
+                                        });
+                                    }
+            
+                                } else if(result.wallType == EDGE_TYPE.VOID) {
+                                    setCharacterHealth(target, -2, this.room, client, "heart");
+    
+                                    if(target == enemy && target.stats.health.current == 0) {
+                                        this.room.RewardFromMonster(character, target, client);
+                                    }
+    
+                                    addStackToCharacter(STACKTYPE.Void, 1, target, client);
+                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                        score: -2,
+                                        type: "heart_e",
                                     });
                                 }
-        
-                            } else if(result.wallType == EDGE_TYPE.VOID) {
-                                setCharacterHealth(target, -2, this.room, client, "heart");
-
-                                if(target == enemy && target.stats.health.current == 0) {
-                                    this.room.RewardFromMonster(character, target, client);
-                                }
-
-                                addStackToCharacter(STACKTYPE.Void, 1, target, client);
-                                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                    score: -2,
-                                    type: "heart_e",
-                                });
                             }
                         }
+
                     }
                 }
 
@@ -429,11 +432,18 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         });
 
         if(message.vampireCount > 0) {
+            console.log("vampirecount: ", message.vampireCount);
             setCharacterHealth(character, message.vampireCount, this.room, client, "heart");
             
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: message.vampireCount,
                 type: "heart",
+            });
+
+            setCharacterHealth(target, -message.diceCount, this.room, client, "heart");
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -message.diceCount,
+                type: "heart_e",
             });
         }
       
