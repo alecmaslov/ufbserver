@@ -75,7 +75,7 @@ export class Pathfinder {
 
     let banTileIds: string[] = [];
     characters.forEach((character) => {
-      if(character.id != room.currentCharacterId) {
+      if(character.id != room.currentCharacterId && character.stats.health.current > 0) {
         banTileIds.push(character.currentTileId);
       }
     });

@@ -1117,6 +1117,8 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
             if(character.type == USER_TYPE.MONSTER) {
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEAD_MONSTER, {characterId : character.id});                
                 room.RespawnMonster();
+                character.coordinates.x = -1;
+                character.coordinates.y = -1;
 
             } else if(character.type == USER_TYPE.USER) {
                 if(!!character.stacks[STACKTYPE.Revive] && character.stacks[STACKTYPE.Revive].count > 0) {

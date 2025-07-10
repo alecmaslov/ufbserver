@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsGreenMonster, IsYellowMonster, setCharacterHealth, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -19,7 +19,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, TileType } from "@prisma/client";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { DICE_TYPE, EDGE_TYPE, END_TYPE, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -31,7 +31,7 @@ const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     itemBags: 8,
     merchants: 2,
     portals: 2,
-    monsters: 2,
+    monsters: 3,
 };
 
 export class UfbRoom extends Room<UfbRoomState> {
@@ -46,6 +46,9 @@ export class UfbRoom extends Room<UfbRoomState> {
     startTurnTime: number;
 
     spawnZoneArray: SpawnZone[];
+
+    isTurnStartEquip: boolean = true;
+    isTurnStartStack: boolean = true;
 
     async onCreate(options: UfbRoomOptions) {
         RoomCache.set(this.roomId, this);
@@ -203,6 +206,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         mana.count = currentCharacter.stats.maxMana;
         melee.count = currentCharacter.stats.maxMelee;
 
+        this.isTurnStartEquip = true;
+        this.isTurnStartStack = true;
         console.log("turn orders:", n, this.state.currentCharacterId);
 
         this.broadcast(
@@ -306,7 +311,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                         addItemToCharacter(lvl1Items[idxItem].id, 1, monster);
                         addPowerToCharacter(lvl1Powers[idxPower].id, 1, monster);
-                        
+             
                         monster.powers.forEach(p => {
                             monster.equipSlots.push(p);
                             p.count--;
@@ -473,6 +478,108 @@ export class UfbRoom extends Room<UfbRoomState> {
         if(isItemUse) {
             this.DoActionMonster()
             return;
+        }
+
+        // AI MONSTER STACK
+        if(this.isTurnStartEquip) {
+            this.isTurnStartEquip = false;
+            if(this.state.currentCharacterId == selectedMonster.id) {
+                let bonuses: any = [];
+                selectedMonster.equipSlots.forEach(slot => {
+                    // ADD BONUS in CHARACTER..
+                    const bonus = {
+                        ...EQUIP_TURN_BONUS[slot.id],
+                        id: slot.id,
+                    }
+    
+                    if(!!bonus.items) {
+                        bonus.items.forEach(item => {
+                            addItemToCharacter(item.id, item.count, selectedMonster);
+                        })
+                    }
+    
+                    if(!!bonus.stacks) {
+                        bonus.stacks.forEach(stack => {
+                            addStackToCharacter(stack.id, stack.count, selectedMonster, null, this);
+                        });
+                    }
+    
+                    if(!!bonus.randomItems) {
+                        const idx = Math.floor(bonus.randomItems.length * Math.random())
+                        const item = bonus.randomItems[idx];
+                        delete bonus.randomItems;
+                        bonus.items.push(item);
+                        addItemToCharacter(item.id, item.count, selectedMonster);
+                    }
+    
+                    if(EQUIP_TURN_BONUS[slot.id] != null) {
+                        bonuses.push(bonus);
+                    }
+                })
+    
+                if(bonuses.length > 0) {
+                    this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
+    
+                    this.DoActionMonster(3);
+                    return;
+                }
+            }
+        }
+
+        // AI MONSTER STACK
+        if(this.isTurnStartStack){
+            this.isTurnStartStack = false;
+
+            let stackList: any[] = [];
+            let diceResult: any[] = [];
+            selectedMonster.stacks.forEach(stack => {
+                if(
+                    (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Void2) && !IsEquipPower(selectedMonster, POWERTYPE.Void3)) ||
+                    (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Fire2) && !IsEquipPower(selectedMonster, POWERTYPE.Fire3)) ||
+                    (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Ice2) && !IsEquipPower(selectedMonster, POWERTYPE.Ice3)) ||
+                    (stack.id == STACKTYPE.Cure && stack.count > 0) ||
+                    (stack.id == STACKTYPE.Slow && stack.count > 0) || 
+                    (stack.id == STACKTYPE.Pump && stack.count > 0)
+                ) {
+                    stackList.push({
+                        id : stack.id,
+                        count: 1
+                    });
+    
+                    const diceType = getDiceTypeFromStack(stack.id);
+            
+                    const dice: any = {
+                        diceData : []
+                    }
+                    if(diceType == DICE_TYPE.DICE_6_4) {
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_6,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                        })
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                    } else if(diceType == DICE_TYPE.DICE_4) {
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                    }
+                    diceResult.push(dice);
+                }
+            });
+    
+            if(stackList.length > 0) {
+                this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
+                    characterId : selectedMonster.id,
+                    stackList: stackList,
+                    diceResult: diceResult
+                });
+                
+                this.DoActionMonster(3);
+                return;
+            }
         }
 
         // AI MONSTER MOVEMENT LOGIC
@@ -1206,29 +1313,40 @@ export class UfbRoom extends Room<UfbRoomState> {
         const {blue, green, yellow, blueLive, greenLive, yellowLive} = GetMonsterDeadCount(this);
         const monsterZones = this.spawnZoneArray.filter(zone => zone.type == SpawnZoneType.Monster).sort(() => Math.random() - 0.5);
         console.log("monster zone:   ", monsterZones.length)
-        if(blue == 4 && greenLive == 0 && green == 0) {
+        if(blueLive == 0 && green == 0) {
             // CREATE GREEN MONSTERS
             const mTypes = [
                 MONSTER_TYPE.WASP_GREEN,
                 MONSTER_TYPE.EARWIG_GREEN,
-                MONSTER_TYPE.SPIDER_GREEN,
-                MONSTER_TYPE.CENTIPEDE_GREEN,
+                MONSTER_TYPE.SPIDER_BLUE,
             ];
             mTypes.forEach((_type, i) => {
                 this.CreateMonster(_type, monsterZones[i]);
             })
-        } else if(blue == 4 && green == 4 && yellow == 0 && yellowLive == 0) {
-            // CREATE YELLOW MONSTERS
+        }
+        else if(blueLive == 0 && green == 2)
+        {
+            // CREATE GREEN MONSTERS
             const mTypes = [
-                MONSTER_TYPE.WASP_YELLOW,
-                MONSTER_TYPE.EARWIG_YELLOW,
-                MONSTER_TYPE.SPIDER_YELLOW,
-                MONSTER_TYPE.CENTIPEDE_YELLOW,
+                MONSTER_TYPE.CENTIPEDE_GREEN,
+                MONSTER_TYPE.SPIDER_GREEN,
+                MONSTER_TYPE.EARWIG_YELLOW
             ];
             mTypes.forEach((_type, i) => {
                 this.CreateMonster(_type, monsterZones[i]);
             })
-        } else if(blue == 4 && green == 4 && yellow == 4) {
+        }
+        else if(blueLive == 0 && greenLive == 0 && green == 4 && yellow == 1){
+                // CREATE GREEN MONSTERS
+                const mTypes = [
+                    MONSTER_TYPE.WASP_YELLOW,
+                    MONSTER_TYPE.CENTIPEDE_YELLOW,
+                    MONSTER_TYPE.SPIDER_YELLOW,
+                ];
+                mTypes.forEach((_type, i) => {
+                    this.CreateMonster(_type, monsterZones[i]);
+                })
+        } else if(blueLive == 0 && greenLive == 0 && yellowLive == 0 && yellow == 4) {
             // WIN PLAYER (in solo mode) // check solo mode
             let characterId = "";
             this.state.characters.forEach(character => {
