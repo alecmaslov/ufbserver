@@ -4,9 +4,9 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { CharacterState, Item } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getDiceCount, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getDiceCount, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
 
 type OnPowerMoveCommandPayload = {
@@ -59,6 +59,15 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 }
             }
         }
+        if(powermove["stackCostList"].length > 0 && isResult){
+            powermove.stackCostList.forEach((stack: any) => {
+                if(isResult){
+                    const idx = character.stacks.findIndex(ii => ii.id == stack.id && ii.count >= stack.count);
+                    isResult = idx > -1;
+                    if(!isResult) return;
+                }
+            });
+        }
 
         console.log("------ check logic======", isResult)
         if(!isResult) {
@@ -103,6 +112,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         });
                     }
                 });
+            } else if(key == "stackCostList"){
+                powermove.stackCostList.forEach((stack: any) => {
+                    addStackToCharacter(stack.id, stack.count, character, client, null);
+                });
             }
         });
 
@@ -110,17 +123,20 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         // ADD RESOULT PART -- IMPORTANT
         let target : CharacterState;
+        let from : CharacterState;
         if(powermove.range == 0) {
             target = character;
+            from = enemy;
         } else {
             target = enemy;
+            from = character;
         }
 
         if(target == null) return;
 
         Object.keys(powermove.result).forEach(key => {
             if(key == "health") {
-                setCharacterHealth(target, powermove.result.health, this.room, client, "heart");
+                setCharacterHealth(target, powermove.result.health, this.room, client, "heart", from);
 
                 if(target == enemy && target.stats.health.current == 0) {
                     this.room.RewardFromMonster(character, target, client);
@@ -138,6 +154,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 });
             } else if(key == "coin") {
                 target.stats.coin += powermove.result.coin;
+
+                setQuestResult(QUESTTYPE.GLITTER, powermove.result.coin, target);
+                
+
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.coin,
                     type: "coin",
@@ -153,7 +173,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 if(powermove.result[key] == PERKTYPE.AreaOfEffect) {
                     const enemyIds = getCharacterIdsInArea(character, powermove.range, this.room);
                     enemyIds.forEach(id => {
-                        setCharacterHealth(this.room.state.characters.get(id), -1, this.room, client, "heart");
+                        setCharacterHealth(this.room.state.characters.get(id), -1, this.room, client, "heart", from);
                     })
 
                 } else {
@@ -175,7 +195,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         console.log("perk: ", result);
                         if(powermove.result[key] != PERKTYPE.Vampire){
                             if(result == null || result.desTileId == "") {
-                                setCharacterHealth(target, -1, this.room, client, "heart");
+                                setCharacterHealth(target, -1, this.room, client, "heart", from);
     
                                 if(target == enemy && target.stats.health.current == 0) {
                                     this.room.RewardFromMonster(character, target, client);
@@ -219,7 +239,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                         });
             
                                     } else {
-                                        setCharacterHealth(target, -1, this.room, client, "heart");
+                                        setCharacterHealth(target, -1, this.room, client, "heart", from);
             
                                         if(target == enemy && target.stats.health.current == 0) {
                                             this.room.RewardFromMonster(character, target, client);
@@ -232,7 +252,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     }
             
                                 } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
-                                    setCharacterHealth(target, -1, this.room, client, "heart");
+                                    setCharacterHealth(target, -1, this.room, client, "heart", from);
             
                                     if(target == enemy && target.stats.health.current == 0) {
                                         this.room.RewardFromMonster(character, target, client);
@@ -268,7 +288,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             
                                 } else if(result.wallType == EDGE_TYPE.CLIFF) {
             
-                                    setCharacterHealth(target, -1, this.room, client, "heart");
+                                    setCharacterHealth(target, -1, this.room, client, "heart", from);
     
                                     if(target == enemy && target.stats.health.current == 0) {
                                         this.room.RewardFromMonster(character, target, client);
@@ -296,7 +316,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     }
             
                                 } else if(result.wallType == EDGE_TYPE.VOID) {
-                                    setCharacterHealth(target, -2, this.room, client, "heart");
+                                    setCharacterHealth(target, -2, this.room, client, "heart", from);
     
                                     if(target == enemy && target.stats.health.current == 0) {
                                         this.room.RewardFromMonster(character, target, client);
@@ -399,7 +419,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         });
 
                     } else {
-                        setCharacterHealth(enemy, -message.diceCount, this.room, client, "heart");
+                        setCharacterHealth(enemy, -message.diceCount, this.room, client, "heart", from);
 
                         // if(powerMoveId == 46) { // ICICLE
                         //     tar
@@ -433,14 +453,14 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         if(message.vampireCount > 0) {
             console.log("vampirecount: ", message.vampireCount);
-            setCharacterHealth(character, message.vampireCount, this.room, client, "heart");
+            setCharacterHealth(character, message.vampireCount, this.room, client, "heart", from);
             
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: message.vampireCount,
                 type: "heart",
             });
 
-            setCharacterHealth(target, -message.diceCount, this.room, client, "heart");
+            setCharacterHealth(target, -message.diceCount, this.room, client, "heart", from);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -message.diceCount,
                 type: "heart_e",

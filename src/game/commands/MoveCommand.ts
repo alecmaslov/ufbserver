@@ -148,6 +148,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
             if(idx != -1) {
                 const moveEntity: MoveItemEntity = this.room.state.map.moveItemEntities[idx];
+                const enemy = getCharacterById(this.room, moveEntity.playerId);
                 const result = itemResults[moveEntity.itemId];
                 if(!!result.energy) {
                     character.stats.energy.add(result.energy);
@@ -157,7 +158,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     });
                 }
                 if(!!result.heart) {
-                    setCharacterHealth(character, result.heart, this.room, client, "heart");
+                    setCharacterHealth(character, result.heart, this.room, client, "heart", enemy);
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                         score: result.heart,
                         type: "heart"

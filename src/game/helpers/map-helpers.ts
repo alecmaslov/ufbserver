@@ -1,4 +1,4 @@
-import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { NavGraphLinkData } from "#game/Pathfinder";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
@@ -559,6 +559,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                 ...p.result
             },
             costList: [...p.costList],
+            stackCostList: [...p.stackCostList]
         };
         if(extraItemId > 0) {
 
@@ -901,6 +902,36 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
         }
     }
 
+    let itemCount = getItemCountFromCharacter(id, state);
+    
+    if(id == ITEMTYPE.HEART_PIECE) {
+        if(itemCount + count >= 4){
+            count = (itemCount + count) % 4 - itemCount;
+
+            state.stats.health.max += 5;
+            state.stats.health.current += 5;
+            setQuestResult(QUESTTYPE.LIFE, 1, state);
+        }
+    } else if(id == ITEMTYPE.ENERGY_SHARD){
+        if(itemCount + count >= 3){
+            count = (itemCount + count) % 3 - itemCount;
+            
+            state.stats.energy.max += 3;
+            state.stats.energy.current += 3;
+            setQuestResult(QUESTTYPE.ENERGY, 1, state);
+        }
+    } else if(id == ITEMTYPE.HEART_CRYSTAL){
+        state.stats.health.max += 5;
+        state.stats.health.current += 5;
+        setQuestResult(QUESTTYPE.LIFE, 1, state);
+        return;
+    } else if(id == ITEMTYPE.ENERGY_CRYSTAL){
+        state.stats.energy.max += 3;
+        state.stats.energy.current += 3;
+        setQuestResult(QUESTTYPE.ENERGY, 1, state);
+        return;
+    }
+
     const itemIdx = state.items.findIndex(ii => ii.id == id);
 
     if(itemIdx != -1) {
@@ -920,6 +951,8 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
         newItem.sell = ITEMDETAIL[id].sell;
         state.items.push(newItem);
     }
+
+
 }
 
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
@@ -1106,7 +1139,7 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
     return ids;
 }
 
-export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string) {
+export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string, enemy: CharacterState) {
     if(type == "heart") {
         character.stats.health.add(amount);
         if(amount < 0) {
@@ -1119,6 +1152,15 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                 room.RespawnMonster();
                 character.coordinates.x = -1;
                 character.coordinates.y = -1;
+                
+                if(enemy != null){
+                    setQuestResult(QUESTTYPE.SLAYER, 1, enemy);
+                    if(IsGreenMonster(enemy.characterClass)){
+                        setQuestResult(QUESTTYPE.KILL, 1, enemy);
+                    }
+                }
+
+
 
             } else if(character.type == USER_TYPE.USER) {
                 if(!!character.stacks[STACKTYPE.Revive] && character.stacks[STACKTYPE.Revive].count > 0) {
@@ -1335,4 +1377,14 @@ export function getDiceTypeFromStack(stackId: number) : number {
     else{
         return DICE_TYPE.DICE_4;
     }
+}
+
+export function setQuestResult(questId: number, complete: number, character: CharacterState) {
+
+    character.quests.forEach(q => {
+        if(q.id == questId){
+            q.complete += complete;
+        }
+    })
+
 }

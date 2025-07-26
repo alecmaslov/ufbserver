@@ -4,8 +4,8 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter } from "#game/helpers/map-helpers";
+import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setQuestResult } from "#game/helpers/map-helpers";
 import { SpawnEntity } from "#game/schema/MapState";
 
 type OnItemCommandPayload = {
@@ -69,7 +69,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // });
 
         // ADD POWER for MOVE ITEM
-        // [POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
+        // [POWERTYPE.Shield3, POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
         //     const testPower : Item = character.powers.find(power => power.id == key);
         //     if(testPower == null) {
         //         const newPower = new Item();
@@ -110,12 +110,17 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
         character.stats.coin += message.coinCount;
 
+        setQuestResult(QUESTTYPE.GLITTER, message.coinCount, character);
+        
+
         if(message.spawnId == "itemBag") {
             character.stats.bags++;
         }
         else{
             character.stats.itemBox++;
         }
+
+        setQuestResult(QUESTTYPE.LUCK, 1, character);
 
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 

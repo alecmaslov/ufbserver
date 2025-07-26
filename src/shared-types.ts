@@ -14,6 +14,7 @@ export interface PowerMove {
     powerImageId: number;
     powerIds: number[];
     costList: Item[];
+    stackCostList: Item[];
     light: number;
     coin: number;
     range: number;

@@ -348,6 +348,7 @@ export const powermoves : any = [
         powerIds: [
             0, 12, 24
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -391,6 +392,12 @@ export const powermoves : any = [
         powerIds: [
             12, 24
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Revenge,
+                count: 1
+            },
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -423,6 +430,7 @@ export const powermoves : any = [
         powerIds: [
             12, 24
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -448,6 +456,12 @@ export const powermoves : any = [
         powerImageId: 24,
         powerIds: [
             24
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Revenge,
+                count: 2
+            },
         ],
         costList: [
             {
@@ -479,6 +493,12 @@ export const powermoves : any = [
         powerImageId: 24,
         powerIds: [
             24
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Revenge,
+                count: 1
+            },
         ],
         costList: [
             {
@@ -514,6 +534,7 @@ export const powermoves : any = [
         powerIds: [
             1, 13, 25
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -534,6 +555,12 @@ export const powermoves : any = [
         powerImageId: 13,
         powerIds: [
             13, 25
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Steady,
+                count: 1
+            },
         ],
         costList: [
             {
@@ -567,6 +594,7 @@ export const powermoves : any = [
         powerIds: [
             13, 25
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -593,14 +621,16 @@ export const powermoves : any = [
         powerIds: [
             25
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Steady,
+                count: 2
+            },
+        ],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
                 count: 2
-            },
-            {
-                id: ITEMTYPE.MANA,
-                count: 1
             },
         ],
         result : {
@@ -614,32 +644,38 @@ export const powermoves : any = [
     {
         // Ax3
         id: 10,
-        name: "Electrify",
+        name: "Dimensional Chop",
         powerImageId: 25,
         powerIds: [
             25
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Steady,
+                count: 2
+            },
+        ],
         costList: [
             {
-                id: ITEMTYPE.MANA,
-                count: 1
+                id: ITEMTYPE.MELEE,
+                count: 2
             },
         ],
         result : {
-            ultimate: 5,
             stacks: [
                 {
-                    id : STACKTYPE.Charge,
+                    id : STACKTYPE.Void,
                     count : 1
                 },
                 {
-                    id : STACKTYPE.Pump,
+                    id : STACKTYPE.Slow,
                     count : 1
                 }
-            ]
+            ],
+            dice: DICE_TYPE.DICE_6_6
         },
-        range: 0,
-        light: 5,
+        range: 1,
+        light: 8,
         coin: 0,
     },
     {
@@ -650,6 +686,7 @@ export const powermoves : any = [
         powerIds: [
             2, 14, 26
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -667,29 +704,56 @@ export const powermoves : any = [
     {
         // Spear2
         id: 12,
+        name: "Electrify",
+        powerImageId: 14,
+        powerIds: [
+            14, 26
+        ],
+        stackCostList: [],
+        costList: [
+            {
+                id: ITEMTYPE.MELEE,
+                count: 1
+            }
+        ],
+        result : {
+            stacks: [
+                {
+                    id : STACKTYPE.Charge,
+                    count : 1
+                }
+            ],
+        },
+        range: 1,
+        light: 2,
+        coin: 0,
+    },
+    {
+        // Spear2
+        id: 13,
         name: "Ice Lance",
         powerImageId: 14,
         powerIds: [
             14, 26
+        ],
+        stackCostList: [
+            {
+                id : STACKTYPE.Charge,
+                count: 1
+            }
         ],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
                 count: 1
             },
-            {
-                id: ITEMTYPE.MANA,
-                count: 1
-            },
         ],
         result : {
+            stacks: [{
+                id: STACKTYPE.Freeze,
+                count: 1
+            }],
             dice: DICE_TYPE.DICE_6_4,
-            stacks: [
-                {
-                    id : STACKTYPE.Freeze,
-                    count : 1
-                }
-            ],
             perkId: PERKTYPE.Push
         },
         range: 1,
@@ -697,42 +761,32 @@ export const powermoves : any = [
         coin: 0,
     },
     {
-        // Spear2
-        id: 13,
-        name: "Harpoon",
-        powerImageId: 14,
-        powerIds: [
-            14, 26
-        ],
-        costList: [
-            {
-                id: ITEMTYPE.MELEE,
-                count: 2
-            },
-        ],
-        result : {
-            dice: DICE_TYPE.DICE_6,
-            perkId: PERKTYPE.Pull
-        },
-        range: 3,
-        light: 8,
-        coin: 0,
-    },
-    {
         // Spear3
         id: 14,
-        name: "Pole Vault",
+        name: "Rising Thunder",
         powerImageId: 26,
         powerIds: [
             26
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Charge,
+                count: 2
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 2
+                count: 1
             },
         ],
         result : {
+            stacks: [
+                {
+                    id: STACKTYPE.Pump,
+                    count: 1
+                }
+            ],
             items: [
                 {
                     id: ITEMTYPE.FEATHER,
@@ -740,44 +794,36 @@ export const powermoves : any = [
                 }
             ]
         },
-        range: 1,
+        range: 0,
         light: 8,
         coin: 0,
     },
     {
         // Spear3
         id: 15,
-        name: "Void Spear",
+        name: "Harpoon",
         powerImageId: 26,
         powerIds: [
             26
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Charge,
+                count: 1
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 2
-            },
-            {
-                id: ITEMTYPE.MANA,
                 count: 1
             },
         ],
         result : {
-            dice: DICE_TYPE.DICE_6_6,
-            stacks: [
-                {
-                    id : STACKTYPE.Void,
-                    count : 1
-                },
-                {
-                    id : STACKTYPE.Charge,
-                    count : 1
-                }
-            ],
+            dice: DICE_TYPE.DICE_6,
             perkId: PERKTYPE.Push
         },
         range: 1,
-        light: 7,
+        light: 8,
         coin: 0,
     },
     {
@@ -788,6 +834,7 @@ export const powermoves : any = [
         powerIds: [
             3, 15, 27
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -815,6 +862,7 @@ export const powermoves : any = [
         powerIds: [
             15, 27
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -845,6 +893,7 @@ export const powermoves : any = [
         powerIds: [
             15, 27
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -872,10 +921,16 @@ export const powermoves : any = [
     {
         // Shield3
         id: 19,
-        name: "Electric Shield",
+        name: "Electric Fence",
         powerImageId: 27,
         powerIds: [
             27
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Reflect,
+                count: 1
+            }
         ],
         costList: [
             {
@@ -886,47 +941,48 @@ export const powermoves : any = [
         result : {
             stacks: [
                 {
-                    id: STACKTYPE.Dodge,
+                    id: STACKTYPE.Pump,
                     count: 1
                 },
                 {
                     id: STACKTYPE.Revenge,
                     count: 1
                 },
-                {
-                    id: STACKTYPE.Steady,
-                    count: 1
-                },
             ]
         },
-        range: 0,
-        light: 4,
+        range: 1,
+        light: 5,
         coin: 0,
     },
     {
         // Shield3
         id: 20,
-        name: "Sacred Shield",
+        name: "Mental Barrier",
         powerImageId: 27,
         powerIds: [
             27
         ],
-        costList: [
+        stackCostList: [
             {
-                id: ITEMTYPE.MELEE,
-                count: 1
-            },
+                id: STACKTYPE.Block,
+                count: 2
+            }
         ],
+        costList: [],
         result : {
             stacks : [
                 {
-                    id : STACKTYPE.Pump,
-                    count : 1
+                    id : STACKTYPE.Steady,
+                    count : 2
+                },
+                {
+                    id : STACKTYPE.Dodge,
+                    count : 2
                 }
             ]
         },
-        range: 0,
-        light: 5,
+        range: 1,
+        light: 4,
         coin: 0,
     },
     {
@@ -937,6 +993,7 @@ export const powermoves : any = [
         powerIds: [
             4, 16, 28
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.RandomArrow,
@@ -958,6 +1015,7 @@ export const powermoves : any = [
         powerIds: [
             16, 28
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -984,6 +1042,7 @@ export const powermoves : any = [
         powerIds: [
             16, 28
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1014,6 +1073,7 @@ export const powermoves : any = [
         powerIds: [
             28
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -1045,6 +1105,7 @@ export const powermoves : any = [
         powerIds: [
             28
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.Arrow,
@@ -1070,6 +1131,7 @@ export const powermoves : any = [
         powerIds: [
             5, 17, 29
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.RandomArrow,
@@ -1080,7 +1142,7 @@ export const powermoves : any = [
             health: -1
         },
         range: 3,
-        light: 4,
+        light: 2,
         coin: 0,
     },
     {
@@ -1091,11 +1153,8 @@ export const powermoves : any = [
         powerIds: [
             17, 29
         ],
+        stackCostList: [],
         costList: [
-            {
-                id: ITEMTYPE.MELEE,
-                count: 1
-            },
             {
                 id: ITEMTYPE.MANA,
                 count: 1
@@ -1107,8 +1166,7 @@ export const powermoves : any = [
         ],
         result : {
             health: -2,
-            perkId: PERKTYPE.Vampire,
-            perkId1: PERKTYPE.Pull
+            perkId: PERKTYPE.Pull,
         },
         range: 3,
         light: 4,
@@ -1122,6 +1180,7 @@ export const powermoves : any = [
         powerIds: [
             17, 29
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.ARROW,
@@ -1156,6 +1215,7 @@ export const powermoves : any = [
         powerIds: [
             29
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.ARROW,
@@ -1186,6 +1246,7 @@ export const powermoves : any = [
         powerIds: [
             29
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.ARROW,
@@ -1224,6 +1285,7 @@ export const powermoves : any = [
         powerIds: [
             6, 18, 30
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.RandomBomb,
@@ -1246,6 +1308,7 @@ export const powermoves : any = [
         powerIds: [
             18, 30
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -1272,6 +1335,7 @@ export const powermoves : any = [
         powerIds: [
             18, 30
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1310,6 +1374,7 @@ export const powermoves : any = [
         powerIds: [
             30
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.BOMB,
@@ -1340,6 +1405,7 @@ export const powermoves : any = [
         powerIds: [
             30
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1365,6 +1431,7 @@ export const powermoves : any = [
         powerIds: [
             7, 19, 31
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -1390,6 +1457,12 @@ export const powermoves : any = [
         powerImageId: 19,
         powerIds: [
             19, 31
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Block,
+                count: 1
+            }
         ],
         costList: [
             {
@@ -1425,6 +1498,7 @@ export const powermoves : any = [
         powerIds: [
             19, 31
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MELEE,
@@ -1465,6 +1539,12 @@ export const powermoves : any = [
         powerIds: [
             31
         ],
+        stackCostList: [
+            {
+                id : STACKTYPE.Block,
+                count: 1
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1497,6 +1577,16 @@ export const powermoves : any = [
         powerIds: [
             31
         ],
+        stackCostList: [
+            {
+                id : STACKTYPE.Block,
+                count: 1
+            },
+            {
+                id : STACKTYPE.Reflect,
+                count: 1
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1519,7 +1609,8 @@ export const powermoves : any = [
                     id : ITEMTYPE.ICE_TEA,
                     count : 1
                 }
-            ]
+            ],
+            light: 5
         },
         range: 0,
         light: 0,
@@ -1533,6 +1624,7 @@ export const powermoves : any = [
         powerIds: [
             8, 20, 32
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1561,6 +1653,7 @@ export const powermoves : any = [
         powerIds: [
             20, 32
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1586,6 +1679,12 @@ export const powermoves : any = [
         powerImageId: 20,
         powerIds: [
             20, 32
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Burn,
+                count: 1
+            }
         ],
         costList: [
             {
@@ -1621,6 +1720,10 @@ export const powermoves : any = [
         powerIds: [
             32
         ],
+        stackCostList: [{
+            id: STACKTYPE.Burn,
+            count: 5
+        }],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1653,14 +1756,16 @@ export const powermoves : any = [
         powerIds: [
             32
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Burn,
+                count: 4
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
                 count: 2
-            },
-            {
-                id: ITEMTYPE.BOMB,
-                count: 4
             },
         ],
         result : {
@@ -1688,6 +1793,7 @@ export const powermoves : any = [
         powerIds: [
             9, 21, 33
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1715,6 +1821,7 @@ export const powermoves : any = [
         powerIds: [
             21, 33
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1741,13 +1848,15 @@ export const powermoves : any = [
         powerIds: [
             21, 33
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Freeze,
+                count: 1
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.ARROW,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.BOMB,
                 count: 1
             },
         ],
@@ -1775,14 +1884,16 @@ export const powermoves : any = [
         powerIds: [
             33
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Freeze,
+                count: 5
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
                 count: 2
-            },
-            {
-                id: ITEMTYPE.ICE_TEA,
-                count: 5
             },
         ],
         result : {
@@ -1795,7 +1906,7 @@ export const powermoves : any = [
             ],
             perkId: PERKTYPE.AreaOfEffect
         },
-        range: 0,
+        range: 4,
         light: 12,
         coin: 0,
     },
@@ -1807,14 +1918,16 @@ export const powermoves : any = [
         powerIds: [
             33
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Freeze,
+                count: 3
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
                 count: 1
-            },
-            {
-                id: ITEMTYPE.ICE_TEA,
-                count: 3
             },
         ],
         result : {
@@ -1841,6 +1954,7 @@ export const powermoves : any = [
         powerIds: [
             10, 22, 34
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -1868,116 +1982,25 @@ export const powermoves : any = [
     {
         // Holy2
         id: 52,
-        name: "Divine Blessing",
-        powerImageId: 22,
-        powerIds: [
-            22, 34
-        ],
-        costList: [
-            {
-                id: ITEMTYPE.MANA,
-                count: 2
-            },
-            {
-                id: ITEMTYPE.POTION,
-                count: 1
-            },
-        ],
-        result : {
-            items : [
-                {
-                    id : ITEMTYPE.ELIXIR,
-                    count : 1
-                }
-            ],
-            stacks : [
-                {
-                    id : STACKTYPE.Cure,
-                    count : 2
-                }
-            ]
-        },
-        range: 0,
-        light: 18,
-        coin: 0,
-    },
-    {
-        // Holy2
-        id: 53,
-        name: "Lightning Bolt",
-        powerImageId: 22,
-        powerIds: [
-            22, 34
-        ],
-        costList: [
-            {
-                id: ITEMTYPE.MANA,
-                count: 1
-            },
-        ],
-        result : {
-            dice: DICE_TYPE.DICE_4,
-            stacks :[
-                {
-                    id : STACKTYPE.Slow,
-                    count : 1
-                },
-            ]
-        },
-        range: 0,
-        light: 5,
-        coin: 0,
-    },
-    {
-        // Holy3
-        id: 54,
-        name: "Guardian Angel",
-        powerImageId: 34,
-        powerIds: [
-            34
-        ],
-        costList: [
-            {
-                id: ITEMTYPE.MANA,
-                count: 2
-            },
-            {
-                id: ITEMTYPE.ELIXIR,
-                count: 1
-            },
-        ],
-        result : {
-            stacks : [
-                {
-                    id : STACKTYPE.Revive,
-                    count : 1
-                },
-                {
-                    id : STACKTYPE.Cure,
-                    count : 3
-                },
-            ]
-        },
-        range: 0,
-        light: 24,
-        coin: 0,
-    },
-    {
-        // Holy3
-        id: 55,
         name: "Sacred Halo",
-        powerImageId: 34,
+        powerImageId: 22,
         powerIds: [
-            34
+            22, 34
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Cure,
+                count: 1
+            }
         ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
-                count: 2
-            },
+                count: 1
+            }
         ],
         result : {
-            stacks :[
+            stacks : [
                 {
                     id : STACKTYPE.Charge,
                     count : 1
@@ -1989,12 +2012,116 @@ export const powermoves : any = [
                 {
                     id : STACKTYPE.Steady,
                     count : 1
-                },
-            ],
-            ultimate : 5
+                }
+            ]
         },
         range: 0,
-        light: 12,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Holy2
+        id: 53,
+        name: "Lightning Bolt",
+        powerImageId: 22,
+        powerIds: [
+            22, 34
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Cure,
+                count: 1
+            }
+        ],
+        costList: [
+            {
+                id: ITEMTYPE.MANA,
+                count: 1
+            },
+        ],
+        result : {
+            dice: DICE_TYPE.DICE_4,
+        },
+        range: 3,
+        light: 5,
+        coin: 0,
+    },
+    {
+        // Holy3
+        id: 54,
+        name: "Divine Blessing",
+        powerImageId: 34,
+        powerIds: [
+            34
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Cure,
+                count: 2
+            }
+        ],
+        costList: [
+            {
+                id: ITEMTYPE.MANA,
+                count: 2
+            }
+        ],
+        result : {
+            items : [
+                {
+                    id: ITEMTYPE.ELIXIR,
+                    count: 1
+                },
+            ]
+        },
+        range: 0,
+        light: 18,
+        coin: 0,
+    },
+    {
+        // Holy3
+        id: 55,
+        name: "Holy Prayer",
+        powerImageId: 34,
+        powerIds: [
+            34
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Cure,
+                count: 2
+            }
+        ],
+        costList: [
+            {
+                id: ITEMTYPE.MANA,
+                count: 2
+            },
+        ],
+        result : {
+            stacks :[
+                {
+                    id : STACKTYPE.Pump,
+                    count : 1
+                }
+            ],
+            items:[
+                {
+                    id: ITEMTYPE.ICE_TEA,
+                    count: 1
+                },
+                {
+                    id: ITEMTYPE.POTION,
+                    count: 1
+                },
+                {
+                    id: ITEMTYPE.FLAME_CHILI,
+                    count: 1
+                }
+            ]
+        },
+        range: 0,
+        light: 5,
         coin: 0,
     },
     {
@@ -2005,14 +2132,15 @@ export const powermoves : any = [
         powerIds: [
             11, 23, 35
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
-                count: 1
+                count: 0
             },
             {
                 id: ITEMTYPE.MELEE,
-                count: 1
+                count: 0
             },
         ],
         result : {
@@ -2022,10 +2150,11 @@ export const powermoves : any = [
                     count : 1
                 }
             ],
-            perkId: PERKTYPE.Vampire
+            // perkId: PERKTYPE.Vampire,
+            health: -59
         },
         range: 1,
-        light: 8,
+        light: 0,
         coin: 0,
     },
     {
@@ -2036,6 +2165,7 @@ export const powermoves : any = [
         powerIds: [
             23, 35
         ],
+        stackCostList: [],
         costList: [
             {
                 id: ITEMTYPE.MANA,
@@ -2061,6 +2191,12 @@ export const powermoves : any = [
         powerImageId: 23,
         powerIds: [
             23, 35
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Void,
+                count: 1
+            }
         ],
         costList: [
             {
@@ -2096,13 +2232,15 @@ export const powermoves : any = [
         powerIds: [
             35
         ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Void,
+                count: 2
+            }
+        ],
         costList: [
             {
                 id: ITEMTYPE.MANA,
-                count: 2
-            },
-            {
-                id: ITEMTYPE.VOID_BOMB,
                 count: 1
             },
         ],
@@ -2114,8 +2252,8 @@ export const powermoves : any = [
                 }
             ]            
         },
-        range: 3,
-        light: 11,
+        range: 0,
+        light: 6,
         coin: 0,
     },
     {
@@ -2125,6 +2263,12 @@ export const powermoves : any = [
         powerImageId: 35,
         powerIds: [
             35
+        ],
+        stackCostList: [
+            {
+                id: STACKTYPE.Void,
+                count: 3
+            }
         ],
         costList: [
             {
@@ -2961,13 +3105,14 @@ export const POWERCOSTS: {[key: number]: {cost: number, sell: number}} = {
     }
 }
 
-export const QUESTS: {[key: number]: {id: number, title: string, normal: string, hard: string, level: number, condition: Object}} = {
+export const QUESTS: {[key: number]: {id: number, title: string, normal: string, hard: string, level: number, value?: number, condition: Object}} = {
     [QUESTTYPE.SLAYER]: {
         id: QUESTTYPE.SLAYER,
         title: "SLAYERS GONNA SLAY",
         normal: "Get 3 kills",
         hard: "Get 6 kills",
         condition: {},
+        value: 3,
         level: 1
     },
     [QUESTTYPE.GLITTER]: {
@@ -2976,6 +3121,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         normal: "Get 20 gold",
         hard: "Get 40 gold",
         condition: {},
+        value: 20,
         level: 1
     },
     [QUESTTYPE.KILL]: {
@@ -2984,6 +3130,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         normal: "Kill a Green Monster",
         hard: "Kill a Yellow Monster",
         condition: {},
+        value: 1,
         level: 1
     },
     [QUESTTYPE.CRAFTS]: {
@@ -2992,6 +3139,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         normal: "Craft 2 items",
         hard: "Craft 4 items",
         condition: {},
+        value: 2,
         level: 1
     },
     [QUESTTYPE.LUCK]: {
@@ -3000,6 +3148,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         normal: "Get 4 Treasures/ItemBags",
         hard: "Get 8 Treasures/ItemBags",
         condition: {},
+        value: 4,
         level: 1
     },
     [QUESTTYPE.ENERGY]: {
@@ -3008,6 +3157,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         normal: "Complete 2 Energy Crystal",
         hard: "Complete 4 Energy Crystal",
         condition: {},
+        value: 2,
         level: 1
     },
     [QUESTTYPE.STRENGTH]: {
@@ -3015,6 +3165,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         title: "THE STRENGTH WITHIN",
         normal: " Get 7 stacks at once",
         hard: " Get 15 stacks at once",
+        value: 7,
         condition: {},
         level: 1
     },
@@ -3024,6 +3175,7 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         normal: "Complete 2 Heart Crystal",
         hard: "Complete 4 Heart Crystal",
         condition: {},
+        value: 2,
         level: 1
     },
 }
@@ -3225,23 +3377,9 @@ export const EQUIP_TURN_BONUS = {
         items: [
             {
                 id: ITEMTYPE.ARROW,
-                count : 1
+                count : 2
             }
         ],
-        randomItems: [
-            {
-                id: ITEMTYPE.FIRE_ARROW,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.ICE_ARROW,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.VOID_ARROW,
-                count: 1
-            },
-        ]
     },
     [POWERTYPE.Cannon1]: {
         items: [
@@ -3269,28 +3407,14 @@ export const EQUIP_TURN_BONUS = {
         items: [
             {
                 id: ITEMTYPE.BOMB,
-                count : 1
+                count : 2
             }
         ],
         stacks: [
             {
                 id: STACKTYPE.Steady,
-                count: 1
+                count: 2
             }
-        ],
-        randomItems: [
-            {
-                id: ITEMTYPE.FIRE_BOMB,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.ICE_BOMB,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.VOID_BOMB,
-                count: 1
-            },
         ]
     },
     [POWERTYPE.Holy2]: {

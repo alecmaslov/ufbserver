@@ -2,7 +2,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { Client } from "@colyseus/core";
 import { coordToTileId } from "./map-helpers";
 import { CoordinatesState } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, MONSTER_BAN_TIEM, powers } from "#assets/resources";
+import { ITEMDETAIL, ITEMTYPE, MONSTER_BAN_TIEM, powers, QUESTS, QUESTTYPE } from "#assets/resources";
 
 export const getClientCharacter = (room: UfbRoom, client: Client) => {
     const playerId = room.sessionIdToPlayerId.get(client.sessionId);
@@ -60,18 +60,38 @@ export const getPowerIdsByLevel = (level : number, isMonster? : boolean) => {
 
 export const getItemIdsByLevel = (level : number, isMonster? : boolean) => {
     if(isMonster) {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key] && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER).map((k : any) => {
+        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key] && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2).map((k : any) => {
             return {
                 ...ITEMDETAIL[k],
                 id: Number(k)
             }
         });
     } else {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER).map((k : any) => {
+        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2).map((k : any) => {
             return {
                 ...ITEMDETAIL[k],
                 id: Number(k)
             }
         });
+    }
+}
+
+export const getQuestTargetValue = (id: number, level: number) => {
+    if(id == QUESTTYPE.SLAYER){
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.GLITTER) {
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.KILL) {
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.CRAFTS) {
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.LUCK) {
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.ENERGY) {
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.STRENGTH) {
+        return level == 1? QUESTS[id].value :  15;
+    } else if(id == QUESTTYPE.LIFE) {
+        return QUESTS[id].value * level;
     }
 }

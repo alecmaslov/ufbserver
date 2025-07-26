@@ -75,6 +75,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     coin : move.coin,
                     powerIds: [],
                     costList: [],
+                    stackCostList: [],
                     result: move.result
                 };
 
@@ -89,6 +90,12 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                         item
                     )
                 })
+                move.stackCostList.forEach((sItem: any) => {
+                    const item = new Item();
+                    item.id = sItem.id;
+                    item.count = sItem.count;
+                    powermove.stackCostList.push(item);
+                });
                 clientMessage.powermoves.push(powermove);
             }
         })

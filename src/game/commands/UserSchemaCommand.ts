@@ -4,8 +4,8 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter } from "#game/helpers/map-helpers";
+import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setQuestResult } from "#game/helpers/map-helpers";
 
 type OnUserSchemaCommandPayload = {
     client: Client;
@@ -102,6 +102,8 @@ export class UserSchemaCommand extends Command<UfbRoom, OnUserSchemaCommandPaylo
             //character.stats.coin += extra;
         }
         character.stats.coin += message.coinCount;
+        setQuestResult(QUESTTYPE.GLITTER, message.coinCount, character);
+        
         character.stats.bags++;
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
     }

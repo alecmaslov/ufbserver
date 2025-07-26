@@ -1,6 +1,6 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getDiceTypeFromStack, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth } from "#game/helpers/map-helpers";
-import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getDiceTypeFromStack, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
+import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
 import { MoveCommand } from "#game/commands/MoveCommand";
@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
@@ -312,6 +312,7 @@ export const messageHandlers: MessageHandlers = {
             let extra = character.stats.health.add(5);
             if(extra > 0) {
                 character.stats.coin += extra;
+                setQuestResult(QUESTTYPE.GLITTER, extra, character);
             }
 
         } else if(itemId == ITEMTYPE.ELIXIR) {
@@ -406,7 +407,7 @@ export const messageHandlers: MessageHandlers = {
         if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, room)) {
             if(message.stackId == STACKTYPE.Revenge) {
                 addStackToCharacter(STACKTYPE.Revenge, -1, enemy, client, room);
-                setCharacterHealth(character, -enemyDiceCount, room, client, "heart");
+                setCharacterHealth(character, -enemyDiceCount, room, client, "heart", enemy);
                 enemy.stats.ultimate.add(enemyDiceCount);
 
                 deltaCount += enemyDiceCount;
@@ -428,7 +429,7 @@ export const messageHandlers: MessageHandlers = {
         }
 
         if(deltaCount > 0) {
-            setCharacterHealth(enemy, -deltaCount, room, client, "heart");
+            setCharacterHealth(enemy, -deltaCount, room, client, "heart", enemy);
             character.stats.ultimate.add(deltaCount);
 
             if(enemy.stats.health.current == 0) {
@@ -669,6 +670,8 @@ export const messageHandlers: MessageHandlers = {
                 addItemToCharacter(id, -1, character);
                 character.stats.coin += ITEMDETAIL[id].sell;
 
+                setQuestResult(QUESTTYPE.GLITTER, ITEMDETAIL[id].sell, character);
+
                 msg = {
                     items: [{
                         id,
@@ -691,6 +694,8 @@ export const messageHandlers: MessageHandlers = {
             } else {
                 addPowerToCharacter(id, -1, character);
                 character.stats.coin += POWERCOSTS[power.level].sell;
+                
+                setQuestResult(QUESTTYPE.GLITTER, POWERCOSTS[power.level].sell, character);
 
                 msg = {
                     items: [],
@@ -715,6 +720,9 @@ export const messageHandlers: MessageHandlers = {
             } else {
                 addStackToCharacter(id, -1, character, client, room);
                 character.stats.coin += stacks[id].sell;
+
+                setQuestResult(QUESTTYPE.GLITTER, stacks[id].sell, character);
+
 
                 msg = {
                     items: [],
@@ -756,6 +764,10 @@ export const messageHandlers: MessageHandlers = {
     setActiveQuest: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
 
+        character.quests.forEach(q => {
+            
+        })
+
         const quest = message.quest;
         const newQ = new Quest();
         newQ.id = quest.id;
@@ -767,9 +779,37 @@ export const messageHandlers: MessageHandlers = {
         newQ.melee = quest.melee;
         newQ.mana = quest.mana;
         newQ.coin = quest.coin;
-
+        newQ.target = getQuestTargetValue(quest.id, quest.level);
         character.quests.push(newQ);
 
+    },
+
+    [CLIENT_SERVER_MESSAGE.COMPLETE_QUEST]: (room, client, message) => {
+        const character = getCharacterById(room, message.characterId);
+        if(character == null) {
+            room.notify(
+                client,
+                "It's not your turn!",
+                "error"
+            );
+            return;
+        }
+
+        character.quests.forEach(q => {
+            if(q.id == message.questId){
+                addItemToCharacter(q.itemId, 1, character);
+                addPowerToCharacter(q.powerId, 1, character);
+                if(q.melee > 0){
+                    addItemToCharacter(ITEMTYPE.MELEE, 1, character);
+                }
+                if(q.mana > 0){
+                    addItemToCharacter(ITEMTYPE.MANA, 1, character);
+                }
+                character.stats.coin += q.coin;
+
+                q.complete = 0;
+            }
+        });
     },
 
     [CLIENT_SERVER_MESSAGE.MERCHANT_ADDCRAFTITEM]: (room, client, message) => {
@@ -860,13 +900,15 @@ export const messageHandlers: MessageHandlers = {
             "Add Craft Item!",
             "success"
         );
+
+        setQuestResult(QUESTTYPE.CRAFTS, 1, character);
         
         client.send(SERVER_TO_CLIENT_MESSAGE.MERCHANT_RESULT, msg);
     },
 
     testHealth: (room, client, message) => {
         const character = getCharacterById(room, message.characterId);
-        setCharacterHealth(character, -4, room, client, "heart");
+        setCharacterHealth(character, -4, room, client, "heart", null);
         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
             score: -4,
             type: "heart",
@@ -998,13 +1040,13 @@ export const messageHandlers: MessageHandlers = {
                     });
                 }
 
-                if(!!bonus.randomItems) {
-                    const idx = Math.floor(bonus.randomItems.length * Math.random())
-                    const item = bonus.randomItems[idx];
-                    delete bonus.randomItems;
-                    bonus.items.push(item);
-                    addItemToCharacter(item.id, item.count, character);
-                }
+                // if(!!bonus.randomItems) {
+                //     const idx = Math.floor(bonus.randomItems.length * Math.random())
+                //     const item = bonus.randomItems[idx];
+                //     delete bonus.randomItems;
+                //     bonus.items.push(item);
+                //     addItemToCharacter(item.id, item.count, character);
+                // }
 
                 if(EQUIP_TURN_BONUS[slot.id] != null) {
                     bonuses.push(bonus);
@@ -1116,6 +1158,8 @@ export const messageHandlers: MessageHandlers = {
             let extra = character.stats.health.add(diceData[0].diceCount);
             if(extra > 0) {
                 character.stats.coin += extra;
+                setQuestResult(QUESTTYPE.GLITTER, extra, character);
+
             }
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: diceData[0].diceCount,
@@ -1123,7 +1167,7 @@ export const messageHandlers: MessageHandlers = {
             });
 
         } else if(stackId == STACKTYPE.Void) {
-            setCharacterHealth(character, -diceData[1].diceCount, room, client, "heart");
+            setCharacterHealth(character, -diceData[1].diceCount, room, client, "heart", null);
             character.stats.ultimate.add(-diceData[0].diceCount);
             
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1137,7 +1181,7 @@ export const messageHandlers: MessageHandlers = {
             });
 
         } else if(stackId == STACKTYPE.Burn) {
-            setCharacterHealth(character, -diceData[0].diceCount, room, client, "heart");
+            setCharacterHealth(character, -diceData[0].diceCount, room, client, "heart", null);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -diceData[0].diceCount,
                 type: "heart"
@@ -1212,6 +1256,7 @@ export const messageHandlers: MessageHandlers = {
                         coin : move.coin,
                         powerIds: [],
                         costList: [],
+                        stackCostList: [],
                         result: move.result
                     };
     
@@ -1225,7 +1270,15 @@ export const messageHandlers: MessageHandlers = {
                         powermove.costList.push(
                             item
                         )
-                    })
+                    });
+                    move.stackCostList.forEach((stack:any) => {
+                        const item = new Item();
+                        item.id = stack.id;
+                        item.count = stack.count;
+                        powermove.stackCostList.push(
+                            item
+                        )
+                    });
                     slotData.powermoves.push(powermove);
                 }
             })

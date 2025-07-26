@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -19,7 +19,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, TileType } from "@prisma/client";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -49,6 +49,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     isTurnStartEquip: boolean = true;
     isTurnStartStack: boolean = true;
+    isTurnStartForScreen: boolean = true;
 
     async onCreate(options: UfbRoomOptions) {
         RoomCache.set(this.roomId, this);
@@ -208,6 +209,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         this.isTurnStartEquip = true;
         this.isTurnStartStack = true;
+        this.isTurnStartForScreen = true;
         console.log("turn orders:", n, this.state.currentCharacterId);
 
         this.broadcast(
@@ -459,6 +461,12 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         console.log("AI CHECKING..kkk")
 
+        if(this.isTurnStartForScreen){
+            this.DoActionMonster(1.5);
+            this.isTurnStartForScreen = false;
+            return;
+        }
+
         // AI MONSTER ITEM
         let isItemUse = false;
         selectedMonster.items.forEach(p => {
@@ -702,6 +710,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         
         if(idx != -1) {
             const moveEntity: MoveItemEntity = this.state.map.moveItemEntities[idx];
+            const enemy = this.state.characters.get(moveEntity.playerId);
             const result = itemResults[moveEntity.itemId];
             if(!!result.energy) {
                 monster.stats.energy.add(result.energy);
@@ -711,7 +720,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                 });
             }
             if(!!result.heart) {
-                setCharacterHealth(monster, result.heart, this, null, "heart");
+                setCharacterHealth(monster, result.heart, this, null, "heart", enemy);
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: result.heart,
                     type: "heart"
@@ -883,13 +892,24 @@ export class UfbRoom extends Room<UfbRoomState> {
                 }
             });
         }
+
+        // if(powermove['stackCostList'].length > 0 && isResult){
+        //     powermove.stackCostList.forEach((stack : any) => {
+        //         if(isResult){
+        //             const idx = character.stacks.findIndex(ii => ii.id == stack.id && ii.count >= stack.count);
+        //             isResult = idx > -1;
+        //             if(!isResult) return;
+        //         }
+        //     });
+        // }
+
         console.log("check isResult : ", isResult, powermove);
         if(!isResult) {
             this.notify(null, "Your item is not enough!", "error");
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {
                 characterId: character.id,
             })
-            this.DoActionMonster();
+            this.DoActionMonster(1);
             return;
         }
         // REDUCE COST PART
@@ -926,6 +946,11 @@ export class UfbRoom extends Room<UfbRoomState> {
                     }
                 });
             }
+            // } else if(key == "stackCostList"){
+            //     powermove.stackCostList.forEach((stack: any) => {
+            //         addStackToCharacter(stack.id, stack.count, character, null, this);
+            //     });
+            // }
         });
 
         console.log("------ check cost ppart======")
@@ -935,17 +960,20 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         // ADD RESOULT PART -- IMPORTANT
         let target : CharacterState;
+        let from : CharacterState;
         if(powermove.range == 0) {
             target = character;
+            from = enemy;
         } else {
             target = enemy;
+            from = character;
         }
 
         if(target == null) return;
 
         Object.keys(powermove.result).forEach(key => {
             if(key == "health") {
-                setCharacterHealth(target, powermove.result.health, this, null, "heart");
+                setCharacterHealth(target, powermove.result.health, this, null, "heart", from);
 
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.health,
@@ -959,6 +987,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 });
             } else if(key == "coin") {
                 target.stats.coin += powermove.result.coin;
+                setQuestResult(QUESTTYPE.GLITTER, powermove.result.coin, target);
+                
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.coin,
                     type: "coin",
@@ -974,7 +1004,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                 if(powermove.result[key] == PERKTYPE.AreaOfEffect) {
                     const enemyIds = getCharacterIdsInArea(character, powermove.range, this);
                     enemyIds.forEach((id: string) => {
-                        setCharacterHealth(this.state.characters.get(id), -1, this, null, "heart");
+                        setCharacterHealth(this.state.characters.get(id), -1, this, null, "heart", from);
                     })
 
                 } else {
@@ -995,7 +1025,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         const result = getPerkEffectDamage(character, enemy, this, powermove.result[key]);
                         console.log(result);
                         if(result.desTileId == "") {
-                            setCharacterHealth(target, -1, this, null, "heart");
+                            setCharacterHealth(target, -1, this, null, "heart", from);
 
                             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                 score: -1,
@@ -1035,7 +1065,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                     });
         
                                 } else {
-                                    setCharacterHealth(target, -1, this, null, "heart");
+                                    setCharacterHealth(target, -1, this, null, "heart", from);
         
                                     this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -1,
@@ -1044,7 +1074,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 }
         
                             } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR) {
-                                setCharacterHealth(target, -1, this, null, "heart");
+                                setCharacterHealth(target, -1, this, null, "heart", from);
         
                                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -1,
@@ -1076,7 +1106,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         
                             } else if(result.wallType == EDGE_TYPE.CLIFF) {
         
-                                setCharacterHealth(target, -1, this, null, "heart");
+                                setCharacterHealth(target, -1, this, null, "heart", from);
 
                                 // CHANGE POSITION
                                 if(isEmptyTile) {
@@ -1100,7 +1130,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 }
         
                             } else if(result.wallType == EDGE_TYPE.VOID) {
-                                setCharacterHealth(target, -2, this, null, "heart");
+                                setCharacterHealth(target, -2, this, null, "heart", from);
                                 addStackToCharacter(STACKTYPE.Void, 1, target, null, this);
                                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -2,
@@ -1198,7 +1228,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         isEndAttack = false;
 
                     } else {
-                        setCharacterHealth(enemy, -message.diceCount, this, null, "heart");
+                        setCharacterHealth(enemy, -message.diceCount, this, null, "heart", from);
 
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -message.diceCount,
@@ -1226,7 +1256,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         });
 
         if(message.vampireCount > 0) {
-            setCharacterHealth(character, message.vampireCount, this, null, "heart");
+            setCharacterHealth(character, message.vampireCount, this, null, "heart", from);
             
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: message.vampireCount,
@@ -1257,7 +1287,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
             if(message.stackId == STACKTYPE.Revenge) {
                 enemy.stacks[STACKTYPE.Revenge].count--;
-                setCharacterHealth(character, -enemyDiceCount, this, null, "heart");
+                setCharacterHealth(character, -enemyDiceCount, this, null, "heart", enemy);
 
                 enemy.stats.ultimate.add(enemyDiceCount);
 
@@ -1283,10 +1313,8 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         }
 
-        console.log("ai - reduce health", deltaCount, diceCount, health, enemyDiceCount);
-
         if(deltaCount > 0) {
-            setCharacterHealth(enemy, -deltaCount, this, null, "heart");
+            setCharacterHealth(enemy, -deltaCount, this, null, "heart", enemy);
             enemy.stats.ultimate.add(deltaCount);
 
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1575,6 +1603,10 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     GetInventoryFromEnemy(character: CharacterState, enemy: CharacterState) {
         character.stats.coin += enemy.stats.coin;
+
+        setQuestResult(QUESTTYPE.GLITTER, enemy.stats.coin, character);
+
+
         let addItems: any = [];
         let addPowers: any = [];
         // enemy.items.forEach(item => {

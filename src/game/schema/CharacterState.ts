@@ -81,6 +81,8 @@ export class Quest extends Schema {
     @type("int32") melee: number = 0;
     @type("int32") mana: number = 0;
     @type("int32") coin: number = 0;
+    @type("int32") target: number = 0;
+    @type("int32") complete: number = 0;
 }
 
 export class CharacterState extends Schema {
