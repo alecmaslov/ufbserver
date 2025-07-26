@@ -2136,11 +2136,11 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MANA,
-                count: 0
+                count: 1
             },
             {
                 id: ITEMTYPE.MELEE,
-                count: 0
+                count: 1
             },
         ],
         result : {
@@ -2150,11 +2150,11 @@ export const powermoves : any = [
                     count : 1
                 }
             ],
-            // perkId: PERKTYPE.Vampire,
+            perkId: PERKTYPE.Vampire,
             health: -59
         },
         range: 1,
-        light: 0,
+        light: 8,
         coin: 0,
     },
     {
