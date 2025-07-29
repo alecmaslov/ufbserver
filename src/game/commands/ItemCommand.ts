@@ -28,20 +28,23 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // Object.keys(ITEMTYPE).forEach(key => {
         //     const id = ITEMTYPE[key];
         //     if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb)) {
-        //         const testItem : Item = character.items.find(item => item.id == id);
-        //         if(testItem == null) {
-        //             const newItem = new Item();
-        //             newItem.id = id;
-        //             newItem.count = 30;
-        //             newItem.name = ITEMDETAIL[id].name;
-        //             newItem.description = "description";
-        //             newItem.level = ITEMDETAIL[id].level;
-        //             newItem.cost = ITEMDETAIL[id].cost;
-        //             newItem.sell = ITEMDETAIL[id].sell;
-        
-        //             character.items.push(newItem);
-        //         } else {
-        //             testItem.count++;
+
+        //         if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
+        //             const testItem : Item = character.items.find(item => item.id == id);
+        //             if(testItem == null) {
+        //                 const newItem = new Item();
+        //                 newItem.id = id;
+        //                 newItem.count = 30;
+        //                 newItem.name = ITEMDETAIL[id].name;
+        //                 newItem.description = "description";
+        //                 newItem.level = ITEMDETAIL[id].level;
+        //                 newItem.cost = ITEMDETAIL[id].cost;
+        //                 newItem.sell = ITEMDETAIL[id].sell;
+            
+        //                 character.items.push(newItem);
+        //             } else {
+        //                 testItem.count++;
+        //             }
         //         }
         //     }
 
@@ -89,7 +92,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // END TEST
 
-        addItemToCharacter(message.itemId, 1, character);
+        addItemToCharacter(message.itemId, 1, character, client);
 
         console.log("item command: ", message)
 

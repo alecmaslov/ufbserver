@@ -2151,7 +2151,7 @@ export const powermoves : any = [
                 }
             ],
             perkId: PERKTYPE.Vampire,
-            health: -59
+            health: -1
         },
         range: 1,
         light: 8,

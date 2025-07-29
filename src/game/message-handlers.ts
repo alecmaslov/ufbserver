@@ -133,6 +133,7 @@ export const messageHandlers: MessageHandlers = {
         const idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
 
         let itemId = lvl1Items[idxItem].id;
+        // let itemId = ITEMTYPE.ENERGY_SHARD;
         let powerId = lvl1Powers[idxPower].id;
 
         if(message.isItemBag) {
@@ -141,6 +142,7 @@ export const messageHandlers: MessageHandlers = {
             const lvl2Items = getItemIdsByLevel(2, false);
             const idx2 = Math.ceil(Math.random() * lvl2Items.length) % lvl2Items.length;
             itemId = lvl2Items[idx2].id;
+            // itemId = ITEMTYPE.HEART_PIECE;
 
             const idx = Math.ceil(Math.random() * GOOD_STACKS.length) % GOOD_STACKS.length;
             powerId = GOOD_STACKS[idx];
@@ -281,7 +283,7 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        addItemToCharacter(itemId, -1, character);
+        addItemToCharacter(itemId, -1, character, client);
 
         // const idx = character.items.findIndex(it => it.id == itemId && it.count > 0);
         // if(idx != -1) {
@@ -571,7 +573,7 @@ export const messageHandlers: MessageHandlers = {
         if(type == "item") {
             if(character.stats.coin >= ITEMDETAIL[id].cost) {
                 character.stats.coin -= ITEMDETAIL[id].cost;
-                addItemToCharacter(id, 1, character);
+                addItemToCharacter(id, 1, character, client);
 
                 msg = {
                     items: [{
@@ -797,7 +799,7 @@ export const messageHandlers: MessageHandlers = {
 
         character.quests.forEach(q => {
             if(q.id == message.questId){
-                addItemToCharacter(q.itemId, 1, character);
+                addItemToCharacter(q.itemId, 1, character, client);
                 addPowerToCharacter(q.powerId, 1, character);
                 if(q.melee > 0){
                     addItemToCharacter(ITEMTYPE.MELEE, 1, character);
@@ -843,7 +845,7 @@ export const messageHandlers: MessageHandlers = {
                 character.stats.coin -= coin;
                 addItemToCharacter(idx1, -1, character);
                 addItemToCharacter(idx2, -1, character);
-                addItemToCharacter(idx3, 1, character);
+                addItemToCharacter(idx3, 1, character, client);
                 msg.items = [
                     {
                         id: idx1,
@@ -1030,7 +1032,7 @@ export const messageHandlers: MessageHandlers = {
 
                 if(!!bonus.items) {
                     bonus.items.forEach(item => {
-                        addItemToCharacter(item.id, item.count, character);
+                        addItemToCharacter(item.id, item.count, character, client);
                     })
                 }
 

@@ -858,7 +858,7 @@ export function getItemCountFromCharacter(id: number, state: CharacterState) {
     return count;
 }
 
-export function addItemToCharacter(id: number, count : number, state: CharacterState) {
+export function addItemToCharacter(id: number, count : number, state: CharacterState, client: Client = null) {
     const {arrow, bomb, mana, melee} = getArrowBombCount(state);
 
     const data = GetRealItemIdByDouble(id);
@@ -904,33 +904,69 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 
     let itemCount = getItemCountFromCharacter(id, state);
     
-    if(id == ITEMTYPE.HEART_PIECE) {
-        if(itemCount + count >= 4){
-            count = (itemCount + count) % 4 - itemCount;
+    if(count > 0){
 
+        if(id == ITEMTYPE.HEART_PIECE) {
+            let beforeCount = Math.ceil(itemCount / 4);
+            let presentCount = Math.ceil((itemCount + count) / 4);
+            if(beforeCount != presentCount){
+                //count = (itemCount + count) % 4 - itemCount;
+
+                state.stats.health.max += 5;
+                state.stats.health.current += 5;
+
+                if(client != null){
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: 5,
+                        type: "heart"
+                    });
+                }
+
+                setQuestResult(QUESTTYPE.LIFE, 1, state);
+            }
+        } else if(id == ITEMTYPE.ENERGY_SHARD){
+            let beforeCount = Math.ceil(itemCount / 3);
+            let presentCount = Math.ceil((itemCount + count) / 3);
+            if(beforeCount != presentCount){
+                //count = (itemCount + count) % 3 - itemCount;
+                
+                state.stats.energy.max += 3;
+                state.stats.energy.current += 3;
+
+                if(client != null){
+                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        score: 3,
+                        type: "energy"
+                    });
+                }
+
+                setQuestResult(QUESTTYPE.ENERGY, 1, state);
+            }
+        } else if(id == ITEMTYPE.HEART_CRYSTAL){
             state.stats.health.max += 5;
             state.stats.health.current += 5;
+            if(client != null){
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: 5,
+                    type: "heart"
+                });
+            }
             setQuestResult(QUESTTYPE.LIFE, 1, state);
-        }
-    } else if(id == ITEMTYPE.ENERGY_SHARD){
-        if(itemCount + count >= 3){
-            count = (itemCount + count) % 3 - itemCount;
-            
+            return;
+        } else if(id == ITEMTYPE.ENERGY_CRYSTAL){
             state.stats.energy.max += 3;
             state.stats.energy.current += 3;
+            if(client != null){
+                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: 3,
+                    type: "energy"
+                });
+            }
             setQuestResult(QUESTTYPE.ENERGY, 1, state);
+            return;
         }
-    } else if(id == ITEMTYPE.HEART_CRYSTAL){
-        state.stats.health.max += 5;
-        state.stats.health.current += 5;
-        setQuestResult(QUESTTYPE.LIFE, 1, state);
-        return;
-    } else if(id == ITEMTYPE.ENERGY_CRYSTAL){
-        state.stats.energy.max += 3;
-        state.stats.energy.current += 3;
-        setQuestResult(QUESTTYPE.ENERGY, 1, state);
-        return;
     }
+
 
     const itemIdx = state.items.findIndex(ii => ii.id == id);
 
