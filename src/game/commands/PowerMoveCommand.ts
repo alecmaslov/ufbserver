@@ -59,7 +59,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 }
             }
         }
-        if(powermove["stackCostList"].length > 0 && isResult){
+        if(!!powermove.stackCostList && powermove.stackCostList.length > 0 && isResult){
             powermove.stackCostList.forEach((stack: any) => {
                 if(isResult){
                     const idx = character.stacks.findIndex(ii => ii.id == stack.id && ii.count >= stack.count);
