@@ -321,7 +321,7 @@ export const messageHandlers: MessageHandlers = {
             character.stats.energy.add(10);
             character.stats.ultimate.add(10);
             addStackToCharacter(STACKTYPE.Cure, 1, character, client, room)
-            addStackToCharacter(STACKTYPE.Dodge, 1, character, client, room)
+            addStackToCharacter(STACKTYPE.Charge, 1, character, client, room)
 
         } else if(itemId == ITEMTYPE.FLAME_CHILI) {
             character.stats.ultimate.add(10);
@@ -404,6 +404,23 @@ export const messageHandlers: MessageHandlers = {
         const health = !!pm.result.health? pm.result.health : 0;
 
         let deltaCount = diceCount - health - enemyDiceCount;
+
+        if(enemy == null) {
+            room.notify(
+                client,
+                "Enemy missed!",
+                "error"
+            );
+            return;
+        }
+        if(character == null){
+            room.notify(
+                client,
+                "Character missed!",
+                "error"
+            );
+            return;
+        }
 
         // REVENGE STACK ACTIVE
         if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, room)) {
@@ -936,7 +953,7 @@ export const messageHandlers: MessageHandlers = {
         const powermove = powermoves.find((pm : any) => pm.id == message.powerMoveId);
 
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
-            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? powermove.range : 1)
+            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? Math.max(powermove.range, 1) : 1)
         });
     },
 

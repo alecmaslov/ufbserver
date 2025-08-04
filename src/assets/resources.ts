@@ -452,7 +452,7 @@ export const powermoves : any = [
     {
         // SWORD3
         id: 4,
-        name: "Elemental Strike",
+        name: "Burning Rage",
         powerImageId: 24,
         powerIds: [
             24
@@ -466,10 +466,6 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 2
-            },
-            {
-                id: ITEMTYPE.MANA,
                 count: 1
             },
         ],
@@ -478,12 +474,12 @@ export const powermoves : any = [
             stacks: [
                 {
                     id: STACKTYPE.Burn,
-                    count : 1
+                    count : 2
                 },
             ]
         },
         range: 1,
-        light: 10,
+        light: 8,
         coin: 0,
     },
     {
@@ -503,10 +499,6 @@ export const powermoves : any = [
         costList: [
             {
                 id: ITEMTYPE.MELEE,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.MANA,
                 count: 1
             },
         ],
@@ -712,7 +704,7 @@ export const powermoves : any = [
         stackCostList: [],
         costList: [
             {
-                id: ITEMTYPE.MELEE,
+                id: ITEMTYPE.MANA,
                 count: 1
             }
         ],
@@ -948,10 +940,11 @@ export const powermoves : any = [
                     id: STACKTYPE.Revenge,
                     count: 1
                 },
-            ]
+            ],
+            energy: 5
         },
         range: 1,
-        light: 5,
+        light: 0,
         coin: 0,
     },
     {
@@ -1809,8 +1802,8 @@ export const powermoves : any = [
                 }
             ]
         },
-        range: 0,
-        light: 8,
+        range: 4,
+        light: 6,
         coin: 0,
     },
     {

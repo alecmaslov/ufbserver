@@ -26,6 +26,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             this.room.notify(client, "You are not in room game!", "error");
             return;
         }
+        if(!enemy){
+            this.room.notify(client, "Enemy are not in room game!", "error");
+            return; 
+        }
 
         const powerMoveId = message.powerMoveId;
 
@@ -114,7 +118,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 });
             } else if(key == "stackCostList"){
                 powermove.stackCostList.forEach((stack: any) => {
-                    addStackToCharacter(stack.id, stack.count, character, client, null);
+                    addStackToCharacter(stack.id, -stack.count, character, client, null);
                 });
             }
         });
@@ -124,13 +128,13 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         // ADD RESOULT PART -- IMPORTANT
         let target : CharacterState;
         let from : CharacterState;
-        if(powermove.range == 0) {
-            target = character;
-            from = enemy;
-        } else {
+        // if(powermove.range == 0) {
+        //     target = character;
+        //     from = enemy;
+        // } else {
             target = enemy;
             from = character;
-        }
+        // }
 
         if(target == null) return;
 
@@ -391,13 +395,13 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         });
 
                     } else {
-                        console.log("add charcter stack....", stack.id, stack)
+                        console.log("add charcter stack....", stack.id, stack, target==enemy)
 
                         addStackToCharacter(stack.id, stack.count, target, client);
                     }
                     ctn += stack.count;
                 })
-                console.log("use stack....")
+                console.log("use stack....", ctn);
                 if(ctn > 0) {
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                         score: ctn,

@@ -591,7 +591,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                 });
             } else if(extraItemId == ITEMTYPE.ICE_ARROW) {
                 powermove.result.ultimate -= 3;
-                powermove.result.energy -= 3;
+                powermove.result.health -= 3;
                 powermove.result.stacks.push({
                     id: STACKTYPE.Freeze,
                     count: 1
@@ -648,6 +648,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                         },
 
                     ],
+                    stackCostList:[],
                     result : {
                         dice: DICE_TYPE.DICE_4
                     },
@@ -669,6 +670,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                             count: 1
                         },
                     ],
+                    stackCostList:[],
                     result : {
                         dice: DICE_TYPE.DICE_4
                     },
@@ -696,7 +698,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                     }];
                 } else if(arrowId == ITEMTYPE.ICE_ARROW) {
                     powermove.result.ultimate = -3;
-                    powermove.result.energy = -3;
+                    powermove.result.health = -3;
                     powermove.result.stacks = [{
                         id: STACKTYPE.Freeze,
                         count: 1
@@ -1050,6 +1052,7 @@ export function addStackToCharacter(id: number, count : number, state: Character
 
     if(stack == null) {
         if(count > 0) {
+            console.log("added stack in state", count, id);
             const newStack = new Item();
             newStack.id = id;
             newStack.count = count;
