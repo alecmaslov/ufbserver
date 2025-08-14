@@ -8,7 +8,7 @@ import { PowerMoveListMessage } from "#game/message-types";
 import { powermoves, POWERTYPE } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addPowerToCharacter } from "#game/helpers/map-helpers";
+import { addPowerToCharacter, getEquipBonusDamage } from "#game/helpers/map-helpers";
 
 type OnEquipCommandPayload = {
     client: Client;
@@ -66,6 +66,9 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         }
         powermoves.forEach((move : any) => {
             if(move.powerIds.indexOf(powerId) > -1) {
+
+                let extraDamage = getEquipBonusDamage(powerId, character);
+
                 const powermove : PowerMove = {
                     id : move.id,
                     name : move.name,
@@ -96,6 +99,10 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     item.count = sItem.count;
                     powermove.stackCostList.push(item);
                 });
+
+                powermove.range += extraDamage.range;
+                powermove.result.health = !!powermove.result.health? powermove.result.health - extraDamage.damage : - extraDamage.damage;
+
                 clientMessage.powermoves.push(powermove);
             }
         })
