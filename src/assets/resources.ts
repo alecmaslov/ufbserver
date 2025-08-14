@@ -3420,6 +3420,49 @@ export const EQUIP_TURN_BONUS = {
     },
 }
 
+export const EQUIP_EXTRA_BONUS = {
+    [POWERTYPE.Sword2] : {
+        damage: 1,
+        range: 0
+    },
+    [POWERTYPE.Sword3] : {
+        damage: 2,
+        range: 0
+    },
+    [POWERTYPE.Axe2] : {
+        damage: 1,
+        range: 0
+    },
+    [POWERTYPE.Axe3] : {
+        damage: 2,
+        range: 0
+    },
+    [POWERTYPE.Spear2] : {
+        damage: 1,
+        range: 0
+    },
+    [POWERTYPE.Spear3] : {
+        damage: 2,
+        range: 0
+    },
+    [POWERTYPE.Bow2] : {
+        damage: 0,
+        range: 1
+    },
+    [POWERTYPE.Bow3] : {
+        damage: 0,
+        range: 2
+    },
+    [POWERTYPE.CrossBow2] : {
+        damage: 1,
+        range: 0
+    },
+    [POWERTYPE.CrossBow3] : {
+        damage: 1,
+        range: 0
+    },
+}
+
 export const BAN_STACKS = {
     [STACKTYPE.Cure] : STACKTYPE.Void,
     [STACKTYPE.Void] : STACKTYPE.Cure,

@@ -4,9 +4,9 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { CharacterState, Item } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getDiceCount, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
 
 type OnPowerMoveCommandPayload = {
@@ -34,6 +34,12 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         const powerMoveId = message.powerMoveId;
 
         let powermove = getPowerMoveFromId(powerMoveId, message.extraItemId);
+
+        let extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
+
+        powermove.result.health = !!powermove.result.health? (powermove.result.health - extraDamage.damage) : -extraDamage.damage;
+        powermove.range += extraDamage.range;
+
         console.log("added: ", powermove);
         let isResult = true;
 

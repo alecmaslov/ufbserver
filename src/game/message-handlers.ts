@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getDiceTypeFromStack, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -9,7 +9,7 @@ import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
 import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
-import { PowerMove } from "#shared-types";
+import { PathStep, PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 import { getRandomElements } from "#utils/collections";
@@ -351,6 +351,91 @@ export const messageHandlers: MessageHandlers = {
 
     },
 
+    // SET STAB ATTACK PART
+    [CLIENT_SERVER_MESSAGE.SET_STAB_ATTACK]:(room, client, message) => {
+        const itemId = message.itemId;
+        const character = getCharacterById(room, message.characterId);
+        const enemy = getCharacterById(room, message.enemyId);
+
+        const itemCount = getItemCountFromCharacter(itemId, character);
+
+        if(character == null) {
+            room.notify(
+                client,
+                "Character is not in the room.",
+                "error"
+            );
+            return;
+        }
+
+        if(itemCount == 0) {
+            room.notify(
+                client,
+                "You don't have enough item to move there!",
+                "error"
+            );
+            return;
+        }
+
+        addItemToCharacter(itemId, -1, character, client);
+
+        if(itemId == ITEMTYPE.ARROW){
+            setCharacterHealth(enemy, -2, room, client, "heart", character);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -2,
+                type: "heart_e",
+            });
+        } else if(itemId == ITEMTYPE.BOMB_ARROW){
+            setCharacterHealth(enemy, -6, room, client, "heart", character);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -6,
+                type: "heart_e",
+            });
+
+            // PERK PART
+            setPerkEffectDamage(character, enemy, room, client, PERKTYPE.Push);
+
+        } else if(itemId == ITEMTYPE.FIRE_ARROW){
+            setCharacterHealth(enemy, -3, room, client, "heart", character);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -3,
+                type: "heart_e",
+            });
+
+            addStackToCharacter(STACKTYPE.Burn, 1, enemy, client);
+
+        } else if(itemId == ITEMTYPE.ICE_ARROW){
+            setCharacterHealth(enemy, -3, room, client, "heart", character);
+
+            enemy.stats.ultimate.current -= 3;
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -3,
+                type: "heart_e",
+            });
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -3,
+                type: "ultimate_e",
+            });
+
+            addStackToCharacter(STACKTYPE.Freeze, 1, enemy, client);
+
+
+        } else if(itemId == ITEMTYPE.VOID_ARROW){
+            setCharacterHealth(enemy, -4, room, client, "heart", character);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -4,
+                type: "heart_e",
+            });
+
+            addStackToCharacter(STACKTYPE.Void, 1, enemy, client);
+        }
+
+    },
+
     [CLIENT_SERVER_MESSAGE.SET_MOVE_POINT] : (room, client, message) => {
         const tileId = message.tileId;
         const character = getCharacterById(room, message.characterId);
@@ -401,7 +486,10 @@ export const messageHandlers: MessageHandlers = {
         const enemy = getCharacterById(room, enemyId);
         const character = getCharacterById(room, characterId);
         const pm = getPowerMoveFromId(powerMoveId, extraItemId);
-        const health = !!pm.result.health? pm.result.health : 0;
+
+        let extraDamage = getEquipBonusDamage(pm.powerImageId, character);
+
+        const health = !!pm.result.health? (pm.result.health - extraDamage.damage) : 0;
 
         let deltaCount = diceCount - health - enemyDiceCount;
 
@@ -952,8 +1040,10 @@ export const messageHandlers: MessageHandlers = {
         
         const powermove = powermoves.find((pm : any) => pm.id == message.powerMoveId);
 
+        let extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
+
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
-            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? Math.max(powermove.range, 1) : 1)
+            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? Math.max(powermove.range + extraDamage.range, 1) : 1)
         });
     },
 
