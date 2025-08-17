@@ -252,7 +252,8 @@ export const ITEMTYPE: {[key : string] : number} = {
 
     //RANDOM ITEM
     RandomArrow : 51,
-    RandomBomb : 52
+    RandomBomb : 52,
+    RandomArrowOrBomb : 53
 }
 
 export const STACKTYPE: {[key : string] : number} = {
@@ -1681,11 +1682,7 @@ export const powermoves : any = [
         ],
         costList: [
             {
-                id: ITEMTYPE.ARROW,
-                count: 1
-            },
-            {
-                id: ITEMTYPE.BOMB,
+                id: ITEMTYPE.RandomArrowOrBomb,
                 count: 1
             },
         ],
@@ -1849,7 +1846,7 @@ export const powermoves : any = [
         ],
         costList: [
             {
-                id: ITEMTYPE.ARROW,
+                id: ITEMTYPE.RandomArrowOrBomb,
                 count: 1
             },
         ],
@@ -2197,7 +2194,7 @@ export const powermoves : any = [
                 count: 1
             },
             {
-                id: ITEMTYPE.ARROW,
+                id: ITEMTYPE.RandomArrowOrBomb,
                 count: 1
             },
         ],

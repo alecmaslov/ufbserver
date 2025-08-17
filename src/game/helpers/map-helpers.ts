@@ -567,70 +567,92 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
             powermove.costList.push({
                 id: extraItemId,
                 count: 1
-            })
+            });
 
             powermove.result.health = !!powermove.result.health? powermove.result.health : 0;
             powermove.result.energy = !!powermove.result.energy? powermove.result.energy : 0;
             powermove.result.ultimate = !!powermove.result.ultimate? powermove.result.ultimate : 0;
             powermove.result.stacks = !!powermove.result.stacks? [...powermove.result.stacks] : [];
 
-            if(extraItemId == ITEMTYPE.ARROW) {
-                powermove.result.health -= 2;
-            } else if(extraItemId == ITEMTYPE.BOMB_ARROW) {
-                powermove.result.health -= 6;
-                if(!!powermove.result.perkId) {
-                    powermove.result.perkId1 = PERKTYPE.Pull;
-                } else {
-                    powermove.result.perkId = PERKTYPE.Pull;
+            if(powermove.powerImageId == POWERTYPE.Void2){
+                powermove.result.items = [];
+                powermove.result.items.push({
+                    id: extraItemId == ITEMTYPE.ARROW? ITEMTYPE.VOID_ARROW : ITEMTYPE.VOID_BOMB,
+                    count: 1
+                });
+            } else if(powermove.powerImageId == POWERTYPE.Fire2){
+                powermove.result.items = [];
+                powermove.result.items.push({
+                    id: extraItemId == ITEMTYPE.ARROW? ITEMTYPE.FIRE_ARROW : ITEMTYPE.FIRE_BOMB,
+                    count: 1
+                });
+            } else if(powermove.powerImageId == POWERTYPE.Ice2){
+                powermove.result.items = [];
+                powermove.result.items.push({
+                    id: extraItemId == ITEMTYPE.ARROW? ITEMTYPE.ICE_ARROW : ITEMTYPE.ICE_BOMB,
+                    count: 1
+                });
+            } else {
+                if(extraItemId == ITEMTYPE.ARROW) {
+                    powermove.result.health -= 2;
+                } else if(extraItemId == ITEMTYPE.BOMB_ARROW) {
+                    powermove.result.health -= 6;
+                    if(!!powermove.result.perkId) {
+                        powermove.result.perkId1 = PERKTYPE.Pull;
+                    } else {
+                        powermove.result.perkId = PERKTYPE.Pull;
+                    }
+                } else if(extraItemId == ITEMTYPE.FIRE_ARROW) {
+                    powermove.result.health -= 3;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Burn,
+                        count: 1
+                    });
+                } else if(extraItemId == ITEMTYPE.ICE_ARROW) {
+                    powermove.result.ultimate -= 3;
+                    powermove.result.health -= 3;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Freeze,
+                        count: 1
+                    });
+                } else if(extraItemId == ITEMTYPE.VOID_ARROW) {
+                    powermove.result.health -= 4;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Void,
+                        count: 1
+                    });
+                } else if(extraItemId == ITEMTYPE.BOMB) {
+                    powermove.result.health -= 3;
+                } else if(extraItemId == ITEMTYPE.FIRE_BOMB) {
+                    powermove.result.health -= 4;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Burn,
+                        count: 1
+                    });
+                } else if(extraItemId == ITEMTYPE.ICE_BOMB) {
+                    powermove.result.health -= 3;
+                    powermove.result.energy -= 2;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Freeze,
+                        count: 1
+                    });
+                } else if(extraItemId == ITEMTYPE.VOID_BOMB) {
+                    powermove.result.health -= 5;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Void,
+                        count: 1
+                    });
+                } else if(extraItemId == ITEMTYPE.CALTROP_BOMB) {
+                    powermove.result.ultimate -= 4;
+                    powermove.result.energy -= 4;
+                    powermove.result.stacks.push({
+                        id: STACKTYPE.Slow,
+                        count: 1
+                    })
                 }
-            } else if(extraItemId == ITEMTYPE.FIRE_ARROW) {
-                powermove.result.health -= 3;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Burn,
-                    count: 1
-                });
-            } else if(extraItemId == ITEMTYPE.ICE_ARROW) {
-                powermove.result.ultimate -= 3;
-                powermove.result.health -= 3;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Freeze,
-                    count: 1
-                });
-            } else if(extraItemId == ITEMTYPE.VOID_ARROW) {
-                powermove.result.health -= 4;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Void,
-                    count: 1
-                });
-            } else if(extraItemId == ITEMTYPE.BOMB) {
-                powermove.result.health -= 3;
-            } else if(extraItemId == ITEMTYPE.FIRE_BOMB) {
-                powermove.result.health -= 4;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Burn,
-                    count: 1
-                });
-            } else if(extraItemId == ITEMTYPE.ICE_BOMB) {
-                powermove.result.health -= 3;
-                powermove.result.energy -= 2;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Freeze,
-                    count: 1
-                });
-            } else if(extraItemId == ITEMTYPE.VOID_BOMB) {
-                powermove.result.health -= 5;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Void,
-                    count: 1
-                });
-            } else if(extraItemId == ITEMTYPE.CALTROP_BOMB) {
-                powermove.result.ultimate -= 4;
-                powermove.result.energy -= 4;
-                powermove.result.stacks.push({
-                    id: STACKTYPE.Slow,
-                    count: 1
-                })
             }
+
+
         } 
         return powermove;
     } else {

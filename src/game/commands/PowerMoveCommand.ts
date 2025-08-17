@@ -53,7 +53,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             for (let i = powermove.costList.length - 1; i >= 0; i--) {
                 const item = powermove.costList[i];
                 if (isResult) {
-                    if (!(item.id == ITEMTYPE.RandomArrow || item.id == ITEMTYPE.RandomBomb)) {
+                    if (!(item.id == ITEMTYPE.RandomArrow || item.id == ITEMTYPE.RandomBomb || item.id == ITEMTYPE.RandomArrowOrBomb)) {
                         const idx = character.items.findIndex(ii => ii.id == item.id);
                         if (idx > -1) {
                             isResult = character.items[idx].count >= item.count;
@@ -107,19 +107,23 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 });
             } else if(key == "costList") {
                 powermove.costList.forEach((item: any) => {
-                    const idx = character.items.findIndex(ii => ii.id == item.id);
-                    character.items[idx].count -= item.count;
 
-                    if(item.id == ITEMTYPE.MELEE) {
-                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                            score: -item.count,
-                            type: "melee",
-                        });
-                    } else if(item.id == ITEMTYPE.MANA) {
-                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                            score: -item.count,
-                            type: "mana",
-                        });
+                    if(!(item.id == ITEMTYPE.RandomArrow || item.id == ITEMTYPE.RandomBomb || item.id == ITEMTYPE.RandomArrowOrBomb)) {
+                        
+                        console.log("delete cost item : ", item.id, item.count);
+                        addItemToCharacter(item.id, -item.count, character, client);
+
+                        if(item.id == ITEMTYPE.MELEE) {
+                            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                score: -item.count,
+                                type: "melee",
+                            });
+                        } else if(item.id == ITEMTYPE.MANA) {
+                            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                score: -item.count,
+                                type: "mana",
+                            });
+                        }
                     }
                 });
             } else if(key == "stackCostList"){
