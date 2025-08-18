@@ -1344,9 +1344,9 @@ export const messageHandlers: MessageHandlers = {
                 type: "ultimate"
             });
         } else if(stackId == STACKTYPE.Pump) {
-            character.stats.ultimate.add(-diceData[0].diceCount);
+            character.stats.ultimate.add(diceData[0].diceCount);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[0].diceCount,
+                score: diceData[0].diceCount,
                 type: "ultimate"
             });
         }
