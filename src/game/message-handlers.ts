@@ -1037,10 +1037,13 @@ export const messageHandlers: MessageHandlers = {
     [CLIENT_SERVER_MESSAGE.GET_HIGHLIGHT_RECT] : (room, client, message) => {
         console.log("-----power move message - test range")
         const character = getCharacterById(room, message.characterId);
-        
+
         const powermove = powermoves.find((pm : any) => pm.id == message.powerMoveId);
 
-        let extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
+        let extraDamage = {damage: 0, range: 1};
+        if(powermove != null){
+            extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
+        }
 
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
             tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? Math.max(powermove.range + extraDamage.range, 1) : 1)
