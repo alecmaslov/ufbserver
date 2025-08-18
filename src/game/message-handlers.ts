@@ -947,6 +947,16 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
+
+                if(it1.id == it2.id && it1.count < 2) {
+                    room.notify(
+                        client,
+                        `You don't have enough ${remainCoin < coin? "gold" : "count"} to craft item!`,
+                        "error"
+                    );
+                    return;
+                }
+
                 character.stats.coin -= coin;
                 addItemToCharacter(idx1, -1, character);
                 addItemToCharacter(idx2, -1, character);
@@ -979,6 +989,15 @@ export const messageHandlers: MessageHandlers = {
                 );
                 return;
             } else {
+                if(it1.id == it2.id && it1.count < 2) {
+                    room.notify(
+                        client,
+                        `You don't have enough ${remainCoin < coin? "gold" : "count"} to craft item!`,
+                        "error"
+                    );
+                    return;
+                }
+
                 character.stats.coin -= coin;
                 addPowerToCharacter(idx1, -1, character);
                 addPowerToCharacter(idx2, -1, character);
