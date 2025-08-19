@@ -2305,7 +2305,7 @@ export const GOOD_STACKS: number[] = [
     STACKTYPE.Revenge,
     STACKTYPE.Block,
     STACKTYPE.Reflect,
-    STACKTYPE.Revive,
+    // STACKTYPE.Revive,
     STACKTYPE.Pump
 ]
 

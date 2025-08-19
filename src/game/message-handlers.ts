@@ -573,7 +573,7 @@ export const messageHandlers: MessageHandlers = {
         const itemData : Item[] = [];
         Object.keys(ITEMTYPE).forEach(key => {
             const id: number = ITEMTYPE[key];
-            if(!!ITEMDETAIL[id]) {
+            if(!!ITEMDETAIL[id] && id != ITEMTYPE.BOMB_BAG && id != ITEMTYPE.QUIVER && id != ITEMTYPE.QUIVER2 && id != ITEMTYPE.BOMB_BAG2) {
                 let item = new Item();
                 item.id = id;
                 item.name = ITEMDETAIL[id].name;
