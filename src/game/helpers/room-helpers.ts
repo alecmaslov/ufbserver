@@ -60,14 +60,14 @@ export const getPowerIdsByLevel = (level : number, isMonster? : boolean) => {
 
 export const getItemIdsByLevel = (level : number, isMonster? : boolean) => {
     if(isMonster) {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key] && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2).map((k : any) => {
+        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key] && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2 && key != ITEMTYPE.RandomArrow && key != ITEMTYPE.RandomBomb && key != ITEMTYPE.RandomArrowOrBomb).map((k : any) => {
             return {
                 ...ITEMDETAIL[k],
                 id: Number(k)
             }
         });
     } else {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2).map((k : any) => {
+        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2 && key != ITEMTYPE.RandomArrow && key != ITEMTYPE.RandomBomb && key != ITEMTYPE.RandomArrowOrBomb).map((k : any) => {
             return {
                 ...ITEMDETAIL[k],
                 id: Number(k)

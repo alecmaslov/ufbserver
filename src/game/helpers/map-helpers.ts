@@ -755,7 +755,7 @@ export function getEquipBonusDamage(id: number, character: CharacterState){
     character.equipSlots.forEach(slot => {
         if(id >= 0) {
             if(slot.id == id && !!EQUIP_EXTRA_BONUS[id]){
-                extraDamage.damage = EQUIP_EXTRA_BONUS[id].damage;
+                extraDamage.damage = 0;
                 extraDamage.range = EQUIP_EXTRA_BONUS[id].range;
             }
         }

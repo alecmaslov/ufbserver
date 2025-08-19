@@ -27,7 +27,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // TEST:::
         // Object.keys(ITEMTYPE).forEach(key => {
         //     const id = ITEMTYPE[key];
-        //     if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb)) {
+        //     if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb || id == ITEMTYPE.RandomArrowOrBomb)) {
 
         //         if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
         //             const testItem : Item = character.items.find(item => item.id == id);
