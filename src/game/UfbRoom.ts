@@ -549,32 +549,49 @@ export class UfbRoom extends Room<UfbRoomState> {
                     (stack.id == STACKTYPE.Slow && stack.count > 0) || 
                     (stack.id == STACKTYPE.Pump && stack.count > 0)
                 ) {
-                    stackList.push({
-                        id : stack.id,
-                        count: 1
-                    });
-    
-                    const diceType = getDiceTypeFromStack(stack.id);
-            
-                    const dice: any = {
-                        diceData : []
+                    if(stackList.length < 3){
+                        stackList.push({
+                            id : stack.id,
+                            count: 1
+                        });
+        
+                        const diceType = getDiceTypeFromStack(stack.id);
+                
+                        const dice: any = {
+                            diceData : []
+                        }
+                        if(diceType == DICE_TYPE.DICE_6_4) {
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_6,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                            })
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_4,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                            })
+                        } else if(diceType == DICE_TYPE.DICE_4) {
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_4,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                            })
+                        } else if(diceType == DICE_TYPE.DICE_6_6){
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_6,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                            });
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_6,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                            });
+                        } else{
+                            dice.diceData.push({
+                                type: diceType,
+                                diceCount: getDiceCount(Math.random(), diceType)
+                            });
+                        }
+                        diceResult.push(dice);
                     }
-                    if(diceType == DICE_TYPE.DICE_6_4) {
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_6,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                        })
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_4,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                        })
-                    } else if(diceType == DICE_TYPE.DICE_4) {
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_4,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                        })
-                    }
-                    diceResult.push(dice);
+                    
                 }
             });
     
@@ -961,13 +978,13 @@ export class UfbRoom extends Room<UfbRoomState> {
         // ADD RESOULT PART -- IMPORTANT
         let target : CharacterState;
         let from : CharacterState;
-        if(powermove.range == 0) {
-            target = character;
-            from = enemy;
-        } else {
+        // if(powermove.range == 0) {
+        //     target = character;
+        //     from = enemy;
+        // } else {
             target = enemy;
             from = character;
-        }
+        // }
 
         if(target == null) return;
 
@@ -1185,7 +1202,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 let ctn = 0;
                 powermove.result.stacks.forEach((stack : any) => {
                     if(target == enemy && !!enemy.stacks[STACKTYPE.Reflect] && enemy.stacks[STACKTYPE.Reflect].count > stack.count) {
-                        enemy.stacks[STACKTYPE.Reflect].count -= stack.count;
+                        addStackToCharacter(STACKTYPE.Reflect, -stack.count, enemy, null, this);
+                        //enemy.stacks[STACKTYPE.Reflect].count -= stack.count;
 
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
                             characterId : character.id,
@@ -1236,7 +1254,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                         });
 
                         if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
-                            enemy.stacks[STACKTYPE.Revenge].count--;
+                            addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
+                            // enemy.stacks[STACKTYPE.Revenge].count--;
                             const msg = {
                                 enemyId: enemy.id,
                                 characterId: character.id,

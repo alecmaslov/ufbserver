@@ -1235,46 +1235,49 @@ export const messageHandlers: MessageHandlers = {
                 (stack.id == STACKTYPE.Slow && stack.count > 0) || 
                 (stack.id == STACKTYPE.Pump && stack.count > 0)
             ) {
-                stackList.push({
-                    id : stack.id,
-                    count: 1
-                });
+                if(stackList.length < 3) {
+                    stackList.push({
+                        id : stack.id,
+                        count: 1
+                    });
 
-                const diceType = getDiceTypeFromStack(stack.id);
-        
-                const dice: any = {
-                    diceData : []
+                    const diceType = getDiceTypeFromStack(stack.id);
+            
+                    const dice: any = {
+                        diceData : []
+                    }
+                    if(diceType == DICE_TYPE.DICE_6_4) {
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_6,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                        })
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                    } else if(diceType == DICE_TYPE.DICE_4) {
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                    } else if(diceType == DICE_TYPE.DICE_6_6){
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_6,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                        });
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_6,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                        });
+                    } else{
+                        dice.diceData.push({
+                            type: diceType,
+                            diceCount: getDiceCount(Math.random(), diceType)
+                        });
+                    }
+                    diceResult.push(dice);
                 }
-                if(diceType == DICE_TYPE.DICE_6_4) {
-                    dice.diceData.push({
-                        type: DICE_TYPE.DICE_6,
-                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                    })
-                    dice.diceData.push({
-                        type: DICE_TYPE.DICE_4,
-                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                    })
-                } else if(diceType == DICE_TYPE.DICE_4) {
-                    dice.diceData.push({
-                        type: DICE_TYPE.DICE_4,
-                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                    })
-                } else if(diceType == DICE_TYPE.DICE_6_6){
-                    dice.diceData.push({
-                        type: DICE_TYPE.DICE_6,
-                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                    });
-                    dice.diceData.push({
-                        type: DICE_TYPE.DICE_6,
-                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                    });
-                } else{
-                    dice.diceData.push({
-                        type: diceType,
-                        diceCount: getDiceCount(Math.random(), diceType)
-                    });
-                }
-                diceResult.push(dice);
+                
             }
         });
 
