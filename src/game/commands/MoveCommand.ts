@@ -3,10 +3,10 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, getItemCountFromCharacter, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
-import { EDGE_TYPE, ITEMTYPE, itemResults, stacks } from "#assets/resources";
+import { EDGE_TYPE, ITEMTYPE, featherStep, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -115,6 +115,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             featherCost = -route_path.featherCount;
         }
 
+        console.log("---check find path");
+
 
         if (!force && character.stats.energy.current < cost) {
             this.room.notify(
@@ -125,7 +127,12 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             return;
         }
 
-        if(!force && !character.items[ITEMTYPE.FEATHER] && character.items[ITEMTYPE.FEATHER].count >= featherCost) {
+        let userFeatherCount = getItemCountFromCharacter(ITEMTYPE.FEATHER, character);
+
+        console.log("feather count: ", userFeatherCount, featherCost);
+
+        if(!force && (featherCost != 0 && userFeatherCount < featherCost)) 
+        {
             this.room.notify(
                 client,
                 "You don't have enough feather to move there!",
@@ -133,6 +140,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             );
             return;
         }
+        console.log("---check path");
 
         path.forEach(p => {
             const idx = this.room.state.map.moveItemEntities.findIndex(
@@ -140,6 +148,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
             if(idx != -1) {
                 const moveEntity: MoveItemEntity = this.room.state.map.moveItemEntities[idx];
+                const enemy = getCharacterById(this.room, moveEntity.playerId);
                 const result = itemResults[moveEntity.itemId];
                 if(!!result.energy) {
                     character.stats.energy.add(result.energy);
@@ -149,7 +158,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     });
                 }
                 if(!!result.heart) {
-                    setCharacterHealth(character, result.heart, this.room, client, "heart");
+                    setCharacterHealth(character, result.heart, this.room, client, "heart", enemy);
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                         score: result.heart,
                         type: "heart"
@@ -175,7 +184,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
     
                 client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
                     playerId: moveEntity.playerId,
-                    itemResult: result
+                    itemResult: result,
+                    itemId: moveEntity.itemId
                 });
                 this.room.state.map.moveItemEntities.deleteAt(idx);
     
@@ -188,6 +198,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             energy = originEnergy - character.stats.energy.current;
             character.stats.energy.add(originEnergy - character.stats.energy.current);
         } else {
+            cost = cost - featherStep * featherCost;
             character.stats.energy.add(cost);
             addItemToCharacter(ITEMTYPE.FEATHER, featherCost, character);
         }
@@ -203,6 +214,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 tileId: message.tileId
             });
         }
+
+        console.log("---send find path");
+
 
         character.coordinates.x = destinationTile.coordinates.x;
         character.coordinates.y = destinationTile.coordinates.y;

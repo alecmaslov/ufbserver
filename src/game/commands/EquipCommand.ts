@@ -5,9 +5,10 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { PowerMoveListMessage } from "#game/message-types";
-import { powermoves } from "#assets/resources";
+import { powermoves, POWERTYPE } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { addPowerToCharacter, getEquipBonusDamage } from "#game/helpers/map-helpers";
 
 type OnEquipCommandPayload = {
     client: Client;
@@ -33,7 +34,27 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
             console.log("count issue");
             return;
         }
-        power.count--;
+
+        // BAN EQUIP POWER
+        let isBan = false;
+
+        character.equipSlots.forEach(slot => {
+            if( 
+                ([POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(slot.id) != -1 && [POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(power.id) != -1) || 
+                ([POWERTYPE.Ice1, POWERTYPE.Ice2, POWERTYPE.Ice3].indexOf(slot.id) != -1 && [POWERTYPE.Fire1, POWERTYPE.Fire2, POWERTYPE.Fire3].indexOf(power.id) != -1) ||
+                ([POWERTYPE.Holy1, POWERTYPE.Holy2, POWERTYPE.Holy3].indexOf(slot.id) != -1 && [POWERTYPE.Void1, POWERTYPE.Void2, POWERTYPE.Void3].indexOf(power.id) != -1) ||
+                ([POWERTYPE.Void1, POWERTYPE.Void2, POWERTYPE.Void3].indexOf(slot.id) != -1 && [POWERTYPE.Holy1, POWERTYPE.Holy2, POWERTYPE.Holy3].indexOf(power.id) != -1)
+            ){
+                isBan = true;
+            }
+        });
+
+        if(isBan) {
+            this.room.notify(client, "You can not equip this power because of ban power", "error");
+            return;
+        }
+
+        addPowerToCharacter(power.id, -1, character);
 
         // ADD EQUIP SLOTS
         character.equipSlots.push(power);
@@ -45,6 +66,9 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         }
         powermoves.forEach((move : any) => {
             if(move.powerIds.indexOf(powerId) > -1) {
+
+                let extraDamage = getEquipBonusDamage(powerId, character);
+
                 const powermove : PowerMove = {
                     id : move.id,
                     name : move.name,
@@ -54,6 +78,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     coin : move.coin,
                     powerIds: [],
                     costList: [],
+                    stackCostList: [],
                     result: move.result
                 };
 
@@ -68,6 +93,16 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                         item
                     )
                 })
+                move.stackCostList.forEach((sItem: any) => {
+                    const item = new Item();
+                    item.id = sItem.id;
+                    item.count = sItem.count;
+                    powermove.stackCostList.push(item);
+                });
+
+                powermove.range += extraDamage.range;
+                powermove.result.health = !!powermove.result.health? powermove.result.health - extraDamage.damage : - extraDamage.damage;
+
                 clientMessage.powermoves.push(powermove);
             }
         })

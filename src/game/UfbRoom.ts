@@ -3,10 +3,11 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsGreenMonster, IsYellowMonster, setCharacterHealth, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
+    MoveItemEntity,
     TileState,
 } from "#game/schema/MapState";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
@@ -18,7 +19,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, TileType } from "@prisma/client";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { DICE_TYPE, EDGE_TYPE, END_TYPE, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -30,7 +31,7 @@ const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     itemBags: 8,
     merchants: 2,
     portals: 2,
-    monsters: 2,
+    monsters: 3,
 };
 
 export class UfbRoom extends Room<UfbRoomState> {
@@ -42,8 +43,13 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     isMonsterActive: boolean = true;
     aiInterval: any;
+    startTurnTime: number;
 
     spawnZoneArray: SpawnZone[];
+
+    isTurnStartEquip: boolean = true;
+    isTurnStartStack: boolean = true;
+    isTurnStartForScreen: boolean = true;
 
     async onCreate(options: UfbRoomOptions) {
         RoomCache.set(this.roomId, this);
@@ -134,7 +140,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
 
             // allow disconnected client to reconnect into this room until 20 seconds
-            await this.allowReconnection(client, 30);
+            await this.allowReconnection(client, 2000000);
      
             console.log("connect failed");
             // client returned! let's re-activate it.
@@ -201,6 +207,9 @@ export class UfbRoom extends Room<UfbRoomState> {
         mana.count = currentCharacter.stats.maxMana;
         melee.count = currentCharacter.stats.maxMelee;
 
+        this.isTurnStartEquip = true;
+        this.isTurnStartStack = true;
+        this.isTurnStartForScreen = true;
         console.log("turn orders:", n, this.state.currentCharacterId);
 
         this.broadcast(
@@ -208,6 +217,9 @@ export class UfbRoom extends Room<UfbRoomState> {
             { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime : TURN_TIME },
             { afterNextPatch: true }
         );
+
+        this.startTurnTime = Date.now();
+        console.log("turn time ", this.startTurnTime);
     }
 
     resetTurn() {
@@ -301,7 +313,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                         addItemToCharacter(lvl1Items[idxItem].id, 1, monster);
                         addPowerToCharacter(lvl1Powers[idxPower].id, 1, monster);
-                        
+             
                         monster.powers.forEach(p => {
                             monster.equipSlots.push(p);
                             p.count--;
@@ -442,10 +454,18 @@ export class UfbRoom extends Room<UfbRoomState> {
         const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
 
         if(selectedMonster == null || selectedMonster.type == USER_TYPE.USER || !this.isMonsterActive) {
+            if(selectedMonster.type == USER_TYPE.USER)
+                this.checkUserTimer();
             return;
         }
 
         console.log("AI CHECKING..kkk")
+
+        if(this.isTurnStartForScreen){
+            this.DoActionMonster(1.5);
+            this.isTurnStartForScreen = false;
+            return;
+        }
 
         // AI MONSTER ITEM
         let isItemUse = false;
@@ -466,6 +486,127 @@ export class UfbRoom extends Room<UfbRoomState> {
         if(isItemUse) {
             this.DoActionMonster()
             return;
+        }
+
+        // AI MONSTER STACK
+        if(this.isTurnStartEquip) {
+            this.isTurnStartEquip = false;
+            if(this.state.currentCharacterId == selectedMonster.id) {
+                let bonuses: any = [];
+                selectedMonster.equipSlots.forEach(slot => {
+                    // ADD BONUS in CHARACTER..
+                    const bonus = {
+                        ...EQUIP_TURN_BONUS[slot.id],
+                        id: slot.id,
+                    }
+    
+                    if(!!bonus.items) {
+                        bonus.items.forEach(item => {
+                            addItemToCharacter(item.id, item.count, selectedMonster);
+                        })
+                    }
+    
+                    if(!!bonus.stacks) {
+                        bonus.stacks.forEach(stack => {
+                            addStackToCharacter(stack.id, stack.count, selectedMonster, null, this);
+                        });
+                    }
+    
+                    if(!!bonus.randomItems) {
+                        const idx = Math.floor(bonus.randomItems.length * Math.random())
+                        const item = bonus.randomItems[idx];
+                        delete bonus.randomItems;
+                        bonus.items.push(item);
+                        addItemToCharacter(item.id, item.count, selectedMonster);
+                    }
+    
+                    if(EQUIP_TURN_BONUS[slot.id] != null) {
+                        bonuses.push(bonus);
+                    }
+                })
+    
+                if(bonuses.length > 0) {
+                    this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
+    
+                    this.DoActionMonster(3);
+                    return;
+                }
+            }
+        }
+
+        // AI MONSTER STACK
+        if(this.isTurnStartStack){
+            this.isTurnStartStack = false;
+
+            let stackList: any[] = [];
+            let diceResult: any[] = [];
+            selectedMonster.stacks.forEach(stack => {
+                if(
+                    (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Void2) && !IsEquipPower(selectedMonster, POWERTYPE.Void3)) ||
+                    (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Fire2) && !IsEquipPower(selectedMonster, POWERTYPE.Fire3)) ||
+                    (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Ice2) && !IsEquipPower(selectedMonster, POWERTYPE.Ice3)) ||
+                    (stack.id == STACKTYPE.Cure && stack.count > 0) ||
+                    (stack.id == STACKTYPE.Slow && stack.count > 0) || 
+                    (stack.id == STACKTYPE.Pump && stack.count > 0)
+                ) {
+                    if(stackList.length < 3){
+                        stackList.push({
+                            id : stack.id,
+                            count: 1
+                        });
+        
+                        const diceType = getDiceTypeFromStack(stack.id);
+                
+                        const dice: any = {
+                            diceData : []
+                        }
+                        if(diceType == DICE_TYPE.DICE_6_4) {
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_6,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                            })
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_4,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                            })
+                        } else if(diceType == DICE_TYPE.DICE_4) {
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_4,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                            })
+                        } else if(diceType == DICE_TYPE.DICE_6_6){
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_6,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                            });
+                            dice.diceData.push({
+                                type: DICE_TYPE.DICE_6,
+                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                            });
+                        } else{
+                            dice.diceData.push({
+                                type: diceType,
+                                diceCount: getDiceCount(Math.random(), diceType)
+                            });
+                        }
+                        diceResult.push(dice);
+                    }
+                    
+                }
+            });
+    
+            if(stackList.length > 0) {
+                this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
+                    characterId : selectedMonster.id,
+                    stackList: stackList,
+                    diceResult: diceResult
+                });
+                
+                console.log("------------------turn stack of monster........")
+
+                this.DoActionMonster(3);
+                return;
+            }
         }
 
         // AI MONSTER MOVEMENT LOGIC
@@ -493,12 +634,26 @@ export class UfbRoom extends Room<UfbRoomState> {
             );
             console.log("ai move : ", path);
 
+            let isBomb = false;
+
             const energy = selectedMonster.stats.energy.current;
             if(energy > 0 && path.length > 1) {
                 const pathArray = path.slice(0, Math.min(path.length, energy));
                 let monsterPath: any = pathArray;
                 for(let i = 0; i < pathArray.length; i++) {
                     const p = pathArray[i];
+
+                    const idx = this.state.map.moveItemEntities.findIndex(
+                        mItem => mItem.tileId == p.tileId && 
+                        (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
+
+                    if(idx > -1) {
+                        this.checkBombPos(idx, selectedMonster);
+                        isBomb = true;
+                        monsterPath = pathArray.slice(0, i + 1);
+                        break;
+                    }
+
                     if(obstacleTileIds.indexOf(p.tileId) != -1) {
                         monsterPath = pathArray.slice(0, i);
                         break;
@@ -520,18 +675,27 @@ export class UfbRoom extends Room<UfbRoomState> {
     
                     selectedMonster.stats.energy.add(-Math.min(monsterPath.length, energy));
             
-                    this.DoActionMonster()
                     const destinationTile = this.state.map.tiles.get(monsterPath[monsterPath.length - 1].tileId);
                     selectedMonster.coordinates.x = destinationTile.coordinates.x;
                     selectedMonster.coordinates.y = destinationTile.coordinates.y;
                     selectedMonster.currentTileId = destinationTile.id;
-    
+                    
                     this.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
-        
+                    
                     this.sendBroadcastStats(-Math.min(monsterPath.length, energy));
-
+                    
+                    if(isBomb) {
+                        this.DoActionMonster(6);
+                        return;
+                    }
+                    else{
+                        this.DoActionMonster()
+                        return;
+                    }
                 }
             }
+
+
         }
 
 
@@ -559,6 +723,64 @@ export class UfbRoom extends Room<UfbRoomState> {
             setTimeout(this.incrementTurn.bind(this), 2000);
         }
 
+    }
+
+    checkBombPos(idx: any, monster: CharacterState){
+        
+        if(idx != -1) {
+            const moveEntity: MoveItemEntity = this.state.map.moveItemEntities[idx];
+            const enemy = this.state.characters.get(moveEntity.playerId);
+            const result = itemResults[moveEntity.itemId];
+            if(!!result.energy) {
+                monster.stats.energy.add(result.energy);
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: result.energy,
+                    type: "energy"
+                });
+            }
+            if(!!result.heart) {
+                setCharacterHealth(monster, result.heart, this, null, "heart", enemy);
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: result.heart,
+                    type: "heart"
+                });
+            }
+            if(!!result.ultimate) {
+                monster.stats.ultimate.add(result.ultimate);
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: result.ultimate,
+                    type: "ultimate"
+                });
+            }
+
+            if(!!result.stackId) {
+                addStackToCharacter(result.stackId, 1, monster, null, this);
+
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: 1,
+                    type: "stack",
+                    stackId: result.stackId
+                });
+            }
+
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
+                playerId: moveEntity.playerId,
+                itemResult: result,
+                itemId: moveEntity.itemId
+            });
+            this.state.map.moveItemEntities.deleteAt(idx);
+
+        }
+    }
+
+    checkUserTimer() {
+        if(this.startTurnTime > 0) {
+            const duration = (Date.now() - this.startTurnTime) / 1000;
+            // console.log(duration, "check timer....")
+            if(duration > TURN_TIME){
+                this.incrementTurn();
+            }
+        }
     }
 
     sendBroadcastStats(score : number, type: string = 'energy') {
@@ -689,13 +911,24 @@ export class UfbRoom extends Room<UfbRoomState> {
                 }
             });
         }
+
+        // if(powermove['stackCostList'].length > 0 && isResult){
+        //     powermove.stackCostList.forEach((stack : any) => {
+        //         if(isResult){
+        //             const idx = character.stacks.findIndex(ii => ii.id == stack.id && ii.count >= stack.count);
+        //             isResult = idx > -1;
+        //             if(!isResult) return;
+        //         }
+        //     });
+        // }
+
         console.log("check isResult : ", isResult, powermove);
         if(!isResult) {
             this.notify(null, "Your item is not enough!", "error");
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {
                 characterId: character.id,
             })
-            this.DoActionMonster();
+            this.DoActionMonster(1);
             return;
         }
         // REDUCE COST PART
@@ -732,6 +965,11 @@ export class UfbRoom extends Room<UfbRoomState> {
                     }
                 });
             }
+            // } else if(key == "stackCostList"){
+            //     powermove.stackCostList.forEach((stack: any) => {
+            //         addStackToCharacter(stack.id, stack.count, character, null, this);
+            //     });
+            // }
         });
 
         console.log("------ check cost ppart======")
@@ -740,18 +978,19 @@ export class UfbRoom extends Room<UfbRoomState> {
         let isEndAttack = true;
 
         // ADD RESOULT PART -- IMPORTANT
-        let target : CharacterState;
-        if(powermove.range == 0) {
-            target = character;
-        } else {
-            target = enemy;
-        }
+        // if(powermove.range == 0) {
+        //     target = character;
+        //     from = enemy;
+        // } else {
+        var target = enemy;
+        var from = character;
+        // }
 
         if(target == null) return;
 
         Object.keys(powermove.result).forEach(key => {
             if(key == "health") {
-                setCharacterHealth(target, powermove.result.health, this, null, "heart");
+                setCharacterHealth(target, powermove.result.health, this, null, "heart", from);
 
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.health,
@@ -765,6 +1004,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 });
             } else if(key == "coin") {
                 target.stats.coin += powermove.result.coin;
+                setQuestResult(QUESTTYPE.GLITTER, powermove.result.coin, target);
+                
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.coin,
                     type: "coin",
@@ -780,28 +1021,28 @@ export class UfbRoom extends Room<UfbRoomState> {
                 if(powermove.result[key] == PERKTYPE.AreaOfEffect) {
                     const enemyIds = getCharacterIdsInArea(character, powermove.range, this);
                     enemyIds.forEach((id: string) => {
-                        setCharacterHealth(this.state.characters.get(id), -1, this, null, "heart");
+                        setCharacterHealth(this.state.characters.get(id), -1, this, null, "heart", from);
                     })
 
                 } else {
 
-                    if(!!enemy.stacks[STACKTYPE.Steady] && enemy.stacks[STACKTYPE.Steady].count > 0) {
+                    if(getCountFromItem(STACKTYPE.Steady, enemy.stacks) > 0) {
                         // REMOVE PERK EFFECT BY STEADY STACK
                         console.log("ACTIVE STEADY STACK....", character.id);
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_PERK_TOAST, {
                             characterId : character.id,
                             stackId : STACKTYPE.Steady,
                             perkId : powermove.result[key],
-                            count : enemy.stacks[STACKTYPE.Steady].count,
+                            count : getCountFromItem(STACKTYPE.Steady, enemy.stacks),
                         });
 
-                        enemy.stacks[STACKTYPE.Steady].count--;
+                        addStackToCharacter(STACKTYPE.Steady, -1, enemy, null, this);
 
                     } else {
                         const result = getPerkEffectDamage(character, enemy, this, powermove.result[key]);
                         console.log(result);
                         if(result.desTileId == "") {
-                            setCharacterHealth(target, -1, this, null, "heart");
+                            setCharacterHealth(target, -1, this, null, "heart", from);
 
                             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                 score: -1,
@@ -841,7 +1082,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                     });
         
                                 } else {
-                                    setCharacterHealth(target, -1, this, null, "heart");
+                                    setCharacterHealth(target, -1, this, null, "heart", from);
         
                                     this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -1,
@@ -850,7 +1091,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 }
         
                             } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR) {
-                                setCharacterHealth(target, -1, this, null, "heart");
+                                setCharacterHealth(target, -1, this, null, "heart", from);
         
                                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -1,
@@ -882,7 +1123,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         
                             } else if(result.wallType == EDGE_TYPE.CLIFF) {
         
-                                setCharacterHealth(target, -1, this, null, "heart");
+                                setCharacterHealth(target, -1, this, null, "heart", from);
 
                                 // CHANGE POSITION
                                 if(isEmptyTile) {
@@ -906,7 +1147,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 }
         
                             } else if(result.wallType == EDGE_TYPE.VOID) {
-                                setCharacterHealth(target, -2, this, null, "heart");
+                                setCharacterHealth(target, -2, this, null, "heart", from);
                                 addStackToCharacter(STACKTYPE.Void, 1, target, null, this);
                                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -2,
@@ -922,8 +1163,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 powermove.result.items.forEach((item : any) => {
                     const id = item.id;
 
-                    if(target == enemy && !!enemy.stacks[STACKTYPE.Dodge] && enemy.stacks[STACKTYPE.Dodge].count > 0) {
-                        enemy.stacks[STACKTYPE.Dodge].count--;
+                    if(target == enemy && getCountFromItem(STACKTYPE.Dodge, enemy.stacks) > 0) {
+                        addStackToCharacter(STACKTYPE.Dodge, -1, enemy, null, this);
 
                         // DODGE STACK ... remove Item effect
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_ITEM_TOAST, {
@@ -931,7 +1172,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                             stack1 : id,
                             stack2 : STACKTYPE.Dodge,
                             count1 : item.count,
-                            count2 : enemy.stacks[STACKTYPE.Dodge].count
+                            count2 : getCountFromItem(STACKTYPE.Dodge, enemy.stacks)
                         });
 
                     } else {
@@ -960,15 +1201,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             } else if(key == "stacks") {
                 let ctn = 0;
                 powermove.result.stacks.forEach((stack : any) => {
-                    if(target == enemy && !!enemy.stacks[STACKTYPE.Reflect] && enemy.stacks[STACKTYPE.Reflect].count > stack.count) {
-                        enemy.stacks[STACKTYPE.Reflect].count -= stack.count;
+                    if(target == enemy && getCountFromItem(STACKTYPE.Reflect, enemy.stacks) > stack.count) {
+                        addStackToCharacter(STACKTYPE.Reflect, -stack.count, enemy, null, this);
 
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
                             characterId : character.id,
                             stack1 : stack.id,
                             stack2 : STACKTYPE.Reflect,
                             count1 : stack.count,
-                            count2 : enemy.stacks[STACKTYPE.Reflect].count
+                            count2 : getCountFromItem(STACKTYPE.Reflect, enemy.stacks)
                         });
 
                     } else {
@@ -987,8 +1228,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 }
             } else if(key == "dice") {
                 if(target == enemy) {
-                    if(!!enemy.stacks[STACKTYPE.Block] && enemy.stacks[STACKTYPE.Block].count > 0) {
-                        enemy.stacks[STACKTYPE.Block].count--;
+                    if(getCountFromItem(STACKTYPE.Block, enemy.stacks) > 0) {
+                        addStackToCharacter(STACKTYPE.Block, -1, enemy, null, this);
 
                         const msg = {
                             enemyId: enemy.id,
@@ -1004,15 +1245,15 @@ export class UfbRoom extends Room<UfbRoomState> {
                         isEndAttack = false;
 
                     } else {
-                        setCharacterHealth(enemy, -message.diceCount, this, null, "heart");
+                        setCharacterHealth(enemy, -message.diceCount, this, null, "heart", from);
 
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -message.diceCount,
                             type: "heart",
                         });
 
-                        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
-                            enemy.stacks[STACKTYPE.Revenge].count--;
+                        if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
+                            addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
                             const msg = {
                                 enemyId: enemy.id,
                                 characterId: character.id,
@@ -1032,7 +1273,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         });
 
         if(message.vampireCount > 0) {
-            setCharacterHealth(character, message.vampireCount, this, null, "heart");
+            setCharacterHealth(character, message.vampireCount, this, null, "heart", from);
             
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: message.vampireCount,
@@ -1060,10 +1301,10 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         let isEnd = true;
         // REVENGE STACK ACTIVE
-        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
+        if( getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
             if(message.stackId == STACKTYPE.Revenge) {
-                enemy.stacks[STACKTYPE.Revenge].count--;
-                setCharacterHealth(character, -enemyDiceCount, this, null, "heart");
+                addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
+                setCharacterHealth(character, -enemyDiceCount, this, null, "heart", enemy);
 
                 enemy.stats.ultimate.add(enemyDiceCount);
 
@@ -1089,10 +1330,8 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         }
 
-        console.log("ai - reduce health", deltaCount, diceCount, health, enemyDiceCount);
-
         if(deltaCount > 0) {
-            setCharacterHealth(enemy, -deltaCount, this, null, "heart");
+            setCharacterHealth(enemy, -deltaCount, this, null, "heart", enemy);
             enemy.stats.ultimate.add(deltaCount);
 
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1119,29 +1358,40 @@ export class UfbRoom extends Room<UfbRoomState> {
         const {blue, green, yellow, blueLive, greenLive, yellowLive} = GetMonsterDeadCount(this);
         const monsterZones = this.spawnZoneArray.filter(zone => zone.type == SpawnZoneType.Monster).sort(() => Math.random() - 0.5);
         console.log("monster zone:   ", monsterZones.length)
-        if(blue == 4 && greenLive == 0 && green == 0) {
+        if(blueLive == 0 && green == 0) {
             // CREATE GREEN MONSTERS
             const mTypes = [
                 MONSTER_TYPE.WASP_GREEN,
                 MONSTER_TYPE.EARWIG_GREEN,
-                MONSTER_TYPE.SPIDER_GREEN,
-                MONSTER_TYPE.CENTIPEDE_GREEN,
+                MONSTER_TYPE.SPIDER_BLUE,
             ];
             mTypes.forEach((_type, i) => {
                 this.CreateMonster(_type, monsterZones[i]);
             })
-        } else if(blue == 4 && green == 4 && yellow == 0 && yellowLive == 0) {
-            // CREATE YELLOW MONSTERS
+        }
+        else if(blueLive == 0 && green == 2)
+        {
+            // CREATE GREEN MONSTERS
             const mTypes = [
-                MONSTER_TYPE.WASP_YELLOW,
-                MONSTER_TYPE.EARWIG_YELLOW,
-                MONSTER_TYPE.SPIDER_YELLOW,
-                MONSTER_TYPE.CENTIPEDE_YELLOW,
+                MONSTER_TYPE.CENTIPEDE_GREEN,
+                MONSTER_TYPE.SPIDER_GREEN,
+                MONSTER_TYPE.EARWIG_YELLOW
             ];
             mTypes.forEach((_type, i) => {
                 this.CreateMonster(_type, monsterZones[i]);
             })
-        } else if(blue == 4 && green == 4 && yellow == 4) {
+        }
+        else if(blueLive == 0 && greenLive == 0 && green == 4 && yellow == 1){
+                // CREATE GREEN MONSTERS
+                const mTypes = [
+                    MONSTER_TYPE.WASP_YELLOW,
+                    MONSTER_TYPE.CENTIPEDE_YELLOW,
+                    MONSTER_TYPE.SPIDER_YELLOW,
+                ];
+                mTypes.forEach((_type, i) => {
+                    this.CreateMonster(_type, monsterZones[i]);
+                })
+        } else if(blueLive == 0 && greenLive == 0 && yellowLive == 0 && yellow == 4) {
             // WIN PLAYER (in solo mode) // check solo mode
             let characterId = "";
             this.state.characters.forEach(character => {
@@ -1175,20 +1425,20 @@ export class UfbRoom extends Room<UfbRoomState> {
         );
 
         // TEST:::
-        Object.keys(STACKTYPE).forEach(key => {
-            const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
-            if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
-                const newStack = new Item();
-                newStack.id = STACKTYPE[key];
-                newStack.count = 1;
-                newStack.name = key;
-                newStack.description = stacks[STACKTYPE[key]].description;
-                newStack.level = stacks[STACKTYPE[key]].level;
-                newStack.cost = stacks[STACKTYPE[key]].cost;
-                newStack.sell = stacks[STACKTYPE[key]].sell;
-                monster.stacks.push(newStack);
-            }
-        });                    
+        // Object.keys(STACKTYPE).forEach(key => {
+        //     const testStack : Item = monster.stacks.find(stack => stack.id == STACKTYPE[key]);
+        //     if(testStack == null && STACKTYPE[key] < STACKTYPE.Dodge2) {
+        //         const newStack = new Item();
+        //         newStack.id = STACKTYPE[key];
+        //         newStack.count = 1;
+        //         newStack.name = key;
+        //         newStack.description = stacks[STACKTYPE[key]].description;
+        //         newStack.level = stacks[STACKTYPE[key]].level;
+        //         newStack.cost = stacks[STACKTYPE[key]].cost;
+        //         newStack.sell = stacks[STACKTYPE[key]].sell;
+        //         monster.stacks.push(newStack);
+        //     }
+        // });                    
         // END TEST:::
         console.log("init monster")
         // AI MONSTER EQUIP all POWERS AND INIT ITEM...
@@ -1370,26 +1620,30 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     GetInventoryFromEnemy(character: CharacterState, enemy: CharacterState) {
         character.stats.coin += enemy.stats.coin;
+
+        setQuestResult(QUESTTYPE.GLITTER, enemy.stats.coin, character);
+
+
         let addItems: any = [];
         let addPowers: any = [];
-        enemy.items.forEach(item => {
-            if(item.count > 0) {
-                addItemToCharacter(item.id, item.count, character);
-                addItems.push({
-                    id: item.id,
-                    count: item.count
-                })
-            }
-        })
+        // enemy.items.forEach(item => {
+        //     if(item.count > 0) {
+        //         addItemToCharacter(item.id, item.count, character);
+        //         addItems.push({
+        //             id: item.id,
+        //             count: item.count
+        //         })
+        //     }
+        // })
 
-        enemy.powers.forEach(p => {
-            if(p.count > 0) {
-                addPowerToCharacter(p.id, p.count, character);
+        enemy.equipSlots.forEach(p => {
+            // if(p.count > 0) {
+                addPowerToCharacter(p.id, 1, character);
                 addPowers.push({
                     id: p.id,
-                    count: p.count
+                    count: 1
                 })
-            }
+            // }
         });
 
         return {items: addItems, powers: addPowers};

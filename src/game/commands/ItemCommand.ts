@@ -4,8 +4,9 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter } from "#game/helpers/map-helpers";
+import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setQuestResult } from "#game/helpers/map-helpers";
+import { SpawnEntity } from "#game/schema/MapState";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -26,31 +27,38 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // TEST:::
         Object.keys(ITEMTYPE).forEach(key => {
             const id = ITEMTYPE[key];
-            const testItem : Item = character.items.find(item => item.id == id);
-            if(testItem == null) {
-                const newItem = new Item();
-                newItem.id = id;
-                newItem.count = 30;
-                newItem.name = ITEMDETAIL[id].name;
-                newItem.description = "description";
-                newItem.level = ITEMDETAIL[id].level;
-                newItem.cost = ITEMDETAIL[id].cost;
-                newItem.sell = ITEMDETAIL[id].sell;
-    
-                character.items.push(newItem);
-            } else {
-                testItem.count++;
+            if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb || id == ITEMTYPE.RandomArrowOrBomb)) {
+
+                if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
+                    const testItem : Item = character.items.find(item => item.id == id);
+                    if(testItem == null) {
+                        const newItem = new Item();
+                        newItem.id = id;
+                        newItem.count = 30;
+                        newItem.name = ITEMDETAIL[id].name;
+                        newItem.description = "description";
+                        newItem.level = ITEMDETAIL[id].level;
+                        newItem.cost = ITEMDETAIL[id].cost;
+                        newItem.sell = ITEMDETAIL[id].sell;
+            
+                        character.items.push(newItem);
+                    } else {
+                        testItem.count++;
+                    }
+                }
             }
+
         });
 
         // ADD STACKS
+        let k = 0;
         Object.keys(STACKTYPE).forEach(key => {
             const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
-            if(testStack == null) {
+            if(testStack == null && k < 10) {
                 console.log(STACKTYPE[key])
                 const newStack = new Item();
                 newStack.id = STACKTYPE[key];
-                newStack.count = 1;
+                newStack.count = 10;
                 newStack.name = key;
                 newStack.description = stacks[STACKTYPE[key]].description;
                 newStack.level = stacks[STACKTYPE[key]].level;
@@ -59,10 +67,12 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
                 character.stacks.push(newStack);
             }
+
+            k++;
         });
 
         // ADD POWER for MOVE ITEM
-        [POWERTYPE.Shield3, POWERTYPE.Fire3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3].forEach(key => {
+        [POWERTYPE.Shield3, POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
             const testPower : Item = character.powers.find(power => power.id == key);
             if(testPower == null) {
                 const newPower = new Item();
@@ -82,7 +92,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // END TEST
 
-        addItemToCharacter(message.itemId, 1, character);
+        addItemToCharacter(message.itemId, 1, character, client);
 
         console.log("item command: ", message)
 
@@ -102,7 +112,30 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
             //character.stats.coin += extra;
         }
         character.stats.coin += message.coinCount;
-        character.stats.bags++;
+
+        setQuestResult(QUESTTYPE.GLITTER, message.coinCount, character);
+        
+
+        if(message.spawnId == "itemBag") {
+            character.stats.bags++;
+        }
+        else{
+            character.stats.itemBox++;
+        }
+
+        setQuestResult(QUESTTYPE.LUCK, 1, character);
+
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
+
+        let idx = -1;
+        this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
+            if(entity.tileId == message.tileId) {
+                idx = id;
+            }
+        });
+
+        if(idx != -1) {
+            this.room.state.map.spawnEntities.deleteAt(idx);
+        }
     }
 }
