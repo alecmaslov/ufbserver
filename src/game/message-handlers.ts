@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -511,7 +511,7 @@ export const messageHandlers: MessageHandlers = {
         }
 
         // REVENGE STACK ACTIVE
-        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, room)) {
+        if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, room)) {
             if(message.stackId == STACKTYPE.Revenge) {
                 addStackToCharacter(STACKTYPE.Revenge, -1, enemy, client, room);
                 setCharacterHealth(character, -enemyDiceCount, room, client, "heart", enemy);
@@ -1287,7 +1287,7 @@ export const messageHandlers: MessageHandlers = {
             stackList: stackList,
             diceResult: diceResult
         });
-
+        console.log("------------------turn stack of mine........")
     },
 
     [CLIENT_SERVER_MESSAGE.SET_STACK_ON_START]: (room, client, message) => {

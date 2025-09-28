@@ -6,7 +6,7 @@ import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers
 import { CharacterState, Item } from "#game/schema/CharacterState";
 import { DICE_TYPE, EDGE_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
 
 type OnPowerMoveCommandPayload = {
@@ -192,14 +192,14 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
                 } else {
 
-                    if(!!enemy.stacks[STACKTYPE.Steady] && enemy.stacks[STACKTYPE.Steady].count > 0) {
+                    if(getCountFromItem(STACKTYPE.Steady, enemy.stacks) > 0) {
                         // REMOVE PERK EFFECT BY STEADY STACK
                         console.log("ACTIVE STEADY STACK....", character.id);
                         client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_PERK_TOAST, {
                             characterId : character.id,
                             stackId : STACKTYPE.Steady,
                             perkId : powermove.result[key],
-                            count : enemy.stacks[STACKTYPE.Steady].count,
+                            count : getCountFromItem(STACKTYPE.Steady, enemy.stacks),
                         });
 
                         addStackToCharacter(STACKTYPE.Steady, -1, enemy, client, this.room);
@@ -353,7 +353,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 powermove.result.items.forEach((item : any) => {
                     const id = item.id;
 
-                    if(target == enemy && !!enemy.stacks[STACKTYPE.Dodge] && enemy.stacks[STACKTYPE.Dodge].count > 0) {
+                    if(target == enemy && getCountFromItem(STACKTYPE.Dodge, enemy.stacks) > 0) {
 
                         addStackToCharacter(STACKTYPE.Dodge, -1, enemy, client, this.room);
 
@@ -363,7 +363,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                             stack1 : id,
                             stack2 : STACKTYPE.Dodge,
                             count1 : item.count,
-                            count2 : enemy.stacks[STACKTYPE.Dodge].count
+                            count2 : getCountFromItem(STACKTYPE.Dodge, enemy.stacks)
                         });
 
                     } else {
@@ -393,15 +393,15 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             } else if(key == "stacks") {
                 let ctn = 0;
                 powermove.result.stacks.forEach((stack : any) => {
-                    if(target == enemy && !!enemy.stacks[STACKTYPE.Reflect] && enemy.stacks[STACKTYPE.Reflect].count > stack.count) {
-                        enemy.stacks[STACKTYPE.Reflect].count -= stack.count;
+                    if(target == enemy && getCountFromItem(STACKTYPE.Reflect, enemy.stacks) > stack.count) {
+                        addStackToCharacter(STACKTYPE.Reflect, -stack.count, enemy, client);
 
                         client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
                             characterId : character.id,
                             stack1 : stack.id,
                             stack2 : STACKTYPE.Reflect,
                             count1 : stack.count,
-                            count2 : enemy.stacks[STACKTYPE.Reflect].count
+                            count2 : getCountFromItem(STACKTYPE.Reflect, enemy.stacks)
                         });
 
                     } else {
@@ -420,7 +420,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 }
             } else if(key == "dice") {
                 if(target == enemy) {
-                    if(!!enemy.stacks[STACKTYPE.Block] && enemy.stacks[STACKTYPE.Block].count > 0) {
+                    if(getCountFromItem(STACKTYPE.Block, enemy.stacks) > 0) {
                         addStackToCharacter(STACKTYPE.Block, -1, enemy, client, this.room);
                         
                         client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
@@ -448,7 +448,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                             type: "heart_e",
                         });
 
-                        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this.room)) {
+                        if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this.room)) {
 
                             client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
                                 enemyId: enemy.id,

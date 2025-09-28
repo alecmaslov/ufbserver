@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -602,6 +602,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                     diceResult: diceResult
                 });
                 
+                console.log("------------------turn stack of monster........")
+
                 this.DoActionMonster(3);
                 return;
             }
@@ -976,14 +978,12 @@ export class UfbRoom extends Room<UfbRoomState> {
         let isEndAttack = true;
 
         // ADD RESOULT PART -- IMPORTANT
-        let target : CharacterState;
-        let from : CharacterState;
         // if(powermove.range == 0) {
         //     target = character;
         //     from = enemy;
         // } else {
-            target = enemy;
-            from = character;
+        var target = enemy;
+        var from = character;
         // }
 
         if(target == null) return;
@@ -1026,17 +1026,17 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                 } else {
 
-                    if(!!enemy.stacks[STACKTYPE.Steady] && enemy.stacks[STACKTYPE.Steady].count > 0) {
+                    if(getCountFromItem(STACKTYPE.Steady, enemy.stacks) > 0) {
                         // REMOVE PERK EFFECT BY STEADY STACK
                         console.log("ACTIVE STEADY STACK....", character.id);
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_PERK_TOAST, {
                             characterId : character.id,
                             stackId : STACKTYPE.Steady,
                             perkId : powermove.result[key],
-                            count : enemy.stacks[STACKTYPE.Steady].count,
+                            count : getCountFromItem(STACKTYPE.Steady, enemy.stacks),
                         });
 
-                        enemy.stacks[STACKTYPE.Steady].count--;
+                        addStackToCharacter(STACKTYPE.Steady, -1, enemy, null, this);
 
                     } else {
                         const result = getPerkEffectDamage(character, enemy, this, powermove.result[key]);
@@ -1163,8 +1163,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 powermove.result.items.forEach((item : any) => {
                     const id = item.id;
 
-                    if(target == enemy && !!enemy.stacks[STACKTYPE.Dodge] && enemy.stacks[STACKTYPE.Dodge].count > 0) {
-                        enemy.stacks[STACKTYPE.Dodge].count--;
+                    if(target == enemy && getCountFromItem(STACKTYPE.Dodge, enemy.stacks) > 0) {
+                        addStackToCharacter(STACKTYPE.Dodge, -1, enemy, null, this);
 
                         // DODGE STACK ... remove Item effect
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_ITEM_TOAST, {
@@ -1172,7 +1172,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                             stack1 : id,
                             stack2 : STACKTYPE.Dodge,
                             count1 : item.count,
-                            count2 : enemy.stacks[STACKTYPE.Dodge].count
+                            count2 : getCountFromItem(STACKTYPE.Dodge, enemy.stacks)
                         });
 
                     } else {
@@ -1201,16 +1201,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             } else if(key == "stacks") {
                 let ctn = 0;
                 powermove.result.stacks.forEach((stack : any) => {
-                    if(target == enemy && !!enemy.stacks[STACKTYPE.Reflect] && enemy.stacks[STACKTYPE.Reflect].count > stack.count) {
+                    if(target == enemy && getCountFromItem(STACKTYPE.Reflect, enemy.stacks) > stack.count) {
                         addStackToCharacter(STACKTYPE.Reflect, -stack.count, enemy, null, this);
-                        //enemy.stacks[STACKTYPE.Reflect].count -= stack.count;
 
                         this.broadcast( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
                             characterId : character.id,
                             stack1 : stack.id,
                             stack2 : STACKTYPE.Reflect,
                             count1 : stack.count,
-                            count2 : enemy.stacks[STACKTYPE.Reflect].count
+                            count2 : getCountFromItem(STACKTYPE.Reflect, enemy.stacks)
                         });
 
                     } else {
@@ -1229,8 +1228,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 }
             } else if(key == "dice") {
                 if(target == enemy) {
-                    if(!!enemy.stacks[STACKTYPE.Block] && enemy.stacks[STACKTYPE.Block].count > 0) {
-                        enemy.stacks[STACKTYPE.Block].count--;
+                    if(getCountFromItem(STACKTYPE.Block, enemy.stacks) > 0) {
+                        addStackToCharacter(STACKTYPE.Block, -1, enemy, null, this);
 
                         const msg = {
                             enemyId: enemy.id,
@@ -1253,9 +1252,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                             type: "heart",
                         });
 
-                        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
+                        if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
                             addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
-                            // enemy.stacks[STACKTYPE.Revenge].count--;
                             const msg = {
                                 enemyId: enemy.id,
                                 characterId: character.id,
@@ -1303,9 +1301,9 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         let isEnd = true;
         // REVENGE STACK ACTIVE
-        if(!!enemy.stacks[STACKTYPE.Revenge] && enemy.stacks[STACKTYPE.Revenge].count > 0 && IsEnemyAdjacent(character, enemy, this)) {
+        if( getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
             if(message.stackId == STACKTYPE.Revenge) {
-                enemy.stacks[STACKTYPE.Revenge].count--;
+                addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
                 setCharacterHealth(character, -enemyDiceCount, this, null, "heart", enemy);
 
                 enemy.stats.ultimate.add(enemyDiceCount);

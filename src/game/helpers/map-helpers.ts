@@ -1038,7 +1038,6 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 }
 
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
-    const stack : Item = state.stacks.find(stack => stack.id == id);
     // ADD BAN STACK LOGIC
     if(!!BAN_STACKS[id] && count > 0) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
@@ -1094,7 +1093,9 @@ export function addStackToCharacter(id: number, count : number, state: Character
         }
     }
 
-    if(stack == null) {
+    const stackIdx = state.stacks.findIndex(stack => stack.id == id);
+
+    if(stackIdx == -1) {
         if(count > 0) {
             console.log("added stack in state", count, id);
             const newStack = new Item();
@@ -1110,11 +1111,12 @@ export function addStackToCharacter(id: number, count : number, state: Character
         }
 
     } else {
-        const stackIdx = state.stacks.findIndex(st => st.id == id);
-        stack.count += count;
-        stack.count = Math.max(0, stack.count);
+        const _stack = state.stacks[stackIdx];
+        _stack.count += count;
+        _stack.count = Math.max(0, _stack.count);
+        console.log("------------stack count------------" + _stack.count + " : " + stackIdx);
         state.stacks.deleteAt(stackIdx);
-        state.stacks.push(stack);
+        state.stacks.push(_stack);
     }
 }
 
@@ -1213,14 +1215,14 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
 
     } else {
 
-        if(!!enemy.stacks[STACKTYPE.Steady] && enemy.stacks[STACKTYPE.Steady].count > 0) {
+        if(getCountFromItem(STACKTYPE.Steady, enemy.stacks) > 0) {
             // REMOVE PERK EFFECT BY STEADY STACK
             console.log("ACTIVE STEADY STACK....", character.id);
             client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_STACK_PERK_TOAST, {
                 characterId : character.id,
                 stackId : STACKTYPE.Steady,
                 perkId : perkType,
-                count : enemy.stacks[STACKTYPE.Steady].count,
+                count : getCountFromItem(STACKTYPE.Steady, enemy.stacks),
             });
 
             addStackToCharacter(STACKTYPE.Steady, -1, enemy, client, room);
@@ -1414,7 +1416,7 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
 
 
             } else if(character.type == USER_TYPE.USER) {
-                if(!!character.stacks[STACKTYPE.Revive] && character.stacks[STACKTYPE.Revive].count > 0) {
+                if(getCountFromItem(STACKTYPE.Revive, character.stacks) > 0) {
                     addStackToCharacter(STACKTYPE.Revive, -1, character, client, room);
                     character.stats.health.add(1);
                     character.stats.isRevive = true;
@@ -1638,4 +1640,16 @@ export function setQuestResult(questId: number, complete: number, character: Cha
         }
     })
 
+}
+
+export function getCountFromItem(id: number, items: ArraySchema<Item>){
+    let itemCount = 0;
+
+    items.forEach(v => {
+        if(v.id == id){
+            itemCount = v.count;
+        }
+    })
+
+    return itemCount;
 }
