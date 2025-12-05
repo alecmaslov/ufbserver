@@ -62,6 +62,17 @@ interface SignInUserPayload {
     password: string
 }
 
+interface ChangeUserPasswordPayload {
+    email: string,
+    oldPassword: string,
+    password: string
+}
+
+interface ChangeUserNamePayload {
+    email: string,
+    displayName: string,
+}
+
 interface RegisterUserResponse {
     clientId: string;
     error: string;
@@ -69,6 +80,9 @@ interface RegisterUserResponse {
 
 interface SignInUserResponse {
     clientId: string,
+    displayName: string,
+    gold: number,
+    email: string,
     error: string
 }
 
@@ -105,7 +119,7 @@ const registerUserHandler: Handler = async (req: any, res: any) => {
             email,
             profileImageUrl: "",
             passwordHash: hashedPassword,
-            displayName: ""
+            displayName: "Player"
         }
     });
     const response: RegisterUserResponse = {
@@ -128,7 +142,7 @@ const signInUserHandler: Handler = async (req: any, res: any) => {
     });
 
     if (existClient == null) {
-        const response: SignInUserResponse = {
+        const response: RegisterUserResponse = {
             clientId: 'sdaf',
             error: RESPONSE_TYPE.NOT_EXIST
         };
@@ -137,8 +151,11 @@ const signInUserHandler: Handler = async (req: any, res: any) => {
     }
 
     if (bcrypt.compareSync(password, existClient.passwordHash)) {
-        const response: RegisterUserResponse = {
+        const response: SignInUserResponse = {
             clientId: existClient.id,
+            displayName: existClient.displayName,
+            gold: existClient.gold,
+            email: existClient.email,
             error: RESPONSE_TYPE.SUCCESS
         };
         res.send(response);
@@ -151,6 +168,88 @@ const signInUserHandler: Handler = async (req: any, res: any) => {
     }
 }
 
+const changeUserPasswordHandler: Handler = async (req: any, res: any) => {
+
+    const { email, password, oldPassword } = req.body as ChangeUserPasswordPayload;
+
+    console.log("change password api", email, password, oldPassword);
+
+    const existClient = await db.user.findUnique({
+        where: {
+            email: email
+        }
+    });
+
+    if (existClient == null) {
+        const response: RegisterUserResponse = {
+            clientId: 'xxx',
+            error: RESPONSE_TYPE.NOT_EXIST
+        };
+        res.send(response);
+        return;
+    }
+
+    if (!bcrypt.compareSync(oldPassword, existClient.passwordHash)) {
+        const response: RegisterUserResponse = {
+            clientId: existClient.id,
+            error: RESPONSE_TYPE.WRONG_PASSWORD
+        };
+        res.send(response);
+    } else {
+
+        await db.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                passwordHash: bcrypt.hashSync(password, 10)
+            }
+        });
+
+        const response: RegisterUserResponse = {
+            clientId: "existClient.id",
+            error: RESPONSE_TYPE.SUCCESS
+        };
+        res.send(response);
+    }
+}
+
+const changeUserNameHandler: Handler = async (req: any, res: any) => {
+
+    const { email, displayName } = req.body as ChangeUserNamePayload;
+
+    console.log("change password api", email, displayName);
+
+    const existClient = await db.user.findUnique({
+        where: {
+            email: email
+        }
+    });
+
+    if (existClient == null) {
+        const response: RegisterUserResponse = {
+            clientId: 'xxx',
+            error: RESPONSE_TYPE.NOT_EXIST
+        };
+        res.send(response);
+        return;
+    }
+
+    await db.user.update({
+        where: {
+            email
+        },
+        data: {
+            displayName
+        }
+    });
+
+    const response: RegisterUserResponse = {
+        clientId: "existClient.id",
+        error: RESPONSE_TYPE.SUCCESS
+    };
+    res.send(response);
+}
 
 const router: Router = Router();
 export default router;
@@ -167,6 +266,21 @@ router.post("/sign-in",
     body("password").isString().withMessage("Invalid password"),
     validate,
     safetyNet(signInUserHandler)
+);
+
+router.post("/change-user-password",
+    body("email").isString().withMessage("Invalid mail"),
+    body("password").isString().withMessage("Invalid password"),
+    body("oldPassword").isString().withMessage("Invalid password"),
+    validate,
+    safetyNet(changeUserPasswordHandler)
+);
+
+router.post("/change-user-name",
+    body("email").isString().withMessage("Invalid mail"),
+    body("displayName").isString().withMessage("Invalid password"),
+    validate,
+    safetyNet(changeUserNameHandler)
 );
 
 // @kyle: Adding an endpoint to validate token, so if a client has a token
