@@ -8,7 +8,7 @@ import { PowerMoveListMessage } from "#game/message-types";
 import { powermoves, POWERTYPE } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addPowerToCharacter } from "#game/helpers/map-helpers";
+import { addPowerToCharacter, setCharacterEnergy } from "#game/helpers/map-helpers";
 
 type OnUnEquipCommandPayload = {
     client: Client;
@@ -34,7 +34,7 @@ export class UnEquipCommand extends Command<UfbRoom, OnUnEquipCommandPayload> {
             return;
         }
 
-        character.stats.energy.add(-2);
+        setCharacterEnergy(character, -2, this.room, client);
         addPowerToCharacter(powerId , 1, character);
 
         // DELETE SLOTS SYSTEM

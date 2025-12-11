@@ -6,7 +6,7 @@ import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers
 import { CharacterState, Item } from "#game/schema/CharacterState";
 import { DICE_TYPE, EDGE_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterEnergy, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
 
 type OnPowerMoveCommandPayload = {
@@ -94,7 +94,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             if(key == "range") {
 
             } else if(key == "light") {
-                character.stats.energy.add(-powermove.light);
+                setCharacterEnergy(character, -powermove.light, this.room, client);
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: -powermove.light,
                     type: "energy",

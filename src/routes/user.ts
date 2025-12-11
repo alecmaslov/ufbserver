@@ -122,6 +122,12 @@ const registerUserHandler: Handler = async (req: any, res: any) => {
             displayName: "Player"
         }
     });
+
+    const newUserData = await db.userData.create({
+        data: {
+            userId: newClient.id
+        }
+    });
     const response: RegisterUserResponse = {
         clientId: newClient.id,
         error: RESPONSE_TYPE.SUCCESS

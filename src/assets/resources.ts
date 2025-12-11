@@ -3470,6 +3470,16 @@ export const BAN_STACKS = {
 
 }
 
+export const USER_DATA_TYPE = {
+    DAMAGE_TAKEN : 0,
+    USED_ENERGY: 1,
+    DAMAGE_DEAL: 2,
+    USED_STACK: 3,
+    DAMAGE_HEAL: 4,
+    TRAVELED_TILE: 5,
+    KILLS: 6
+}
+
 export const TURN_TIME = 180;
 
 export const featherStep = 6;

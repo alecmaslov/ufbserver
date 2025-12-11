@@ -8,7 +8,7 @@ import { PowerMoveListMessage } from "#game/message-types";
 import { powermoves, POWERTYPE } from "#assets/resources";
 import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addPowerToCharacter, getEquipBonusDamage } from "#game/helpers/map-helpers";
+import { addPowerToCharacter, getEquipBonusDamage, setCharacterEnergy } from "#game/helpers/map-helpers";
 
 type OnEquipCommandPayload = {
     client: Client;
@@ -59,7 +59,8 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         // ADD EQUIP SLOTS
         character.equipSlots.push(power);
 
-        character.stats.energy.add(-1);
+        setCharacterEnergy(character, -1, null, null);
+        
         // SEND POWER MOVES
         let clientMessage: PowerMoveListMessage = {
             powermoves: []

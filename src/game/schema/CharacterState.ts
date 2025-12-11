@@ -50,6 +50,14 @@ export class CharacterStatsState extends Schema {
     @type("int32") range: number = 0;
     @type("int32") bags: number = 0;
     @type("int32") itemBox: number = 0;
+    @type("int32") damage_taken: number = 0;
+    @type("int32") used_energy: number = 0;
+    @type("int32") damage_deal: number = 0;
+    @type("int32") used_stack: number = 0;
+    @type("int32") damage_heal: number = 0;
+    @type("int32") traveled_tile: number = 0;
+    @type("int32") kills: number = 0;
+
     @type("int16") arrowLimit: number = 999;
     @type("int16") bombLimit: number = 999;
     @type("int8") maxMelee: number = 2;

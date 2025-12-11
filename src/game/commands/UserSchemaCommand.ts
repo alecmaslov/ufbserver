@@ -5,7 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setCharacterEnergy, setQuestResult } from "#game/helpers/map-helpers";
 
 type OnUserSchemaCommandPayload = {
     client: Client;
@@ -96,7 +96,9 @@ export class UserSchemaCommand extends Command<UfbRoom, OnUserSchemaCommandPaylo
 
         character.stats.energy.setMaxValue(character.stats.energy.max + count);
         character.stats.health.setMaxValue(character.stats.health.max + count);
-        character.stats.energy.add(count);
+
+        setCharacterEnergy(character, count, this.room, client);
+        
         let extra = character.stats.health.add(count);
         if(extra > 0) {
             //character.stats.coin += extra;

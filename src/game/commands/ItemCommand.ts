@@ -5,7 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setCharacterEnergy, setQuestResult } from "#game/helpers/map-helpers";
 import { SpawnEntity } from "#game/schema/MapState";
 
 type OnItemCommandPayload = {
@@ -51,25 +51,25 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // });
 
         // ADD STACKS
-        let k = 0;
-        Object.keys(STACKTYPE).forEach(key => {
-            const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
-            if(testStack == null && k < 10) {
-                console.log(STACKTYPE[key])
-                const newStack = new Item();
-                newStack.id = STACKTYPE[key];
-                newStack.count = 10;
-                newStack.name = key;
-                newStack.description = stacks[STACKTYPE[key]].description;
-                newStack.level = stacks[STACKTYPE[key]].level;
-                newStack.cost = stacks[STACKTYPE[key]].cost;
-                newStack.sell = stacks[STACKTYPE[key]].sell;
+        // let k = 0;
+        // Object.keys(STACKTYPE).forEach(key => {
+        //     const testStack : Item = character.stacks.find(stack => stack.id == STACKTYPE[key]);
+        //     if(testStack == null && k < 10) {
+        //         console.log(STACKTYPE[key])
+        //         const newStack = new Item();
+        //         newStack.id = STACKTYPE[key];
+        //         newStack.count = 10;
+        //         newStack.name = key;
+        //         newStack.description = stacks[STACKTYPE[key]].description;
+        //         newStack.level = stacks[STACKTYPE[key]].level;
+        //         newStack.cost = stacks[STACKTYPE[key]].cost;
+        //         newStack.sell = stacks[STACKTYPE[key]].sell;
 
-                character.stacks.push(newStack);
-            }
+        //         character.stacks.push(newStack);
+        //     }
 
-            k++;
-        });
+        //     k++;
+        // });
 
         // ADD POWER for MOVE ITEM
         // [POWERTYPE.Shield3, POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
@@ -106,7 +106,9 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         character.stats.energy.setMaxValue(character.stats.energy.max + count);
         character.stats.health.setMaxValue(character.stats.health.max + count);
-        character.stats.energy.add(count);
+
+        setCharacterEnergy(character, count, this.room, client);
+        
         let extra = character.stats.health.add(count);
         if(extra > 0) {
             //character.stats.coin += extra;

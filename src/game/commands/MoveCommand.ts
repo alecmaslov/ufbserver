@@ -3,7 +3,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, getItemCountFromCharacter, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, getItemCountFromCharacter, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterEnergy, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
 import { EDGE_TYPE, ITEMTYPE, featherStep, itemResults, stacks } from "#assets/resources";
@@ -151,7 +151,8 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 const enemy = getCharacterById(this.room, moveEntity.playerId);
                 const result = itemResults[moveEntity.itemId];
                 if(!!result.energy) {
-                    character.stats.energy.add(result.energy);
+                    setCharacterEnergy(character, result.energy, this.room, client);
+                    
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                         score: result.energy,
                         type: "energy"
@@ -196,10 +197,11 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         if(force) {
             const originEnergy = message.originEnergy;
             energy = originEnergy - character.stats.energy.current;
-            character.stats.energy.add(originEnergy - character.stats.energy.current);
+
+            setCharacterEnergy(character, energy, this.room, client);
         } else {
             cost = cost - featherStep * featherCost;
-            character.stats.energy.add(cost);
+            setCharacterEnergy(character, cost, this.room, client);
             addItemToCharacter(ITEMTYPE.FEATHER, featherCost, character);
         }
         if(energy != 0) {

@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -149,6 +149,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         } catch (e) {
      
             // 20 seconds expired. let's remove the client.
+            await this.SaveCharacterData(playerId);
+
             this.state.characters.delete(playerId);
             this.sessionIdToPlayerId.delete(client.sessionId);
         }
@@ -156,8 +158,9 @@ export class UfbRoom extends Room<UfbRoomState> {
 
 
 
-    onDispose() {
+    async onDispose() {
         console.log("room", this.roomId, "disposing...");
+        await this.EndRoom();
         this.dispatcher.stop();
         this.StopAIChecking();
     }
@@ -936,7 +939,8 @@ export class UfbRoom extends Room<UfbRoomState> {
             if(key == "range") {
 
             } else if(key == "light") {
-                character.stats.energy.add(-powermove.light);
+                setCharacterEnergy(character, -powermove.light, null, null);
+                
                 // this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 //     score: -powermove.light,
                 //     type: "energy",
@@ -1651,5 +1655,149 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     StopAIChecking() {
         clearInterval(this.aiInterval);
+    }
+
+    async EndRoom(){
+        this.sessionIdToPlayerId.keys().forEach(key => {
+            const playerId = this.sessionIdToPlayerId.get(key);
+            this.SaveCharacterData(playerId);
+        })
+    }
+
+    async SaveCharacterData(playerId: string){
+        const player = this.state.characters.get(playerId);
+        if(player.type == USER_TYPE.USER){
+            const clientData = await db.client.findFirst({
+                where : {
+                    id: playerId
+                }
+            });
+
+            console.log("client data : " + clientData);
+
+            const characterToken = await db.character.findFirst({
+                where: {
+                    ownerId: clientData.userId,
+                    className: player.characterClass
+                }
+            })
+
+            if(clientData != null) {
+
+                //calc gold
+                let gold = getTotalGoldAtEnd(player);
+
+                await db.characterData.update({
+                    where: {
+                        userId: clientData.userId,
+                        characterId: characterToken.id
+                    },
+                    data: {
+                        losses: {
+                            increment: player.stats.health.current > 0? 0 : 1
+                        },
+                        wins: {
+                            increment: player.stats.health.current > 0? 1 : 0
+                        },
+                        battles: {
+                            increment: 1
+                        },
+                        kills: {
+                            increment: player.stats.kills
+                        },
+                        damage_taken: {
+                            increment: player.stats.damage_taken
+                        },
+                        item_bags: {
+                            increment: player.stats.itemBox
+                        },
+                        used_energies: {
+                            increment: player.stats.used_energy
+                        },
+                        damage_deal: {
+                            increment: player.stats.damage_deal
+                        },
+                        used_stacks: {
+                            increment: player.stats.used_stack
+                        },
+                        damage_heal: {
+                            increment: player.stats.damage_heal
+                        },
+                        collect_golds: {
+                            increment: gold
+                        },
+                        traveled_tiles: {
+                            increment: player.stats.traveled_tile
+                        },
+                        chests: {
+                            increment: player.stats.bags
+                        }
+                    }
+                })
+
+                await db.user.update({
+                    where: {
+                        id: clientData.userId
+                    },
+                    data: {
+                        gold: gold
+                    }
+                });
+
+                await db.userData.update({
+                    where :{
+                        userId: clientData.userId
+                    },
+                    data: {
+                        gold,
+                        losses: {
+                            increment: player.stats.health.current > 0? 0 : 1
+                        },
+                        wins: {
+                            increment: player.stats.health.current > 0? 1 : 0
+                        },
+                        battles: {
+                            increment: 1
+                        },
+                        kills: {
+                            increment: player.stats.kills
+                        },
+                        damage_taken: {
+                            increment: player.stats.damage_taken
+                        },
+                        item_bags: {
+                            increment: player.stats.itemBox
+                        },
+                        used_energies: {
+                            increment: player.stats.used_energy
+                        },
+                        damage_deal: {
+                            increment: player.stats.damage_deal
+                        },
+                        used_stacks: {
+                            increment: player.stats.used_stack
+                        },
+                        damage_heal: {
+                            increment: player.stats.damage_heal
+                        },
+                        collect_golds: {
+                            increment: gold
+                        },
+                        traveled_tiles: {
+                            increment: player.stats.traveled_tile
+                        },
+                        chests: {
+                            increment: player.stats.bags
+                        }
+                    }
+                });
+
+                console.log("update user's gold");
+            }
+            else{
+                console.error("client id does not exist.");
+            }
+
+        }
     }
 }

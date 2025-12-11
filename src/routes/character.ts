@@ -4,6 +4,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { query } from "express-validator";
 import { validate } from "#middleware/validate";
+import { RESPONSE_TYPE } from "#shared-types";
 
 const router: Router = Router();
 export default router;
@@ -63,6 +64,44 @@ const handleGetCharacterClass: Handler = async (req: any, res: any) => {
         res.sendStatus(500);
     }
 };
+
+const handleGetCharacterData: Handler = async (req: any, res: any) => {
+    try {
+
+        const { userId, characterClass } = req.params;
+
+        // const character = await db.character.findFirst({
+        //     where: {
+        //         ownerId: userId,
+        //         className: characterClass
+        //     },
+        // });
+
+        // console.log(character.id);
+
+        const characterData = await db.characterData.findFirst({
+            where: {
+                userId: userId,
+                // characterId: character.id
+            }
+        });
+
+        console.log(userId, characterClass, characterData.id)
+
+        res.send({
+            ...characterData,
+            error: RESPONSE_TYPE.SUCCESS
+        });
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+}
+
+router.post("/get-hero-detail", 
+    validate,
+    handleGetCharacterData
+)
 
 router.get("/:id", handleGetCharacter);
 

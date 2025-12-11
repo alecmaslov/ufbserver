@@ -1,4 +1,4 @@
-import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, USER_DATA_TYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { NavGraphLinkData } from "#game/Pathfinder";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
@@ -476,6 +476,9 @@ export function spawnCharacter(
 
     addItemToCharacter(ITEMTYPE.MANA, character.stats.maxMana, character);
     addItemToCharacter(ITEMTYPE.MELEE, character.stats.maxMelee, character);
+
+    // get coin in database...
+    
 
     characters.set(id, character);
 
@@ -1040,6 +1043,11 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 }
 
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
+
+    if(count < 0) {
+        AddUserData(USER_DATA_TYPE.USED_STACK, state, count);
+    }
+
     // ADD BAN STACK LOGIC
     if(!!BAN_STACKS[id] && count > 0) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
@@ -1396,12 +1404,21 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string, enemy: CharacterState) {
     if(type == "heart") {
-        character.stats.health.add(amount);
+        let extra = character.stats.health.add(amount);
         if(amount < 0) {
             character.stats.ultimate.add(2 * Math.abs(amount));
+            AddUserData(USER_DATA_TYPE.DAMAGE_TAKEN, character, amount);
+            if(enemy != null)
+                AddUserData(USER_DATA_TYPE.DAMAGE_DEAL, enemy, amount);
+        } else{
+            AddUserData(USER_DATA_TYPE.DAMAGE_HEAL, character, amount);
         }
 
         if(character.stats.health.current == 0) {
+
+            if(enemy != null)
+                AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);
+
             if(character.type == USER_TYPE.MONSTER) {
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEAD_MONSTER, {characterId : character.id});                
                 room.RespawnMonster();
@@ -1414,8 +1431,6 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                         setQuestResult(QUESTTYPE.KILL, 1, enemy);
                     }
                 }
-
-
 
             } else if(character.type == USER_TYPE.USER) {
                 if(getCountFromItem(STACKTYPE.Revive, character.stacks) > 0) {
@@ -1462,9 +1477,16 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
             }
         }
 
+        return extra;
+
     } else {
 
     }
+}
+
+export function setCharacterEnergy(character: CharacterState, amount: number, room: UfbRoom, client: Client){
+    character.stats.energy.add(amount);
+    AddUserData(USER_DATA_TYPE.USED_ENERGY, character, amount);
 }
 
 export function IsEquipPower(character : CharacterState, powerId: number) {
@@ -1654,4 +1676,47 @@ export function getCountFromItem(id: number, items: ArraySchema<Item>){
     })
 
     return itemCount;
+}
+
+export function getTotalGoldAtEnd(character: CharacterState){
+    let gold = character.stats.coin;
+
+    character.powers.forEach(p => {
+        gold += p.sell;
+    });
+    character.items.forEach(i => {
+        gold += i.sell;
+    });
+    character.stacks.forEach(s => {
+        gold += s.sell;
+    })
+
+    return gold;
+}
+
+export function AddUserData(type: number, character: CharacterState, amount: number){
+    switch(type){
+        case USER_DATA_TYPE.DAMAGE_DEAL:
+            character.stats.damage_deal += amount;
+            break;
+        case USER_DATA_TYPE.DAMAGE_HEAL:
+            character.stats.damage_heal += amount;
+            break;
+        case USER_DATA_TYPE.DAMAGE_TAKEN:
+            character.stats.damage_taken += amount;
+            break;
+        case USER_DATA_TYPE.KILLS:
+            character.stats.kills += amount;
+            break;
+        case USER_DATA_TYPE.TRAVELED_TILE:
+            character.stats.traveled_tile += amount;
+            break;
+        case USER_DATA_TYPE.USED_ENERGY:
+            character.stats.used_energy += amount;
+            break;      
+        case USER_DATA_TYPE.USED_STACK:
+            character.stats.used_stack += amount;
+            break;          
+            default:
+    }
 }

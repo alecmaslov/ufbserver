@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -309,16 +309,18 @@ export const messageHandlers: MessageHandlers = {
                 room.state.map.moveItemEntities.deleteAt(idx);
             }
 
-            character.stats.energy.add(-1);
+            setCharacterEnergy(character, -1, room, client);
         } else if(itemId == ITEMTYPE.POTION) {
-            let extra = character.stats.health.add(5);
+
+            let extra = setCharacterHealth(character, 5, room, client, "health", character);
+
             if(extra > 0) {
                 character.stats.coin += extra;
                 setQuestResult(QUESTTYPE.GLITTER, extra, character);
             }
 
         } else if(itemId == ITEMTYPE.ELIXIR) {
-            character.stats.energy.add(10);
+            setCharacterEnergy(character, 10, room, client);
             character.stats.ultimate.add(10);
             addStackToCharacter(STACKTYPE.Cure, 1, character, client, room)
             addStackToCharacter(STACKTYPE.Charge, 1, character, client, room)
@@ -1336,24 +1338,24 @@ export const messageHandlers: MessageHandlers = {
             });
 
         } else if(stackId == STACKTYPE.Freeze) {
+            setCharacterEnergy(character, diceData[0].diceCount, room, client);
 
-            character.stats.energy.add(diceData[0].diceCount);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: diceData[0].diceCount,
                 type: "energy"
             });
 
         } else if(stackId == STACKTYPE.Charge) {
+            setCharacterEnergy(character, -diceData[0].diceCount, room, client);
 
-            character.stats.energy.add(-diceData[0].diceCount);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -diceData[0].diceCount,
                 type: "energy"
             });
             
         } else if(stackId == STACKTYPE.Slow) {
+            setCharacterEnergy(character, -diceData[1].diceCount, room, client);
 
-            character.stats.energy.add(-diceData[1].diceCount);
             character.stats.ultimate.add(-diceData[0].diceCount);
             
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {

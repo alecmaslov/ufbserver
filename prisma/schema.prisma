@@ -31,7 +31,35 @@ model User {
   createdAt       DateTime    @default(now())
   client          Client[]
   character       Character[]
+  
+    // opposite relation field (back-reference)
+  userData        UserData?    // 1:1
+  characterData   CharacterData[]
+
   @@map("user")
+}
+
+model UserData {
+  id             String  @id @default(cuid())
+  gold           Int     @default(0)
+  losses         Int     @default(0)
+  wins           Int     @default(0)
+  kills          Int     @default(0)
+  battles        Int     @default(0)
+  damage_taken   Int     @default(0)
+  item_bags      Int     @default(0)
+  used_energies  Int     @default(0) // fixed typo: energe -> energy
+  damage_deal    Int     @default(0)
+  used_stacks    Int     @default(0)
+  damage_heal    Int     @default(0)
+  collect_golds  Int     @default(0)
+  traveled_tiles Int     @default(0)
+  chests         Int     @default(0)
+
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_data")
 }
 
 model GameSession {
@@ -189,10 +217,13 @@ model Character {
   traits         Json?
   ownerId        String?
   nftId          String?        @unique
+  level          Int            @default(1)
   className      String
   characterClass CharacterClass @relation(fields: [className], references: [name])
   nft            Nft?           @relation(fields: [nftId], references: [id])
   owner          User?          @relation(fields: [ownerId], references: [id])
+
+  characterData   CharacterData[]
 
   @@index([className], map: "character_token_className_fkey")
   @@index([ownerId], map: "character_token_ownerId_fkey")
@@ -222,6 +253,31 @@ model CharacterTest {
   @@index([className], map: "character_token_className_fkey")
   @@index([ownerId], map: "character_token_ownerId_fkey")
   @@map("charactertest")
+}
+
+model CharacterData {
+  id             String  @id @default(cuid())
+  gold           Int     @default(0)
+  losses         Int     @default(0)
+  wins           Int     @default(0)
+  kills          Int     @default(0)
+  battles        Int     @default(0)
+  damage_taken   Int     @default(0)
+  item_bags      Int     @default(0)
+  used_energies  Int     @default(0) // fixed typo: energe -> energy
+  damage_deal    Int     @default(0)
+  used_stacks    Int     @default(0)
+  damage_heal    Int     @default(0)
+  collect_golds  Int     @default(0)
+  traveled_tiles Int     @default(0)
+  chests         Int     @default(0)
+
+  userId         String  @unique
+  characterId    String  @unique
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character      Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@map("character_data")
 }
 
 model Nft {

@@ -34,6 +34,9 @@ namespace UFB.StateSchema {
 		[Type(7, "array", typeof(ArraySchema<SpawnEntity>))]
 		public ArraySchema<SpawnEntity> spawnEntities = new ArraySchema<SpawnEntity>();
 
+		[Type(8, "array", typeof(ArraySchema<MoveItemEntity>))]
+		public ArraySchema<MoveItemEntity> moveItemEntities = new ArraySchema<MoveItemEntity>();
+
 		/*
 		 * Support for individual property change callbacks below...
 		 */
@@ -134,6 +137,18 @@ namespace UFB.StateSchema {
 			};
 		}
 
+		protected event PropertyChangeHandler<ArraySchema<MoveItemEntity>> __moveItemEntitiesChange;
+		public Action OnMoveItemEntitiesChange(PropertyChangeHandler<ArraySchema<MoveItemEntity>> __handler, bool __immediate = true) {
+			if (__callbacks == null) { __callbacks = new SchemaCallbacks(); }
+			__callbacks.AddPropertyCallback(nameof(this.moveItemEntities));
+			__moveItemEntitiesChange += __handler;
+			if (__immediate && this.moveItemEntities != null) { __handler(this.moveItemEntities, null); }
+			return () => {
+				__callbacks.RemovePropertyCallback(nameof(moveItemEntities));
+				__moveItemEntitiesChange -= __handler;
+			};
+		}
+
 		protected override void TriggerFieldChange(DataChange change) {
 			switch (change.Field) {
 				case nameof(id): __idChange?.Invoke((string) change.Value, (string) change.PreviousValue); break;
@@ -144,6 +159,7 @@ namespace UFB.StateSchema {
 				case nameof(tiles): __tilesChange?.Invoke((MapSchema<TileState>) change.Value, (MapSchema<TileState>) change.PreviousValue); break;
 				case nameof(adjacencyList): __adjacencyListChange?.Invoke((MapSchema<AdjacencyListItemState>) change.Value, (MapSchema<AdjacencyListItemState>) change.PreviousValue); break;
 				case nameof(spawnEntities): __spawnEntitiesChange?.Invoke((ArraySchema<SpawnEntity>) change.Value, (ArraySchema<SpawnEntity>) change.PreviousValue); break;
+				case nameof(moveItemEntities): __moveItemEntitiesChange?.Invoke((ArraySchema<MoveItemEntity>) change.Value, (ArraySchema<MoveItemEntity>) change.PreviousValue); break;
 				default: break;
 			}
 		}
