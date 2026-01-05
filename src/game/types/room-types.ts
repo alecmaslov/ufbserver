@@ -8,6 +8,8 @@ export interface UfbRoomRules {
 
 export interface UfbRoomCreateOptions {
     mapName: string;
+    ownerId: string;
+    isPrivate: string;
     rules: UfbRoomRules;
 }
 

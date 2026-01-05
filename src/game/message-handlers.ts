@@ -1439,6 +1439,8 @@ export const messageHandlers: MessageHandlers = {
 
         client.send(SERVER_TO_CLIENT_MESSAGE.GET_EQUIP_SLOT_LIST, clientMessage);
     },
+
+    
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

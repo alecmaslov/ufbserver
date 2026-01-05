@@ -25,6 +25,7 @@ import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpe
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
+import { nanoid } from "nanoid";
 
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
@@ -33,6 +34,8 @@ const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     portals: 2,
     monsters: 3,
 };
+
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
 
 export class UfbRoom extends Room<UfbRoomState> {
     dispatcher = new Dispatcher(this);
@@ -51,9 +54,17 @@ export class UfbRoom extends Room<UfbRoomState> {
     isTurnStartStack: boolean = true;
     isTurnStartForScreen: boolean = true;
 
+    roomOption: UfbRoomOptions;
+    inviteToken: string;
+
     async onCreate(options: UfbRoomOptions) {
+        this.roomId = await this.generateUniqueId();
+
         RoomCache.set(this.roomId, this);
         this.setState(new UfbRoomState());
+        this.roomOption = options;
+        
+        this.inviteToken = options.createOptions.isPrivate ? nanoid(8) : undefined;
 
         console.log("onCreate options", options.createOptions);
         try {
@@ -69,6 +80,28 @@ export class UfbRoom extends Room<UfbRoomState> {
         }, 2000);
     }
 
+    // Generate single 4-char ID
+    generateIdSingle(): string {
+        let id = '';
+        for (let i = 0; i < 4; i++) {
+        id += CHARS[Math.floor(Math.random() * CHARS.length)];
+        }
+        return id;
+    }
+
+    // Generate unique ID using presence
+    async generateUniqueId(): Promise<string> {
+        const existingIds = await this.presence!.smembers("ufbRoom");
+        let id: string;
+        
+        do {
+        id = this.generateIdSingle();
+        } while (existingIds.includes(id));
+        
+        await this.presence!.sadd("ufbRoom", id);
+        return id;
+    }
+
     notify(client: Client, message: string, notificationType: string = "info") {
         this.broadcast("notification", {
             type: notificationType,
@@ -79,6 +112,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     async onJoin(client: Client, options: UfbRoomOptions) {
         let playerId = options.joinOptions.playerId ?? "";
         console.log("onJoin options", options);
+
         if (isNullOrEmpty(playerId)) {
             playerId = createId();
             this.broadcast("generatedPlayerId", {
@@ -160,7 +194,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     async onDispose() {
         console.log("room", this.roomId, "disposing...");
-        await this.EndRoom();
+        // await this.EndRoom();
         this.dispatcher.stop();
         this.StopAIChecking();
     }
@@ -810,7 +844,182 @@ export class UfbRoom extends Room<UfbRoomState> {
             targetId: target.id
         });
         console.log("AIPunch attack-------")
-        setTimeout(this.AISetDiceRoll.bind(this, ai, target, {powerMoveId: id, extraItemId: -1, diceTimes: 1}), 1000);
+        setTimeout(this.AIPunchSetDiceRoll.bind(this, ai, target, {powerMoveId: id, extraItemId: -1, diceTimes: 1}), 1000);
+    }
+
+    AIPunchSetDiceRoll(ai: CharacterState,  target : CharacterState, message: any) {
+        const powermove = getPowerMoveFromId(message.powerMoveId, message.extraItemId);
+
+        if(powermove == null) {
+            return;
+        }
+        const setDiceRollMessage: any = {
+            diceData : []
+        }
+
+        const {mana, melee} = getArrowBombCount(ai);
+        console.log("mana, melee: ", mana, melee);
+        console.log("ATTCK PUNCH: ", ai.stats.energy.current);
+
+        // mana -100, melee -1
+        if(message.powerMoveId == -100) {
+            const diceTimes = Math.min(mana, ai.stats.energy.current / 2);
+            for(let i = 0; i < diceTimes; i++){
+                setDiceRollMessage.diceData.push({
+                    type: powermove.result.dice,
+                    diceCount: getDiceCount(Math.random(), powermove.result.dice)
+                });
+            }
+            message.diceTimes = diceTimes;
+        } else{
+            const diceTimes = Math.min(melee, ai.stats.energy.current / 2);
+            for(let i = 0; i < diceTimes; i++){
+                setDiceRollMessage.diceData.push({
+                    type: powermove.result.dice,
+                    diceCount: getDiceCount(Math.random(), powermove.result.dice)
+                });
+            }
+            message.diceTimes = diceTimes;
+        }
+
+        setDiceRollMessage.diceData.push({
+            type: powermove.result.dice,
+            diceCount: getDiceCount(Math.random(), powermove.result.dice)
+        })
+
+        this.broadcast( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        message.diceRoll = setDiceRollMessage;
+
+        // send damage for punch
+
+        setTimeout(this.AISendPunchDamage.bind(this, ai, target, message), 1500)
+        console.log("AIPunchSetDiceRoll attack-------")
+    }
+
+    AISendPunchDamage(ai: CharacterState,  target : CharacterState, message: any) {
+        const diceRoll = message.diceRoll;
+        let diceCount = 0;
+        let vampireCount = 0; // set vampire
+        diceRoll.diceData.forEach((roll : any) => {
+            diceCount += roll.diceCount;
+        });
+        
+        message = {
+            enemyId : target.id,
+            characterId : ai.id,
+            diceCount : diceCount,
+            vampireCount : vampireCount,
+            ...message
+        }
+
+        const character = ai;
+        const enemy = target;
+
+        const powerMoveId = message.powerMoveId;
+
+        let powermove = getPowerMoveFromId(powerMoveId, message.extraItemId);
+        console.log("AISendDamage: ", message);
+
+        const diceTimes = message.diceTimes;
+
+        // REDUCE COST PART
+        Object.keys(powermove).forEach(key => {
+            if(key == "range") {
+
+            } else if(key == "light") {
+                setCharacterEnergy(character, -powermove.light * diceTimes, null, null);
+            } else if(key == "coin") {
+                character.stats.coin -= powermove.coin;
+            } else if(key == "costList") {
+                powermove.costList.forEach((item: any) => {
+                    const idx = character.items.findIndex(ii => ii.id == item.id);
+                    character.items[idx].count -= item.count * diceTimes;
+
+                    if(item.id == ITEMTYPE.MELEE) {
+                        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            score: -item.count * diceTimes,
+                            type: "melee",
+                        });
+                    } else if(item.id == ITEMTYPE.MANA) {
+                        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            score: -item.count * diceTimes,
+                            type: "mana",
+                        });
+                    }
+                });
+            }
+        });
+
+        let isEndAttack = true;
+
+        if(target == null) return;
+
+        var target = enemy;
+        var from = character;
+
+        Object.keys(powermove.result).forEach(key => {
+            if(key == "health") {
+
+            } else if(key == "energy") {
+                target.stats.energy.add(powermove.result.energy);
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    score: powermove.result.energy,
+                    type: target == character? "energy_e" : "energy",
+                });
+            } 
+            else if(key == "dice") {
+                if(target == enemy) {
+                    if(getCountFromItem(STACKTYPE.Block, enemy.stacks) > 0) {
+                        addStackToCharacter(STACKTYPE.Block, -1, enemy, null, this);
+
+                        const msg = {
+                            enemyId: enemy.id,
+                            characterId: character.id,
+                            powerMoveId: message.powerMoveId,
+                            stackId: STACKTYPE.Block,
+                            diceCount: message.diceCount,
+                            enemyDiceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4),
+                            extraItemId: message.extraItemId
+                        }
+                        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, msg);
+                        setTimeout(this.AIEndDiceRoll.bind(this, msg), 3500);
+                        isEndAttack = false;
+
+                    } else {
+                        setCharacterHealth(enemy, -message.diceCount, this, null, "heart", from);
+
+                        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            score: -message.diceCount,
+                            type: "heart",
+                        });
+
+                        if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
+                            addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
+                            const msg = {
+                                enemyId: enemy.id,
+                                characterId: character.id,
+                                powerMoveId: message.powerMoveId,
+                                stackId: STACKTYPE.Revenge,
+                                diceCount: 0,
+                                enemyDiceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4),
+                                extraItemId: message.extraItemId
+                            }
+                            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, msg);
+                            setTimeout(this.AIEndDiceRoll.bind(this, msg), 3500);
+                            isEndAttack = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        if(isEndAttack) {
+            setTimeout(() => {
+                this.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id})
+            }, 1000);
+            this.DoActionMonster();
+        }
+
     }
 
     AISetDiceRoll( ai: CharacterState,  target : CharacterState, message: any ) {

@@ -1685,7 +1685,8 @@ export function getTotalGoldAtEnd(character: CharacterState){
         gold += p.sell;
     });
     character.items.forEach(i => {
-        gold += i.sell;
+        if(!(i.id == ITEMTYPE.MANA || i.id == ITEMTYPE.MELEE))
+            gold += i.sell;
     });
     character.stacks.forEach(s => {
         gold += s.sell;

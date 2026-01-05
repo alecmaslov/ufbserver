@@ -12,6 +12,7 @@ import maps from "#routes/maps";
 import character from "#routes/character";
 import nft from "#routes/nft";
 import user from "#routes/user";
+import lobby from "#routes/lobby";
 
 
 import { Server } from "@colyseus/core";
@@ -38,6 +39,7 @@ app.use("/assets", assets);
 app.use("/maps", maps);
 app.use("/character", character);
 app.use("/nft", nft);
+app.use("/lobby", lobby);
 app.use("/user", user);
 
 if (DEV_MODE) {
