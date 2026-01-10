@@ -14,7 +14,6 @@ import nft from "#routes/nft";
 import user from "#routes/user";
 import lobby from "#routes/lobby";
 
-
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import cors from "cors";
@@ -22,6 +21,8 @@ import express, { json } from "express";
 import { readFileSync } from "fs";
 import https from "https";
 import http from "http";
+import { LobbyRoom } from "#game/rooms/LobbyRoom";
+import { WaitingRoom } from "#game/rooms/WaitingRoom";
 
 const app = express();
 
@@ -74,6 +75,8 @@ const colyseusServer = new Server({
 
 colyseusServer.listen(API_PORT, undefined, undefined, () => {
     console.log(`✨ UFB Server listening on port ${API_PORT} ✨`);
+    colyseusServer.define("lobby", LobbyRoom);
+    colyseusServer.define("waiting", WaitingRoom);
     colyseusServer.define("ufbRoom", UfbRoom);
 });
 

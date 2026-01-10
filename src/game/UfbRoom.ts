@@ -35,7 +35,7 @@ const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     monsters: 3,
 };
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 
 export class UfbRoom extends Room<UfbRoomState> {
     dispatcher = new Dispatcher(this);
@@ -58,8 +58,8 @@ export class UfbRoom extends Room<UfbRoomState> {
     inviteToken: string;
 
     async onCreate(options: UfbRoomOptions) {
-        this.roomId = await this.generateUniqueId();
-
+        //this.roomId = await this.generateUniqueId();
+        this.roomId = options.createOptions.roomId;
         RoomCache.set(this.roomId, this);
         this.setState(new UfbRoomState());
         this.roomOption = options;
@@ -74,6 +74,12 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
         registerMessageHandlers(this);
         console.log(`created room ${this.roomId}`);
+
+
+        this.state.turnOrder.clear();
+        options.createOptions.turnIds.forEach(id => {
+            this.state.turnOrder.push(id);
+        })
 
         this.aiInterval = setInterval(() => {
             this.aiChecking();
@@ -111,7 +117,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     async onJoin(client: Client, options: UfbRoomOptions) {
         let playerId = options.joinOptions.playerId ?? "";
-        console.log("onJoin options", options);
+        console.log("onJoin options=============", options);
 
         if (isNullOrEmpty(playerId)) {
             playerId = createId();
@@ -120,7 +126,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             });
         }
         this.sessionIdToPlayerId.set(client.sessionId, playerId);
-        console.log(client.sessionId, "joined!");
+        console.log(client.sessionId, "joined!..........");
 
         const tile = await db.tile.findFirst({
             where: {
@@ -146,11 +152,17 @@ export class UfbRoom extends Room<UfbRoomState> {
         );
 
         // @change
-        this.state.turnOrder.push(character.id);
+        //this.state.turnOrder.push(character.id);
+        var userCount = 0;
+        this.state.characters.forEach(p => {
+            if(p.type == USER_TYPE.USER){
+                userCount++;
+            }
+        })
 
-        const users = this.state.turnOrder.map(key => this.state.characters.get(key)).filter(p => p.type == USER_TYPE.USER);
+        // const users = this.state.turnOrder.map(key => this.state.characters.get(key)).filter(p => p.type == USER_TYPE.USER);
 
-        if (users.length === 1) {
+        if (userCount === 1) {
             this.state.currentCharacterId = playerId;
             console.log("first player, setting current player id to", playerId);
         }

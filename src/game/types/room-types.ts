@@ -9,7 +9,9 @@ export interface UfbRoomRules {
 export interface UfbRoomCreateOptions {
     mapName: string;
     ownerId: string;
+    roomId: string;
     isPrivate: string;
+    turnIds: string[];
     rules: UfbRoomRules;
 }
 
