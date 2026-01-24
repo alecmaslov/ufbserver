@@ -183,7 +183,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     });
                 }
     
-                client.send(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
+                this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
                     playerId: moveEntity.playerId,
                     itemResult: result,
                     itemId: moveEntity.itemId

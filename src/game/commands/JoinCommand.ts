@@ -7,6 +7,7 @@ import { SpawnInitMessage } from "#game/message-types";
 import { TURN_TIME } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { SpawnEntity } from "#game/schema/MapState";
+import { GetRandomFreeTileId } from "#game/helpers/map-helpers";
 
 type Payload = { client: Client; message: any;};
 
@@ -46,11 +47,16 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
 
         console.log(`itemid: ${itemId}, powerId: ${powerId}, coin: ${coinCount}`);
 
+        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ACTIVE_USER, {
+            characterId: message.playerId,
+            tileId: message.tileId
+        });
+
         client.send(SERVER_TO_CLIENT_MESSAGE.SPAWN_INIT, spawnMessage);
-        
+
         // Turn start....
         client.send(SERVER_TO_CLIENT_MESSAGE.INIT_TURN, {
-            characterId : message.playerId,
+            characterId : this.room.state.currentCharacterId,
             curTime : TURN_TIME
         });
 
@@ -58,15 +64,21 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
         character.coordinates.y = message.destination.y;
         character.currentTileId = message.tileId;
 
-        let idx = -1;
         this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId) {
-                idx = id;
+            if(entity.tileId == message.tileId && (entity.type == "Chest" || entity.type == "Merchant")) {
+                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room);
+
+                console.log("change chset position : ", randomTileId);
+
+                if(randomTileId == "") return;
+                entity.tileId = randomTileId;
             }
         });
 
-        if(idx != -1) {
-            this.room.state.map.spawnEntities.deleteAt(idx);
-        }
+        var turnIdx = this.room.state.turnOrder.indexOf(character.id);
+        console.log("first coin count ", character.stats.coin)
+        character.stats.coin += turnIdx * 2;
+        console.log("first coin count ", character.stats.coin)
+
     }
 }

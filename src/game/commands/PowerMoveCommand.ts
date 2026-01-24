@@ -135,6 +135,13 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         console.log("------ check cost ppart======")
 
+        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEFENCE_ATTACK, {
+            pm: powermove,
+            originId: character.id,
+            targetId: enemy.id
+        }, {except: client});
+
+
         // ADD RESOULT PART -- IMPORTANT
         let target : CharacterState;
         let from : CharacterState;
@@ -481,5 +488,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             });
         }
       
+        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})
+
     }
 }

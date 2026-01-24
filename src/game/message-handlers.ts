@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPerkEffectDamage, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -15,6 +15,7 @@ import { PowerMoveCommand } from "./commands/PowerMoveCommand";
 import { getRandomElements } from "#utils/collections";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { UnEquipCommand } from "./commands/UnEquipCommand";
+import { SpawnZoneType } from "@prisma/client";
 
 
 type MessageHandler<TMessage> = (
@@ -378,6 +379,12 @@ export const messageHandlers: MessageHandlers = {
             );
             return;
         }
+
+        room.broadcast(CLIENT_SERVER_MESSAGE.SET_STAB_ATTACK, {
+            characterId: character.id,
+            itemType: itemId
+        })
+
 
         addItemToCharacter(itemId, -1, character, client);
 
@@ -849,23 +856,11 @@ export const messageHandlers: MessageHandlers = {
     },
 
     leaveMerchant: (room, client, message) => {
-        let tileId = "";
-        room.state.map.tiles.forEach(tile => {
-            if(Math.random() > 0.7) {
-                tileId = tile.id;
-                return;
-            }
-        });
-
-        room.broadcast(SERVER_TO_CLIENT_MESSAGE.RESPAWN_MERCHANT, {
-            tileId : tileId,
-            oldTileId : message.tileId
-        });
-
+        let randomTileId = GetRandomFreeTileId(message.tileId, room);
         // CHANGE ENTITY POSITION.
         room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId) {
-                entity.tileId = tileId;
+            if(entity.tileId == message.tileId && entity.type == SpawnZoneType.Merchant && randomTileId != "") {
+                entity.tileId = randomTileId;
             }
         });
     },
@@ -1072,7 +1067,8 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.SET_DICE_ROLL]: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
+        const target = getCharacterById(room, message.characterId);
+        const character = getClientCharacter(room, client);
         const powermove = getPowerMoveFromId(message.powerMoveId, message.extraItemId);
 
         if(powermove == null) {
@@ -1121,7 +1117,8 @@ export const messageHandlers: MessageHandlers = {
             })
         }
 
-        client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        // client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        room.broadcast( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
     },
 
     [CLIENT_SERVER_MESSAGE.SET_DICE_STACK_TURN_ROLL]: (room, client, message) => {

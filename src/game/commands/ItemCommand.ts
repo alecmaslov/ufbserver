@@ -5,7 +5,7 @@ import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, setCharacterEnergy, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, GetRandomFreeTileId, setCharacterEnergy, setQuestResult } from "#game/helpers/map-helpers";
 import { SpawnEntity } from "#game/schema/MapState";
 
 type OnItemCommandPayload = {
@@ -25,30 +25,30 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        Object.keys(ITEMTYPE).forEach(key => {
-            const id = ITEMTYPE[key];
-            if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb || id == ITEMTYPE.RandomArrowOrBomb)) {
+        // Object.keys(ITEMTYPE).forEach(key => {
+        //     const id = ITEMTYPE[key];
+        //     if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb || id == ITEMTYPE.RandomArrowOrBomb)) {
 
-                if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
-                    const testItem : Item = character.items.find(item => item.id == id);
-                    if(testItem == null) {
-                        const newItem = new Item();
-                        newItem.id = id;
-                        newItem.count = 30;
-                        newItem.name = ITEMDETAIL[id].name;
-                        newItem.description = "description";
-                        newItem.level = ITEMDETAIL[id].level;
-                        newItem.cost = ITEMDETAIL[id].cost;
-                        newItem.sell = ITEMDETAIL[id].sell;
+        //         if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
+        //             const testItem : Item = character.items.find(item => item.id == id);
+        //             if(testItem == null) {
+        //                 const newItem = new Item();
+        //                 newItem.id = id;
+        //                 newItem.count = 30;
+        //                 newItem.name = ITEMDETAIL[id].name;
+        //                 newItem.description = "description";
+        //                 newItem.level = ITEMDETAIL[id].level;
+        //                 newItem.cost = ITEMDETAIL[id].cost;
+        //                 newItem.sell = ITEMDETAIL[id].sell;
             
-                        character.items.push(newItem);
-                    } else {
-                        testItem.count++;
-                    }
-                }
-            }
+        //                 character.items.push(newItem);
+        //             } else {
+        //                 testItem.count++;
+        //             }
+        //         }
+        //     }
 
-        });
+        // });
 
         // ADD STACKS
         // let k = 0;
@@ -129,15 +129,14 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
-        let idx = -1;
         this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId) {
-                idx = id;
+            if(entity.tileId == message.tileId && (entity.type == "Chest" || entity.type == "Merchant")) {
+                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room);
+                console.log("change chset position : ", randomTileId);
+
+                if(randomTileId == "") return;
+                entity.tileId = randomTileId;
             }
         });
-
-        if(idx != -1) {
-            this.room.state.map.spawnEntities.deleteAt(idx);
-        }
     }
 }

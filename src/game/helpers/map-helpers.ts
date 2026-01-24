@@ -1547,6 +1547,37 @@ export function GetObstacleTileIds(currentTileId: string, room: UfbRoom) {
     return tileIds;
 }
 
+export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom): string {
+    const tileIds: string[] = [];
+    const characterTileIds: string[] = [];
+    const spawnIds: string[] = [];
+    
+    room.state.characters.forEach(c => {
+        characterTileIds.push(c.currentTileId);
+    });
+    
+    room.state.map.tiles.forEach(tile => {
+        tileIds.push(tile.id);
+    });
+    
+    room.state.map.spawnEntities.forEach(entity => {
+        spawnIds.push(entity.id);
+    });
+
+    // Filter out occupied tiles (characters, spawns, and current tile to avoid immediate respawn overlap)
+    const occupiedIds: Set<string> = new Set([...characterTileIds, ...spawnIds, currentTileId]);
+    const freeTileIds: string[] = tileIds.filter(id => !occupiedIds.has(id));
+    
+    // Return random free tile or fallback
+    if (freeTileIds.length === 0) {
+        console.warn("No free tiles available");
+        return "";  // Or handle error as needed
+    }
+    
+    const randomIndex: number = Math.floor(Math.random() * freeTileIds.length);
+    return freeTileIds[randomIndex];
+}
+
 export function GetMonsterDeadCount(room: UfbRoom) {
     let blue = 0;
     let blueLive = 0;
