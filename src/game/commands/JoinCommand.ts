@@ -8,6 +8,7 @@ import { TURN_TIME } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { SpawnEntity } from "#game/schema/MapState";
 import { GetRandomFreeTileId } from "#game/helpers/map-helpers";
+import { SpawnZoneType } from "@prisma/client";
 
 type Payload = { client: Client; message: any;};
 
@@ -65,8 +66,8 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
         character.currentTileId = message.tileId;
 
         this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId && (entity.type == "Chest" || entity.type == "Merchant")) {
-                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room);
+            if(entity.tileId == message.tileId && (entity.type == SpawnZoneType.Chest || entity.type == SpawnZoneType.Merchant)) {
+                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room, entity.type);
 
                 console.log("change chset position : ", randomTileId);
 

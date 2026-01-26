@@ -7,6 +7,7 @@ import { Item } from "#game/schema/CharacterState";
 import { ITEMDETAIL, ITEMTYPE, POWERCOSTS, POWERTYPE, QUESTTYPE, STACKTYPE, powers, stacks } from "#assets/resources";
 import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, GetRandomFreeTileId, setCharacterEnergy, setQuestResult } from "#game/helpers/map-helpers";
 import { SpawnEntity } from "#game/schema/MapState";
+import { SpawnZoneType } from "@prisma/client";
 
 type OnItemCommandPayload = {
     client: Client;
@@ -92,7 +93,13 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // END TEST
 
-        addItemToCharacter(message.itemId, 1, character, client);
+        if(message.itemId == ITEMTYPE.MELEE){
+            character.stats.maxMelee++;
+        }else if(message.itemId == ITEMTYPE.MANA){
+            character.stats.maxMana++;
+        }else{
+            addItemToCharacter(message.itemId, 1, character, client);
+        }
 
         console.log("item command: ", message)
 
@@ -130,8 +137,8 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         console.log(`itemid : ${message.itemId}, powerId: ${message.powerId}, coinCount: ${message.coinCount}`);
 
         this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId && (entity.type == "Chest" || entity.type == "Merchant")) {
-                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room);
+            if(entity.tileId == message.tileId && (entity.type == SpawnZoneType.Chest || entity.type == SpawnZoneType.Merchant)) {
+                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room, entity.type);
                 console.log("change chset position : ", randomTileId);
 
                 if(randomTileId == "") return;

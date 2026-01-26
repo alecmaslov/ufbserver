@@ -1547,7 +1547,7 @@ export function GetObstacleTileIds(currentTileId: string, room: UfbRoom) {
     return tileIds;
 }
 
-export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom): string {
+export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom, type: SpawnZoneType): string {
     const tileIds: string[] = [];
     const characterTileIds: string[] = [];
     const spawnIds: string[] = [];
@@ -1556,9 +1556,15 @@ export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom): strin
         characterTileIds.push(c.currentTileId);
     });
     
-    room.state.map.tiles.forEach(tile => {
-        tileIds.push(tile.id);
-    });
+    room.spawnZoneArray.forEach(zone => {
+        if(zone.type == type){
+            tileIds.push(zone.tileId);
+        }
+    })
+
+    // room.state.map.tiles.forEach(tile => {
+    //     tileIds.push(tile.id);
+    // });
     
     room.state.map.spawnEntities.forEach(entity => {
         spawnIds.push(entity.id);

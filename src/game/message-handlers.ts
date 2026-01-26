@@ -856,7 +856,7 @@ export const messageHandlers: MessageHandlers = {
     },
 
     leaveMerchant: (room, client, message) => {
-        let randomTileId = GetRandomFreeTileId(message.tileId, room);
+        let randomTileId = GetRandomFreeTileId(message.tileId, room, SpawnZoneType.Merchant);
         // CHANGE ENTITY POSITION.
         room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
             if(entity.tileId == message.tileId && entity.type == SpawnZoneType.Merchant && randomTileId != "") {
@@ -1152,6 +1152,7 @@ export const messageHandlers: MessageHandlers = {
         if(room.state.currentCharacterId == character.id) {
             let bonuses: any = [];
             character.equipSlots.forEach(slot => {
+                console.log("equip bouns item", slot.id, EQUIP_TURN_BONUS[slot.id])
                 // ADD BONUS in CHARACTER..
                 const bonus = {
                     ...EQUIP_TURN_BONUS[slot.id],
@@ -1191,7 +1192,7 @@ export const messageHandlers: MessageHandlers = {
 
     
     [CLIENT_SERVER_MESSAGE.EQUIP_BONUS_LIST]: (room, client, message) => {
-
+        console.log("equip bonus list.....")
         const character = getCharacterById(room, message.characterId);
         if(room.state.currentCharacterId == character.id) {
             const powerId = message.powerId;

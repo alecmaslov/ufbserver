@@ -3347,7 +3347,7 @@ export const EQUIP_TURN_BONUS = {
             }
         ]
     },
-    [POWERTYPE.CrossBow1]: {
+    [POWERTYPE.Crossbow1]: {
         items: [
             {
                 id: ITEMTYPE.ARROW,
@@ -3355,7 +3355,7 @@ export const EQUIP_TURN_BONUS = {
             }
         ]
     },
-    [POWERTYPE.CrossBow2]: {
+    [POWERTYPE.Crossbow2]: {
         items: [
             {
                 id: ITEMTYPE.ARROW,
@@ -3363,7 +3363,7 @@ export const EQUIP_TURN_BONUS = {
             }
         ]
     },
-    [POWERTYPE.CrossBow3]: {
+    [POWERTYPE.Crossbow3]: {
         items: [
             {
                 id: ITEMTYPE.ARROW,
@@ -3450,11 +3450,11 @@ export const EQUIP_EXTRA_BONUS = {
         damage: 0,
         range: 2
     },
-    [POWERTYPE.CrossBow2] : {
+    [POWERTYPE.Crossbow2] : {
         damage: 1,
         range: 0
     },
-    [POWERTYPE.CrossBow3] : {
+    [POWERTYPE.Crossbow3] : {
         damage: 1,
         range: 0
     },
