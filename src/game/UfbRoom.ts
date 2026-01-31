@@ -183,10 +183,10 @@ export class UfbRoom extends Room<UfbRoomState> {
             }
 
             // allow disconnected client to reconnect into this room until 20 seconds
-            // if(player.connected) {
-            //     console.log(client.sessionId, "wait for ... onLeave");
-            //     await this.allowReconnection(client, 20);
-            // }
+            if(player.connected) {
+                console.log(client.sessionId, "wait for ... onLeave");
+                await this.allowReconnection(client, 20);
+            }
 
             console.log(client.sessionId, "solve for ... onLeave");
      
