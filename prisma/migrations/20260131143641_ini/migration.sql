@@ -13,12 +13,36 @@ CREATE TABLE `client` (
 CREATE TABLE `user` (
     `id` VARCHAR(191) NOT NULL,
     `displayName` VARCHAR(191) NOT NULL,
+    `gold` INTEGER NOT NULL DEFAULT 0,
     `email` VARCHAR(191) NOT NULL,
     `profileImageUrl` VARCHAR(191) NULL,
     `passwordHash` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `user_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `user_data` (
+    `id` VARCHAR(191) NOT NULL,
+    `gold` INTEGER NOT NULL DEFAULT 0,
+    `losses` INTEGER NOT NULL DEFAULT 0,
+    `wins` INTEGER NOT NULL DEFAULT 0,
+    `kills` INTEGER NOT NULL DEFAULT 0,
+    `battles` INTEGER NOT NULL DEFAULT 0,
+    `damage_taken` INTEGER NOT NULL DEFAULT 0,
+    `item_bags` INTEGER NOT NULL DEFAULT 0,
+    `used_energies` INTEGER NOT NULL DEFAULT 0,
+    `damage_deal` INTEGER NOT NULL DEFAULT 0,
+    `used_stacks` INTEGER NOT NULL DEFAULT 0,
+    `damage_heal` INTEGER NOT NULL DEFAULT 0,
+    `collect_golds` INTEGER NOT NULL DEFAULT 0,
+    `traveled_tiles` INTEGER NOT NULL DEFAULT 0,
+    `chests` INTEGER NOT NULL DEFAULT 0,
+    `userId` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `user_data_userId_key`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -169,9 +193,9 @@ CREATE TABLE `character_token` (
     `traits` JSON NULL,
     `ownerId` VARCHAR(191) NULL,
     `nftId` VARCHAR(191) NULL,
+    `level` INTEGER NOT NULL DEFAULT 1,
     `className` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `character_token_name_key`(`name`),
     UNIQUE INDEX `character_token_nftId_key`(`nftId`),
     INDEX `character_token_className_fkey`(`className`),
     INDEX `character_token_ownerId_fkey`(`ownerId`),
@@ -202,6 +226,30 @@ CREATE TABLE `charactertest` (
     UNIQUE INDEX `charactertest_nftId_key`(`nftId`),
     INDEX `character_token_className_fkey`(`className`),
     INDEX `character_token_ownerId_fkey`(`ownerId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `character_data` (
+    `id` VARCHAR(191) NOT NULL,
+    `gold` INTEGER NOT NULL DEFAULT 0,
+    `losses` INTEGER NOT NULL DEFAULT 0,
+    `wins` INTEGER NOT NULL DEFAULT 0,
+    `kills` INTEGER NOT NULL DEFAULT 0,
+    `battles` INTEGER NOT NULL DEFAULT 0,
+    `damage_taken` INTEGER NOT NULL DEFAULT 0,
+    `item_bags` INTEGER NOT NULL DEFAULT 0,
+    `used_energies` INTEGER NOT NULL DEFAULT 0,
+    `damage_deal` INTEGER NOT NULL DEFAULT 0,
+    `used_stacks` INTEGER NOT NULL DEFAULT 0,
+    `damage_heal` INTEGER NOT NULL DEFAULT 0,
+    `collect_golds` INTEGER NOT NULL DEFAULT 0,
+    `traveled_tiles` INTEGER NOT NULL DEFAULT 0,
+    `chests` INTEGER NOT NULL DEFAULT 0,
+    `userId` VARCHAR(191) NOT NULL,
+    `characterId` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `character_data_userId_characterId_key`(`userId`, `characterId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -273,6 +321,9 @@ CREATE TABLE `itembehavior` (
 ALTER TABLE `client` ADD CONSTRAINT `client_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `user_data` ADD CONSTRAINT `user_data_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `gamesession` ADD CONSTRAINT `gamesession_hostClientId_fkey` FOREIGN KEY (`hostClientId`) REFERENCES `client`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -316,6 +367,12 @@ ALTER TABLE `character_token` ADD CONSTRAINT `character_token_nftId_fkey` FOREIG
 
 -- AddForeignKey
 ALTER TABLE `character_token` ADD CONSTRAINT `character_token_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `character_data` ADD CONSTRAINT `character_data_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `character_data` ADD CONSTRAINT `character_data_characterId_fkey` FOREIGN KEY (`characterId`) REFERENCES `character_token`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `nft` ADD CONSTRAINT `nft_contractAddress_fkey` FOREIGN KEY (`contractAddress`) REFERENCES `nft_contract`(`address`) ON DELETE CASCADE ON UPDATE CASCADE;

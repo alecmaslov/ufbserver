@@ -175,28 +175,34 @@ export class UfbRoom extends Room<UfbRoomState> {
         const playerId = this.sessionIdToPlayerId.get(client.sessionId);
         const player = this.state.characters.get(playerId);
 
-        player.connected = false;
+        // player.connected = false;
  
         try {
             if (consented) {
                 throw new Error("consented leave");
             }
-     
-            console.log(client.sessionId, "wait for ... onLeave");
-
 
             // allow disconnected client to reconnect into this room until 20 seconds
-            await this.allowReconnection(client, 2000000);
+            // if(player.connected) {
+            //     console.log(client.sessionId, "wait for ... onLeave");
+            //     await this.allowReconnection(client, 20);
+            // }
+
+            console.log(client.sessionId, "solve for ... onLeave");
      
             console.log("connect failed");
             // client returned! let's re-activate it.
-            player.connected = true;
      
+            await this.SaveCharacterData(playerId, client.sessionId);
+
+            console.log("saved character data");
+        
+            this.state.characters.delete(playerId);
+            this.sessionIdToPlayerId.delete(client.sessionId);
+
         } catch (e) {
      
             // 20 seconds expired. let's remove the client.
-            await this.SaveCharacterData(playerId);
-
             this.state.characters.delete(playerId);
             this.sessionIdToPlayerId.delete(client.sessionId);
         }
@@ -207,8 +213,8 @@ export class UfbRoom extends Room<UfbRoomState> {
     async onDispose() {
         console.log("room", this.roomId, "disposing...");
         // await this.EndRoom();
-        this.dispatcher.stop();
         this.StopAIChecking();
+        this.dispatcher.stop();
     }
 
     onAuth(client: Client, options: Record<string, any>) {
@@ -307,6 +313,9 @@ export class UfbRoom extends Room<UfbRoomState> {
             DEFAULT_SPAWN_ENTITY_CONFIG,
             async (spawnZone, type) => {
                 // Spawn monsters
+
+                // this.CreateMonster(type, spawnZone);
+
                 const tile = await db.tile.findUnique({
                     where: { id: spawnZone.tileId },
                 });
@@ -431,6 +440,10 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                     addItemToCharacter(ITEMTYPE.MELEE, MONSTERS[type].property.melee, monster);
                     addItemToCharacter(ITEMTYPE.MANA, MONSTERS[type].property.mana, monster);
+
+                    monster.stats.maxMelee = MONSTERS[type].property.melee;
+                    monster.stats.maxMana = MONSTERS[type].property.mana;
+
                     // END MONSTER PROPERTY
 
                     this.state.turnOrder.push(monster.id);
@@ -894,10 +907,10 @@ export class UfbRoom extends Room<UfbRoomState> {
             message.diceTimes = diceTimes;
         }
 
-        setDiceRollMessage.diceData.push({
-            type: powermove.result.dice,
-            diceCount: getDiceCount(Math.random(), powermove.result.dice)
-        })
+        // setDiceRollMessage.diceData.push({
+        //     type: powermove.result.dice,
+        //     diceCount: getDiceCount(Math.random(), powermove.result.dice)
+        // })
 
         this.broadcast( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
         message.diceRoll = setDiceRollMessage;
@@ -905,7 +918,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         // send damage for punch
 
         setTimeout(this.AISendPunchDamage.bind(this, ai, target, message), 1500)
-        console.log("AIPunchSetDiceRoll attack-------")
+        console.log("AIPunchSetDiceRoll attack-------", message.diceTimes)
     }
 
     AISendPunchDamage(ai: CharacterState,  target : CharacterState, message: any) {
@@ -945,7 +958,8 @@ export class UfbRoom extends Room<UfbRoomState> {
             } else if(key == "costList") {
                 powermove.costList.forEach((item: any) => {
                     const idx = character.items.findIndex(ii => ii.id == item.id);
-                    character.items[idx].count -= item.count * diceTimes;
+                    addItemToCharacter(item.id, -item.count * diceTimes, character)
+                    // character.items[idx].count -= item.count * diceTimes;
 
                     if(item.id == ITEMTYPE.MELEE) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1682,6 +1696,9 @@ export class UfbRoom extends Room<UfbRoomState> {
                 p.count--;
             });
 
+            monster.stats.maxMelee = MONSTERS[type].property.melee;
+            monster.stats.maxMana = MONSTERS[type].property.mana;
+
             monster.stats.coin = 3 + Math.ceil(Math.random() * 3);
         } else if(MONSTERS[type].level == 2) {
             const lvl1Items = getItemIdsByLevel(1, true);
@@ -1748,6 +1765,10 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         addItemToCharacter(ITEMTYPE.MELEE, MONSTERS[type].property.melee, monster);
         addItemToCharacter(ITEMTYPE.MANA, MONSTERS[type].property.mana, monster);
+
+        monster.stats.maxMelee = MONSTERS[type].property.melee;
+        monster.stats.maxMana = MONSTERS[type].property.mana;
+
         // END MONSTER PROPERTY
 
         this.state.turnOrder.push(monster.id);
@@ -1881,37 +1902,47 @@ export class UfbRoom extends Room<UfbRoomState> {
     async EndRoom(){
         this.sessionIdToPlayerId.keys().forEach(key => {
             const playerId = this.sessionIdToPlayerId.get(key);
-            this.SaveCharacterData(playerId);
+            this.SaveCharacterData(playerId, key);
         })
     }
 
-    async SaveCharacterData(playerId: string){
+    async SaveCharacterData(playerId: string, sessionId: string = ""){
         const player = this.state.characters.get(playerId);
         if(player.type == USER_TYPE.USER){
-            const clientData = await db.client.findFirst({
+            const user = await db.user.findFirst({
                 where : {
                     id: playerId
                 }
             });
 
-            console.log("client data : " + clientData);
+            console.log("client data : " + user, user.id);
 
             const characterToken = await db.character.findFirst({
                 where: {
-                    ownerId: clientData.userId,
+                    ownerId: user.id,
                     className: player.characterClass
                 }
             })
 
-            if(clientData != null) {
+            console.log("character token : " + characterToken.className);
+
+            if(user != null) {
 
                 //calc gold
                 let gold = getTotalGoldAtEnd(player);
 
+                console.log("player gold : ", gold , " character id: ", characterToken.id, " userid: ", user.id);
+
+                const characterData = await db.characterData.findFirst({
+                    where: {
+                        characterId: characterToken.id,
+                        userId: user.id
+                    }
+                });
+
                 await db.characterData.update({
                     where: {
-                        userId: clientData.userId,
-                        characterId: characterToken.id
+                        id: characterData.id,
                     },
                     data: {
                         losses: {
@@ -1956,18 +1987,22 @@ export class UfbRoom extends Room<UfbRoomState> {
                     }
                 })
 
+                console.log("udpated --------------")
+
                 await db.user.update({
                     where: {
-                        id: clientData.userId
+                        id: user.id
                     },
                     data: {
                         gold: gold
                     }
                 });
 
+                console.log("udpated --------------")
+
                 await db.userData.update({
                     where :{
-                        userId: clientData.userId
+                        userId: user.id
                     },
                     data: {
                         gold,
@@ -2014,6 +2049,9 @@ export class UfbRoom extends Room<UfbRoomState> {
                 });
 
                 console.log("update user's gold");
+
+                this.state.characters.delete(playerId);
+                this.sessionIdToPlayerId.delete(sessionId);
             }
             else{
                 console.error("client id does not exist.");

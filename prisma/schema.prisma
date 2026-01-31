@@ -213,7 +213,7 @@ model CharacterClass {
 
 model Character {
   id             String         @id @default(cuid())
-  name           String         @unique
+  name           String         
   traits         Json?
   ownerId        String?
   nftId          String?        @unique
@@ -272,11 +272,22 @@ model CharacterData {
   traveled_tiles Int     @default(0)
   chests         Int     @default(0)
 
-  userId         String  @unique
-  characterId    String  @unique
+  maxEnergy      Int     @default(0)
+  energy         Int     @default(0)
+  maxHealth      Int     @default(0)
+  health         Int     @default(0)
+  ultimate       Int     @default(0)
+  maxUltimate    Int     @default(0)
+  maxMelee       Int     @default(0)
+  maxMana        Int     @default(0)
+
+  userId         String
+  characterId    String
+
   user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   character      Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, characterId])  // One per character per user
   @@map("character_data")
 }
 

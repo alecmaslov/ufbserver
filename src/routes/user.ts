@@ -128,6 +128,40 @@ const registerUserHandler: Handler = async (req: any, res: any) => {
             userId: newClient.id
         }
     });
+
+    const classNames = ["Kirin", "Ophaia", "Mevisto", "Data Avenger"];
+    const characterIds = [];
+    await db.$transaction(async (tx) => {
+        await Promise.all(
+            classNames.map(async (className) => {
+                const newCharacter = await tx.character.create({
+                    data: {
+                        className,
+                        ownerId: newClient.id,
+                        name: className,
+                        level: 1
+                    }
+                });
+                console.log("create : ", className);
+
+                characterIds.push(newCharacter.id);
+                await tx.characterData.create({
+                    data: {
+                        characterId: newCharacter.id,
+                        userId: newCharacter.ownerId,
+                        maxHealth: 40,
+                        health: 40,
+                        energy: 20,
+                        maxEnergy: 20,
+                        maxUltimate: 100,
+                        maxMana: 2,
+                        maxMelee: 2
+                    }
+                });
+            })
+        );
+    });
+
     const response: RegisterUserResponse = {
         clientId: newClient.id,
         error: RESPONSE_TYPE.SUCCESS

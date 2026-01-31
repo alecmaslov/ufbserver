@@ -99,7 +99,7 @@ export class CharacterState extends Schema {
     @type("string") sessionId: string = "";
     @type("string") characterId: string = "";
     @type("string") characterClass: string = "";
-    @type("boolean") connected: boolean = false;
+    @type("boolean") connected: boolean = true;
     @type("string") mapName: string = "";
     // @kyle - What if instead of sending CoordinatesState, we send tileId?
     @type("string") currentTileId: string = "";

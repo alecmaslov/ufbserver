@@ -1469,6 +1469,8 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                         })
                     }
 
+                    // room.SaveCharacterData(character.id, client.sessionId);
+                    character.connected = false;
                     if(aliveCount == 0) {
                         room.StopAIChecking();
                     }
@@ -1486,7 +1488,7 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
 
 export function setCharacterEnergy(character: CharacterState, amount: number, room: UfbRoom, client: Client){
     character.stats.energy.add(amount);
-    AddUserData(USER_DATA_TYPE.USED_ENERGY, character, amount);
+    AddUserData(USER_DATA_TYPE.USED_ENERGY, character, Math.abs(amount));
 }
 
 export function IsEquipPower(character : CharacterState, powerId: number) {
@@ -1735,25 +1737,25 @@ export function getTotalGoldAtEnd(character: CharacterState){
 export function AddUserData(type: number, character: CharacterState, amount: number){
     switch(type){
         case USER_DATA_TYPE.DAMAGE_DEAL:
-            character.stats.damage_deal += amount;
+            character.stats.damage_deal += Math.abs(amount);
             break;
         case USER_DATA_TYPE.DAMAGE_HEAL:
-            character.stats.damage_heal += amount;
+            character.stats.damage_heal += Math.abs(amount);
             break;
         case USER_DATA_TYPE.DAMAGE_TAKEN:
-            character.stats.damage_taken += amount;
+            character.stats.damage_taken += Math.abs(amount);
             break;
         case USER_DATA_TYPE.KILLS:
-            character.stats.kills += amount;
+            character.stats.kills += Math.abs(amount);
             break;
         case USER_DATA_TYPE.TRAVELED_TILE:
-            character.stats.traveled_tile += amount;
+            character.stats.traveled_tile += Math.abs(amount);
             break;
         case USER_DATA_TYPE.USED_ENERGY:
-            character.stats.used_energy += amount;
+            character.stats.used_energy += Math.abs(amount);
             break;      
         case USER_DATA_TYPE.USED_STACK:
-            character.stats.used_stack += amount;
+            character.stats.used_stack += Math.abs(amount);
             break;          
             default:
     }

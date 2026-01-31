@@ -15,7 +15,8 @@
     "job:insert-maps": "node out/jobs/insert-maps.js",
     "job:update-characters": "node out/jobs/update-characters.js",
     "start:service": "pm2 stop ufb-server; pm2 start out/app.js --name ufb-server",
-    "stop:service": "pm2 stop ufb-server"
+    "stop:service": "pm2 stop ufb-server",
+    "init-db": "npx prisma migrate dev"
   },
   "keywords": [],
   "author": "",

@@ -12,12 +12,12 @@
       "collectionName": "Stellar Dream God-Level Collection",
       "collectionSlug": "god-levels",
       "safelistRequestStatus": "not_requested",
-      "imageUrl": "https://i2.seadn.io/ethereum/9ed830073c324f8fafb256afbd907dc8/4f7e7152c628022582b9d0e4982015/564f7e7152c628022582b9d0e4982015.png",
+      "imageUrl": "https://i2c.seadn.io/ethereum/9ed830073c324f8fafb256afbd907dc8/4f7e7152c628022582b9d0e4982015/564f7e7152c628022582b9d0e4982015.png",
       "description": "The God-Levels are sick. They will tear the metaverse apart to find a cure.",
       "twitterUsername": "stellardreamnft",
       "discordUrl": "https://discord.gg/Rp5EZvkj",
-      "bannerImageUrl": "https://i2.seadn.io/ethereum/9ed830073c324f8fafb256afbd907dc8/3f2253423d1009d09c8bd9933c41c5/5d3f2253423d1009d09c8bd9933c41c5.png?fit=inside",
-      "lastIngestedAt": "2025-09-17T02:09:23.000Z"
+      "bannerImageUrl": "https://i2c.seadn.io/ethereum/9ed830073c324f8fafb256afbd907dc8/3f2253423d1009d09c8bd9933c41c5/5d3f2253423d1009d09c8bd9933c41c5.png?fit=inside",
+      "lastIngestedAt": "2026-01-29T21:33:12.000Z"
     }
   },
   "nfts": [
@@ -586,13 +586,13 @@
       "tokenType": "ERC721",
       "name": "#15 Yutu",
       "description": "Yutu the Beast Goddess unleashes the might of all mammals with her Chimaera Filament.",
-      "tokenUri": "https://ipfs.io/ipfs/QmdyvqRv2FB7CnjER4fhAAgxrjx6o2qjveFx5vveekNxbZ",
+      "tokenUri": "https://alchemy.mypinata.cloud/ipfs/QmdyvqRv2FB7CnjER4fhAAgxrjx6o2qjveFx5vveekNxbZ",
       "image": {
         "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/f76ed56834fc093f4f2020c2e50f5b43",
         "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/f76ed56834fc093f4f2020c2e50f5b43",
         "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/f76ed56834fc093f4f2020c2e50f5b43",
         "contentType": "image/png",
-        "size": 0,
+        "size": 3428421,
         "originalUrl": "https://ipfs.io/ipfs/QmScedGJjRfJJYPm9n3ibtTiA8mGtSA6GaicGG8n8c8T5o"
       },
       "animation": {},
@@ -619,7 +619,7 @@
       "owners": [
         "0x0092f2D0129407bdcF88f861F400BBef3D83F7D9"
       ],
-      "timeLastUpdated": "2024-08-31T18:25:50.434Z"
+      "timeLastUpdated": "2026-01-31T14:28:43.374Z"
     },
     {
       "tokenId": "16",
@@ -748,11 +748,7 @@
       "description": "Shala is a genius Hunter, her inventive mind is always dreaming up new gizmos and gadgets.",
       "tokenUri": "https://ipfs.io/ipfs/QmXsh7aVUwNN3rvnRHmWZpHGQF3gMCdsFBBgY6HnF8vpg8",
       "image": {
-        "cachedUrl": "https://nft-cdn.alchemy.com/eth-mainnet/a53a6133ec99241fe22d5e0e0593a4cf",
-        "thumbnailUrl": "https://res.cloudinary.com/alchemyapi/image/upload/thumbnailv2/eth-mainnet/a53a6133ec99241fe22d5e0e0593a4cf",
-        "pngUrl": "https://res.cloudinary.com/alchemyapi/image/upload/convert-png/eth-mainnet/a53a6133ec99241fe22d5e0e0593a4cf",
-        "contentType": "image/png",
-        "size": 0,
+        "cachedUrl": "https://ipfs.io/ipfs/QmPZD1w85wEhnLzQn7k27kHmWudRGCLwAaeZ2Kq3mJyhPz",
         "originalUrl": "https://ipfs.io/ipfs/QmPZD1w85wEhnLzQn7k27kHmWudRGCLwAaeZ2Kq3mJyhPz"
       },
       "animation": {},
@@ -779,7 +775,7 @@
       "owners": [
         "0x0092f2D0129407bdcF88f861F400BBef3D83F7D9"
       ],
-      "timeLastUpdated": "2025-03-13T19:45:36.788Z"
+      "timeLastUpdated": "2026-01-31T14:37:38.767Z"
     },
     {
       "tokenId": "20",
@@ -825,6 +821,6 @@
   "collection": {
     "name": "Stellar Dream God-Level Collection",
     "slug": "god-levels",
-    "bannerImageUrl": "https://i2.seadn.io/ethereum/9ed830073c324f8fafb256afbd907dc8/3f2253423d1009d09c8bd9933c41c5/5d3f2253423d1009d09c8bd9933c41c5.png?fit=inside"
+    "bannerImageUrl": "https://i2c.seadn.io/ethereum/9ed830073c324f8fafb256afbd907dc8/3f2253423d1009d09c8bd9933c41c5/5d3f2253423d1009d09c8bd9933c41c5.png?fit=inside"
   }
 }

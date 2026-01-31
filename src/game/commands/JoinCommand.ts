@@ -66,13 +66,16 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
         character.currentTileId = message.tileId;
 
         this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId && (entity.type == SpawnZoneType.Chest || entity.type == SpawnZoneType.Merchant)) {
-                let randomTileId = GetRandomFreeTileId(entity.tileId, this.room, entity.type);
+            // if(entity.tileId == message.tileId && (entity.type == SpawnZoneType.Chest || entity.type == SpawnZoneType.Merchant)) {
+            //     let randomTileId = GetRandomFreeTileId(entity.tileId, this.room, entity.type);
 
-                console.log("change chset position : ", randomTileId);
+            //     console.log("change chset position : ", randomTileId);
 
-                if(randomTileId == "") return;
-                entity.tileId = randomTileId;
+            //     if(randomTileId == "") return;
+            //     entity.tileId = randomTileId;
+            // }
+            if(entity.tileId == message.tileId){
+                this.room.state.map.spawnEntities.deleteAt(id);
             }
         });
 

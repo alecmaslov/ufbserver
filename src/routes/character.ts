@@ -65,10 +65,10 @@ const handleGetCharacterClass: Handler = async (req: any, res: any) => {
     }
 };
 
-const handleGetCharacterData: Handler = async (req: any, res: any) => {
+const handleGetUserData: Handler = async (req: any, res: any) => {
     try {
 
-        const { userId, characterClass } = req.params;
+        const { userId } = req.body;
 
         // const character = await db.character.findFirst({
         //     where: {
@@ -79,10 +79,43 @@ const handleGetCharacterData: Handler = async (req: any, res: any) => {
 
         // console.log(character.id);
 
+        const characterData = await db.userData.findFirst({
+            where: {
+                userId: userId
+                // characterId: character.id
+            }
+        });
+
+        console.log(userId, characterData.id)
+
+        res.send({
+            ...characterData,
+            error: RESPONSE_TYPE.SUCCESS
+        });
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+}
+
+const handleGetHeroData: Handler = async (req: any, res: any) => {
+    try {
+
+        const { userId, characterClass } = req.body;
+
+        const character = await db.character.findFirst({
+            where: {
+                ownerId: userId,
+                className: characterClass
+            },
+        });
+
+        console.log(character.id);
+
         const characterData = await db.characterData.findFirst({
             where: {
                 userId: userId,
-                // characterId: character.id
+                characterId: character.id
             }
         });
 
@@ -98,9 +131,53 @@ const handleGetCharacterData: Handler = async (req: any, res: any) => {
     }
 }
 
+const handleGetHeroList: Handler = async (req: any, res: any) => {
+    try {
+
+        const { userId } = req.body;
+
+        console.log("request : ", req.body);
+
+        const characters = await db.character.findMany({
+            where: {
+                ownerId: userId
+            },
+            orderBy: {
+                name: 'desc'
+            }
+        });
+
+        console.log("character length: ", characters.length, ", ", userId);
+
+        const characterData: any = [];
+
+        characters.forEach(data => {
+            characterData.push(data);
+        })
+
+        res.send({
+            data : characterData,
+            error: RESPONSE_TYPE.SUCCESS
+        });
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+}
+
+router.post("/get-hero-list", 
+    validate,
+    handleGetHeroList
+)
+
 router.post("/get-hero-detail", 
     validate,
-    handleGetCharacterData
+    handleGetHeroData
+)
+
+router.post("/get-user-detail", 
+    validate,
+    handleGetUserData
 )
 
 router.get("/:id", handleGetCharacter);
