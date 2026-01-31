@@ -1559,14 +1559,17 @@ export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom, type: 
     });
     
     room.spawnZoneArray.forEach(zone => {
-        if(zone.type == type){
-            tileIds.push(zone.tileId);
+        if(type == SpawnZoneType.Merchant){
+            if(zone.type == SpawnZoneType.Chest || zone.type == SpawnZoneType.Merchant){
+                tileIds.push(zone.tileId);
+            }
+        }else{
+            if(zone.type == type){
+                tileIds.push(zone.tileId);
+            }
         }
-    })
 
-    // room.state.map.tiles.forEach(tile => {
-    //     tileIds.push(tile.id);
-    // });
+    })
     
     room.state.map.spawnEntities.forEach(entity => {
         spawnIds.push(entity.id);
@@ -1576,6 +1579,7 @@ export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom, type: 
     const occupiedIds: Set<string> = new Set([...characterTileIds, ...spawnIds, currentTileId]);
     const freeTileIds: string[] = tileIds.filter(id => !occupiedIds.has(id));
     
+    console.log("total zone count : ", tileIds.length);
     // Return random free tile or fallback
     if (freeTileIds.length === 0) {
         console.warn("No free tiles available");

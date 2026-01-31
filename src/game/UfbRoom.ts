@@ -202,6 +202,8 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         } catch (e) {
      
+            console.log("connect failed");
+            await this.SaveCharacterData(playerId, client.sessionId);
             // 20 seconds expired. let's remove the client.
             this.state.characters.delete(playerId);
             this.sessionIdToPlayerId.delete(client.sessionId);
@@ -212,9 +214,10 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     async onDispose() {
         console.log("room", this.roomId, "disposing...");
-        // await this.EndRoom();
         this.StopAIChecking();
         this.dispatcher.stop();
+        console.log(this.sessionIdToPlayerId, this.sessionIdToPlayerId.size);
+        // await this.EndRoom();
     }
 
     onAuth(client: Client, options: Record<string, any>) {
@@ -513,278 +516,285 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     // @amin - AI Monsters checking..
     aiChecking() {
-        const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
+        try
+        {
+            const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
 
-        if(selectedMonster == null || selectedMonster.type == USER_TYPE.USER || !this.isMonsterActive) {
-            if(selectedMonster.type == USER_TYPE.USER)
-                this.checkUserTimer();
-            return;
-        }
-
-        console.log("AI CHECKING..kkk")
-
-        if(this.isTurnStartForScreen){
-            this.DoActionMonster(1.5);
-            this.isTurnStartForScreen = false;
-            return;
-        }
-
-        // AI MONSTER ITEM
-        let isItemUse = false;
-        selectedMonster.items.forEach(p => {
-            if(p.id == ITEMTYPE.POTION && p.count > 0) {
-                isItemUse = true
-                selectedMonster.stats.health.add(5);
-                this.sendBroadcastStats(5, 'heart');
-                p.count--;
-            } else if(p.id == ITEMTYPE.ELIXIR && p.count > 0) {
-                isItemUse = true;
-                selectedMonster.stats.energy.add(10);
-                addStackToCharacter(STACKTYPE.Cure, 1, selectedMonster, null, this);
-                addStackToCharacter(STACKTYPE.Dodge, 1, selectedMonster, null, this);
-                p.count--;
+            if(selectedMonster == null || selectedMonster.type == USER_TYPE.USER || !this.isMonsterActive) {
+                if(selectedMonster.type == USER_TYPE.USER)
+                    this.checkUserTimer();
+                return;
             }
-        })
-        if(isItemUse) {
-            this.DoActionMonster()
-            return;
-        }
 
-        // AI MONSTER STACK
-        if(this.isTurnStartEquip) {
-            this.isTurnStartEquip = false;
-            if(this.state.currentCharacterId == selectedMonster.id) {
-                let bonuses: any = [];
-                selectedMonster.equipSlots.forEach(slot => {
-                    // ADD BONUS in CHARACTER..
-                    const bonus = {
-                        ...EQUIP_TURN_BONUS[slot.id],
-                        id: slot.id,
-                    }
-    
-                    if(!!bonus.items) {
-                        bonus.items.forEach(item => {
+            console.log("AI CHECKING..kkk")
+
+            if(this.isTurnStartForScreen){
+                this.DoActionMonster(1.5);
+                this.isTurnStartForScreen = false;
+                return;
+            }
+
+            // AI MONSTER ITEM
+            let isItemUse = false;
+            selectedMonster.items.forEach(p => {
+                if(p.id == ITEMTYPE.POTION && p.count > 0) {
+                    isItemUse = true
+                    selectedMonster.stats.health.add(5);
+                    this.sendBroadcastStats(5, 'heart');
+                    p.count--;
+                } else if(p.id == ITEMTYPE.ELIXIR && p.count > 0) {
+                    isItemUse = true;
+                    selectedMonster.stats.energy.add(10);
+                    addStackToCharacter(STACKTYPE.Cure, 1, selectedMonster, null, this);
+                    addStackToCharacter(STACKTYPE.Dodge, 1, selectedMonster, null, this);
+                    p.count--;
+                }
+            })
+            if(isItemUse) {
+                this.DoActionMonster()
+                return;
+            }
+
+            // AI MONSTER STACK
+            if(this.isTurnStartEquip) {
+                this.isTurnStartEquip = false;
+                if(this.state.currentCharacterId == selectedMonster.id) {
+                    let bonuses: any = [];
+                    selectedMonster.equipSlots.forEach(slot => {
+                        // ADD BONUS in CHARACTER..
+                        const bonus = {
+                            ...EQUIP_TURN_BONUS[slot.id],
+                            id: slot.id,
+                        }
+        
+                        if(!!bonus.items) {
+                            bonus.items.forEach(item => {
+                                addItemToCharacter(item.id, item.count, selectedMonster);
+                            })
+                        }
+        
+                        if(!!bonus.stacks) {
+                            bonus.stacks.forEach(stack => {
+                                addStackToCharacter(stack.id, stack.count, selectedMonster, null, this);
+                            });
+                        }
+        
+                        if(!!bonus.randomItems) {
+                            const idx = Math.floor(bonus.randomItems.length * Math.random())
+                            const item = bonus.randomItems[idx];
+                            delete bonus.randomItems;
+                            bonus.items.push(item);
                             addItemToCharacter(item.id, item.count, selectedMonster);
-                        })
+                        }
+        
+                        if(EQUIP_TURN_BONUS[slot.id] != null) {
+                            bonuses.push(bonus);
+                        }
+                    })
+        
+                    if(bonuses.length > 0) {
+                        this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
+        
+                        this.DoActionMonster(3);
+                        return;
                     }
-    
-                    if(!!bonus.stacks) {
-                        bonus.stacks.forEach(stack => {
-                            addStackToCharacter(stack.id, stack.count, selectedMonster, null, this);
-                        });
+                }
+            }
+
+            // AI MONSTER STACK
+            if(this.isTurnStartStack){
+                this.isTurnStartStack = false;
+
+                let stackList: any[] = [];
+                let diceResult: any[] = [];
+                selectedMonster.stacks.forEach(stack => {
+                    if(
+                        (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Void2) && !IsEquipPower(selectedMonster, POWERTYPE.Void3)) ||
+                        (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Fire2) && !IsEquipPower(selectedMonster, POWERTYPE.Fire3)) ||
+                        (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Ice2) && !IsEquipPower(selectedMonster, POWERTYPE.Ice3)) ||
+                        (stack.id == STACKTYPE.Cure && stack.count > 0) ||
+                        (stack.id == STACKTYPE.Slow && stack.count > 0) || 
+                        (stack.id == STACKTYPE.Pump && stack.count > 0)
+                    ) {
+                        if(stackList.length < 3){
+                            stackList.push({
+                                id : stack.id,
+                                count: 1
+                            });
+            
+                            const diceType = getDiceTypeFromStack(stack.id);
+                    
+                            const dice: any = {
+                                diceData : []
+                            }
+                            if(diceType == DICE_TYPE.DICE_6_4) {
+                                dice.diceData.push({
+                                    type: DICE_TYPE.DICE_6,
+                                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                                })
+                                dice.diceData.push({
+                                    type: DICE_TYPE.DICE_4,
+                                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                                })
+                            } else if(diceType == DICE_TYPE.DICE_4) {
+                                dice.diceData.push({
+                                    type: DICE_TYPE.DICE_4,
+                                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                                })
+                            } else if(diceType == DICE_TYPE.DICE_6_6){
+                                dice.diceData.push({
+                                    type: DICE_TYPE.DICE_6,
+                                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                                });
+                                dice.diceData.push({
+                                    type: DICE_TYPE.DICE_6,
+                                    diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                                });
+                            } else{
+                                dice.diceData.push({
+                                    type: diceType,
+                                    diceCount: getDiceCount(Math.random(), diceType)
+                                });
+                            }
+                            diceResult.push(dice);
+                        }
+                        
                     }
-    
-                    if(!!bonus.randomItems) {
-                        const idx = Math.floor(bonus.randomItems.length * Math.random())
-                        const item = bonus.randomItems[idx];
-                        delete bonus.randomItems;
-                        bonus.items.push(item);
-                        addItemToCharacter(item.id, item.count, selectedMonster);
-                    }
-    
-                    if(EQUIP_TURN_BONUS[slot.id] != null) {
-                        bonuses.push(bonus);
-                    }
-                })
-    
-                if(bonuses.length > 0) {
-                    this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_TURN_START_EQUIP, { bonuses });
-    
+                });
+        
+                if(stackList.length > 0) {
+                    this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
+                        characterId : selectedMonster.id,
+                        stackList: stackList,
+                        diceResult: diceResult
+                    });
+                    
+                    console.log("------------------turn stack of monster........")
+
                     this.DoActionMonster(3);
                     return;
                 }
             }
-        }
 
-        // AI MONSTER STACK
-        if(this.isTurnStartStack){
-            this.isTurnStartStack = false;
+            // AI MONSTER MOVEMENT LOGIC
+            let nearTileId = "";
+            let isAjuacent = false;
 
-            let stackList: any[] = [];
-            let diceResult: any[] = [];
-            selectedMonster.stacks.forEach(stack => {
-                if(
-                    (stack.id == STACKTYPE.Void && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Void2) && !IsEquipPower(selectedMonster, POWERTYPE.Void3)) ||
-                    (stack.id == STACKTYPE.Burn && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Fire2) && !IsEquipPower(selectedMonster, POWERTYPE.Fire3)) ||
-                    (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(selectedMonster, POWERTYPE.Ice2) && !IsEquipPower(selectedMonster, POWERTYPE.Ice3)) ||
-                    (stack.id == STACKTYPE.Cure && stack.count > 0) ||
-                    (stack.id == STACKTYPE.Slow && stack.count > 0) || 
-                    (stack.id == STACKTYPE.Pump && stack.count > 0)
-                ) {
-                    if(stackList.length < 3){
-                        stackList.push({
-                            id : stack.id,
-                            count: 1
-                        });
-        
-                        const diceType = getDiceTypeFromStack(stack.id);
-                
-                        const dice: any = {
-                            diceData : []
-                        }
-                        if(diceType == DICE_TYPE.DICE_6_4) {
-                            dice.diceData.push({
-                                type: DICE_TYPE.DICE_6,
-                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                            })
-                            dice.diceData.push({
-                                type: DICE_TYPE.DICE_4,
-                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                            })
-                        } else if(diceType == DICE_TYPE.DICE_4) {
-                            dice.diceData.push({
-                                type: DICE_TYPE.DICE_4,
-                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                            })
-                        } else if(diceType == DICE_TYPE.DICE_6_6){
-                            dice.diceData.push({
-                                type: DICE_TYPE.DICE_6,
-                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                            });
-                            dice.diceData.push({
-                                type: DICE_TYPE.DICE_6,
-                                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                            });
-                        } else{
-                            dice.diceData.push({
-                                type: diceType,
-                                diceCount: getDiceCount(Math.random(), diceType)
-                            });
-                        }
-                        diceResult.push(dice);
-                    }
-                    
-                }
-            });
-    
-            if(stackList.length > 0) {
-                this.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
-                    characterId : selectedMonster.id,
-                    stackList: stackList,
-                    diceResult: diceResult
-                });
-                
-                console.log("------------------turn stack of monster........")
+            const nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
+            const obstacleTileIds = GetObstacleTileIds(selectedMonster.currentTileId, this);
+            console.log("near character id: ", nearCharcterId);
 
-                this.DoActionMonster(3);
-                return;
-            }
-        }
-
-        // AI MONSTER MOVEMENT LOGIC
-        let nearTileId = "";
-        let isAjuacent = false;
-
-        const nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
-        const obstacleTileIds = GetObstacleTileIds(selectedMonster.currentTileId, this);
-        console.log("near character id: ", nearCharcterId);
-
-        if(nearCharcterId != "") {
-            const enemy = this.state.characters.get(nearCharcterId);
-            nearTileId = getOpenTilePosition(enemy.currentTileId, this);
-            isAjuacent = IsEnemyAdjacent(selectedMonster, enemy, this);
-            // nearTileId = enemy.currentTileId;
-        }
-
-        console.log("near tile id: ", nearTileId);
-
-
-        if(!isAjuacent && nearTileId != "") {
-            const { path, cost } = this.getPathFinder().find(
-                selectedMonster.currentTileId,
-                nearTileId
-            );
-            console.log("ai move : ", path);
-
-            let isBomb = false;
-
-            const energy = selectedMonster.stats.energy.current;
-            if(energy > 0 && path.length > 1) {
-                const pathArray = path.slice(0, Math.min(path.length, energy));
-                let monsterPath: any = pathArray;
-                for(let i = 0; i < pathArray.length; i++) {
-                    const p = pathArray[i];
-
-                    const idx = this.state.map.moveItemEntities.findIndex(
-                        mItem => mItem.tileId == p.tileId && 
-                        (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
-
-                    if(idx > -1) {
-                        this.checkBombPos(idx, selectedMonster);
-                        isBomb = true;
-                        monsterPath = pathArray.slice(0, i + 1);
-                        break;
-                    }
-
-                    if(obstacleTileIds.indexOf(p.tileId) != -1) {
-                        monsterPath = pathArray.slice(0, i);
-                        break;
-                    }
-                }
-
-
-                fillPathWithCoords(monsterPath, this.state.map);
-
-                if(monsterPath.length > 1) {
-                    const characterMovedMessage: CharacterMovedMessage = {
-                        characterId: selectedMonster.id,
-                        path: monsterPath,
-                        left: -1,
-                        right: -1,
-                        top: -1,
-                        down: -1,
-                    };
-    
-                    selectedMonster.stats.energy.add(-Math.min(monsterPath.length, energy));
-            
-                    const destinationTile = this.state.map.tiles.get(monsterPath[monsterPath.length - 1].tileId);
-                    selectedMonster.coordinates.x = destinationTile.coordinates.x;
-                    selectedMonster.coordinates.y = destinationTile.coordinates.y;
-                    selectedMonster.currentTileId = destinationTile.id;
-                    
-                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
-                    
-                    this.sendBroadcastStats(-Math.min(monsterPath.length, energy));
-                    
-                    if(isBomb) {
-                        this.DoActionMonster(6);
-                        return;
-                    }
-                    else{
-                        this.DoActionMonster()
-                        return;
-                    }
-                }
-            }
-
-
-        }
-
-
-        // AI MONSTER ATTACK
-        if(this.isMonsterActive && isAjuacent) {
-            // PUNCH
-            const {mana, melee} = getArrowBombCount(selectedMonster);
-            console.log("mana, melee: ", mana, melee);
-            console.log("ATTCK PUNCH: ", selectedMonster.stats.energy.current);
-            if(selectedMonster.stats.energy.current > 2) {
+            if(nearCharcterId != "") {
                 const enemy = this.state.characters.get(nearCharcterId);
-                if(mana > 0) {
-                    this.isMonsterActive = false;
-                    this.AIPunchAttack(selectedMonster, enemy, -100);
-                } else if(melee > 0) {
-                    this.isMonsterActive = false;
-                    this.AIPunchAttack(selectedMonster, enemy, -1);
+                nearTileId = getOpenTilePosition(enemy.currentTileId, this);
+                isAjuacent = IsEnemyAdjacent(selectedMonster, enemy, this);
+                // nearTileId = enemy.currentTileId;
+            }
+
+            console.log("near tile id: ", nearTileId);
+
+
+            if(!isAjuacent && nearTileId != "") {
+                const { path, cost } = this.getPathFinder().find(
+                    selectedMonster.currentTileId,
+                    nearTileId
+                );
+                console.log("ai move : ", path);
+
+                let isBomb = false;
+
+                const energy = selectedMonster.stats.energy.current;
+                if(energy > 0 && path.length > 1) {
+                    const pathArray = path.slice(0, Math.min(path.length, energy));
+                    let monsterPath: any = pathArray;
+                    for(let i = 0; i < pathArray.length; i++) {
+                        const p = pathArray[i];
+
+                        const idx = this.state.map.moveItemEntities.findIndex(
+                            mItem => mItem.tileId == p.tileId && 
+                            (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
+
+                        if(idx > -1) {
+                            this.checkBombPos(idx, selectedMonster);
+                            isBomb = true;
+                            monsterPath = pathArray.slice(0, i + 1);
+                            break;
+                        }
+
+                        if(obstacleTileIds.indexOf(p.tileId) != -1) {
+                            monsterPath = pathArray.slice(0, i);
+                            break;
+                        }
+                    }
+
+
+                    fillPathWithCoords(monsterPath, this.state.map);
+
+                    if(monsterPath.length > 1) {
+                        const characterMovedMessage: CharacterMovedMessage = {
+                            characterId: selectedMonster.id,
+                            path: monsterPath,
+                            left: -1,
+                            right: -1,
+                            top: -1,
+                            down: -1,
+                        };
+        
+                        selectedMonster.stats.energy.add(-Math.min(monsterPath.length, energy));
+                
+                        const destinationTile = this.state.map.tiles.get(monsterPath[monsterPath.length - 1].tileId);
+                        selectedMonster.coordinates.x = destinationTile.coordinates.x;
+                        selectedMonster.coordinates.y = destinationTile.coordinates.y;
+                        selectedMonster.currentTileId = destinationTile.id;
+                        
+                        this.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
+                        
+                        this.sendBroadcastStats(-Math.min(monsterPath.length, energy));
+                        
+                        if(isBomb) {
+                            this.DoActionMonster(6);
+                            return;
+                        }
+                        else{
+                            this.DoActionMonster()
+                            return;
+                        }
+                    }
+                }
+
+
+            }
+
+
+            // AI MONSTER ATTACK
+            if(this.isMonsterActive && isAjuacent) {
+                // PUNCH
+                const {mana, melee} = getArrowBombCount(selectedMonster);
+                console.log("mana, melee: ", mana, melee);
+                console.log("ATTCK PUNCH: ", selectedMonster.stats.energy.current);
+                if(selectedMonster.stats.energy.current > 2) {
+                    const enemy = this.state.characters.get(nearCharcterId);
+                    if(mana > 0) {
+                        this.isMonsterActive = false;
+                        this.AIPunchAttack(selectedMonster, enemy, -100);
+                    } else if(melee > 0) {
+                        this.isMonsterActive = false;
+                        this.AIPunchAttack(selectedMonster, enemy, -1);
+                    }
                 }
             }
-        }
 
-        console.log("isMonsterActive: ", this.isMonsterActive);
-        // AI MONSTER TURN
-        if(this.isMonsterActive) {
-            setTimeout(this.incrementTurn.bind(this), 2000);
+            console.log("isMonsterActive: ", this.isMonsterActive);
+            // AI MONSTER TURN
+            if(this.isMonsterActive) {
+                setTimeout(this.incrementTurn.bind(this), 2000);
+            }
+        } catch (e) {
+            console.log(e);
+            if(this.isMonsterActive) {
+                setTimeout(this.incrementTurn.bind(this), 2000);
+            }
         }
-
     }
 
     checkBombPos(idx: any, monster: CharacterState){

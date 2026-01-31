@@ -221,7 +221,7 @@ model Character {
   className      String
   characterClass CharacterClass @relation(fields: [className], references: [name])
   nft            Nft?           @relation(fields: [nftId], references: [id])
-  owner          User?          @relation(fields: [ownerId], references: [id])
+  owner          User?          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   characterData   CharacterData[]
 
