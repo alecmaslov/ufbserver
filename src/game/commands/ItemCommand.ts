@@ -98,8 +98,10 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         if(message.itemId == ITEMTYPE.MELEE){
             character.stats.maxMelee++;
+            addItemToCharacter(message.itemId, 1, character, client);
         }else if(message.itemId == ITEMTYPE.MANA){
             character.stats.maxMana++;
+            addItemToCharacter(message.itemId, 1, character, client);
         }else{
             addItemToCharacter(message.itemId, 1, character, client);
         }
