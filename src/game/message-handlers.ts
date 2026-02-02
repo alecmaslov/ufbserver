@@ -134,7 +134,7 @@ export const messageHandlers: MessageHandlers = {
         const idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
 
         let itemId = lvl1Items[idxItem].id;
-        // let itemId = ITEMTYPE.ENERGY_SHARD;
+        // let itemId = ITEMTYPE.MANA;
         let powerId = lvl1Powers[idxPower].id;
 
         if(message.isItemBag) {
@@ -904,10 +904,12 @@ export const messageHandlers: MessageHandlers = {
                 addItemToCharacter(q.itemId, 1, character, client);
                 addPowerToCharacter(q.powerId, 1, character);
                 if(q.melee > 0){
-                    addItemToCharacter(ITEMTYPE.MELEE, 1, character);
+                    character.stats.maxMelee++;
+                    // addItemToCharacter(ITEMTYPE.MELEE, 1, character);
                 }
                 if(q.mana > 0){
-                    addItemToCharacter(ITEMTYPE.MANA, 1, character);
+                    character.stats.maxMana++;
+                    // addItemToCharacter(ITEMTYPE.MANA, 1, character);
                 }
                 character.stats.coin += q.coin;
 

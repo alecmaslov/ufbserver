@@ -1804,7 +1804,14 @@ export class UfbRoom extends Room<UfbRoomState> {
 
             // REWARD PART
             const id = Math.random() < 0.5? ITEMTYPE.MELEE : ITEMTYPE.MANA;
+            // addItemToCharacter(id, 1, character);
+            if(id == ITEMTYPE.MELEE) {
+                character.stats.maxMelee++;
+            } else if(id == ITEMTYPE.MANA) {
+                character.stats.maxMana++;
+            }
             addItemToCharacter(id, 1, character);
+
             const lvl1Items = getItemIdsByLevel(1, true);
             const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
             addItemToCharacter(lvl1Items[idxItem].id, 1, character);
@@ -1826,7 +1833,13 @@ export class UfbRoom extends Room<UfbRoomState> {
 
             // REWARD PART
             const id = Math.random() < 0.5? ITEMTYPE.MELEE : ITEMTYPE.MANA;
+            if(id == ITEMTYPE.MELEE) {
+                character.stats.maxMelee += 2;
+            } else if(id == ITEMTYPE.MANA) {
+                character.stats.maxMana += 2;
+            }
             addItemToCharacter(id, 2, character);
+
             const lvl1Items = getItemIdsByLevel(1, true);
             const lvl2Items = getItemIdsByLevel(2, true);
             const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
@@ -1851,6 +1864,11 @@ export class UfbRoom extends Room<UfbRoomState> {
 
             // REWARD PART
             const id = Math.random() < 0.5? ITEMTYPE.MELEE : ITEMTYPE.MANA;
+            if(id == ITEMTYPE.MELEE) {
+                character.stats.maxMelee += 3;
+            } else if(id == ITEMTYPE.MANA) {
+                character.stats.maxMana += 3;
+            }
             addItemToCharacter(id, 3, character);
             const lvl1Items = getItemIdsByLevel(1, true);
             const lvl2Items = getItemIdsByLevel(2, true);

@@ -938,7 +938,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
         const maxMana = state.stats.maxMana;
         let addedCount = Math.max(0, mana + count - maxMana);
         if(addedCount == count) {
-            state.stats.maxMana += addedCount;
+            // state.stats.maxMana += addedCount;
         } else {
             count -= addedCount;
         }
@@ -947,7 +947,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
         const maxMelee = state.stats.maxMelee;
         let addedCount = Math.max(0, melee + count - maxMelee);
         if(addedCount == count) {
-            state.stats.maxMelee += addedCount;
+            // state.stats.maxMelee += addedCount;
         } else {
             count -= addedCount;
         }

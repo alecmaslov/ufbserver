@@ -93,6 +93,9 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // END TEST
 
+        console.log("item command: ", message.itemId, ITEMTYPE.MELEE, ITEMTYPE.MANA)
+        console.log("user's max melee, max mana: ", character.stats.maxMelee, character.stats.maxMana)
+
         if(message.itemId == ITEMTYPE.MELEE){
             character.stats.maxMelee++;
         }else if(message.itemId == ITEMTYPE.MANA){
@@ -102,6 +105,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         console.log("item command: ", message)
+        console.log("user's max melee, max mana: ", character.stats.maxMelee, character.stats.maxMana)
 
         let count = 3;
         if(message.spawnId != "default") {
