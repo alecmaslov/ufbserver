@@ -521,6 +521,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             const selectedMonster = this.state.characters.get(this.state.currentCharacterId);
 
             if(selectedMonster == null || selectedMonster.type == USER_TYPE.USER || !this.isMonsterActive) {
+                if(selectedMonster == null) return;
                 if(selectedMonster.type == USER_TYPE.USER)
                     this.checkUserTimer();
                 return;
