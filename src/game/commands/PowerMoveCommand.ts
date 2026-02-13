@@ -311,6 +311,11 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
     
+                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                        score: -1,
+                                        type: "heart_e",
+                                    });
+
                                     if(target == enemy && target.stats.health.current == 0) {
                                         this.room.RewardFromMonster(character, target, client);
                                     }
@@ -342,7 +347,6 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     if(target == enemy && target.stats.health.current == 0) {
                                         this.room.RewardFromMonster(character, target, client);
                                     }
-    
                                     addStackToCharacter(STACKTYPE.Void, 1, target, client);
                                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -2,

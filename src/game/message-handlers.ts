@@ -134,7 +134,7 @@ export const messageHandlers: MessageHandlers = {
         const idxPower = Math.ceil(Math.random() * lvl1Powers.length) % lvl1Powers.length;
 
         let itemId = lvl1Items[idxItem].id;
-        // let itemId = ITEMTYPE.MANA;
+        // let itemId = ITEMTYPE.FLAME_CHILI;
         let powerId = lvl1Powers[idxPower].id;
 
         if(message.isItemBag) {
@@ -642,11 +642,11 @@ export const messageHandlers: MessageHandlers = {
             quest.description = Qarray[i].normal;
 
             const itemKeys = Object.keys(ITEMTYPE);
-            let idx = Math.floor(itemKeys.length * Math.random());
+            let idx = Math.ceil(itemKeys.length * Math.random()) % itemKeys.length;
             quest.itemId = ITEMTYPE[itemKeys[idx]];
 
             const powerKeys = Object.keys(POWERTYPE);         
-            idx = Math.floor(powerKeys.length * Math.random());
+            idx = Math.ceil(powerKeys.length * Math.random());
             quest.powerId = POWERTYPE[powerKeys[idx]];
             if(Math.random() > 0.5) {
                 quest.melee = 1;

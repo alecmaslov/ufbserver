@@ -958,44 +958,17 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     if(count > 0){
 
         if(id == ITEMTYPE.HEART_PIECE) {
-            let beforeCount = Math.ceil(itemCount / 4);
-            let presentCount = Math.ceil((itemCount + count) / 4);
-            if(beforeCount != presentCount){
-                //count = (itemCount + count) % 4 - itemCount;
-
-                state.stats.health.max += 5;
-                state.stats.health.current += 5;
-
-                if(client != null){
-                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                        score: 5,
-                        type: "heart"
-                    });
-                }
-
-                setQuestResult(QUESTTYPE.LIFE, 1, state);
+            if(itemCount != 0 && (itemCount + 1) % 4 == 0){
+                addItemToCharacter(ITEMTYPE.HEART_CRYSTAL, 1, state, client);
             }
         } else if(id == ITEMTYPE.ENERGY_SHARD){
-            let beforeCount = Math.ceil(itemCount / 3);
-            let presentCount = Math.ceil((itemCount + count) / 3);
-            if(beforeCount != presentCount){
-                //count = (itemCount + count) % 3 - itemCount;
-                
-                state.stats.energy.max += 3;
-                state.stats.energy.current += 3;
-
-                if(client != null){
-                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                        score: 3,
-                        type: "energy"
-                    });
-                }
-
-                setQuestResult(QUESTTYPE.ENERGY, 1, state);
+            if(itemCount != 0 && (itemCount + 1) % 3 == 0){
+                console.log("added energy crystal...")
+                addItemToCharacter(ITEMTYPE.ENERGY_CRYSTAL, 1, state, client);
             }
         } else if(id == ITEMTYPE.HEART_CRYSTAL){
             state.stats.health.max += 5;
-            state.stats.health.current += 5;
+            state.stats.health.add(5);
             if(client != null){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 5,
@@ -1003,10 +976,9 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
                 });
             }
             setQuestResult(QUESTTYPE.LIFE, 1, state);
-            return;
         } else if(id == ITEMTYPE.ENERGY_CRYSTAL){
             state.stats.energy.max += 3;
-            state.stats.energy.current += 3;
+            state.stats.energy.add(3);
             if(client != null){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 3,
@@ -1014,7 +986,8 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
                 });
             }
             setQuestResult(QUESTTYPE.ENERGY, 1, state);
-            return;
+
+            console.log("added energy crystal...", count)
         }
     }
 
@@ -1572,21 +1545,21 @@ export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom, type: 
     })
     
     room.state.map.spawnEntities.forEach(entity => {
-        spawnIds.push(entity.id);
+        spawnIds.push(entity.tileId);
     });
 
     // Filter out occupied tiles (characters, spawns, and current tile to avoid immediate respawn overlap)
     const occupiedIds: Set<string> = new Set([...characterTileIds, ...spawnIds, currentTileId]);
     const freeTileIds: string[] = tileIds.filter(id => !occupiedIds.has(id));
     
-    console.log("total zone count : ", tileIds.length);
+    console.log("total zone count : ", tileIds.length, spawnIds.length, freeTileIds.length);
     // Return random free tile or fallback
     if (freeTileIds.length === 0) {
         console.warn("No free tiles available");
         return "";  // Or handle error as needed
     }
     
-    const randomIndex: number = Math.floor(Math.random() * freeTileIds.length);
+    let randomIndex: number = Math.floor(Math.random() * freeTileIds.length);
     return freeTileIds[randomIndex];
 }
 
