@@ -164,6 +164,10 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                         score: result.heart,
                         type: "heart"
                     });
+                    
+                    if(character.stats.health.current <= 0) {
+                        this.room.RewardFromMonster(enemy, character, client);
+                    }
                 }
                 if(!!result.ultimate) {
                     character.stats.ultimate.add(result.ultimate);

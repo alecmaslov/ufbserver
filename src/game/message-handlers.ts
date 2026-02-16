@@ -443,6 +443,9 @@ export const messageHandlers: MessageHandlers = {
             addStackToCharacter(STACKTYPE.Void, 1, enemy, client);
         }
 
+        if(enemy.stats.health.current <= 0) {
+            room.RewardFromMonster(character, enemy, client);
+        }
     },
 
     [CLIENT_SERVER_MESSAGE.SET_MOVE_POINT] : (room, client, message) => {
@@ -548,11 +551,6 @@ export const messageHandlers: MessageHandlers = {
             setCharacterHealth(enemy, -deltaCount, room, client, "heart", enemy);
             character.stats.ultimate.add(deltaCount);
 
-            if(enemy.stats.health.current == 0) {
-                console.log("----reward.. monster")
-                room.RewardFromMonster(character, enemy, client);
-            }
-
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "heart_e",
@@ -570,6 +568,10 @@ export const messageHandlers: MessageHandlers = {
             }
         }
 
+        if(enemy.stats.health.current <= 0) {
+            console.log("----reward.. monster")
+            room.RewardFromMonster(character, enemy, client);
+        }
     },
 
     [CLIENT_SERVER_MESSAGE.END_REVENGER_STACK]: (room, client, message) => {

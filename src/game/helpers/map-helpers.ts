@@ -1194,6 +1194,9 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
         const enemyIds = getCharacterIdsInArea(character, range, room);
         enemyIds.forEach(id => {
             setCharacterHealth(room.state.characters.get(id), -1, room, client, "heart", character);
+            if(room.state.characters.get(id).stats.health.current <= 0) {
+                room.RewardFromMonster(character, room.state.characters.get(id), client);
+            }
         })
 
     } else {
@@ -1217,9 +1220,9 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                 if(result == null || result.desTileId == "") {
                     setCharacterHealth(enemy, -1, room, client, "heart", character);
 
-                    if(enemy.stats.health.current == 0) {
-                        room.RewardFromMonster(character, enemy, client);
-                    }
+                    // if(enemy.stats.health.current == 0) {
+                    //     room.RewardFromMonster(character, enemy, client);
+                    // }
 
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                         score: -1,
@@ -1261,9 +1264,9 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                         } else {
                             setCharacterHealth(target, -1, room, client, "heart", character);
 
-                            if(target == enemy && target.stats.health.current == 0) {
-                                room.RewardFromMonster(character, target, client);
-                            }
+                            // if(target == enemy && target.stats.health.current == 0) {
+                            //     room.RewardFromMonster(character, target, client);
+                            // }
 
                             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                 score: -1,
@@ -1274,9 +1277,9 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                     } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
                         setCharacterHealth(target, -1, room, client, "heart", character);
 
-                        if(target == enemy && target.stats.health.current == 0) {
-                            room.RewardFromMonster(character, target, client);
-                        }
+                        // if(target == enemy && target.stats.health.current == 0) {
+                        //     room.RewardFromMonster(character, target, client);
+                        // }
 
                         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -1,
@@ -1310,9 +1313,9 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
 
                         setCharacterHealth(target, -1, room, client, "heart", character);
 
-                        if(target == enemy && target.stats.health.current == 0) {
-                            room.RewardFromMonster(character, target, client);
-                        }
+                        // if(target == enemy && target.stats.health.current == 0) {
+                        //     room.RewardFromMonster(character, target, client);
+                        // }
 
                         // CHANGE POSITION
                         if(isEmptyTile) {
@@ -1338,9 +1341,9 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                     } else if(result.wallType == EDGE_TYPE.VOID) {
                         setCharacterHealth(target, -2, room, client, "heart", character);
 
-                        if(target == enemy && target.stats.health.current == 0) {
-                            room.RewardFromMonster(character, target, client);
-                        }
+                        // if(target == enemy && target.stats.health.current == 0) {
+                        //     room.RewardFromMonster(character, target, client);
+                        // }
 
                         addStackToCharacter(STACKTYPE.Void, 1, target, client);
                         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1387,7 +1390,7 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
             AddUserData(USER_DATA_TYPE.DAMAGE_HEAL, character, amount);
         }
 
-        if(character.stats.health.current == 0) {
+        if(character.stats.health.current <= 0) {
 
             if(enemy != null)
                 AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);
@@ -1398,6 +1401,10 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                 character.coordinates.x = -1;
                 character.coordinates.y = -1;
                 
+                // if(enemy != null && character.stats.health.current <= 0) {
+                //     room.RewardFromMonster(enemy, character, client);
+                // }
+
                 if(enemy != null){
                     setQuestResult(QUESTTYPE.SLAYER, 1, enemy);
                     if(IsGreenMonster(enemy.characterClass)){

@@ -159,9 +159,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             if(key == "health") {
                 setCharacterHealth(target, powermove.result.health, this.room, client, "heart", from);
 
-                if(target == enemy && target.stats.health.current == 0) {
-                    this.room.RewardFromMonster(character, target, client);
-                }
+                // if(target == enemy && target.stats.health.current == 0) {
+                //     this.room.RewardFromMonster(character, target, client);
+                // }
 
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: powermove.result.health,
@@ -218,9 +218,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                             if(result == null || result.desTileId == "") {
                                 setCharacterHealth(target, -1, this.room, client, "heart", from);
     
-                                if(target == enemy && target.stats.health.current == 0) {
-                                    this.room.RewardFromMonster(character, target, client);
-                                }
+                                // if(target == enemy && target.stats.health.current == 0) {
+                                //     this.room.RewardFromMonster(character, target, client);
+                                // }
     
                                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -1,
@@ -262,9 +262,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     } else {
                                         setCharacterHealth(target, -1, this.room, client, "heart", from);
             
-                                        if(target == enemy && target.stats.health.current == 0) {
-                                            this.room.RewardFromMonster(character, target, client);
-                                        }
+                                        // if(target == enemy && target.stats.health.current == 0) {
+                                        //     this.room.RewardFromMonster(character, target, client);
+                                        // }
     
                                         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                             score: -1,
@@ -275,9 +275,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                 } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
             
-                                    if(target == enemy && target.stats.health.current == 0) {
-                                        this.room.RewardFromMonster(character, target, client);
-                                    }
+                                    // if(target == enemy && target.stats.health.current == 0) {
+                                    //     this.room.RewardFromMonster(character, target, client);
+                                    // }
     
                                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -1,
@@ -316,9 +316,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                         type: "heart_e",
                                     });
 
-                                    if(target == enemy && target.stats.health.current == 0) {
-                                        this.room.RewardFromMonster(character, target, client);
-                                    }
+                                    // if(target == enemy && target.stats.health.current == 0) {
+                                    //     this.room.RewardFromMonster(character, target, client);
+                                    // }
     
                                     // CHANGE POSITION
                                     if(isEmptyTile) {
@@ -344,9 +344,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                 } else if(result.wallType == EDGE_TYPE.VOID) {
                                     setCharacterHealth(target, -2, this.room, client, "heart", from);
     
-                                    if(target == enemy && target.stats.health.current == 0) {
-                                        this.room.RewardFromMonster(character, target, client);
-                                    }
+                                    // if(target == enemy && target.stats.health.current == 0) {
+                                    //     this.room.RewardFromMonster(character, target, client);
+                                    // }
                                     addStackToCharacter(STACKTYPE.Void, 1, target, client);
                                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -2,
@@ -450,9 +450,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         //     tar
                         // }
 
-                        if(target == enemy && target.stats.health.current == 0) {
-                            this.room.RewardFromMonster(character, target, client);
-                        }
+                        // if(target == enemy && target.stats.health.current == 0) {
+                        //     this.room.RewardFromMonster(character, target, client);
+                        // }
 
                         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -message.diceCount,
@@ -490,6 +490,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 score: -message.diceCount,
                 type: "heart_e",
             });
+        }
+
+        if(target == enemy && target.stats.health.current <= 0) {
+            this.room.RewardFromMonster(character, target, client);
         }
       
         this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})

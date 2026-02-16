@@ -843,6 +843,14 @@ export class UfbRoom extends Room<UfbRoomState> {
             });
             this.state.map.moveItemEntities.deleteAt(idx);
 
+            if(monster.stats.health.current <= 0) {
+                console.log("----reward.. monster")
+                this.clients.forEach(client => {
+                    if(this.sessionIdToPlayerId.get(client.sessionId) == enemy.characterId){
+                        this.RewardFromMonster(enemy, monster, client);
+                    }
+                })
+            }
         }
     }
 
@@ -1531,6 +1539,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             });
         }
 
+        if(enemy.stats.health.current <= 0) {
+            console.log("----reward.. monster")
+            this.clients.forEach(client => {
+                if(this.sessionIdToPlayerId.get(client.sessionId) == enemy.characterId){
+                    this.RewardFromMonster(character, enemy, client);
+                }
+            })
+        }
+
         if(isEndAttack) {
             setTimeout(() => {
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id})
@@ -1581,7 +1598,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
 
         if(deltaCount > 0) {
-            setCharacterHealth(enemy, -deltaCount, this, null, "heart", enemy);
+            setCharacterHealth(character, -deltaCount, this, null, "heart", enemy);
             enemy.stats.ultimate.add(deltaCount);
 
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1594,6 +1611,15 @@ export class UfbRoom extends Room<UfbRoomState> {
                     type: "stack",
                 });
             }
+        }
+
+        if(character.stats.health.current <= 0) {
+            console.log("----reward.. monster")
+            this.clients.forEach(client => {
+                if(this.sessionIdToPlayerId.get(client.sessionId) == character.characterId){
+                    this.RewardFromMonster(enemy, character, client);
+                }
+            })
         }
 
         if(isEnd) {
