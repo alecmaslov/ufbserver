@@ -497,6 +497,5 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         }
       
         this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})
-
     }
 }
