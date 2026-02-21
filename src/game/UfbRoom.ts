@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -1307,14 +1307,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 type: "heart_e",
                             });
                         } else {
-                            let isEmptyTile = true;
-                            this.state.characters.forEach(ct => {
-                                if(!isEmptyTile) return; 
-                                if(ct.currentTileId == result.desTileId) {
-                                    isEmptyTile = false;
-                                    return
-                                }
-                            })
+                            let isEmptyTile = IsEmptyTile(result.desTileId, this);
                             if(result.wallType == EDGE_TYPE.BASIC) {
         
                                 if(isEmptyTile) {

@@ -61,8 +61,11 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
             curTime : TURN_TIME
         });
 
-        character.coordinates.x = message.destination.x;
-        character.coordinates.y = message.destination.y;
+
+        const desTile = this.state.map.tiles.get(message.tileId);
+
+        character.coordinates.x = desTile.coordinates.x;
+        character.coordinates.y = desTile.coordinates.y;
         character.currentTileId = message.tileId;
 
         this.room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {

@@ -74,21 +74,7 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
 
         // ADD POWER for MOVE ITEM
         [POWERTYPE.Shield3, POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
-            const testPower : Item = character.powers.find(power => power.id == key);
-            if(testPower == null) {
-                const newPower = new Item();
-                newPower.id = key;
-                newPower.name = powers[key].name;
-                newPower.count = 4;
-                newPower.description = "";
-                newPower.level = powers[key].level;
-                newPower.cost = POWERCOSTS[powers[key].level].cost;
-                newPower.sell = POWERCOSTS[powers[key].level].sell;
-
-                character.powers.push(newPower);
-            } else {
-                testPower.count++;
-            }
+            addPowerToCharacter(key, 4, character);
         })
 
         // END TEST

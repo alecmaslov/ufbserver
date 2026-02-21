@@ -380,8 +380,26 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
+        if(!IsEnemyAdjacent(character, enemy, room)) {
+            room.notify(
+                client,
+                "You can't attack because of position!",
+                "error"
+            );
+            return;
+        }
+
+        const powermove = getPowerMoveFromId(-100, itemId);
+
+        room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEFENCE_ATTACK, {
+            pm: powermove,
+            originId: character.id,
+            targetId: enemy.id
+        }, {except: client});
+
         room.broadcast(CLIENT_SERVER_MESSAGE.SET_STAB_ATTACK, {
             characterId: character.id,
+            enemyId: enemy.id,
             itemType: itemId
         })
 
@@ -391,14 +409,14 @@ export const messageHandlers: MessageHandlers = {
         if(itemId == ITEMTYPE.ARROW){
             setCharacterHealth(enemy, -2, room, client, "heart", character);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -2,
                 type: "heart_e",
             });
         } else if(itemId == ITEMTYPE.BOMB_ARROW){
             setCharacterHealth(enemy, -6, room, client, "heart", character);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -6,
                 type: "heart_e",
             });
@@ -409,7 +427,7 @@ export const messageHandlers: MessageHandlers = {
         } else if(itemId == ITEMTYPE.FIRE_ARROW){
             setCharacterHealth(enemy, -3, room, client, "heart", character);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -3,
                 type: "heart_e",
             });
@@ -420,11 +438,11 @@ export const messageHandlers: MessageHandlers = {
             setCharacterHealth(enemy, -3, room, client, "heart", character);
 
             enemy.stats.ultimate.current -= 3;
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -3,
                 type: "heart_e",
             });
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -3,
                 type: "ultimate_e",
             });
@@ -435,7 +453,7 @@ export const messageHandlers: MessageHandlers = {
         } else if(itemId == ITEMTYPE.VOID_ARROW){
             setCharacterHealth(enemy, -4, room, client, "heart", character);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -4,
                 type: "heart_e",
             });
@@ -446,6 +464,11 @@ export const messageHandlers: MessageHandlers = {
         if(enemy.stats.health.current <= 0) {
             room.RewardFromMonster(character, enemy, client);
         }
+
+        setTimeout(() => {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})
+        }, 1500);
+
     },
 
     [CLIENT_SERVER_MESSAGE.SET_MOVE_POINT] : (room, client, message) => {
@@ -530,12 +553,12 @@ export const messageHandlers: MessageHandlers = {
                 enemy.stats.ultimate.add(enemyDiceCount);
 
                 deltaCount += enemyDiceCount;
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: -enemyDiceCount,
                     type: "heart",
                 });
             } else {
-                client.send(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
+                room.broadcast(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
                     enemyId: enemy.id,
                     characterId: character.id,
                     powerMoveId: powerMoveId,
@@ -551,17 +574,17 @@ export const messageHandlers: MessageHandlers = {
             setCharacterHealth(enemy, -deltaCount, room, client, "heart", enemy);
             character.stats.ultimate.add(deltaCount);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "heart_e",
             });
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
                 type: "ultimate_e",
             });
             if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
-                client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 1,
                     type: "stack_e",
                 });
@@ -982,6 +1005,10 @@ export const messageHandlers: MessageHandlers = {
             const it1 = character.powers.find(p => p.id == idx1);
             const it2 = character.powers.find(p => p.id == idx2);
             const remainCoin = character.stats.coin;
+
+            if(it1 != null && it2 != null)
+                console.log("power1 : ", it1.count, " power2 : ", it2.count)
+
             if(remainCoin < coin || it1 == null || it1.count == 0 || it2 == null || it2.count == 0) {
                 room.notify(
                     client,
@@ -1078,6 +1105,13 @@ export const messageHandlers: MessageHandlers = {
         if(powermove == null) {
             return;
         }
+
+        room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEFENCE_ATTACK, {
+            pm: powermove,
+            originId: character.id,
+            targetId: target.id
+        }, {except: client});
+
         const setDiceRollMessage: any = {
             diceData : []
         }
@@ -1125,30 +1159,27 @@ export const messageHandlers: MessageHandlers = {
         room.broadcast( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
     },
 
-    [CLIENT_SERVER_MESSAGE.SET_DICE_STACK_TURN_ROLL]: (room, client, message) => {
+    [CLIENT_SERVER_MESSAGE.SEND_ATTACK_BROADCAST] : (room, client, message) => {
+        const powerMoveId = message.powerMoveId;
+        let powermove = getPowerMoveFromId(powerMoveId, message.extraItemId);
+      
         const character = getCharacterById(room, message.characterId);
-        const diceType = message.diceType;
-        
-        const setDiceRollMessage: any = {
-            diceData : []
-        }
-        if(diceType == DICE_TYPE.DICE_6_4) {
-            setDiceRollMessage.diceData.push({
-                type: DICE_TYPE.DICE_6,
-                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-            })
-            setDiceRollMessage.diceData.push({
-                type: DICE_TYPE.DICE_4,
-                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-            })
-        } else if(diceType == DICE_TYPE.DICE_4) {
-            setDiceRollMessage.diceData.push({
-                type: DICE_TYPE.DICE_4,
-                diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-            })
-        }
+        const enemy = getCharacterById(room, message.enemyId);
 
-        client.send( SERVER_TO_CLIENT_MESSAGE.SET_DICE_ROLL, setDiceRollMessage);
+        if (!character) {
+            room.notify(client, "You are not in room game!", "error");
+            return;
+        }
+        if(!enemy){
+            room.notify(client, "Enemy are not in room game!", "error");
+            return; 
+        }
+        
+        room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEFENCE_ATTACK, {
+            pm: powermove,
+            originId: character.id,
+            targetId: enemy.id
+        }, {except: client});
     },
 
     [CLIENT_SERVER_MESSAGE.TURN_START_EQUIP]: (room, client, message) => {
@@ -1193,7 +1224,6 @@ export const messageHandlers: MessageHandlers = {
             }
         }
     },
-
     
     [CLIENT_SERVER_MESSAGE.EQUIP_BONUS_LIST]: (room, client, message) => {
         console.log("equip bonus list.....")
@@ -1286,7 +1316,7 @@ export const messageHandlers: MessageHandlers = {
         });
 
         
-        client.send( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
+        room.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
             characterId : character.id,
             stackList: stackList,
             diceResult: diceResult
@@ -1441,8 +1471,6 @@ export const messageHandlers: MessageHandlers = {
 
         client.send(SERVER_TO_CLIENT_MESSAGE.GET_EQUIP_SLOT_LIST, clientMessage);
     },
-
-    
 };
 
 export function registerMessageHandlers(room: UfbRoom) {

@@ -601,9 +601,9 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                 } else if(extraItemId == ITEMTYPE.BOMB_ARROW) {
                     powermove.result.health -= 6;
                     if(!!powermove.result.perkId) {
-                        powermove.result.perkId1 = PERKTYPE.Pull;
+                        powermove.result.perkId1 = PERKTYPE.Push;
                     } else {
-                        powermove.result.perkId = PERKTYPE.Pull;
+                        powermove.result.perkId = PERKTYPE.Push;
                     }
                 } else if(extraItemId == ITEMTYPE.FIRE_ARROW) {
                     powermove.result.health -= 3;
@@ -718,7 +718,7 @@ export function getPowerMoveFromId(id : number, extraItemId : number = -1) {
                     powermove.result.health = -2;
                 } else if(arrowId == ITEMTYPE.BOMB_ARROW) {
                     powermove.result.health = -6;
-                    powermove.result.perkId = PERKTYPE.Pull;
+                    powermove.result.perkId = PERKTYPE.Push;
                 } else if(arrowId == ITEMTYPE.FIRE_ARROW) {
                     powermove.result.health = -3;
                     powermove.result.stacks = [{
@@ -1229,14 +1229,8 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                         type: "heart_e",
                     });
                 } else {
-                    let isEmptyTile = true;
-                    room.state.characters.forEach(ct => {
-                        if(!isEmptyTile) return; 
-                        if(ct.currentTileId == result.desTileId) {
-                            isEmptyTile = false;
-                            return
-                        }
-                    })
+                    let isEmptyTile = IsEmptyTile(result.desTileId, room);
+
                     if(result.wallType == EDGE_TYPE.BASIC) {
 
                         if(isEmptyTile) {
@@ -1255,7 +1249,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                                 path
                             });
 
-                            client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
                                 characterId : target.id,
                                 perkId: perkType,
                                 tileId: result.desTileId
@@ -1268,20 +1262,21 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                             //     room.RewardFromMonster(character, target, client);
                             // }
 
-                            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                 score: -1,
                                 type: "heart_e",
                             });
                         }
 
-                    } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
+                    } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.STAIR 
+                        || result.wallType == EDGE_TYPE.CLIFF) {
                         setCharacterHealth(target, -1, room, client, "heart", character);
 
                         // if(target == enemy && target.stats.health.current == 0) {
                         //     room.RewardFromMonster(character, target, client);
                         // }
 
-                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -1,
                             type: "heart_e",
                         });
@@ -1302,7 +1297,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                                 path
                             });
 
-                            client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
                                 characterId : target.id,
                                 perkId: perkType,
                                 tileId: result.desTileId
@@ -1310,33 +1305,36 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                         }
 
                     } else if(result.wallType == EDGE_TYPE.CLIFF) {
-
                         setCharacterHealth(target, -1, room, client, "heart", character);
-
+                        
+                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            score: -1,
+                            type: "heart_e",
+                        });
                         // if(target == enemy && target.stats.health.current == 0) {
                         //     room.RewardFromMonster(character, target, client);
                         // }
 
                         // CHANGE POSITION
-                        if(isEmptyTile) {
-                            target.coordinates.x = result.desCoodinate.x;
-                            target.coordinates.y = result.desCoodinate.y;
-                            target.currentTileId = result.desTileId;
+                        // if(isEmptyTile) {
+                        //     target.coordinates.x = result.desCoodinate.x;
+                        //     target.coordinates.y = result.desCoodinate.y;
+                        //     target.currentTileId = result.desTileId;
 
-                            const path: PathStep[] = [{
-                                tileId: result.desTileId
-                            }];
-                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                characterId : target.id,
-                                path
-                            });
+                        //     const path: PathStep[] = [{
+                        //         tileId: result.desTileId
+                        //     }];
+                        //     room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
+                        //         characterId : target.id,
+                        //         path
+                        //     });
 
-                            client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                characterId : target.id,
-                                perkId: perkType,
-                                tileId: result.desTileId
-                            });
-                        }
+                        //     client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                        //         characterId : target.id,
+                        //         perkId: perkType,
+                        //         tileId: result.desTileId
+                        //     });
+                        // }
 
                     } else if(result.wallType == EDGE_TYPE.VOID) {
                         setCharacterHealth(target, -2, room, client, "heart", character);
@@ -1346,7 +1344,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                         // }
 
                         addStackToCharacter(STACKTYPE.Void, 1, target, client);
-                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                             score: -2,
                             type: "heart_e",
                         });
@@ -1417,17 +1415,10 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                     addStackToCharacter(STACKTYPE.Revive, -1, character, client, room);
                     character.stats.health.add(1);
                     character.stats.isRevive = true;
-                    if(client == null) {
-                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
-                            characterId: character.id,
-                            endType : END_TYPE.DEFEAT
-                        })
-                    } else {
-                        client.send(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
-                            characterId: character.id,
-                            endType : END_TYPE.DEFEAT
-                        })
-                    }
+                    room.broadcast(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
+                        characterId: character.id,
+                        endType : END_TYPE.DEFEAT
+                    });
                     return;
                 } else {
                     let aliveCount = 0;
@@ -1437,16 +1428,23 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                         }
                     })
 
-                    if(client == null) {
-                        room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
-                            characterId: character.id,
-                            endType : END_TYPE.DEFEAT
-                        })
-                    } else {
-                        client.send(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
-                            characterId: character.id,
-                            endType : END_TYPE.DEFEAT
-                        })
+                    room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
+                        characterId: character.id,
+                        endType : END_TYPE.DEFEAT
+                    });
+
+                    if(enemy != null){
+                        room.notify(
+                            client,
+                            `${character.displayName} was killed by ${enemy.displayName}`,
+                            "error"
+                        );
+                    } else{
+                        room.notify(
+                            client,
+                            `${character.displayName} was killed.`,
+                            "error"
+                        );
                     }
 
                     // room.SaveCharacterData(character.id, client.sessionId);
@@ -1486,6 +1484,25 @@ export function IsEnemyAdjacent(character: CharacterState, enemy : CharacterStat
     const enemyTile = room.state.map.tiles.get(enemy.currentTileId);
     const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
     return r == 1;
+}
+
+export function IsEmptyTile(tileId: string, room: UfbRoom){
+    const characterTileIds: string[] = [];
+    const spawnIds: string[] = [];
+    
+    room.state.characters.forEach(c => {
+        characterTileIds.push(c.currentTileId);
+    });
+    
+    room.state.map.spawnEntities.forEach(entity => {
+        spawnIds.push(entity.tileId);
+    });
+
+    // Filter out occupied tiles (characters, spawns, and current tile to avoid immediate respawn overlap)
+    const occupiedIds: string[] = [...characterTileIds, ...spawnIds];
+
+    return occupiedIds.findIndex(id => id == tileId) == -1;
+
 }
 
 export function GetNearestPlayerId( currentTileId: string, room: UfbRoom) {

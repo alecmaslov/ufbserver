@@ -6,7 +6,7 @@ import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers
 import { CharacterState, Item } from "#game/schema/CharacterState";
 import { DICE_TYPE, EDGE_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
-import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEnemyAdjacent, setCharacterEnergy, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEmptyTile, IsEnemyAdjacent, setCharacterEnergy, setCharacterHealth, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
 
 type OnPowerMoveCommandPayload = {
@@ -217,24 +217,14 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         if(powermove.result[key] != PERKTYPE.Vampire){
                             if(result == null || result.desTileId == "") {
                                 setCharacterHealth(target, -1, this.room, client, "heart", from);
-    
-                                // if(target == enemy && target.stats.health.current == 0) {
-                                //     this.room.RewardFromMonster(character, target, client);
-                                // }
-    
                                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                     score: -1,
                                     type: "heart_e",
                                 });
                             } else {
-                                let isEmptyTile = true;
-                                this.room.state.characters.forEach(ct => {
-                                    if(!isEmptyTile) return; 
-                                    if(ct.currentTileId == result.desTileId) {
-                                        isEmptyTile = false;
-                                        return
-                                    }
-                                })
+                                let isEmptyTile = IsEmptyTile(result.desTileId, this.room);`    `
+                                console.log("perk attack wall type....... : ", result.wallType);
+
                                 if(result.wallType == EDGE_TYPE.BASIC) {
             
                                     if(isEmptyTile) {
@@ -253,7 +243,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                             path
                                         });
         
-                                        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
                                             characterId : target.id,
                                             perkId: powermove.result[key],
                                             tileId: result.desTileId
@@ -262,24 +252,20 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     } else {
                                         setCharacterHealth(target, -1, this.room, client, "heart", from);
             
-                                        // if(target == enemy && target.stats.health.current == 0) {
-                                        //     this.room.RewardFromMonster(character, target, client);
-                                        // }
-    
-                                        client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                             score: -1,
                                             type: "heart_e",
                                         });
                                     }
             
-                                } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
+                                } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
             
                                     // if(target == enemy && target.stats.health.current == 0) {
                                     //     this.room.RewardFromMonster(character, target, client);
                                     // }
     
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -1,
                                         type: "heart_e",
                                     });
@@ -300,7 +286,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                             path
                                         });
         
-                                        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
                                             characterId : target.id,
                                             perkId: powermove.result[key],
                                             tileId: result.desTileId
@@ -311,7 +297,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
     
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -1,
                                         type: "heart_e",
                                     });
@@ -321,25 +307,25 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     // }
     
                                     // CHANGE POSITION
-                                    if(isEmptyTile) {
-                                        target.coordinates.x = result.desCoodinate.x;
-                                        target.coordinates.y = result.desCoodinate.y;
-                                        target.currentTileId = result.desTileId;
+                                    // if(isEmptyTile) {
+                                    //     target.coordinates.x = result.desCoodinate.x;
+                                    //     target.coordinates.y = result.desCoodinate.y;
+                                    //     target.currentTileId = result.desTileId;
             
-                                        const path: PathStep[] = [{
-                                            tileId: result.desTileId
-                                        }];
-                                        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                            characterId : target.id,
-                                            path
-                                        });
+                                    //     const path: PathStep[] = [{
+                                    //         tileId: result.desTileId
+                                    //     }];
+                                    //     this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
+                                    //         characterId : target.id,
+                                    //         path
+                                    //     });
         
-                                        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                            characterId : target.id,
-                                            perkId: powermove.result[key],
-                                            tileId: result.desTileId
-                                        });
-                                    }
+                                    //     client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
+                                    //         characterId : target.id,
+                                    //         perkId: powermove.result[key],
+                                    //         tileId: result.desTileId
+                                    //     });
+                                    // }
             
                                 } else if(result.wallType == EDGE_TYPE.VOID) {
                                     setCharacterHealth(target, -2, this.room, client, "heart", from);
@@ -348,7 +334,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     //     this.room.RewardFromMonster(character, target, client);
                                     // }
                                     addStackToCharacter(STACKTYPE.Void, 1, target, client);
-                                    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                                         score: -2,
                                         type: "heart_e",
                                     });
@@ -496,6 +482,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             this.room.RewardFromMonster(character, target, client);
         }
       
-        this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})
+        console.log("send attack broadcast");
+
+        setTimeout(() => {
+            this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})
+        }, 1500);
     }
 }
