@@ -1377,91 +1377,86 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 }
 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string, enemy: CharacterState) {
-    if(type == "heart") {
-        let extra = character.stats.health.add(amount);
-        if(amount < 0) {
-            character.stats.ultimate.add(2 * Math.abs(amount));
-            AddUserData(USER_DATA_TYPE.DAMAGE_TAKEN, character, amount);
-            if(enemy != null)
-                AddUserData(USER_DATA_TYPE.DAMAGE_DEAL, enemy, amount);
-        } else{
-            AddUserData(USER_DATA_TYPE.DAMAGE_HEAL, character, amount);
-        }
+    let extra = character.stats.health.add(amount);
+    if(amount < 0) {
+        character.stats.ultimate.add(2 * Math.abs(amount));
+        AddUserData(USER_DATA_TYPE.DAMAGE_TAKEN, character, amount);
+        if(enemy != null)
+            AddUserData(USER_DATA_TYPE.DAMAGE_DEAL, enemy, amount);
+    } else{
+        AddUserData(USER_DATA_TYPE.DAMAGE_HEAL, character, amount);
+    }
 
-        if(character.stats.health.current <= 0) {
+    if(character.stats.health.current <= 0) {
 
-            if(enemy != null)
-                AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);
+        if(enemy != null)
+            AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);
 
-            if(character.type == USER_TYPE.MONSTER) {
-                room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEAD_MONSTER, {characterId : character.id});                
-                room.RespawnMonster();
-                character.coordinates.x = -1;
-                character.coordinates.y = -1;
-                
-                // if(enemy != null && character.stats.health.current <= 0) {
-                //     room.RewardFromMonster(enemy, character, client);
-                // }
+        if(character.type == USER_TYPE.MONSTER) {
+            room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEAD_MONSTER, {characterId : character.id});                
+            room.RespawnMonster();
+            character.coordinates.x = -1;
+            character.coordinates.y = -1;
+            
+            // if(enemy != null && character.stats.health.current <= 0) {
+            //     room.RewardFromMonster(enemy, character, client);
+            // }
 
-                if(enemy != null){
-                    setQuestResult(QUESTTYPE.SLAYER, 1, enemy);
-                    if(IsGreenMonster(enemy.characterClass)){
-                        setQuestResult(QUESTTYPE.KILL, 1, enemy);
-                    }
-                }
-
-            } else if(character.type == USER_TYPE.USER) {
-                if(getCountFromItem(STACKTYPE.Revive, character.stacks) > 0) {
-                    addStackToCharacter(STACKTYPE.Revive, -1, character, client, room);
-                    character.stats.health.add(1);
-                    character.stats.isRevive = true;
-                    room.broadcast(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
-                        characterId: character.id,
-                        endType : END_TYPE.DEFEAT
-                    });
-                    return;
-                } else {
-                    let aliveCount = 0;
-                    room.state.characters.forEach(p => {
-                        if(p.type == USER_TYPE.USER && p.stats.health.current > 0) {
-                            aliveCount++;
-                        }
-                    })
-
-                    room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
-                        characterId: character.id,
-                        endType : END_TYPE.DEFEAT
-                    });
-
-                    if(enemy != null){
-                        room.notify(
-                            client,
-                            `${character.displayName} was killed by ${enemy.displayName}`,
-                            "error"
-                        );
-                    } else{
-                        room.notify(
-                            client,
-                            `${character.displayName} was killed.`,
-                            "error"
-                        );
-                    }
-
-                    // room.SaveCharacterData(character.id, client.sessionId);
-                    character.connected = false;
-                    if(aliveCount == 0) {
-                        room.StopAIChecking();
-                    }
-
+            if(enemy != null){
+                setQuestResult(QUESTTYPE.SLAYER, 1, enemy);
+                if(IsGreenMonster(enemy.characterClass)){
+                    setQuestResult(QUESTTYPE.KILL, 1, enemy);
                 }
             }
+
+        } else if(character.type == USER_TYPE.USER) {
+            if(getCountFromItem(STACKTYPE.Revive, character.stacks) > 0) {
+                addStackToCharacter(STACKTYPE.Revive, -1, character, client, room);
+                character.stats.health.add(1);
+                character.stats.isRevive = true;
+                room.broadcast(SERVER_TO_CLIENT_MESSAGE.STACK_REVIVE_ACTIVE, {
+                    characterId: character.id,
+                    endType : END_TYPE.DEFEAT
+                });
+                return;
+            } else {
+                let aliveCount = 0;
+                room.state.characters.forEach(p => {
+                    if(p.type == USER_TYPE.USER && p.stats.health.current > 0) {
+                        aliveCount++;
+                    }
+                })
+
+                room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
+                    characterId: character.id,
+                    endType : END_TYPE.DEFEAT
+                });
+
+                if(enemy != null){
+                    room.notify(
+                        client,
+                        `${character.displayName} was killed by ${enemy.displayName}`,
+                        "error"
+                    );
+                } else{
+                    room.notify(
+                        client,
+                        `${character.displayName} was killed.`,
+                        "error"
+                    );
+                }
+
+                // room.SaveCharacterData(character.id, client.sessionId);
+                character.connected = false;
+                if(aliveCount == 0) {
+                    room.StopAIChecking();
+                }
+
+            }
         }
-
-        return extra;
-
-    } else {
-
     }
+
+    return extra;
 }
 
 export function setCharacterEnergy(character: CharacterState, amount: number, room: UfbRoom, client: Client){

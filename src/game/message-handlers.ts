@@ -304,7 +304,7 @@ export const messageHandlers: MessageHandlers = {
                 const entity : MoveItemEntity = new MoveItemEntity();
                 entity.itemId = itemId;
                 entity.tileId = tileId;
-                entity.playerId = client.id;
+                entity.playerId = character.id;
                 room.state.map.moveItemEntities.push(entity);
             } else {
                 room.state.map.moveItemEntities.deleteAt(idx);
@@ -312,8 +312,8 @@ export const messageHandlers: MessageHandlers = {
 
             setCharacterEnergy(character, -1, room, client);
         } else if(itemId == ITEMTYPE.POTION) {
-
-            let extra = setCharacterHealth(character, 5, room, client, "health", character);
+            console.log("user posion item")
+            let extra = setCharacterHealth(character, 5, room, client, "heart", character);
 
             if(extra > 0) {
                 character.stats.coin += extra;

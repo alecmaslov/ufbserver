@@ -200,61 +200,6 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             }
         }
 
-        // path.forEach(p => {
-        //     const idx = this.room.state.map.moveItemEntities.findIndex(
-        //         mItem => mItem.tileId == p.tileId && 
-        //         (mItem.itemId == ITEMTYPE.BOMB || mItem.itemId == ITEMTYPE.ICE_BOMB || mItem.itemId == ITEMTYPE.FIRE_BOMB || mItem.itemId == ITEMTYPE.VOID_BOMB || mItem.itemId == ITEMTYPE.CALTROP_BOMB))
-        //     if(idx != -1) {
-        //         const moveEntity: MoveItemEntity = this.room.state.map.moveItemEntities[idx];
-        //         const enemy = getCharacterById(this.room, moveEntity.playerId);
-        //         const result = itemResults[moveEntity.itemId];
-        //         if(!!result.energy) {
-        //             setCharacterEnergy(character, result.energy, this.room, client);
-                    
-        //             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-        //                 score: result.energy,
-        //                 type: "energy"
-        //             });
-        //         }
-        //         if(!!result.heart) {
-        //             setCharacterHealth(character, result.heart, this.room, client, "heart", enemy);
-        //             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-        //                 score: result.heart,
-        //                 type: "heart"
-        //             });
-                    
-        //             if(character.stats.health.current <= 0) {
-        //                 this.room.RewardFromMonster(enemy, character, client);
-        //             }
-        //         }
-        //         if(!!result.ultimate) {
-        //             character.stats.ultimate.add(result.ultimate);
-        //             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-        //                 score: result.ultimate,
-        //                 type: "ultimate"
-        //             });
-        //         }
-    
-        //         if(!!result.stackId) {
-        //             addStackToCharacter(result.stackId, 1, character, client);
-    
-        //             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-        //                 score: 1,
-        //                 type: "stack",
-        //                 stackId: result.stackId
-        //             });
-        //         }
-    
-        //         this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
-        //             playerId: moveEntity.playerId,
-        //             itemResult: result,
-        //             itemId: moveEntity.itemId
-        //         });
-        //         this.room.state.map.moveItemEntities.deleteAt(idx);
-    
-        //     }
-        // })
-
         let energy = cost;
         if(force) {
             const originEnergy = message.originEnergy;
