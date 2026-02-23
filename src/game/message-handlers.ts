@@ -311,9 +311,20 @@ export const messageHandlers: MessageHandlers = {
             }
 
             setCharacterEnergy(character, -1, room, client);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: -1,
+                type: "energy",
+            });
+
         } else if(itemId == ITEMTYPE.POTION) {
             console.log("user posion item")
             let extra = setCharacterHealth(character, 5, room, client, "heart", character);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: 5,
+                type: "heart",
+            });
 
             if(extra > 0) {
                 character.stats.coin += extra;
@@ -323,16 +334,33 @@ export const messageHandlers: MessageHandlers = {
         } else if(itemId == ITEMTYPE.ELIXIR) {
             setCharacterEnergy(character, 10, room, client);
             character.stats.ultimate.add(10);
+
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: 10,
+                type: "energy",
+            });
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: 10,
+                type: "ultimate",
+            });
+
             addStackToCharacter(STACKTYPE.Cure, 1, character, client, room)
             addStackToCharacter(STACKTYPE.Charge, 1, character, client, room)
 
         } else if(itemId == ITEMTYPE.FLAME_CHILI) {
             character.stats.ultimate.add(10);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: 10,
+                type: "ultimate",
+            });
             addStackToCharacter(STACKTYPE.Burn, 1, character, client, room);
             
         } else if(itemId == ITEMTYPE.ICE_TEA) {
-
             character.stats.ultimate.add(10);
+            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: 10,
+                type: "ultimate",
+            });
             addStackToCharacter(STACKTYPE.Freeze, 1, character, client, room);
 
         } else if(itemId == ITEMTYPE.FEATHER) {
