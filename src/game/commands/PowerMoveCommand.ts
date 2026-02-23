@@ -222,7 +222,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     type: "heart_e",
                                 });
                             } else {
-                                let isEmptyTile = IsEmptyTile(result.desTileId, this.room);`    `
+                                let isEmptyTile = IsEmptyTile(result.desTileId, this.room);
                                 console.log("perk attack wall type....... : ", result.wallType);
 
                                 if(result.wallType == EDGE_TYPE.BASIC) {
