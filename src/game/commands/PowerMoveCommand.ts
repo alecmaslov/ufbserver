@@ -258,7 +258,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                         });
                                     }
             
-                                } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.STAIR || result.wallType == EDGE_TYPE.CLIFF) {
+                                } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.CLIFF) {
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
             
                                     // if(target == enemy && target.stats.health.current == 0) {
@@ -269,6 +269,17 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                         score: -1,
                                         type: "heart_e",
                                     });
+                                
+                                } else if(result.wallType == EDGE_TYPE.STAIR) {
+
+                                    
+                                    setCharacterHealth(target, -1, this.room, client, "heart", from);
+    
+                                    this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                        score: -1,
+                                        type: "heart_e",
+                                    });
+
                                 } else if(result.wallType == EDGE_TYPE.RAVINE) {
                                     addStackToCharacter(STACKTYPE.Slow, 1, target, client);
             

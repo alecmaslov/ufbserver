@@ -14,7 +14,7 @@
     "generate-schema-client": "npx schema-codegen src/game/schema/* --output ../ufb_unity/Assets/Scripts/Network/Schema --csharp --namespace UFB.StateSchema",
     "job:insert-maps": "node out/jobs/insert-maps.js",
     "job:update-characters": "node out/jobs/update-characters.js",
-    "start:service": "pm2 stop ufb-server; pm2 start out/app.js --name ufb-server",
+    "start:service": "pm2 stop ufb-server; pm2 start npm --name ufb-server -- start -o /home/ubuntu/logs/ufb-out.log -e /home/ubuntu/logs/ufb-err.log",
     "stop:service": "pm2 stop ufb-server",
     "init-db": "npx prisma migrate dev"
   },
