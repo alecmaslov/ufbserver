@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PathStep, PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
@@ -311,20 +311,12 @@ export const messageHandlers: MessageHandlers = {
             }
 
             setCharacterEnergy(character, -1, room, client);
-
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -1,
-                type: "energy",
-            });
-
+            room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.ENERGY);
         } else if(itemId == ITEMTYPE.POTION) {
             console.log("user posion item")
             let extra = setCharacterHealth(character, 5, room, client, "heart", character);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: 5,
-                type: "heart",
-            });
+            room.sendBroadcastStats(5, ADD_EXTRA_TYPE.HEART);
 
             if(extra > 0) {
                 character.stats.coin += extra;
@@ -437,55 +429,30 @@ export const messageHandlers: MessageHandlers = {
         if(itemId == ITEMTYPE.ARROW){
             setCharacterHealth(enemy, -2, room, client, "heart", character);
 
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -2,
-                type: "heart_e",
-            });
+            room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY);
         } else if(itemId == ITEMTYPE.BOMB_ARROW){
             setCharacterHealth(enemy, -6, room, client, "heart", character);
 
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -6,
-                type: "heart_e",
-            });
+            room.sendBroadcastStats(-6, ADD_EXTRA_TYPE.HEART_ENEMY);
 
             // PERK PART
             setPerkEffectDamage(character, enemy, room, client, PERKTYPE.Push);
 
         } else if(itemId == ITEMTYPE.FIRE_ARROW){
             setCharacterHealth(enemy, -3, room, client, "heart", character);
-
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -3,
-                type: "heart_e",
-            });
-
+            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.HEART_ENEMY);
             addStackToCharacter(STACKTYPE.Burn, 1, enemy, client);
 
         } else if(itemId == ITEMTYPE.ICE_ARROW){
             setCharacterHealth(enemy, -3, room, client, "heart", character);
 
             enemy.stats.ultimate.current -= 3;
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -3,
-                type: "heart_e",
-            });
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -3,
-                type: "ultimate_e",
-            });
-
+            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.HEART_ENEMY);
+            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
             addStackToCharacter(STACKTYPE.Freeze, 1, enemy, client);
-
-
         } else if(itemId == ITEMTYPE.VOID_ARROW){
             setCharacterHealth(enemy, -4, room, client, "heart", character);
-
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -4,
-                type: "heart_e",
-            });
-
+            room.sendBroadcastStats(-4, ADD_EXTRA_TYPE.HEART_ENEMY);
             addStackToCharacter(STACKTYPE.Void, 1, enemy, client);
         }
 
@@ -581,10 +548,9 @@ export const messageHandlers: MessageHandlers = {
                 enemy.stats.ultimate.add(enemyDiceCount);
 
                 deltaCount += enemyDiceCount;
-                room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: -enemyDiceCount,
-                    type: "heart",
-                });
+
+                room.sendBroadcastStats(-enemyDiceCount, ADD_EXTRA_TYPE.HEART);
+
             } else {
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
                     enemyId: enemy.id,
@@ -602,15 +568,9 @@ export const messageHandlers: MessageHandlers = {
             setCharacterHealth(enemy, -deltaCount, room, client, "heart", enemy);
             character.stats.ultimate.add(deltaCount);
 
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -deltaCount,
-                type: "heart_e",
-            });
+            room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.HEART_ENEMY);
+            room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
 
-            room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -deltaCount,
-                type: "ultimate_e",
-            });
             if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 1,
@@ -1342,7 +1302,6 @@ export const messageHandlers: MessageHandlers = {
                 
             }
         });
-
         
         room.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
             characterId : character.id,
@@ -1369,12 +1328,13 @@ export const messageHandlers: MessageHandlers = {
             if(extra > 0) {
                 character.stats.coin += extra;
                 setQuestResult(QUESTTYPE.GLITTER, extra, character);
-
             }
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: diceData[0].diceCount,
                 type: "heart"
             });
+
+            room.sendBroadcastStats(diceData[0].diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, client);
 
         } else if(stackId == STACKTYPE.Void) {
             setCharacterHealth(character, -diceData[1].diceCount, room, client, "heart", null);
@@ -1390,13 +1350,17 @@ export const messageHandlers: MessageHandlers = {
                 type: "ultimate"
             });
 
+            room.sendBroadcastStats(-diceData[1].diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, client);
+            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
+
+
         } else if(stackId == STACKTYPE.Burn) {
             setCharacterHealth(character, -diceData[0].diceCount, room, client, "heart", null);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -diceData[0].diceCount,
                 type: "heart"
             });
-
+            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, client);
         } else if(stackId == STACKTYPE.Freeze) {
             setCharacterEnergy(character, diceData[0].diceCount, room, client);
 
@@ -1404,7 +1368,7 @@ export const messageHandlers: MessageHandlers = {
                 score: diceData[0].diceCount,
                 type: "energy"
             });
-
+            room.sendBroadcastStats(diceData[0].diceCount, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
         } else if(stackId == STACKTYPE.Charge) {
             setCharacterEnergy(character, -diceData[0].diceCount, room, client);
 
@@ -1413,6 +1377,8 @@ export const messageHandlers: MessageHandlers = {
                 type: "energy"
             });
             
+            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
+
         } else if(stackId == STACKTYPE.Slow) {
             setCharacterEnergy(character, -diceData[1].diceCount, room, client);
 
@@ -1427,12 +1393,16 @@ export const messageHandlers: MessageHandlers = {
                 score: -diceData[0].diceCount,
                 type: "ultimate"
             });
+            room.sendBroadcastStats(-diceData[1].diceCount, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
+            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
+
         } else if(stackId == STACKTYPE.Pump) {
             character.stats.ultimate.add(diceData[0].diceCount);
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: diceData[0].diceCount,
                 type: "ultimate"
             });
+            room.sendBroadcastStats(diceData[0].diceCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
         }
     },
 

@@ -3483,3 +3483,17 @@ export const USER_DATA_TYPE = {
 export const TURN_TIME = 180;
 
 export const featherStep = 6;
+
+export const ADD_EXTRA_TYPE = {
+    HEART : "heart",
+    HEART_ENEMY : "heart_e",
+    ENERGY : "energy",
+    ENERGY_ENEMY : "energy_e",
+    ULTIMATE : "ultimate",
+    ULTIMATE_ENEMY : "ultimate_e",
+    COIN : "coin",
+    MELEE : "melee",
+    MANA : "mana",
+    ITEM : "item",
+    STACK : "stack"
+}

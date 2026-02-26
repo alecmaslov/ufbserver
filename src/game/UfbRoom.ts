@@ -19,7 +19,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { SpawnZone, SpawnZoneType, TileType } from "@prisma/client";
 import { Dispatcher } from "@colyseus/command";
 import { UfbRoomOptions } from "./types/room-types";
-import { DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
+import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -197,16 +197,16 @@ export class UfbRoom extends Room<UfbRoomState> {
 
             console.log("saved character data");
         
-            this.state.characters.delete(playerId);
-            this.sessionIdToPlayerId.delete(client.sessionId);
+            // this.state.characters.delete(playerId);
+            // this.sessionIdToPlayerId.delete(client.sessionId);
 
         } catch (e) {
      
             console.log("connect failed");
             await this.SaveCharacterData(playerId, client.sessionId);
             // 20 seconds expired. let's remove the client.
-            this.state.characters.delete(playerId);
-            this.sessionIdToPlayerId.delete(client.sessionId);
+            // this.state.characters.delete(playerId);
+            // this.sessionIdToPlayerId.delete(client.sessionId);
         }
     }
 
@@ -806,24 +806,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             const result = itemResults[moveEntity.itemId];
             if(!!result.energy) {
                 monster.stats.energy.add(result.energy);
-                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: result.energy,
-                    type: "energy"
-                });
+                this.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY);
             }
             if(!!result.heart) {
                 setCharacterHealth(monster, result.heart, this, null, "heart", enemy);
-                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: result.heart,
-                    type: "heart"
-                });
+                this.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY);
             }
             if(!!result.ultimate) {
                 monster.stats.ultimate.add(result.ultimate);
-                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: result.ultimate,
-                    type: "ultimate"
-                });
+                this.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
             }
 
             if(!!result.stackId) {
@@ -831,7 +822,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 1,
-                    type: "stack",
+                    type: "stack_e",
                     stackId: result.stackId
                 });
             }
@@ -864,11 +855,21 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
     }
 
-    sendBroadcastStats(score : number, type: string = 'energy') {
-        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-            score: score,
-            type: "energy"
-        })
+    sendBroadcastStats(score : number, type: string = 'energy', client : Client = null) {
+
+        if(client == null) {
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: score,
+                type: type
+            })
+        }
+        else{
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: score,
+                type: type
+            }, {except : client});
+        }
+
     }
 
     DoActionMonster(delay : number = 2) {
