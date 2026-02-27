@@ -1767,3 +1767,10 @@ export function AddUserData(type: number, character: CharacterState, amount: num
             default:
     }
 }
+
+export function sendStatsToClient(score: number, type: string, client: Client){
+    client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+        score: score,
+        type: type
+    });
+}

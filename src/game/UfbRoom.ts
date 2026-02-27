@@ -869,7 +869,6 @@ export class UfbRoom extends Room<UfbRoomState> {
                 type: type
             }, {except : client});
         }
-
     }
 
     DoActionMonster(delay : number = 2) {

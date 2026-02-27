@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -286,18 +286,6 @@ export const messageHandlers: MessageHandlers = {
 
         addItemToCharacter(itemId, -1, character, client);
 
-        // const idx = character.items.findIndex(it => it.id == itemId && it.count > 0);
-        // if(idx != -1) {
-        //     character.items[idx].count--;
-        // } else {
-        //     room.notify(
-        //         client,
-        //         "Your item is not enough!",
-        //         "error"
-        //     );
-        //     return;
-        // }
-
         if(itemId == ITEMTYPE.BOMB || itemId == ITEMTYPE.ICE_BOMB || itemId == ITEMTYPE.FIRE_BOMB || itemId == ITEMTYPE.VOID_BOMB || itemId == ITEMTYPE.CALTROP_BOMB) {
             const idx = room.state.map.moveItemEntities.findIndex(mItem => mItem.tileId == tileId)
             if(idx == -1) {
@@ -311,12 +299,13 @@ export const messageHandlers: MessageHandlers = {
             }
 
             setCharacterEnergy(character, -1, room, client);
-            room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.ENERGY);
+            sendStatsToClient(-1, ADD_EXTRA_TYPE.ENERGY, client);
+
         } else if(itemId == ITEMTYPE.POTION) {
             console.log("user posion item")
             let extra = setCharacterHealth(character, 5, room, client, "heart", character);
 
-            room.sendBroadcastStats(5, ADD_EXTRA_TYPE.HEART);
+            sendStatsToClient(5, ADD_EXTRA_TYPE.HEART, client);
 
             if(extra > 0) {
                 character.stats.coin += extra;
@@ -327,32 +316,21 @@ export const messageHandlers: MessageHandlers = {
             setCharacterEnergy(character, 10, room, client);
             character.stats.ultimate.add(10);
 
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: 10,
-                type: "energy",
-            });
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: 10,
-                type: "ultimate",
-            });
+            sendStatsToClient(10, ADD_EXTRA_TYPE.ENERGY, client);
+            sendStatsToClient(10, ADD_EXTRA_TYPE.ULTIMATE, client);
 
             addStackToCharacter(STACKTYPE.Cure, 1, character, client, room)
             addStackToCharacter(STACKTYPE.Charge, 1, character, client, room)
 
         } else if(itemId == ITEMTYPE.FLAME_CHILI) {
             character.stats.ultimate.add(10);
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: 10,
-                type: "ultimate",
-            });
+            sendStatsToClient(10, ADD_EXTRA_TYPE.ULTIMATE, client);
+
             addStackToCharacter(STACKTYPE.Burn, 1, character, client, room);
-            
         } else if(itemId == ITEMTYPE.ICE_TEA) {
             character.stats.ultimate.add(10);
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: 10,
-                type: "ultimate",
-            });
+            sendStatsToClient(10, ADD_EXTRA_TYPE.ULTIMATE, client);
+
             addStackToCharacter(STACKTYPE.Freeze, 1, character, client, room);
 
         } else if(itemId == ITEMTYPE.FEATHER) {
