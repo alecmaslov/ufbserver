@@ -1151,6 +1151,7 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
     var desTileId = coordToTileId(room.state.map.tiles, desCoodinate);
 
     var wallType = enemyTile.walls[getDirectFromCoord(x1, y1)];
+    console.log("bridge perk : ", wallType, " ", getDirectFromCoord(x1, y1), " ", x1, y1,  enemyTile.walls, EDGE_TYPE.BRIDGE, EDGE_TYPE.STAIR);
     if(wallType == EDGE_TYPE.BRIDGE || wallType == EDGE_TYPE.STAIR){
         
         if(y != 0) {
@@ -1163,8 +1164,14 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
         desCoodinate.y = currentTile.coordinates.y + y1;
 
         var prevTile = room.state.map.tiles.get(desTileId);
-        wallType = prevTile.walls[getDirectFromCoord(x1, y1)];
         desTileId = coordToTileId(room.state.map.tiles, desCoodinate);
+
+        var deltaX = desCoodinate.x - prevTile.coordinates.x;
+        var deltaY = desCoodinate.y - prevTile.coordinates.y;
+
+        wallType = prevTile.walls[getDirectFromCoord(deltaX, deltaY)];
+
+        console.log("des tile : ", prevTile);
     }
 
     return {
@@ -1356,6 +1363,11 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
 }
 
 function getDirectFromCoord(x: number, y: number) : number {
+    if(x == 0) {
+        return Math.sign(y) > 0 ? 2 : 0;
+    } else {
+        return Math.sign(x) > 0 ? 1 : 3;
+    }
     return (1 - y) * (x == 0? 0 : 1) + (2 - x) * (y == 0? 0 : 1);
 }
 

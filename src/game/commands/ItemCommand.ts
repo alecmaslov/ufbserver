@@ -26,30 +26,30 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         }
 
         // TEST:::
-        Object.keys(ITEMTYPE).forEach(key => {
-            const id = ITEMTYPE[key];
-            if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb || id == ITEMTYPE.RandomArrowOrBomb)) {
+        // Object.keys(ITEMTYPE).forEach(key => {
+        //     const id = ITEMTYPE[key];
+        //     if(!(id == ITEMTYPE.RandomArrow || id == ITEMTYPE.RandomBomb || id == ITEMTYPE.RandomArrowOrBomb)) {
 
-                if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
-                    const testItem : Item = character.items.find(item => item.id == id);
-                    if(testItem == null) {
-                        const newItem = new Item();
-                        newItem.id = id;
-                        newItem.count = 30;
-                        newItem.name = ITEMDETAIL[id].name;
-                        newItem.description = "description";
-                        newItem.level = ITEMDETAIL[id].level;
-                        newItem.cost = ITEMDETAIL[id].cost;
-                        newItem.sell = ITEMDETAIL[id].sell;
+        //         if(!(id == ITEMTYPE.HEART_PIECE || id == ITEMTYPE.ENERGY_SHARD)){
+        //             const testItem : Item = character.items.find(item => item.id == id);
+        //             if(testItem == null) {
+        //                 const newItem = new Item();
+        //                 newItem.id = id;
+        //                 newItem.count = 30;
+        //                 newItem.name = ITEMDETAIL[id].name;
+        //                 newItem.description = "description";
+        //                 newItem.level = ITEMDETAIL[id].level;
+        //                 newItem.cost = ITEMDETAIL[id].cost;
+        //                 newItem.sell = ITEMDETAIL[id].sell;
             
-                        character.items.push(newItem);
-                    } else {
-                        testItem.count++;
-                    }
-                }
-            }
+        //                 character.items.push(newItem);
+        //             } else {
+        //                 testItem.count++;
+        //             }
+        //         }
+        //     }
 
-        });
+        // });
 
         // ADD STACKS
         // let k = 0;
@@ -73,9 +73,9 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
         // });
 
         // ADD POWER for MOVE ITEM
-        [POWERTYPE.Shield3, POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
-            addPowerToCharacter(key, 4, character);
-        })
+        // [POWERTYPE.Shield3, POWERTYPE.Holy3, POWERTYPE.Void3, POWERTYPE.Armor3, POWERTYPE.Axe2, POWERTYPE.Spear3, POWERTYPE.Crossbow2, POWERTYPE.Cannon3, POWERTYPE.Ice3].forEach(key => {
+        //     addPowerToCharacter(key, 4, character);
+        // })
 
         // END TEST
 

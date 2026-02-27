@@ -1028,16 +1028,12 @@ export class UfbRoom extends Room<UfbRoomState> {
                             extraItemId: message.extraItemId
                         }
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, msg);
-                        setTimeout(this.AIEndDiceRoll.bind(this, msg), 3500);
+                        setTimeout(this.AIEndDiceRoll.bind(this, msg), 2500);
                         isEndAttack = false;
 
                     } else {
                         setCharacterHealth(enemy, -message.diceCount, this, null, "heart", from);
-
-                        this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                            score: -message.diceCount,
-                            type: "heart",
-                        });
+                        this.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY);
 
                         if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
                             addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
