@@ -151,8 +151,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             options.joinOptions.displayName
         );
 
-        // @change
-        //this.state.turnOrder.push(character.id);
+        // Players who join after the room was created (join-by-code) take their turn after the last human,
+        // before the monsters. Unity's lobby passed everyone in createOptions.turnIds; the web client joins late.
+        if (this.state.turnOrder.indexOf(character.id) === -1) {
+            let lastUser = -1;
+            this.state.turnOrder.forEach((id, i) => { const c = this.state.characters.get(id); if (c && c.type == USER_TYPE.USER) lastUser = i; });
+            this.state.turnOrder.splice(lastUser + 1, 0, character.id);
+            console.log("late join: turn order now", this.state.turnOrder.toArray());
+        }
+
         var userCount = 0;
         this.state.characters.forEach(p => {
             if(p.type == USER_TYPE.USER){
