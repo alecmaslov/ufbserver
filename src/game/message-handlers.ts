@@ -685,22 +685,16 @@ export const messageHandlers: MessageHandlers = {
             quest.level = Qarray[i].level;
             quest.description = Qarray[i].normal;
 
-            const itemKeys = Object.keys(ITEMTYPE);
-            let idx = Math.ceil(itemKeys.length * Math.random()) % itemKeys.length;
-            quest.itemId = ITEMTYPE[itemKeys[idx]];
-
-            const powerKeys = Object.keys(POWERTYPE);         
-            idx = Math.ceil(powerKeys.length * Math.random());
-            quest.powerId = POWERTYPE[powerKeys[idx]];
-            if(Math.random() > 0.5) {
-                quest.melee = 1;
-            } else {
-                quest.mana = 1;
-            }
-            quest.coin = 3 + Math.floor(3 * Math.random());
-            if (i < hardOffers) { quest.level = 2; quest.description = Qarray[i].hard.trim(); }   // hard version
-            if (!ITEMDETAIL[quest.itemId]) quest.itemId = ITEMTYPE.POTION;      // skip the Random* placeholder ids
-            if (quest.powerId === undefined || !powers[quest.powerId]) quest.powerId = POWERTYPE[powerKeys[idx % powerKeys.length]] ?? 0;
+            // Rewards: normal = a level-1 item, a level-1 power, +1 melee or mana, 3-5 gold.
+            // Hard (roughly double) = a level-2 (rarer) item, a level-2 power, 2 melee / 2 mana / 1+1, 6-10 gold.
+            const hard = i < hardOffers;
+            if (hard) { quest.level = 2; quest.description = Qarray[i].hard.trim(); }
+            const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
+            quest.itemId = pick(getItemIdsByLevel(hard ? 2 : 1, false)).id;
+            quest.powerId = pick(getPowerIdsByLevel(hard ? 2 : 1, false)).id;
+            if (hard) { const split = pick([[2, 0], [0, 2], [1, 1]]); quest.melee = split[0]; quest.mana = split[1]; }
+            else if (Math.random() < 0.5) quest.melee = 1; else quest.mana = 1;
+            quest.coin = hard ? 6 + Math.floor(5 * Math.random()) : 3 + Math.floor(3 * Math.random());
 
             questData.push(quest);
         }
@@ -1005,14 +999,9 @@ export const messageHandlers: MessageHandlers = {
                 }
                 if (ITEMDETAIL[q.itemId]) addItemToCharacter(q.itemId, 1, character, client);
                 if (powers[q.powerId]) addPowerToCharacter(q.powerId, 1, character);
-                if(q.melee > 0){
-                    character.stats.maxMelee++;
-                    // addItemToCharacter(ITEMTYPE.MELEE, 1, character);
-                }
-                if(q.mana > 0){
-                    character.stats.maxMana++;
-                    // addItemToCharacter(ITEMTYPE.MANA, 1, character);
-                }
+                // permanent melee / mana capacity, as many points as the quest lists (hard quests give 2)
+                if (q.melee > 0) character.stats.maxMelee += q.melee;
+                if (q.mana > 0) character.stats.maxMana += q.mana;
                 character.stats.coin += q.coin;
                 claimed = q;
                 character.questsCompleted += 1;
