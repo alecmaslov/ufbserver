@@ -1,4 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
+import { canMelee } from "#game/line-of-sight";
 import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
@@ -235,8 +236,11 @@ export const messageHandlers: MessageHandlers = {
 
         const directions = [0, 0, 0, 0];
 
-        // BOMB....
-        if(itemId == ITEMTYPE.BOMB) {
+        // BOMB — and every other bomb. The use handler below accepts all five kinds, but this
+        // "where can I put it" query only ever answered for the plain one, so an ice, fire, void or
+        // caltrop bomb came back with no legal direction and could not be placed anywhere.
+        if(itemId == ITEMTYPE.BOMB || itemId == ITEMTYPE.ICE_BOMB || itemId == ITEMTYPE.FIRE_BOMB
+            || itemId == ITEMTYPE.VOID_BOMB || itemId == ITEMTYPE.CALTROP_BOMB) {
             const conditions = [
                 "top",
                 "right",
@@ -245,7 +249,13 @@ export const messageHandlers: MessageHandlers = {
             ];
             conditions.forEach((cond, i) => {
                 const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, cond)
-                if(currentTile.walls[i] == 0 && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1) {
+                const target = id ? room.state.map.tiles.get(id) : undefined;
+                // A bomb goes where you could reach to put one down: an adjacent tile on your own
+                // level with nothing solid in between. Without the `id` test this offered placement
+                // off the edge of the board, since an empty id matches no spawn entity either.
+                if(target
+                    && canMelee(currentTile as any, target as any)
+                    && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1) {
                     directions[i] = 1;
                 }
             })

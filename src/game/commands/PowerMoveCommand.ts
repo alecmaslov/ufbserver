@@ -4,6 +4,7 @@ import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter } from "#game/helpers/room-helpers";
 import { CharacterState, Item } from "#game/schema/CharacterState";
+import { refusalReason, tileIndex, type LosTile } from "#game/line-of-sight";
 import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERTYPE, QUESTTYPE, STACKTYPE, powermoves, powers, stacks } from "#assets/resources";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEmptyTile, IsEnemyAdjacent, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
@@ -44,6 +45,26 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         powermove.result.health = !!powermove.result.health? (powermove.result.health - extraDamage.damage) : -extraDamage.damage;
         powermove.range += extraDamage.range;
+
+        // Targeting: you have to be able to see something to hit it.
+        //
+        // Melee reaches an adjacent tile on the same level only — not up or down a step, not
+        // through a wall, not across a ravine. A ranged weapon may reach one level up or down but
+        // never through a wall, and never from the ground over an upper tile to the ground beyond.
+        if (enemy.id !== character.id && powermove.range > 0) {
+            const tiles = this.room.state.map.tiles;
+            const fromTile = tiles.get(character.currentTileId) as unknown as LosTile;
+            const toTile = tiles.get(enemy.currentTileId) as unknown as LosTile;
+            if (fromTile && toTile) {
+                const all: LosTile[] = [];
+                tiles.forEach((t) => all.push(t as unknown as LosTile));
+                const reason = refusalReason(fromTile, toTile, tileIndex(all), powermove.range <= 1);
+                if (reason) {
+                    this.room.notify(client, reason, "error");
+                    return;
+                }
+            }
+        }
 
         console.log("added: ", powermove);
         let isResult = true;
