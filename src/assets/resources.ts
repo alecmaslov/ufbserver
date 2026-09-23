@@ -3100,10 +3100,10 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
     [QUESTTYPE.SLAYER]: {
         id: QUESTTYPE.SLAYER,
         title: "SLAYERS GONNA SLAY",
-        normal: "Get 3 kills",
-        hard: "Get 6 kills",
+        normal: "Get 1 kill",
+        hard: "Get 2 kills",
         condition: {},
-        value: 3,
+        value: 1,
         level: 1
     },
     [QUESTTYPE.GLITTER]: {
@@ -3154,9 +3154,9 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
     [QUESTTYPE.STRENGTH]: {
         id: QUESTTYPE.STRENGTH,
         title: "THE STRENGTH WITHIN",
-        normal: " Get 7 stacks at once",
-        hard: " Get 15 stacks at once",
-        value: 7,
+        normal: "Get 12 stacks at once",
+        hard: "Get 23 stacks at once",
+        value: 12,
         condition: {},
         level: 1
     },
@@ -3172,10 +3172,10 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
     [QUESTTYPE.TRAVELER]: {
         id: QUESTTYPE.TRAVELER,
         title: "THE ROAD LESS TRAVELED",
-        normal: "Travel 20 tiles",
-        hard: "Travel 40 tiles",
+        normal: "Travel 60 tiles",
+        hard: "Travel 120 tiles",
         condition: {},
-        value: 20,
+        value: 60,
         level: 1
     },
 }

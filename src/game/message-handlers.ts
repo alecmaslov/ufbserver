@@ -699,11 +699,14 @@ export const messageHandlers: MessageHandlers = {
             const hard = i < hardOffers;
             if (hard) { quest.level = 2; quest.description = Qarray[i].hard.trim(); }
             const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
-            quest.itemId = pick(getItemIdsByLevel(hard ? 2 : 1, false)).id;
-            quest.powerId = pick(getPowerIdsByLevel(hard ? 2 : 1, false)).id;
-            if (hard) { const split = pick([[2, 0], [0, 2], [1, 1]]); quest.melee = split[0]; quest.mana = split[1]; }
-            else if (Math.random() < 0.5) quest.melee = 1; else quest.mana = 1;
-            quest.coin = hard ? 6 + Math.floor(5 * Math.random()) : 3 + Math.floor(3 * Math.random());
+            // LICENSE TO KILL is the hardest quest to finish, so it pays a tier up: normal at the hard tier, hard at a
+            // level-3 tier (a level-3 item and power, 3 melee/mana, 12-20 gold).
+            const tier = (hard ? 2 : 1) + (quest.id == QUESTTYPE.KILL ? 1 : 0);   // 1 normal, 2 hard, 3 kill-hard
+            quest.itemId = pick(getItemIdsByLevel(tier, false)).id;
+            quest.powerId = pick(getPowerIdsByLevel(tier, false)).id;
+            const points = tier;   // melee/mana points: 1, 2 or 3, split at random between the two
+            quest.melee = Math.floor(Math.random() * (points + 1)); quest.mana = points - quest.melee;
+            quest.coin = tier == 1 ? 3 + Math.floor(3 * Math.random()) : tier == 2 ? 6 + Math.floor(5 * Math.random()) : 12 + Math.floor(9 * Math.random());
 
             questData.push(quest);
         }

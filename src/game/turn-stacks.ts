@@ -29,12 +29,12 @@ export function applyTurnStartStack(room: UfbRoom, character: CharacterState, st
         tell(d0, "heart");
         room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.HEART_ENEMY, client);
     } else if (stackId == STACKTYPE.Void) {
-        // Rules: "Drains both health and energy" (it used to drain health and ultimate)
+        // Drains health (d4) and ultimate (d6)
         setCharacterHealth(character, -d1, room, client, "heart", null);
-        setCharacterEnergy(character, -d0, room, client);
-        tell(-d1, "heart"); tell(-d0, "energy");
+        character.stats.ultimate.add(-d0);
+        tell(-d1, "heart"); tell(-d0, "ultimate");
         room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.HEART_ENEMY, client);
-        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
+        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
     } else if (stackId == STACKTYPE.Burn) {
         setCharacterHealth(character, -d0, room, client, "heart", null);
         tell(-d0, "heart");
