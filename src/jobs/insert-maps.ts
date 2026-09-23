@@ -77,7 +77,7 @@ const capitalizeWord = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
 };
 
-async function uspertMapTransaction(map: UFBMap) {
+export async function insertMap(map: UFBMap) {
     const mapId = await upsertMap(map);
 
     // delete the map if it already exist
@@ -183,7 +183,7 @@ async function insertMaps() {
     for (const { name } of allMaps) {
         const map = getMap(name);
         try {
-            await uspertMapTransaction(map);
+            await insertMap(map);
             console.log(`Inserted map: ${name}`);
         } catch (e) {
             console.error(e);
@@ -191,4 +191,5 @@ async function insertMaps() {
     }
 }
 
-insertMaps();
+// running this file directly seeds every map in data/mapsDeploy; reseed-map.ts imports insertMap instead
+if (process.argv[1]?.includes("insert-maps")) insertMaps();
