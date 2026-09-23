@@ -53,6 +53,9 @@ export class JoinCommand extends Command<UfbRoom, Payload> {
             tileId: message.tileId
         });
 
+        // Remember the roll: getSpawn pays exactly this, whatever the client sends back.
+        const owner = this.room.sessionIdToPlayerId.get(client.sessionId) ?? message.playerId;
+        this.room.pendingLoot.set(owner, { spawnId: "default", item: itemId, power: powerId, coin: coinCount, tileId: message.tileId });
         client.send(SERVER_TO_CLIENT_MESSAGE.SPAWN_INIT, spawnMessage);
 
         // Turn start....

@@ -1,3 +1,4 @@
+import { Quest } from "#game/schema/CharacterState";
 import { Jwt, UserJwt } from "#auth";
 import { tickInvisibility } from "#game/ultimates";
 import { DEV_MODE } from "#config";
@@ -53,6 +54,11 @@ export class UfbRoom extends Room<UfbRoomState> {
     spawnZoneArray: SpawnZone[];
 
     isTurnStartEquip: boolean = true;
+    // Anti-cheat bookkeeping: what the server rolled or offered, so clients can't name their own rewards.
+    pendingLoot = new Map<string, { spawnId: string; item: number; power: number; coin: number; tileId: string }>();
+    questOffers = new Map<string, Quest[]>();                                       // per character, from getMerchantData
+    stackDice = new Map<string, { id: number; dice: { type: number; diceCount: number }[] }[]>();   // turn-start stack rolls
+    equipBonusTurn = new Map<string, number>();                                     // turn number the equip bonus was paid
     isTurnStartStack: boolean = true;
     isTurnStartForScreen: boolean = true;
     banked = new Set<string>();   // characters whose end-of-game gold has been written

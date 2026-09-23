@@ -10,6 +10,8 @@ import { PowerMove } from "#shared-types";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { addPowerToCharacter, getEquipBonusDamage, setCharacterEnergy } from "#game/helpers/map-helpers";
 
+
+const MAX_EQUIP_SLOTS = 3;
 type OnEquipCommandPayload = {
     client: Client;
     message: any;
@@ -23,6 +25,11 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
         const character = getCharacterById(this.room, message.characterId);
         if (!character) {
             this.room.notify(client, "You are not in room game!", "error");
+            return;
+        }
+        if (character.equipSlots.length >= MAX_EQUIP_SLOTS) {   // uncapped slots stacked a turn-start bonus per power
+            this.room.notify(client, `You can equip at most ${MAX_EQUIP_SLOTS} powers — unequip one first.`, "error");
+            return;
         }
 
         // WHEN PLAYRE CLICK EQUIP POWER

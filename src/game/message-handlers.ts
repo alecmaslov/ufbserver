@@ -8,7 +8,7 @@ import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
 import { Item, Quest } from "#game/schema/CharacterState";
-import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
+import { ADD_EXTRA_TYPE, CRAFTS_ITEM, DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PathStep, PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
 import { PowerMoveCommand } from "./commands/PowerMoveCommand";
@@ -19,6 +19,19 @@ import { SpawnZoneType } from "@prisma/client";
 import { breakAmbush, isInvisible, useUltimate } from "./ultimates";
 import { DEV_MODE } from "#config";
 
+
+/** The character this connection controls. Refuses a message that names someone else's character. */
+function actor(room: UfbRoom, client: Client, message: any) {
+    const c = getClientCharacter(room, client);
+    if (!c || (message?.characterId && message.characterId !== c.id)) {
+        room.notify(client, "That isn't your character.", "error");
+        return null;
+    }
+    return c;
+}
+/** Is there a merchant on the character's tile? */
+const atMerchant = (room: UfbRoom, c: { currentTileId: string }) =>
+    room.state.map.spawnEntities.some((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -126,6 +139,14 @@ export const messageHandlers: MessageHandlers = {
 
     spawnMove: (room, client, message) => {
         console.log(`Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}, itemBag: ${message.isItemBag}`);
+        const looter = actor(room, client, { characterId: message.playerId });
+        if (!looter) return;
+        const chest = room.state.map.spawnEntities.find((e) => e.tileId === message.tileId && e.type === "Chest");
+        if (!chest || looter.currentTileId !== message.tileId) {
+            room.notify(client, "There's no chest here to open.", "error");
+            return;
+        }
+        message.isItemBag = /ItemBag/i.test(chest.prefabAddress);   // the chest decides, not the client
 
         let coinCount = 2 + Math.round(4 * ( Math.random()));
 
@@ -152,13 +173,14 @@ export const messageHandlers: MessageHandlers = {
         }
 
         const spawnMessage : SpawnInitMessage = {
-            characterId: message.playerId,
+            characterId: looter.id,
             spawnId: message.isItemBag? "itemBag" : "default",
             item: itemId,
             power: powerId,
             coin: coinCount,
             tileId: message.tileId
         }
+        room.pendingLoot.set(looter.id, { spawnId: spawnMessage.spawnId, item: itemId, power: powerId, coin: coinCount, tileId: message.tileId });
 
         client.send(SERVER_TO_CLIENT_MESSAGE.SPAWN_INIT, spawnMessage);
 
@@ -668,9 +690,13 @@ export const messageHandlers: MessageHandlers = {
                 quest.mana = 1;
             }
             quest.coin = 3 + Math.floor(3 * Math.random());
+            if (!ITEMDETAIL[quest.itemId]) quest.itemId = ITEMTYPE.POTION;      // skip the Random* placeholder ids
+            if (quest.powerId === undefined || !powers[quest.powerId]) quest.powerId = POWERTYPE[powerKeys[idx % powerKeys.length]] ?? 0;
 
             questData.push(quest);
         }
+        const shopper = getClientCharacter(room, client);
+        if (shopper) room.questOffers.set(shopper.id, questData);
 
         const getMerchantDataDataMessage = {
             items: itemData,
@@ -686,10 +712,19 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.MERCHANT_BUY_ITEM]: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
-
+        const character = actor(room, client, message);
+        if (!character) return;
         const type = message.type;
         const id = message.id;
+        if (!atMerchant(room, character) || room.state.currentCharacterId !== character.id) {
+            room.notify(client, "You can only trade with a merchant you're standing on, on your turn.", "error");
+            return;
+        }
+        const price = type == "item" ? ITEMDETAIL[id]?.cost : type == "power" ? POWERCOSTS[powers[id]?.level]?.cost : type == "stack" ? stacks[id]?.cost : undefined;
+        if (!(price > 0)) {   // unknown ids and the -1 "not for sale" prices used to pay the buyer
+            room.notify(client, "The merchant doesn't sell that.", "error");
+            return;
+        }
         
         let msg: any = {
             items: [],
@@ -774,10 +809,14 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.MERCHANT_SELL_ITEM]: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
-
+        const character = actor(room, client, message);
+        if (!character) return;
         const type = message.type;
         const id = message.id;
+        if (!atMerchant(room, character) || room.state.currentCharacterId !== character.id) {
+            room.notify(client, "You can only trade with a merchant you're standing on, on your turn.", "error");
+            return;
+        }
 
         console.log(type, id);
         let msg: any = {
@@ -880,7 +919,15 @@ export const messageHandlers: MessageHandlers = {
     },
 
     setActiveQuest: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
+        const character = actor(room, client, message);
+        if (!character) return;
+        // Only a quest the merchant actually offered this character; its rewards come from the server's copy.
+        const offer = (room.questOffers.get(character.id) ?? []).find((q) => q.id === message.quest?.id);
+        if (!offer || character.quests.some((q) => q.id === offer.id)) {
+            room.notify(client, "That quest isn't on offer.", "error");
+            return;
+        }
+        message = { ...message, quest: offer };
 
         character.quests.forEach(q => {
             
@@ -913,10 +960,18 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
+        if (getClientCharacter(room, client)?.id !== character.id) {
+            room.notify(client, "That isn't your character.", "error");
+            return;
+        }
         character.quests.forEach(q => {
             if(q.id == message.questId){
-                addItemToCharacter(q.itemId, 1, character, client);
-                addPowerToCharacter(q.powerId, 1, character);
+                if (!(q.target > 0) || q.complete < q.target) {
+                    room.notify(client, "That quest isn't finished yet.", "error");
+                    return;
+                }
+                if (ITEMDETAIL[q.itemId]) addItemToCharacter(q.itemId, 1, character, client);
+                if (powers[q.powerId]) addPowerToCharacter(q.powerId, 1, character);
                 if(q.melee > 0){
                     character.stats.maxMelee++;
                     // addItemToCharacter(ITEMTYPE.MELEE, 1, character);
@@ -933,12 +988,26 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.MERCHANT_ADDCRAFTITEM]: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
+        const character = actor(room, client, message);
+        if (!character) return;
+        if (!atMerchant(room, character) || room.state.currentCharacterId !== character.id) {
+            room.notify(client, "You can only craft at a merchant you're standing on, on your turn.", "error");
+            return;
+        }
         const type = message.type;
         const idx1 = message.idx1;
         const idx2 = message.idx2;
-        const idx3 = message.idx3;
-        const coin = message.coin;
+        // The client only names the inputs; the result and the fee come from the server's tables.
+        let idx3: number, coin: number;
+        if (type == "item") {
+            const recipe = CRAFTS_ITEM.find((r) => (r.item1 == idx1 && r.item2 == idx2) || (r.item1 == idx2 && r.item2 == idx1));
+            if (!recipe) { room.notify(client, "That isn't a recipe.", "error"); return; }
+            idx3 = recipe.result; coin = recipe.coin;
+        } else if (type == "power") {
+            const lvl = powers[idx1]?.level;
+            if (idx1 !== idx2 || !(lvl < 3) || !powers[idx1 + 12]) { room.notify(client, "Forging needs two copies of the same level 1 or 2 power.", "error"); return; }
+            idx3 = idx1 + 12; coin = lvl === 1 ? 10 : 20;
+        } else { room.notify(client, "Unknown craft.", "error"); return; }
 
         let msg: any = {
             items: [],
@@ -1172,8 +1241,11 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.TURN_START_EQUIP]: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
+        const character = actor(room, client, message);
+        if (!character) return;
+        if (room.equipBonusTurn.get(character.id) === room.state.turn) return;   // already paid this turn
         if(room.state.currentCharacterId == character.id) {
+            room.equipBonusTurn.set(character.id, room.state.turn);
             let bonuses: any = [];
             character.equipSlots.forEach(slot => {
                 console.log("equip bouns item", slot.id, EQUIP_TURN_BONUS[slot.id])
@@ -1303,6 +1375,7 @@ export const messageHandlers: MessageHandlers = {
                 
             }
         });
+        room.stackDice.set(character.id, stackList.map((st: any, i: number) => ({ id: st.id, dice: diceResult[i]?.diceData ?? [] })));
         
         room.broadcast( SERVER_TO_CLIENT_MESSAGE.GET_STACK_ON_TURN_START, {
             characterId : character.id,
@@ -1313,9 +1386,17 @@ export const messageHandlers: MessageHandlers = {
     },
 
     [CLIENT_SERVER_MESSAGE.SET_STACK_ON_START]: (room, client, message) => {
-        const character = getCharacterById(room, message.characterId);
+        const character = actor(room, client, message);
+        if (!character) return;
         const stackId = message.stackId;
-        const diceData = message.diceData;
+        // Use the dice the server rolled in GET_STACK_ON_TURN_START, never the client's, and only for a stack you hold.
+        const rolls = room.stackDice.get(character.id) ?? [];
+        const k = rolls.findIndex((r) => r.id == stackId);
+        if (k < 0 || getCountFromItem(stackId, character.stacks) <= 0) {
+            room.notify(client, "No roll pending for that stack.", "error");
+            return;
+        }
+        const diceData = rolls.splice(k, 1)[0].dice;
 
         character.stacks.forEach(stack => {
             if(stack.id == stackId) {
@@ -1484,6 +1565,9 @@ export function registerMessageHandlers(room: UfbRoom) {
         const c = getCharacterById(room, message?.characterId); if (!c) return;
         if (message.itemId !== undefined) addItemToCharacter(message.itemId, message.count ?? 1, c, client);
         if (message.hp !== undefined) c.stats.health.current = message.hp;
+        if (message.powerId !== undefined) addPowerToCharacter(message.powerId, message.count ?? 1, c);
+        if (message.stackId !== undefined) addStackToCharacter(message.stackId, message.count ?? 1, c, client, room);
+        if (message.coin !== undefined) c.stats.coin = message.coin;
     });
     if (DEV_MODE) room.onMessage<any>("DEV_PLACE", (client, message) => {
         const c = getCharacterById(room, message?.characterId); const t = room.state.map.tiles.get(message?.tileId);

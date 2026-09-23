@@ -19,11 +19,20 @@ export class ItemCommand extends Command<UfbRoom, OnItemCommandPayload> {
     }
 
     execute({ client, message }: OnItemCommandPayload) {
-        const character = getCharacterById(this.room, message.characterId);
-
-        if (!character) {
+        const character = getClientCharacter(this.room, client);
+        if (!character || (message.characterId && message.characterId !== character.id)) {
             this.room.notify(client, "You are not in room game!", "error");
+            return;
         }
+        // Pay only what the server rolled in spawnMove / the first drop (the client used to name its own coin,
+        // item and power). One claim per roll.
+        const pending = this.room.pendingLoot.get(character.id);
+        if (!pending) {
+            this.room.notify(client, "There's no loot waiting for you.", "error");
+            return;
+        }
+        this.room.pendingLoot.delete(character.id);
+        message = { ...message, characterId: character.id, itemId: pending.item, powerId: pending.power, coinCount: pending.coin, spawnId: pending.spawnId, tileId: pending.tileId };
 
         // TEST:::
         // Object.keys(ITEMTYPE).forEach(key => {
