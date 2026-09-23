@@ -306,7 +306,11 @@ export const messageHandlers: MessageHandlers = {
 
         } else if(itemId == ITEMTYPE.POTION) {
             console.log("user posion item")
-            let extra = setCharacterHealth(character, 5, room, client, "heart", character);
+            // Healing past max health pays the overflow as gold. setCharacterHealth returns the new HP, not the
+            // overflow, so work the overheal out before healing (it used to pay the whole HP as gold).
+            const hp = character.stats.health;
+            const extra = Math.max(0, hp.current + 5 - hp.max);
+            setCharacterHealth(character, 5, room, client, "heart", character);
 
             sendStatsToClient(5, ADD_EXTRA_TYPE.HEART, client);
 
@@ -1321,7 +1325,10 @@ export const messageHandlers: MessageHandlers = {
 
         if(stackId == STACKTYPE.Cure) {
             
-            let extra = character.stats.health.add(diceData[0].diceCount);
+            // Only the overheal becomes gold (health.add returns the new HP, which used to be paid out whole).
+            const hp = character.stats.health;
+            const extra = Math.max(0, hp.current + diceData[0].diceCount - hp.max);
+            hp.add(diceData[0].diceCount);
             if(extra > 0) {
                 character.stats.coin += extra;
                 setQuestResult(QUESTTYPE.GLITTER, extra, character);
@@ -1472,6 +1479,11 @@ export function registerMessageHandlers(room: UfbRoom) {
     // Local testing only (DEV_MODE=true): fill a hero's ultimate gauge so every ultimate can be exercised.
     if (DEV_MODE) room.onMessage<any>("DEV_FILL_ULTIMATE", (client, message) => {
         const c = getCharacterById(room, message?.characterId); if (c) c.stats.ultimate.setToMax();
+    });
+    if (DEV_MODE) room.onMessage<any>("DEV_GIVE", (client, message) => {
+        const c = getCharacterById(room, message?.characterId); if (!c) return;
+        if (message.itemId !== undefined) addItemToCharacter(message.itemId, message.count ?? 1, c, client);
+        if (message.hp !== undefined) c.stats.health.current = message.hp;
     });
     if (DEV_MODE) room.onMessage<any>("DEV_PLACE", (client, message) => {
         const c = getCharacterById(room, message?.characterId); const t = room.state.map.tiles.get(message?.tileId);
