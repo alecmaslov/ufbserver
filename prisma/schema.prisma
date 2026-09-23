@@ -25,6 +25,7 @@ model User {
   id              String      @id @default(cuid())
   displayName     String
   gold            Int         @default(0)
+  crystals        Int         @default(0)
   email           String      @unique
   profileImageUrl String?
   passwordHash    String?
@@ -241,6 +242,11 @@ model Character {
   owner          User?          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   characterData CharacterData[]
+  skills        CharacterSkill[]
+
+  /// the three elements rolled when this figurine was bought, in slot order; permanent
+  elements  Json?
+  keystones Json?
 
   @@index([className], map: "character_token_className_fkey")
   @@index([ownerId], map: "character_token_ownerId_fkey")
@@ -420,4 +426,22 @@ enum AdjacencyType {
   UnderBridge
   Wall
   Void
+}
+
+/// One purchased skill-tree node. Append-only: the ledger is the character's progress, an audit
+/// trail for every gold sink, and the per-node data we need to tune the trees later.
+model CharacterSkill {
+  id          String   @id @default(cuid())
+  characterId String
+  element     String
+  slot        Int
+  nodeIndex   Int
+  cost        Int
+  purchasedAt DateTime @default(now())
+
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, slot, nodeIndex])
+  @@index([characterId])
+  @@map("character_skill")
 }

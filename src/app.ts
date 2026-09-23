@@ -14,6 +14,7 @@ import nft from "#routes/nft";
 import user from "#routes/user";
 import lobby from "#routes/lobby";
 import account from "#routes/account";
+import skillTree from "#routes/skill-tree";
 import solo from "#routes/solo";
 
 import { Server } from "@colyseus/core";
@@ -45,6 +46,7 @@ app.use("/nft", nft);
 app.use("/lobby", lobby);
 app.use("/user", user);
 app.use("/account", account);
+app.use("/account/skill-tree", skillTree);
 app.use("/solo", solo);
 
 if (DEV_MODE) {
