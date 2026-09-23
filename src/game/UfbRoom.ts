@@ -59,6 +59,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     questOffers = new Map<string, Quest[]>();                                       // per character, from getMerchantData
     stackDice = new Map<string, { id: number; dice: { type: number; diceCount: number }[] }[]>();   // turn-start stack rolls
     equipBonusTurn = new Map<string, number>();                                     // turn number the equip bonus was paid
+    questVisit = new Map<string, string>();                                         // "turn:merchant" of the visit a quest was accepted on
     isTurnStartStack: boolean = true;
     isTurnStartForScreen: boolean = true;
     banked = new Set<string>();   // characters whose end-of-game gold has been written

@@ -29,6 +29,12 @@ function actor(room: UfbRoom, client: Client, message: any) {
     }
     return c;
 }
+export const MAX_ACTIVE_QUESTS = 3;
+/** A merchant visit: that merchant, on this turn. Players may accept one quest per visit. */
+const merchantVisit = (room: UfbRoom, c: { currentTileId: string }) => {
+    const m = room.state.map.spawnEntities.find((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
+    return m ? `${room.state.turn}:${m.id}` : "";
+};
 /** Is there a merchant on the character's tile? */
 const atMerchant = (room: UfbRoom, c: { currentTileId: string }) =>
     room.state.map.spawnEntities.some((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
@@ -705,7 +711,12 @@ export const messageHandlers: MessageHandlers = {
             powers: randomPower,
             stacks: randomStack,
             quests: questData,
-            tileId: message.tileId
+            tileId: message.tileId,
+            questRules: shopper ? {
+                max: MAX_ACTIVE_QUESTS,
+                active: shopper.quests.length,
+                acceptedThisVisit: room.questVisit.get(shopper.id) === merchantVisit(room, shopper),
+            } : undefined,
         };
 
         client.send(SERVER_TO_CLIENT_MESSAGE.GET_MERCHANT_DATA, getMerchantDataDataMessage)
@@ -927,6 +938,20 @@ export const messageHandlers: MessageHandlers = {
             room.notify(client, "That quest isn't on offer.", "error");
             return;
         }
+        const visit = merchantVisit(room, character);
+        if (!visit || room.state.currentCharacterId !== character.id) {
+            room.notify(client, "Quests are taken from a merchant you're standing on, on your turn.", "error");
+            return;
+        }
+        if (character.quests.length >= MAX_ACTIVE_QUESTS) {
+            room.notify(client, `You already have ${MAX_ACTIVE_QUESTS} quests — finish one first.`, "error");
+            return;
+        }
+        if (room.questVisit.get(character.id) === visit) {
+            room.notify(client, "You can take one quest per merchant visit.", "error");
+            return;
+        }
+        room.questVisit.set(character.id, visit);
         message = { ...message, quest: offer };
 
         character.quests.forEach(q => {
@@ -964,6 +989,7 @@ export const messageHandlers: MessageHandlers = {
             room.notify(client, "That isn't your character.", "error");
             return;
         }
+        let claimed: Quest | null = null;
         character.quests.forEach(q => {
             if(q.id == message.questId){
                 if (!(q.target > 0) || q.complete < q.target) {
@@ -981,10 +1007,13 @@ export const messageHandlers: MessageHandlers = {
                     // addItemToCharacter(ITEMTYPE.MANA, 1, character);
                 }
                 character.stats.coin += q.coin;
-
-                q.complete = 0;
+                claimed = q;
             }
         });
+        if (claimed) {   // a claimed quest leaves the list, freeing one of the MAX_ACTIVE_QUESTS slots
+            const i = character.quests.indexOf(claimed);
+            if (i >= 0) character.quests.splice(i, 1);
+        }
     },
 
     [CLIENT_SERVER_MESSAGE.MERCHANT_ADDCRAFTITEM]: (room, client, message) => {
