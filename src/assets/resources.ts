@@ -296,7 +296,8 @@ export const QUESTTYPE: {[key : string]: number} = {
     LUCK: 4,
     ENERGY: 5,
     STRENGTH: 6,
-    LIFE: 7
+    LIFE: 7,
+    TRAVELER: 8
 }
 
 export const POWERTYPE : {[key : string] : number} = {
@@ -3108,8 +3109,8 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
     [QUESTTYPE.GLITTER]: {
         id: QUESTTYPE.GLITTER,
         title: "ALL THAT GLITTERS",
-        normal: "Get 20 gold",
-        hard: "Get 40 gold",
+        normal: "Hold 20 gold at once",
+        hard: "Hold 40 gold at once",
         condition: {},
         value: 20,
         level: 1
@@ -3166,6 +3167,15 @@ export const QUESTS: {[key: number]: {id: number, title: string, normal: string,
         hard: "Complete 4 Heart Crystal",
         condition: {},
         value: 2,
+        level: 1
+    },
+    [QUESTTYPE.TRAVELER]: {
+        id: QUESTTYPE.TRAVELER,
+        title: "THE ROAD LESS TRAVELED",
+        normal: "Travel 20 tiles",
+        hard: "Travel 40 tiles",
+        condition: {},
+        value: 20,
         level: 1
     },
 }

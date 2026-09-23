@@ -1,5 +1,5 @@
 import { UfbRoom } from "#game/UfbRoom";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -674,6 +674,8 @@ export const messageHandlers: MessageHandlers = {
         const randomStack = getRandomElements(stackData, 3);
 
         const questData : Quest[] = [];
+        // Difficulty ladder (per match): 0 completed → 3 normal, 1 → 2 normal + 1 hard, 2 → 1 + 2, 3+ → 3 hard.
+        const hardOffers = Math.min(3, getClientCharacter(room, client)?.questsCompleted ?? 0);
         const Qarray = getRandomElements(Object.keys(QUESTS).map(key => QUESTS[Number(key)]), 3);
         
         for(let i = 0; i < 3; i++) {
@@ -696,6 +698,7 @@ export const messageHandlers: MessageHandlers = {
                 quest.mana = 1;
             }
             quest.coin = 3 + Math.floor(3 * Math.random());
+            if (i < hardOffers) { quest.level = 2; quest.description = Qarray[i].hard.trim(); }   // hard version
             if (!ITEMDETAIL[quest.itemId]) quest.itemId = ITEMTYPE.POTION;      // skip the Random* placeholder ids
             if (quest.powerId === undefined || !powers[quest.powerId]) quest.powerId = POWERTYPE[powerKeys[idx % powerKeys.length]] ?? 0;
 
@@ -713,6 +716,7 @@ export const messageHandlers: MessageHandlers = {
             quests: questData,
             tileId: message.tileId,
             questRules: shopper ? {
+                completed: shopper.questsCompleted,
                 max: MAX_ACTIVE_QUESTS,
                 active: shopper.quests.length,
                 acceptedThisVisit: room.questVisit.get(shopper.id) === merchantVisit(room, shopper),
@@ -971,6 +975,8 @@ export const messageHandlers: MessageHandlers = {
         newQ.coin = quest.coin;
         newQ.target = getQuestTargetValue(quest.id, quest.level);
         character.quests.push(newQ);
+        updateStrengthQuest(character);   // stacks already held count toward "get N stacks at once"
+        setQuestResult(QUESTTYPE.GLITTER, 0, character);   // and gold already held toward ALL THAT GLITTERS
 
     },
 
@@ -992,8 +998,9 @@ export const messageHandlers: MessageHandlers = {
         let claimed: Quest | null = null;
         character.quests.forEach(q => {
             if(q.id == message.questId){
-                if (!(q.target > 0) || q.complete < q.target) {
-                    room.notify(client, "That quest isn't finished yet.", "error");
+                const progress = q.id == QUESTTYPE.GLITTER ? character.stats.coin : q.complete;   // gold held right now
+                if (!(q.target > 0) || progress < q.target) {
+                    room.notify(client, q.id == QUESTTYPE.GLITTER ? `You need ${q.target} gold in your purse to cash this in.` : "That quest isn't finished yet.", "error");
                     return;
                 }
                 if (ITEMDETAIL[q.itemId]) addItemToCharacter(q.itemId, 1, character, client);
@@ -1008,6 +1015,7 @@ export const messageHandlers: MessageHandlers = {
                 }
                 character.stats.coin += q.coin;
                 claimed = q;
+                character.questsCompleted += 1;
             }
         });
         if (claimed) {   // a claimed quest leaves the list, freeing one of the MAX_ACTIVE_QUESTS slots

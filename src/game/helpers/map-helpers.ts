@@ -1016,6 +1016,18 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
 }
 
 export function addStackToCharacter(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
+    applyStack(id, count, state, client, room);
+    updateStrengthQuest(state);
+}
+
+/** THE STRENGTH WITHIN ("get N stacks at once"): progress is the most stacks held at one time. */
+export function updateStrengthQuest(state: CharacterState) {
+    let held = 0;
+    state.stacks.forEach((st) => { if (st.count > 0) held += st.count; });
+    state.quests.forEach((q) => { if (q.id == QUESTTYPE.STRENGTH && held > q.complete) q.complete = held; });
+}
+
+function applyStack(id: number, count : number, state: CharacterState, client: Client, room: UfbRoom = null) {
 
     if(count < 0) {
         AddUserData(USER_DATA_TYPE.USED_STACK, state, count);
@@ -1416,9 +1428,12 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
 
             if(enemy != null){
                 setQuestResult(QUESTTYPE.SLAYER, 1, enemy);
-                if(IsGreenMonster(enemy.characterClass)){
-                    setQuestResult(QUESTTYPE.KILL, 1, enemy);
-                }
+                // LICENSE TO KILL: normal (level 1) wants a green kill, hard (level 2) a yellow one. `character` is
+                // the monster that died; this used to test the killer's class, so it never progressed.
+                const green = IsGreenMonster(character.characterClass), yellow = IsYellowMonster(character.characterClass);
+                enemy.quests.forEach((q) => {
+                    if (q.id == QUESTTYPE.KILL && ((q.level <= 1 && green) || (q.level >= 2 && yellow))) q.complete += 1;
+                });
             }
 
         } else if(character.type == USER_TYPE.USER) {
@@ -1709,7 +1724,9 @@ export function setQuestResult(questId: number, complete: number, character: Cha
 
     character.quests.forEach(q => {
         if(q.id == questId){
-            q.complete += complete;
+            // ALL THAT GLITTERS is gold held at one time, not gold earned: progress mirrors the purse.
+            if (questId == QUESTTYPE.GLITTER) q.complete = Math.max(0, character.stats.coin);
+            else q.complete += complete;
         }
     })
 

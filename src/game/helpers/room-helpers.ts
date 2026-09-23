@@ -82,7 +82,7 @@ export const getQuestTargetValue = (id: number, level: number) => {
     } else if(id == QUESTTYPE.GLITTER) {
         return QUESTS[id].value * level;
     } else if(id == QUESTTYPE.KILL) {
-        return QUESTS[id].value * level;
+        return QUESTS[id].value;          // one kill either way: a green (normal) or a yellow (hard)
     } else if(id == QUESTTYPE.CRAFTS) {
         return QUESTS[id].value * level;
     } else if(id == QUESTTYPE.LUCK) {
@@ -92,6 +92,8 @@ export const getQuestTargetValue = (id: number, level: number) => {
     } else if(id == QUESTTYPE.STRENGTH) {
         return level == 1? QUESTS[id].value :  15;
     } else if(id == QUESTTYPE.LIFE) {
+        return QUESTS[id].value * level;
+    } else if(id == QUESTTYPE.TRAVELER) {
         return QUESTS[id].value * level;
     }
 }

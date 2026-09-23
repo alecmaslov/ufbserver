@@ -3,10 +3,10 @@ import { UfbRoom } from "#game/UfbRoom";
 import { isNullOrEmpty } from "#util";
 import { Client } from "colyseus";
 import { getCharacterById, getClientCharacter, getHighLightTileIds } from "#game/helpers/room-helpers";
-import { addItemToCharacter, addStackToCharacter, fillPathWithCoords, getItemCountFromCharacter, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterEnergy, setCharacterHealth } from "#game/helpers/map-helpers";
+import { AddUserData, setQuestResult, addItemToCharacter, addStackToCharacter, fillPathWithCoords, getItemCountFromCharacter, GetObstacleTileIds, getPortalPosition, getTileIdByDirection, setCharacterEnergy, setCharacterHealth } from "#game/helpers/map-helpers";
 import { CharacterMovedMessage } from "#game/message-types";
 import { PathStep } from "#shared-types";
-import { ADD_EXTRA_TYPE, EDGE_TYPE, ITEMTYPE, featherStep, itemResults, stacks } from "#assets/resources";
+import { ADD_EXTRA_TYPE, EDGE_TYPE, ITEMTYPE, QUESTTYPE, USER_DATA_TYPE, USER_TYPE, featherStep, itemResults, stacks } from "#assets/resources";
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
@@ -230,6 +230,13 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         console.log("---send find path");
 
         if(path.length > 0) {
+            // Tiles walked (the path starts on the current tile). Feeds the traveled_tile stat, which nothing used to
+            // update, and THE ROAD LESS TRAVELED quest.
+            const steps = message.isPath ? Math.max(0, path.length - 1) : (path[path.length - 1].tileId !== currentTile.id ? 1 : 0);
+            if (steps > 0 && character.type == USER_TYPE.USER) {
+                AddUserData(USER_DATA_TYPE.TRAVELED_TILE, character, steps);
+                setQuestResult(QUESTTYPE.TRAVELER, steps, character);
+            }
             const lastTile = this.state.map.tiles.get(path[path.length - 1].tileId);
             character.coordinates.x = lastTile.coordinates.x;
             character.coordinates.y = lastTile.coordinates.y;

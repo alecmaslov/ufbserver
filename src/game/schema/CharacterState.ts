@@ -116,6 +116,7 @@ export class CharacterState extends Schema {
     // Keep new fields at the end: solo saves (encodeAll) decode by field index.
     @type("int8") invisible: number = 0;     // Data Avenger's ultimate: turns of invisibility left (see ultimates.ts)
     @type("boolean") ambush: boolean = false; // her next attack deals double damage and breaks invisibility
+    @type("int8") questsCompleted: number = 0; // this match; sets how many hard quests the merchant offers
 
 }
 
