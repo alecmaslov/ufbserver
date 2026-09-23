@@ -113,7 +113,12 @@ export const COSTS: number[] = [
     11900, 8600, 10700, 13000, 15700, 18600, 21200, 19600, 17500, 15200, 13300, 11200,
 ];
 export const NODES_PER_TREE = COSTS.length;          // 33
-export const MAX_LEVEL = NODES_PER_TREE * 3;         // 99
+/**
+ * A figurine is level 1 the moment it is claimed, and every node it buys adds one, so all three
+ * trees finished is level 100. The design doc's "max level 99" counts levels *gained*, which is
+ * exactly 33 slots x 3 elements — the cap is simply one higher than that number.
+ */
+export const MAX_LEVEL = NODES_PER_TREE * 3 + 1;     // 100
 export const costOf = (boughtInThisTree: number) => COSTS[boughtInThisTree] ?? null;
 
 // ---------------------------------------------------------------- the tree data
@@ -215,5 +220,5 @@ export function effectsFor(owned: { element: ElementSlug; nodeIndex: number }[])
 export const ultimateMax = (base: number, fx: SkillEffects) =>
     Math.max(ULTIMATE_FLOOR, base - fx.ultimateReduction);
 
-/** A figurine's level is simply how many nodes it has bought, shown as 1 until the first. */
-export const levelFor = (purchases: number) => Math.min(MAX_LEVEL, Math.max(1, purchases));
+/** Level 1 on claim, plus one per node bought. Every purchase moves the number. */
+export const levelFor = (purchases: number) => Math.min(MAX_LEVEL, 1 + Math.max(0, purchases));
