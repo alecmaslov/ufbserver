@@ -2287,17 +2287,6 @@ export const powermoves : any = [
     },
 ]
 
-// Items monsters never carry or drop. Heart Pieces and Energy Shards are allowed (the owner's call): once the
-// chests are gone they're the only way to finish The Meaning of Life / Bundle of Energy besides the merchant.
-export const MONSTER_BAN_TIEM : {[key : number] : number} = {
-    [ITEMTYPE.HEART_CRYSTAL] : 1,
-    [ITEMTYPE.MELEE] : 1,
-    [ITEMTYPE.MANA] : 1,
-    [ITEMTYPE.ENERGY_CRYSTAL] : 1,
-    [ITEMTYPE.QUIVER] : 1,
-    [ITEMTYPE.BOMB_BAG] : 1,
-}
-
 export const GOOD_STACKS: number[] = [
     STACKTYPE.Dodge,
     STACKTYPE.Cure,

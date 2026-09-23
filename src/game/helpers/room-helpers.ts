@@ -2,7 +2,7 @@ import { UfbRoom } from "#game/UfbRoom";
 import { Client } from "@colyseus/core";
 import { coordToTileId } from "./map-helpers";
 import { CoordinatesState } from "#game/schema/CharacterState";
-import { ITEMDETAIL, ITEMTYPE, MONSTER_BAN_TIEM, powers, QUESTS, QUESTTYPE } from "#assets/resources";
+import { ITEMDETAIL, ITEMTYPE, powers, QUESTS, QUESTTYPE } from "#assets/resources";
 
 export const getClientCharacter = (room: UfbRoom, client: Client) => {
     const playerId = room.sessionIdToPlayerId.get(client.sessionId);
@@ -58,23 +58,11 @@ export const getPowerIdsByLevel = (level : number, isMonster? : boolean) => {
     }
 }
 
-export const getItemIdsByLevel = (level : number, isMonster? : boolean) => {
-    if(isMonster) {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !MONSTER_BAN_TIEM[key] && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2 && key != ITEMTYPE.RandomArrow && key != ITEMTYPE.RandomBomb && key != ITEMTYPE.RandomArrowOrBomb).map((k : any) => {
-            return {
-                ...ITEMDETAIL[k],
-                id: Number(k)
-            }
-        });
-    } else {
-        return Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && key != ITEMTYPE.BOMB_BAG && key != ITEMTYPE.QUIVER && key != ITEMTYPE.QUIVER2 && key != ITEMTYPE.BOMB_BAG2 && key != ITEMTYPE.RandomArrow && key != ITEMTYPE.RandomBomb && key != ITEMTYPE.RandomArrowOrBomb).map((k : any) => {
-            return {
-                ...ITEMDETAIL[k],
-                id: Number(k)
-            }
-        });
-    }
-}
+// Items that can be rolled as loot. Quivers / bomb bags no longer exist (there is no ammo cap) and the Random*
+// ids are placeholders, so they never drop. There is no monster-specific ban list: monsters use the same pool.
+const NOT_LOOT = new Set<number>([ITEMTYPE.BOMB_BAG, ITEMTYPE.QUIVER, ITEMTYPE.QUIVER2, ITEMTYPE.BOMB_BAG2, ITEMTYPE.RandomArrow, ITEMTYPE.RandomBomb, ITEMTYPE.RandomArrowOrBomb]);
+export const getItemIdsByLevel = (level : number, _isMonster? : boolean) =>
+    Object.keys(ITEMDETAIL).filter((key : any) => ITEMDETAIL[key].level == level && !NOT_LOOT.has(Number(key))).map((k : any) => ({ ...ITEMDETAIL[k], id: Number(k) }));
 
 export const getQuestTargetValue = (id: number, level: number) => {
     if(id == QUESTTYPE.SLAYER){

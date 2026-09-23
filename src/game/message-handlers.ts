@@ -582,8 +582,7 @@ export const messageHandlers: MessageHandlers = {
         if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, room)) {
             if(message.stackId == STACKTYPE.Revenge) {
                 addStackToCharacter(STACKTYPE.Revenge, -1, enemy, client, room);
-                setCharacterHealth(character, -enemyDiceCount, room, client, "heart", enemy);
-                enemy.stats.ultimate.add(enemyDiceCount);
+                setCharacterHealth(character, -enemyDiceCount, room, client, "heart", enemy);   // charges enemy's ultimate
 
                 deltaCount += enemyDiceCount;
 
@@ -603,8 +602,7 @@ export const messageHandlers: MessageHandlers = {
         }
 
         if(deltaCount > 0) {
-            setCharacterHealth(enemy, -deltaCount, room, client, "heart", enemy);
-            character.stats.ultimate.add(deltaCount);
+            setCharacterHealth(enemy, -deltaCount, room, client, "heart", character);   // the attacker is `character` (was `enemy`); charges its ultimate
 
             room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.HEART_ENEMY);
             room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);

@@ -1423,9 +1423,14 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string, enemy: CharacterState) {
     const wasAlive = character.stats.health.current > 0;   // a hit on a corpse must not run the death branch again (double waves)
     if(amount < 0 && enemy != null && enemy.ambush) amount *= 2;   // Data Avenger striking from invisibility (ultimates.ts)
+    const hpBefore = character.stats.health.current;
     let extra = character.stats.health.add(amount);
     if(amount < 0) {
         character.stats.ultimate.add(2 * Math.abs(amount));
+        // Dealing damage charges the attacker's ultimate 1 point per point actually dealt (this used to happen only
+        // in a couple of block / revenge paths, so ordinary hits charged nothing).
+        const dealt = hpBefore - character.stats.health.current;
+        if (enemy != null && enemy !== character && dealt > 0) enemy.stats.ultimate.add(dealt);
         AddUserData(USER_DATA_TYPE.DAMAGE_TAKEN, character, amount);
         if(enemy != null)
             AddUserData(USER_DATA_TYPE.DAMAGE_DEAL, enemy, amount);

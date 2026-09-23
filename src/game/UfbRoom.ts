@@ -1726,9 +1726,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         if( getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
             if(message.stackId == STACKTYPE.Revenge) {
                 addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
-                setCharacterHealth(character, -enemyDiceCount, this, null, "heart", enemy);
-
-                enemy.stats.ultimate.add(enemyDiceCount);
+                setCharacterHealth(character, -enemyDiceCount, this, null, "heart", enemy);   // charges enemy's ultimate
 
                 deltaCount += enemyDiceCount;
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
@@ -1753,8 +1751,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
 
         if(deltaCount > 0) {
-            setCharacterHealth(character, -deltaCount, this, null, "heart", enemy);
-            enemy.stats.ultimate.add(deltaCount);
+            setCharacterHealth(character, -deltaCount, this, null, "heart", enemy);   // charges enemy's ultimate
 
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                 score: -deltaCount,
@@ -1984,142 +1981,46 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     }
 
+    /**
+     * What a player gets for killing a monster (the monster's own inventory no longer transfers):
+     *   blue   3-6 gold, 1 level-1 item, 1 L1 power, 1 melee/mana token, 1 heart piece or energy shard
+     *   green  7-11 gold, 1 level-2 item, 1 L1 + 1 L2 power, 2 melee/mana tokens, 2 heart pieces / energy shards
+     *   yellow 14-20 gold, 2 items of any level, 2 L2 powers, 3 melee/mana tokens, 1 heart or energy crystal
+     * A melee/mana token raises that maximum by 1 and fills it (rules: Melee / Mana Token "+1 now and +1 max").
+     */
     RewardFromMonster(character: CharacterState, monster: CharacterState, client: Client) {
+        const tier = IsBlueMonster(monster.characterClass) ? 1 : IsGreenMonster(monster.characterClass) ? 2 : IsYellowMonster(monster.characterClass) ? 3 : 0;
+        if (!tier) return;   // not a monster (player kills pay a bounty through the payout instead)
+        const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)];
+        const roll = (lo: number, hi: number) => lo + Math.floor(Math.random() * (hi - lo + 1));
+        // plain items only: tokens, heart pieces / energy shards and crystals are separate reward lines
+        const SPECIAL = new Set<number>([ITEMTYPE.MELEE, ITEMTYPE.MANA, ITEMTYPE.MELEE2, ITEMTYPE.MANA2, ITEMTYPE.HEART_PIECE, ITEMTYPE.HEART_PIECE2,
+            ITEMTYPE.ENERGY_SHARD, ITEMTYPE.HEART_CRYSTAL, ITEMTYPE.ENERGY_CRYSTAL]);
+        const itemAt = (levels: number[]) => pick(levels.flatMap((l) => getItemIdsByLevel(l, true)).filter((it: any) => !SPECIAL.has(it.id))).id;
+        const powerAt = (level: number) => pick(getPowerIdsByLevel(level, true)).id;
 
-        let rewardMsg: any = {
-            characterId : character.id,
-            coin: monster.stats.coin,
-            items: [],
-            stacks: [],
-            powers: []
+        const spec = [
+            null,
+            { gold: [3, 6], items: [[1]], powers: [1], tokens: 1, pieces: 1, crystals: 0 },
+            { gold: [7, 11], items: [[2]], powers: [1, 2], tokens: 2, pieces: 2, crystals: 0 },
+            { gold: [14, 20], items: [[1, 2, 3], [1, 2, 3]], powers: [2, 2], tokens: 3, pieces: 0, crystals: 1 },
+        ][tier]!;
+
+        const items: { id: number; count: number }[] = [], gained: { id: number; count: number }[] = [];
+        const give = (id: number) => { addItemToCharacter(id, 1, character, client); items.push({ id, count: 1 }); };
+        const coin = roll(spec.gold[0], spec.gold[1]);
+        character.stats.coin += coin;
+        setQuestResult(QUESTTYPE.GLITTER, coin, character);
+        spec.items.forEach((levels) => give(itemAt(levels)));
+        spec.powers.forEach((level) => { const id = powerAt(level); addPowerToCharacter(id, 1, character); gained.push({ id, count: 1 }); });
+        for (let i = 0; i < spec.tokens; i++) {
+            if (Math.random() < 0.5) { character.stats.maxMelee++; give(ITEMTYPE.MELEE); }
+            else { character.stats.maxMana++; give(ITEMTYPE.MANA); }
         }
+        for (let i = 0; i < spec.pieces; i++) give(Math.random() < 0.5 ? ITEMTYPE.HEART_PIECE : ITEMTYPE.ENERGY_SHARD);
+        for (let i = 0; i < spec.crystals; i++) give(Math.random() < 0.5 ? ITEMTYPE.HEART_CRYSTAL : ITEMTYPE.ENERGY_CRYSTAL);
 
-        if(IsBlueMonster(monster.characterClass)) {
-            // CHECK MONSTER's INVENTORY
-            const {items, powers} = this.GetInventoryFromEnemy(character, monster);
-            rewardMsg.items = items;
-            rewardMsg.powers = powers;
-
-            // REWARD PART
-            const id = Math.random() < 0.5? ITEMTYPE.MELEE : ITEMTYPE.MANA;
-            // addItemToCharacter(id, 1, character);
-            if(id == ITEMTYPE.MELEE) {
-                character.stats.maxMelee++;
-            } else if(id == ITEMTYPE.MANA) {
-                character.stats.maxMana++;
-            }
-            addItemToCharacter(id, 1, character);
-
-            const lvl1Items = getItemIdsByLevel(1, true);
-            const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
-            addItemToCharacter(lvl1Items[idxItem].id, 1, character);
-
-            rewardMsg.items.push({
-                id: id,
-                count: 1
-            })
-            rewardMsg.items.push({
-                id: lvl1Items[idxItem].id,
-                count: 1
-            })
-
-        } else if(IsGreenMonster(monster.characterClass)) {
-            // CHECK MONSTER's INVENTORY
-            const {items, powers} = this.GetInventoryFromEnemy(character, monster);
-            rewardMsg.items = items;
-            rewardMsg.powers = powers;
-
-            // REWARD PART
-            const id = Math.random() < 0.5? ITEMTYPE.MELEE : ITEMTYPE.MANA;
-            if(id == ITEMTYPE.MELEE) {
-                character.stats.maxMelee += 2;
-            } else if(id == ITEMTYPE.MANA) {
-                character.stats.maxMana += 2;
-            }
-            addItemToCharacter(id, 2, character);
-
-            const lvl1Items = getItemIdsByLevel(1, true);
-            const lvl2Items = getItemIdsByLevel(2, true);
-            const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
-            const idxItem1 = Math.ceil(Math.random() * lvl2Items.length) % lvl2Items.length;
-            addItemToCharacter(lvl1Items[idxItem].id, 1, character);
-            addItemToCharacter(lvl2Items[idxItem1].id, 1, character);
-
-            // ADD GOOD STACK need to develop...
-            const idx = Math.ceil(Math.random() * GOOD_STACKS.length);
-            addStackToCharacter(GOOD_STACKS[idx], 1, character, client, this);
-            if(Math.random() > 0.5) {
-                character.stats.arrowLimit++;
-            } else {
-                character.stats.bombLimit++;
-            }
-
-        } else if(IsYellowMonster(monster.characterClass)) {
-            // CHECK MONSTER's INVENTORY
-            const {items, powers} = this.GetInventoryFromEnemy(character, monster);
-            rewardMsg.items = items;
-            rewardMsg.powers = powers;
-
-            // REWARD PART
-            const id = Math.random() < 0.5? ITEMTYPE.MELEE : ITEMTYPE.MANA;
-            if(id == ITEMTYPE.MELEE) {
-                character.stats.maxMelee += 3;
-            } else if(id == ITEMTYPE.MANA) {
-                character.stats.maxMana += 3;
-            }
-            addItemToCharacter(id, 3, character);
-            const lvl1Items = getItemIdsByLevel(1, true);
-            const lvl2Items = getItemIdsByLevel(2, true);
-            const idxItem = Math.ceil(Math.random() * lvl1Items.length) % lvl1Items.length;
-            const idxItem1 = Math.ceil(Math.random() * lvl2Items.length) % lvl2Items.length;
-            addItemToCharacter(lvl1Items[idxItem].id, 1, character);
-            addItemToCharacter(lvl2Items[idxItem1].id, 1, character);
-
-            // ADD GOOD STACK ....
-            const idx = Math.ceil(Math.random() * GOOD_STACKS.length);
-            addStackToCharacter(GOOD_STACKS[idx], 2, character, client, this);
-            if(Math.random() > 0.5) {
-                character.stats.arrowLimit += 2;
-            } else {
-                character.stats.bombLimit += 2;
-            }
-        }
-
-        if(client != null) {
-            console.log("Reward message: ", rewardMsg);
-            client.send(SERVER_TO_CLIENT_MESSAGE.REWARD_BONUS, rewardMsg);
-        }
-    }
-
-    GetInventoryFromEnemy(character: CharacterState, enemy: CharacterState) {
-        character.stats.coin += enemy.stats.coin;
-
-        setQuestResult(QUESTTYPE.GLITTER, enemy.stats.coin, character);
-
-
-        let addItems: any = [];
-        let addPowers: any = [];
-        // enemy.items.forEach(item => {
-        //     if(item.count > 0) {
-        //         addItemToCharacter(item.id, item.count, character);
-        //         addItems.push({
-        //             id: item.id,
-        //             count: item.count
-        //         })
-        //     }
-        // })
-
-        enemy.equipSlots.forEach(p => {
-            // if(p.count > 0) {
-                addPowerToCharacter(p.id, 1, character);
-                addPowers.push({
-                    id: p.id,
-                    count: 1
-                })
-            // }
-        });
-
-        return {items: addItems, powers: addPowers};
+        if (client != null) client.send(SERVER_TO_CLIENT_MESSAGE.REWARD_BONUS, { characterId: character.id, coin, items, stacks: [], powers: gained });
     }
 
     StopAIChecking() {
