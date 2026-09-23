@@ -9,7 +9,7 @@
         "x": 0,
         "y": 0
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": "Monster",
       "sides": [
@@ -30,7 +30,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A01JU3",
+      "legacyCode": "A01IU3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 1
@@ -42,7 +42,7 @@
         "x": 1,
         "y": 0
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -63,7 +63,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B01JP0"
+      "legacyCode": "B01IP0"
     },
     {
       "id": "tile_C_1",
@@ -71,7 +71,7 @@
         "x": 2,
         "y": 0
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -92,7 +92,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C01JL0"
+      "legacyCode": "C01IL0"
     },
     {
       "id": "tile_D_1",
@@ -100,7 +100,7 @@
         "x": 3,
         "y": 0
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": null,
       "sides": [
@@ -121,7 +121,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "D01JY0"
+      "legacyCode": "D01IY0"
     },
     {
       "id": "tile_E_1",
@@ -129,7 +129,7 @@
         "x": 4,
         "y": 0
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -139,7 +139,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Bottom",
@@ -150,7 +150,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "E01JU0"
+      "legacyCode": "E01IU0"
     },
     {
       "id": "tile_F_1",
@@ -158,7 +158,7 @@
         "x": 5,
         "y": 0
       },
-      "type": "Lower",
+      "type": "StairsEW",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -168,7 +168,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         },
         {
           "side": "Bottom",
@@ -176,10 +176,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairTop"
         }
       ],
-      "legacyCode": "F01JP0"
+      "legacyCode": "F01GP0"
     },
     {
       "id": "tile_G_1",
@@ -205,7 +205,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         }
       ],
       "legacyCode": "G01JR0"
@@ -767,7 +767,7 @@
         "x": 0,
         "y": 1
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouthWest",
       "spawnType": "Chest",
       "sides": [
@@ -788,7 +788,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A02JV1",
+      "legacyCode": "A02IV1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 1
@@ -800,7 +800,7 @@
         "x": 1,
         "y": 1
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -821,7 +821,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "B02JU0"
+      "legacyCode": "B02IU0"
     },
     {
       "id": "tile_C_2",
@@ -829,7 +829,7 @@
         "x": 2,
         "y": 1
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -850,7 +850,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C02JS0"
+      "legacyCode": "C02IS0"
     },
     {
       "id": "tile_D_2",
@@ -858,7 +858,7 @@
         "x": 3,
         "y": 1
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -879,7 +879,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "D02JU0"
+      "legacyCode": "D02IU0"
     },
     {
       "id": "tile_E_2",
@@ -887,7 +887,7 @@
         "x": 4,
         "y": 1
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -908,7 +908,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "E02JS0"
+      "legacyCode": "E02IS0"
     },
     {
       "id": "tile_F_2",
@@ -1438,7 +1438,7 @@
         "x": 23,
         "y": 1
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "WestNorthEast",
       "spawnType": "Chest",
       "sides": [
@@ -1459,7 +1459,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "X02JX1",
+      "legacyCode": "X02IX1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 16
@@ -1533,7 +1533,7 @@
         "x": 0,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "WestNorthEast",
       "spawnType": "Chest",
       "sides": [
@@ -1554,7 +1554,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A03JX1",
+      "legacyCode": "A03IX1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 2
@@ -1566,7 +1566,7 @@
         "x": 1,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -1587,7 +1587,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "B03JT0"
+      "legacyCode": "B03IT0"
     },
     {
       "id": "tile_C_3",
@@ -1595,7 +1595,7 @@
         "x": 2,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": "Monster",
       "sides": [
@@ -1616,7 +1616,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C03JL3",
+      "legacyCode": "C03IL3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 6
@@ -1628,7 +1628,7 @@
         "x": 3,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -1649,7 +1649,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "D03JS0"
+      "legacyCode": "D03IS0"
     },
     {
       "id": "tile_E_3",
@@ -2179,7 +2179,7 @@
         "x": 22,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -2200,7 +2200,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "W03JU0"
+      "legacyCode": "W03IU0"
     },
     {
       "id": "tile_X_3",
@@ -2208,7 +2208,7 @@
         "x": 23,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": "Monster",
       "sides": [
@@ -2229,7 +2229,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X03JK3",
+      "legacyCode": "X03IK3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 16
@@ -2241,7 +2241,7 @@
         "x": 24,
         "y": 2
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -2262,7 +2262,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y03JR0"
+      "legacyCode": "Y03IR0"
     },
     {
       "id": "tile_Z_3",
@@ -2303,7 +2303,7 @@
         "x": 0,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": "Monster",
       "sides": [
@@ -2324,7 +2324,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A04JO3",
+      "legacyCode": "A04IO3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 2
@@ -2336,7 +2336,7 @@
         "x": 1,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -2350,14 +2350,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B04JR0"
+      "legacyCode": "B04IR0"
     },
     {
       "id": "tile_C_4",
@@ -2365,7 +2365,7 @@
         "x": 2,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouthWest",
       "spawnType": "Chest",
       "sides": [
@@ -2386,7 +2386,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "C04JV1",
+      "legacyCode": "C04IV1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 6
@@ -2932,7 +2932,7 @@
         "x": 21,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -2953,7 +2953,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V04JU0"
+      "legacyCode": "V04IU0"
     },
     {
       "id": "tile_W_4",
@@ -2961,7 +2961,7 @@
         "x": 22,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -2982,7 +2982,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W04JK0"
+      "legacyCode": "W04IK0"
     },
     {
       "id": "tile_X_4",
@@ -2990,7 +2990,7 @@
         "x": 23,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -3004,14 +3004,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X04JK0"
+      "legacyCode": "X04IK0"
     },
     {
       "id": "tile_Y_4",
@@ -3019,7 +3019,7 @@
         "x": 24,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -3040,7 +3040,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y04JK0"
+      "legacyCode": "Y04IK0"
     },
     {
       "id": "tile_Z_4",
@@ -3048,7 +3048,7 @@
         "x": 25,
         "y": 3
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -3069,7 +3069,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z04JR0"
+      "legacyCode": "Z04IR0"
     },
     {
       "id": "tile_A_5",
@@ -3077,7 +3077,7 @@
         "x": 0,
         "y": 4
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -3087,7 +3087,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -3098,7 +3098,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A05JO0"
+      "legacyCode": "A05IO0"
     },
     {
       "id": "tile_B_5",
@@ -3112,19 +3112,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B05DK0"
@@ -3135,7 +3135,7 @@
         "x": 2,
         "y": 4
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": "Chest",
       "sides": [
@@ -3153,10 +3153,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C05JR1",
+      "legacyCode": "C05IR1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 7
@@ -3298,7 +3298,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -3694,7 +3694,7 @@
         "x": 21,
         "y": 4
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -3715,7 +3715,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V05JO0"
+      "legacyCode": "V05IO0"
     },
     {
       "id": "tile_W_5",
@@ -3723,7 +3723,7 @@
         "x": 22,
         "y": 4
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -3733,7 +3733,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -3744,7 +3744,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W05JK0"
+      "legacyCode": "W05IK0"
     },
     {
       "id": "tile_X_5",
@@ -3758,19 +3758,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "X05DK0"
@@ -3781,7 +3781,7 @@
         "x": 24,
         "y": 4
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -3799,10 +3799,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Y05JK0"
+      "legacyCode": "Y05IK0"
     },
     {
       "id": "tile_Z_5",
@@ -3810,7 +3810,7 @@
         "x": 25,
         "y": 4
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -3831,7 +3831,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z05JM0"
+      "legacyCode": "Z05IM0"
     },
     {
       "id": "tile_A_6",
@@ -3839,7 +3839,7 @@
         "x": 0,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -3860,7 +3860,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A06JO0"
+      "legacyCode": "A06IO0"
     },
     {
       "id": "tile_B_6",
@@ -3868,13 +3868,13 @@
         "x": 1,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -3882,14 +3882,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B06JM0"
+      "legacyCode": "B06IM0"
     },
     {
       "id": "tile_C_6",
@@ -3897,7 +3897,7 @@
         "x": 2,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastWest",
       "spawnType": "Monster",
       "sides": [
@@ -3918,7 +3918,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "C06JQ3",
+      "legacyCode": "C06IQ3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 7
@@ -4002,7 +4002,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -4027,7 +4027,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -4052,19 +4052,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "H06DK0"
@@ -4093,7 +4093,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "I06JN0"
@@ -4452,7 +4452,7 @@
         "x": 21,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -4473,7 +4473,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V06JO0"
+      "legacyCode": "V06IO0"
     },
     {
       "id": "tile_W_6",
@@ -4481,7 +4481,7 @@
         "x": 22,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -4502,7 +4502,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W06JK0"
+      "legacyCode": "W06IK0"
     },
     {
       "id": "tile_X_6",
@@ -4510,13 +4510,13 @@
         "x": 23,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -4531,7 +4531,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X06JK0"
+      "legacyCode": "X06IK0"
     },
     {
       "id": "tile_Y_6",
@@ -4539,7 +4539,7 @@
         "x": 24,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -4560,7 +4560,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y06JK0"
+      "legacyCode": "Y06IK0"
     },
     {
       "id": "tile_Z_6",
@@ -4568,7 +4568,7 @@
         "x": 25,
         "y": 5
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -4589,7 +4589,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z06JM0"
+      "legacyCode": "Z06IM0"
     },
     {
       "id": "tile_A_7",
@@ -4597,7 +4597,7 @@
         "x": 0,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -4607,7 +4607,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -4618,7 +4618,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A07JO0"
+      "legacyCode": "A07IO0"
     },
     {
       "id": "tile_B_7",
@@ -4632,19 +4632,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B07DK0"
@@ -4655,7 +4655,7 @@
         "x": 2,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -4673,10 +4673,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C07JM0"
+      "legacyCode": "C07IM0"
     },
     {
       "id": "tile_D_7",
@@ -4723,7 +4723,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -4748,19 +4748,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "F07DK0"
@@ -4771,7 +4771,7 @@
         "x": 6,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -4789,10 +4789,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "G07JL0"
+      "legacyCode": "G07IL0"
     },
     {
       "id": "tile_H_7",
@@ -4800,13 +4800,13 @@
         "x": 7,
         "y": 6
       },
-      "type": "Lower",
-      "blockPath": "NorthSouth",
+      "type": "Upper",
+      "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -4821,7 +4821,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H07JP3",
+      "legacyCode": "H07IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 10
@@ -4833,7 +4833,7 @@
         "x": 8,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": "Chest",
       "sides": [
@@ -4847,14 +4847,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I07JR1",
+      "legacyCode": "I07IR1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 10
@@ -5160,7 +5160,7 @@
         "x": 19,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastWest",
       "spawnType": "Monster",
       "sides": [
@@ -5181,7 +5181,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "T07JQ3",
+      "legacyCode": "T07IQ3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 25
@@ -5207,7 +5207,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Bridge"
         },
         {
           "side": "Left",
@@ -5222,7 +5222,7 @@
         "x": 21,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -5243,7 +5243,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V07JO0"
+      "legacyCode": "V07IO0"
     },
     {
       "id": "tile_W_7",
@@ -5251,7 +5251,7 @@
         "x": 22,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -5261,18 +5261,18 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W07JK0"
+      "legacyCode": "W07IK0"
     },
     {
       "id": "tile_X_7",
@@ -5290,7 +5290,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -5298,7 +5298,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "X07JK0"
@@ -5309,7 +5309,7 @@
         "x": 24,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -5323,14 +5323,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         }
       ],
-      "legacyCode": "Y07JK0"
+      "legacyCode": "Y07IK0"
     },
     {
       "id": "tile_Z_7",
@@ -5338,7 +5338,7 @@
         "x": 25,
         "y": 6
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -5359,7 +5359,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z07JM0"
+      "legacyCode": "Z07IM0"
     },
     {
       "id": "tile_A_8",
@@ -5367,7 +5367,7 @@
         "x": 0,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -5388,7 +5388,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A08JO0"
+      "legacyCode": "A08IO0"
     },
     {
       "id": "tile_B_8",
@@ -5396,13 +5396,13 @@
         "x": 1,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -5410,14 +5410,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B08JK0"
+      "legacyCode": "B08IK0"
     },
     {
       "id": "tile_C_8",
@@ -5425,7 +5425,7 @@
         "x": 2,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -5446,7 +5446,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C08JS0"
+      "legacyCode": "C08IS0"
     },
     {
       "id": "tile_D_8",
@@ -5497,7 +5497,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -5512,13 +5512,13 @@
         "x": 5,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -5533,7 +5533,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "F08JO0"
+      "legacyCode": "F08IO0"
     },
     {
       "id": "tile_G_8",
@@ -5541,7 +5541,7 @@
         "x": 6,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -5562,7 +5562,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G08JK0"
+      "legacyCode": "G08IK0"
     },
     {
       "id": "tile_H_8",
@@ -5570,7 +5570,7 @@
         "x": 7,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -5580,7 +5580,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -5591,7 +5591,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H08JL0"
+      "legacyCode": "H08IL0"
     },
     {
       "id": "tile_I_8",
@@ -5605,19 +5605,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "I08DK0"
@@ -5628,7 +5628,7 @@
         "x": 9,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -5646,10 +5646,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "J08JR0"
+      "legacyCode": "J08IR0"
     },
     {
       "id": "tile_K_8",
@@ -5831,7 +5831,7 @@
         "x": 16,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "WestNorthEast",
       "spawnType": null,
       "sides": [
@@ -5852,7 +5852,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "Q08JX0"
+      "legacyCode": "Q08IX0"
     },
     {
       "id": "tile_R_8",
@@ -5893,7 +5893,7 @@
         "x": 18,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -5914,7 +5914,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "S08JU0"
+      "legacyCode": "S08IU0"
     },
     {
       "id": "tile_T_8",
@@ -5922,7 +5922,7 @@
         "x": 19,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -5932,7 +5932,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Bridge"
         },
         {
           "side": "Bottom",
@@ -5943,7 +5943,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T08JK0"
+      "legacyCode": "T08IK0"
     },
     {
       "id": "tile_U_8",
@@ -5952,35 +5952,6 @@
         "y": 7
       },
       "type": "VerticalBridge",
-      "blockPath": "EastWest",
-      "spawnType": null,
-      "sides": [
-        {
-          "side": "Top",
-          "edgeProperty": "Basic"
-        },
-        {
-          "side": "Right",
-          "edgeProperty": "Wall"
-        },
-        {
-          "side": "Bottom",
-          "edgeProperty": "Basic"
-        },
-        {
-          "side": "Left",
-          "edgeProperty": "Wall"
-        }
-      ],
-      "legacyCode": "U08AQ0"
-    },
-    {
-      "id": "tile_V_8",
-      "coordinates": {
-        "x": 21,
-        "y": 7
-      },
-      "type": "Lower",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -6001,7 +5972,36 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V08JK0"
+      "legacyCode": "U08AK0"
+    },
+    {
+      "id": "tile_V_8",
+      "coordinates": {
+        "x": 21,
+        "y": 7
+      },
+      "type": "Upper",
+      "blockPath": "None",
+      "spawnType": null,
+      "sides": [
+        {
+          "side": "Top",
+          "edgeProperty": "Basic"
+        },
+        {
+          "side": "Right",
+          "edgeProperty": "Void"
+        },
+        {
+          "side": "Bottom",
+          "edgeProperty": "Basic"
+        },
+        {
+          "side": "Left",
+          "edgeProperty": "Bridge"
+        }
+      ],
+      "legacyCode": "V08IK0"
     },
     {
       "id": "tile_W_8",
@@ -6015,19 +6015,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "W08DK0"
@@ -6048,7 +6048,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -6056,7 +6056,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "X08JK0"
@@ -6073,19 +6073,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "Y08DK0"
@@ -6096,7 +6096,7 @@
         "x": 25,
         "y": 7
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -6114,10 +6114,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Z08JM0"
+      "legacyCode": "Z08IM0"
     },
     {
       "id": "tile_A_9",
@@ -6125,7 +6125,7 @@
         "x": 0,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -6135,7 +6135,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -6146,7 +6146,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A09JO0"
+      "legacyCode": "A09IO0"
     },
     {
       "id": "tile_B_9",
@@ -6160,19 +6160,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B09DK0"
@@ -6183,7 +6183,7 @@
         "x": 2,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -6201,10 +6201,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C09JR0"
+      "legacyCode": "C09IR0"
     },
     {
       "id": "tile_D_9",
@@ -6222,7 +6222,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -6247,19 +6247,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "E09DK0"
@@ -6270,7 +6270,7 @@
         "x": 5,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -6288,10 +6288,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "F09JK0"
+      "legacyCode": "F09IK0"
     },
     {
       "id": "tile_G_9",
@@ -6299,7 +6299,7 @@
         "x": 6,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -6320,7 +6320,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G09JK0"
+      "legacyCode": "G09IK0"
     },
     {
       "id": "tile_H_9",
@@ -6328,7 +6328,7 @@
         "x": 7,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -6349,7 +6349,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H09JK0"
+      "legacyCode": "H09IK0"
     },
     {
       "id": "tile_I_9",
@@ -6357,13 +6357,13 @@
         "x": 8,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -6378,7 +6378,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I09JK0"
+      "legacyCode": "I09IK0"
     },
     {
       "id": "tile_J_9",
@@ -6386,7 +6386,7 @@
         "x": 9,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -6407,7 +6407,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J09JK0"
+      "legacyCode": "J09IK0"
     },
     {
       "id": "tile_K_9",
@@ -6415,7 +6415,7 @@
         "x": 10,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -6436,7 +6436,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K09JP0"
+      "legacyCode": "K09IP0"
     },
     {
       "id": "tile_L_9",
@@ -6444,7 +6444,7 @@
         "x": 11,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -6465,7 +6465,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L09JP0"
+      "legacyCode": "L09IP0"
     },
     {
       "id": "tile_M_9",
@@ -6473,7 +6473,7 @@
         "x": 12,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": null,
       "sides": [
@@ -6494,7 +6494,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M09JY0"
+      "legacyCode": "M09IY0"
     },
     {
       "id": "tile_N_9",
@@ -6560,7 +6560,7 @@
         "x": 15,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": "Chest",
       "sides": [
@@ -6581,7 +6581,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "P09JW1",
+      "legacyCode": "P09IW1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 26
@@ -6593,7 +6593,7 @@
         "x": 16,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -6614,7 +6614,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q09JN3",
+      "legacyCode": "Q09IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 26
@@ -6626,7 +6626,7 @@
         "x": 17,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -6647,7 +6647,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R09JP0"
+      "legacyCode": "R09IP0"
     },
     {
       "id": "tile_S_9",
@@ -6655,7 +6655,7 @@
         "x": 18,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -6676,7 +6676,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S09JN0"
+      "legacyCode": "S09IN0"
     },
     {
       "id": "tile_T_9",
@@ -6684,7 +6684,7 @@
         "x": 19,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -6705,7 +6705,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T09JS0"
+      "legacyCode": "T09IS0"
     },
     {
       "id": "tile_U_9",
@@ -6719,7 +6719,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Bridge"
         },
         {
           "side": "Right",
@@ -6746,7 +6746,7 @@
         "x": 21,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouthWest",
       "spawnType": null,
       "sides": [
@@ -6767,7 +6767,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V09JV0"
+      "legacyCode": "V09IV0"
     },
     {
       "id": "tile_W_9",
@@ -6781,7 +6781,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -6843,11 +6843,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -6866,7 +6866,7 @@
         "x": 25,
         "y": 8
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -6884,10 +6884,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         }
       ],
-      "legacyCode": "Z09JM0"
+      "legacyCode": "Z09IM0"
     },
     {
       "id": "tile_A_10",
@@ -6895,7 +6895,7 @@
         "x": 0,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -6916,7 +6916,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A10JO0"
+      "legacyCode": "A10IO0"
     },
     {
       "id": "tile_B_10",
@@ -6924,13 +6924,13 @@
         "x": 1,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -6938,14 +6938,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B10JM0"
+      "legacyCode": "B10IM0"
     },
     {
       "id": "tile_C_10",
@@ -6953,7 +6953,7 @@
         "x": 2,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
@@ -6974,7 +6974,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "C10JQ0"
+      "legacyCode": "C10IQ0"
     },
     {
       "id": "tile_D_10",
@@ -7021,7 +7021,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -7029,7 +7029,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -7048,7 +7048,7 @@
         "x": 5,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -7069,7 +7069,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "F10JO0"
+      "legacyCode": "F10IO0"
     },
     {
       "id": "tile_G_10",
@@ -7077,7 +7077,7 @@
         "x": 6,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7098,7 +7098,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G10JK0"
+      "legacyCode": "G10IK0"
     },
     {
       "id": "tile_H_10",
@@ -7106,7 +7106,7 @@
         "x": 7,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7127,7 +7127,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H10JK0"
+      "legacyCode": "H10IK0"
     },
     {
       "id": "tile_I_10",
@@ -7135,7 +7135,7 @@
         "x": 8,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7156,7 +7156,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I10JK0"
+      "legacyCode": "I10IK0"
     },
     {
       "id": "tile_J_10",
@@ -7164,7 +7164,7 @@
         "x": 9,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -7185,7 +7185,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J10JM0"
+      "legacyCode": "J10IM0"
     },
     {
       "id": "tile_K_10",
@@ -7193,7 +7193,7 @@
         "x": 10,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "WestNorthEast",
       "spawnType": "Chest",
       "sides": [
@@ -7214,7 +7214,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "K10JX1",
+      "legacyCode": "K10IX1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 21
@@ -7226,7 +7226,7 @@
         "x": 11,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -7247,7 +7247,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "L10JU0"
+      "legacyCode": "L10IU0"
     },
     {
       "id": "tile_M_10",
@@ -7255,7 +7255,7 @@
         "x": 12,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -7276,7 +7276,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M10JR0"
+      "legacyCode": "M10IR0"
     },
     {
       "id": "tile_N_10",
@@ -7284,7 +7284,7 @@
         "x": 13,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -7305,7 +7305,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "N10JU0"
+      "legacyCode": "N10IU0"
     },
     {
       "id": "tile_O_10",
@@ -7313,7 +7313,7 @@
         "x": 14,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7334,7 +7334,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "O10JL0"
+      "legacyCode": "O10IL0"
     },
     {
       "id": "tile_P_10",
@@ -7342,7 +7342,7 @@
         "x": 15,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7363,7 +7363,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "P10JL0"
+      "legacyCode": "P10IL0"
     },
     {
       "id": "tile_Q_10",
@@ -7371,7 +7371,7 @@
         "x": 16,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7392,7 +7392,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q10JL0"
+      "legacyCode": "Q10IL0"
     },
     {
       "id": "tile_R_10",
@@ -7400,7 +7400,7 @@
         "x": 17,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7421,7 +7421,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R10JL0"
+      "legacyCode": "R10IL0"
     },
     {
       "id": "tile_S_10",
@@ -7429,7 +7429,7 @@
         "x": 18,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7450,7 +7450,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S10JL0"
+      "legacyCode": "S10IL0"
     },
     {
       "id": "tile_T_10",
@@ -7458,7 +7458,7 @@
         "x": 19,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7479,7 +7479,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T10JL0"
+      "legacyCode": "T10IL0"
     },
     {
       "id": "tile_U_10",
@@ -7487,7 +7487,7 @@
         "x": 20,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7508,7 +7508,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U10JL0"
+      "legacyCode": "U10IL0"
     },
     {
       "id": "tile_V_10",
@@ -7516,7 +7516,7 @@
         "x": 21,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -7537,7 +7537,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V10JL0"
+      "legacyCode": "V10IL0"
     },
     {
       "id": "tile_W_10",
@@ -7545,7 +7545,7 @@
         "x": 22,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": "Monster",
       "sides": [
@@ -7555,7 +7555,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Bottom",
@@ -7566,7 +7566,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W10JK3",
+      "legacyCode": "W10IK3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 24
@@ -7596,7 +7596,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "X10JP0"
@@ -7617,11 +7617,11 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -7636,7 +7636,7 @@
         "x": 25,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -7654,10 +7654,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         }
       ],
-      "legacyCode": "Z10JM0"
+      "legacyCode": "Z10IM0"
     },
     {
       "id": "tile_A_11",
@@ -7665,7 +7665,7 @@
         "x": 0,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -7675,7 +7675,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -7686,7 +7686,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A11JO0"
+      "legacyCode": "A11IO0"
     },
     {
       "id": "tile_B_11",
@@ -7700,19 +7700,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B11DK0"
@@ -7723,7 +7723,7 @@
         "x": 2,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -7741,10 +7741,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C11JM0"
+      "legacyCode": "C11IM0"
     },
     {
       "id": "tile_D_11",
@@ -7762,7 +7762,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -7787,19 +7787,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "E11DK0"
@@ -7810,7 +7810,7 @@
         "x": 5,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7828,10 +7828,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "F11JK0"
+      "legacyCode": "F11IK0"
     },
     {
       "id": "tile_G_11",
@@ -7839,7 +7839,7 @@
         "x": 6,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7860,7 +7860,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G11JK0"
+      "legacyCode": "G11IK0"
     },
     {
       "id": "tile_H_11",
@@ -7868,7 +7868,7 @@
         "x": 7,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7889,7 +7889,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H11JK0"
+      "legacyCode": "H11IK0"
     },
     {
       "id": "tile_I_11",
@@ -7897,7 +7897,7 @@
         "x": 8,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -7918,7 +7918,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I11JK0"
+      "legacyCode": "I11IK0"
     },
     {
       "id": "tile_J_11",
@@ -7926,7 +7926,7 @@
         "x": 9,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -7947,7 +7947,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J11JM0"
+      "legacyCode": "J11IM0"
     },
     {
       "id": "tile_K_11",
@@ -7955,7 +7955,7 @@
         "x": 10,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": "Monster",
       "sides": [
@@ -7976,7 +7976,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "K11JT3",
+      "legacyCode": "K11IT3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 21
@@ -7988,7 +7988,7 @@
         "x": 11,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -8009,7 +8009,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L11JS0"
+      "legacyCode": "L11IS0"
     },
     {
       "id": "tile_M_11",
@@ -8017,7 +8017,7 @@
         "x": 12,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -8038,7 +8038,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "M11JT0"
+      "legacyCode": "M11IT0"
     },
     {
       "id": "tile_N_11",
@@ -8046,7 +8046,7 @@
         "x": 13,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8067,7 +8067,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N11JN0"
+      "legacyCode": "N11IN0"
     },
     {
       "id": "tile_O_11",
@@ -8075,7 +8075,7 @@
         "x": 14,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8096,7 +8096,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "O11JN0"
+      "legacyCode": "O11IN0"
     },
     {
       "id": "tile_P_11",
@@ -8104,7 +8104,7 @@
         "x": 15,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8125,7 +8125,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "P11JN0"
+      "legacyCode": "P11IN0"
     },
     {
       "id": "tile_Q_11",
@@ -8133,7 +8133,7 @@
         "x": 16,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8154,7 +8154,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q11JN0"
+      "legacyCode": "Q11IN0"
     },
     {
       "id": "tile_R_11",
@@ -8162,7 +8162,7 @@
         "x": 17,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8183,7 +8183,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R11JN0"
+      "legacyCode": "R11IN0"
     },
     {
       "id": "tile_S_11",
@@ -8191,7 +8191,7 @@
         "x": 18,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8212,7 +8212,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S11JN0"
+      "legacyCode": "S11IN0"
     },
     {
       "id": "tile_T_11",
@@ -8220,7 +8220,7 @@
         "x": 19,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8241,7 +8241,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T11JN0"
+      "legacyCode": "T11IN0"
     },
     {
       "id": "tile_U_11",
@@ -8249,7 +8249,7 @@
         "x": 20,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8270,7 +8270,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U11JN0"
+      "legacyCode": "U11IN0"
     },
     {
       "id": "tile_V_11",
@@ -8278,7 +8278,7 @@
         "x": 21,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8299,7 +8299,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V11JN0"
+      "legacyCode": "V11IN0"
     },
     {
       "id": "tile_W_11",
@@ -8307,7 +8307,7 @@
         "x": 22,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -8328,7 +8328,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W11JK0"
+      "legacyCode": "W11IK0"
     },
     {
       "id": "tile_X_11",
@@ -8346,7 +8346,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -8371,19 +8371,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "Y11DK0"
@@ -8394,7 +8394,7 @@
         "x": 25,
         "y": 10
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -8412,10 +8412,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Z11JM0"
+      "legacyCode": "Z11IM0"
     },
     {
       "id": "tile_A_12",
@@ -8423,7 +8423,7 @@
         "x": 0,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -8444,7 +8444,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A12JT0"
+      "legacyCode": "A12IT0"
     },
     {
       "id": "tile_B_12",
@@ -8452,13 +8452,13 @@
         "x": 1,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -8466,14 +8466,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B12JK0"
+      "legacyCode": "B12IK0"
     },
     {
       "id": "tile_C_12",
@@ -8481,7 +8481,7 @@
         "x": 2,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -8502,7 +8502,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C12JM0"
+      "legacyCode": "C12IM0"
     },
     {
       "id": "tile_D_12",
@@ -8545,7 +8545,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -8568,7 +8568,7 @@
         "x": 5,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -8582,14 +8582,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "F12JO0"
+      "legacyCode": "F12IO0"
     },
     {
       "id": "tile_G_12",
@@ -8597,7 +8597,7 @@
         "x": 6,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -8618,7 +8618,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G12JK0"
+      "legacyCode": "G12IK0"
     },
     {
       "id": "tile_H_12",
@@ -8626,7 +8626,7 @@
         "x": 7,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -8647,7 +8647,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H12JK0"
+      "legacyCode": "H12IK0"
     },
     {
       "id": "tile_I_12",
@@ -8655,7 +8655,7 @@
         "x": 8,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -8676,7 +8676,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I12JK0"
+      "legacyCode": "I12IK0"
     },
     {
       "id": "tile_J_12",
@@ -8684,7 +8684,7 @@
         "x": 9,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -8705,7 +8705,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J12JN0"
+      "legacyCode": "J12IN0"
     },
     {
       "id": "tile_K_12",
@@ -8713,7 +8713,7 @@
         "x": 10,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -8734,7 +8734,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K12JP0"
+      "legacyCode": "K12IP0"
     },
     {
       "id": "tile_L_12",
@@ -8742,7 +8742,7 @@
         "x": 11,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": "Monster",
       "sides": [
@@ -8763,7 +8763,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L12JP3",
+      "legacyCode": "L12IP3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 22
@@ -8775,7 +8775,7 @@
         "x": 12,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -8796,7 +8796,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M12JY1",
+      "legacyCode": "M12IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 22
@@ -8866,7 +8866,7 @@
         "x": 15,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": "Chest",
       "sides": [
@@ -8887,7 +8887,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "P12JW1",
+      "legacyCode": "P12IW1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 23
@@ -8899,7 +8899,7 @@
         "x": 16,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": "Monster",
       "sides": [
@@ -8920,7 +8920,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q12JP3",
+      "legacyCode": "Q12IP3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 23
@@ -8932,7 +8932,7 @@
         "x": 17,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -8953,7 +8953,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R12JL0"
+      "legacyCode": "R12IL0"
     },
     {
       "id": "tile_S_12",
@@ -8961,7 +8961,7 @@
         "x": 18,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -8982,7 +8982,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S12JL0"
+      "legacyCode": "S12IL0"
     },
     {
       "id": "tile_T_12",
@@ -8990,7 +8990,7 @@
         "x": 19,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -9011,7 +9011,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T12JR0"
+      "legacyCode": "T12IR0"
     },
     {
       "id": "tile_U_12",
@@ -9052,7 +9052,7 @@
         "x": 21,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "WestNorthEast",
       "spawnType": null,
       "sides": [
@@ -9073,7 +9073,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V12JX0"
+      "legacyCode": "V12IX0"
     },
     {
       "id": "tile_W_12",
@@ -9081,7 +9081,7 @@
         "x": 22,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
@@ -9102,7 +9102,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "W12JQ0"
+      "legacyCode": "W12IQ0"
     },
     {
       "id": "tile_X_12",
@@ -9110,7 +9110,7 @@
         "x": 23,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -9131,7 +9131,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "X12JU0"
+      "legacyCode": "X12IU0"
     },
     {
       "id": "tile_Y_12",
@@ -9139,13 +9139,13 @@
         "x": 24,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -9160,7 +9160,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y12JK0"
+      "legacyCode": "Y12IK0"
     },
     {
       "id": "tile_Z_12",
@@ -9168,7 +9168,7 @@
         "x": 25,
         "y": 11
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -9189,7 +9189,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z12JM0"
+      "legacyCode": "Z12IM0"
     },
     {
       "id": "tile_A_13",
@@ -9197,7 +9197,7 @@
         "x": 0,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -9207,7 +9207,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -9218,7 +9218,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A13JU0"
+      "legacyCode": "A13IU0"
     },
     {
       "id": "tile_B_13",
@@ -9232,19 +9232,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B13DK0"
@@ -9256,7 +9256,7 @@
         "y": 12
       },
       "type": "Lower",
-      "blockPath": "EastWest",
+      "blockPath": "East",
       "spawnType": null,
       "sides": [
         {
@@ -9273,10 +9273,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C13JQ0"
+      "legacyCode": "C13JM0"
     },
     {
       "id": "tile_D_13",
@@ -9323,7 +9323,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -9348,19 +9348,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "F13DK0"
@@ -9371,7 +9371,7 @@
         "x": 6,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9389,10 +9389,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "G13JK0"
+      "legacyCode": "G13IK0"
     },
     {
       "id": "tile_H_13",
@@ -9400,7 +9400,7 @@
         "x": 7,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9421,7 +9421,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H13JK0"
+      "legacyCode": "H13IK0"
     },
     {
       "id": "tile_I_13",
@@ -9429,7 +9429,7 @@
         "x": 8,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9450,7 +9450,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I13JK0"
+      "legacyCode": "I13IK0"
     },
     {
       "id": "tile_J_13",
@@ -9458,7 +9458,7 @@
         "x": 9,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -9479,7 +9479,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J13JR0"
+      "legacyCode": "J13IR0"
     },
     {
       "id": "tile_K_13",
@@ -9690,7 +9690,7 @@
         "x": 17,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -9711,7 +9711,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "R13JT0"
+      "legacyCode": "R13IT0"
     },
     {
       "id": "tile_S_13",
@@ -9719,7 +9719,7 @@
         "x": 18,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9740,7 +9740,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S13JK0"
+      "legacyCode": "S13IK0"
     },
     {
       "id": "tile_T_13",
@@ -9748,7 +9748,7 @@
         "x": 19,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -9769,7 +9769,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T13JM0"
+      "legacyCode": "T13IM0"
     },
     {
       "id": "tile_U_13",
@@ -9791,7 +9791,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Bridge"
         },
         {
           "side": "Left",
@@ -9810,7 +9810,7 @@
         "x": 21,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -9831,7 +9831,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V13JO0"
+      "legacyCode": "V13IO0"
     },
     {
       "id": "tile_W_13",
@@ -9839,7 +9839,7 @@
         "x": 22,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9853,14 +9853,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W13JK0"
+      "legacyCode": "W13IK0"
     },
     {
       "id": "tile_X_13",
@@ -9868,7 +9868,7 @@
         "x": 23,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9889,7 +9889,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X13JK0"
+      "legacyCode": "X13IK0"
     },
     {
       "id": "tile_Y_13",
@@ -9897,7 +9897,7 @@
         "x": 24,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -9911,14 +9911,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y13JK0"
+      "legacyCode": "Y13IK0"
     },
     {
       "id": "tile_Z_13",
@@ -9926,7 +9926,7 @@
         "x": 25,
         "y": 12
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -9947,7 +9947,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z13JM0"
+      "legacyCode": "Z13IM0"
     },
     {
       "id": "tile_A_14",
@@ -9955,7 +9955,7 @@
         "x": 0,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -9976,7 +9976,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A14JO0"
+      "legacyCode": "A14IO0"
     },
     {
       "id": "tile_B_14",
@@ -9990,7 +9990,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -9998,7 +9998,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -10081,7 +10081,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Bottom",
@@ -10100,28 +10100,28 @@
         "x": 5,
         "y": 13
       },
-      "type": "Lower",
-      "blockPath": "None",
+      "type": "StairsWE",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairTop"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         }
       ],
-      "legacyCode": "F14JK0"
+      "legacyCode": "F14HP0"
     },
     {
       "id": "tile_G_14",
@@ -10129,7 +10129,7 @@
         "x": 6,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -10147,10 +10147,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         }
       ],
-      "legacyCode": "G14JK0"
+      "legacyCode": "G14IK0"
     },
     {
       "id": "tile_H_14",
@@ -10158,7 +10158,7 @@
         "x": 7,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -10179,7 +10179,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H14JK0"
+      "legacyCode": "H14IK0"
     },
     {
       "id": "tile_I_14",
@@ -10187,7 +10187,7 @@
         "x": 8,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -10208,7 +10208,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I14JK0"
+      "legacyCode": "I14IK0"
     },
     {
       "id": "tile_J_14",
@@ -10216,7 +10216,7 @@
         "x": 9,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -10237,7 +10237,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J14JM0"
+      "legacyCode": "J14IM0"
     },
     {
       "id": "tile_K_14",
@@ -10245,7 +10245,7 @@
         "x": 10,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -10266,7 +10266,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "K14JT0"
+      "legacyCode": "K14IT0"
     },
     {
       "id": "tile_L_14",
@@ -10274,7 +10274,7 @@
         "x": 11,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -10295,7 +10295,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L14JL0"
+      "legacyCode": "L14IL0"
     },
     {
       "id": "tile_M_14",
@@ -10303,7 +10303,7 @@
         "x": 12,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -10324,7 +10324,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M14JL0"
+      "legacyCode": "M14IL0"
     },
     {
       "id": "tile_N_14",
@@ -10332,7 +10332,7 @@
         "x": 13,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -10353,7 +10353,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N14JL0"
+      "legacyCode": "N14IL0"
     },
     {
       "id": "tile_O_14",
@@ -10361,7 +10361,7 @@
         "x": 14,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": null,
       "sides": [
@@ -10382,7 +10382,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "O14JY0"
+      "legacyCode": "O14IY0"
     },
     {
       "id": "tile_P_14",
@@ -10477,7 +10477,7 @@
         "x": 18,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -10498,7 +10498,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "S14JO0"
+      "legacyCode": "S14IO0"
     },
     {
       "id": "tile_T_14",
@@ -10506,7 +10506,7 @@
         "x": 19,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -10516,7 +10516,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Bridge"
         },
         {
           "side": "Bottom",
@@ -10527,7 +10527,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T14JK0"
+      "legacyCode": "T14IK0"
     },
     {
       "id": "tile_U_14",
@@ -10536,35 +10536,6 @@
         "y": 13
       },
       "type": "VerticalBridge",
-      "blockPath": "EastWest",
-      "spawnType": null,
-      "sides": [
-        {
-          "side": "Top",
-          "edgeProperty": "Basic"
-        },
-        {
-          "side": "Right",
-          "edgeProperty": "Wall"
-        },
-        {
-          "side": "Bottom",
-          "edgeProperty": "Basic"
-        },
-        {
-          "side": "Left",
-          "edgeProperty": "Wall"
-        }
-      ],
-      "legacyCode": "U14AQ0"
-    },
-    {
-      "id": "tile_V_14",
-      "coordinates": {
-        "x": 21,
-        "y": 13
-      },
-      "type": "Lower",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -10585,7 +10556,36 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V14JK0"
+      "legacyCode": "U14AK0"
+    },
+    {
+      "id": "tile_V_14",
+      "coordinates": {
+        "x": 21,
+        "y": 13
+      },
+      "type": "Upper",
+      "blockPath": "None",
+      "spawnType": null,
+      "sides": [
+        {
+          "side": "Top",
+          "edgeProperty": "Basic"
+        },
+        {
+          "side": "Right",
+          "edgeProperty": "Void"
+        },
+        {
+          "side": "Bottom",
+          "edgeProperty": "Basic"
+        },
+        {
+          "side": "Left",
+          "edgeProperty": "Bridge"
+        }
+      ],
+      "legacyCode": "V14IK0"
     },
     {
       "id": "tile_W_14",
@@ -10599,19 +10599,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "W14DK0"
@@ -10622,7 +10622,7 @@
         "x": 23,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -10632,7 +10632,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -10640,10 +10640,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "X14JK0"
+      "legacyCode": "X14IK0"
     },
     {
       "id": "tile_Y_14",
@@ -10657,19 +10657,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "Y14DK0"
@@ -10680,7 +10680,7 @@
         "x": 25,
         "y": 13
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -10698,10 +10698,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Z14JM0"
+      "legacyCode": "Z14IM0"
     },
     {
       "id": "tile_A_15",
@@ -10709,7 +10709,7 @@
         "x": 0,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -10719,7 +10719,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -10730,7 +10730,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A15JO0"
+      "legacyCode": "A15IO0"
     },
     {
       "id": "tile_B_15",
@@ -10744,19 +10744,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B15DK0"
@@ -10785,7 +10785,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "C15JL0"
@@ -10835,7 +10835,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -10860,19 +10860,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "F15DK0"
@@ -10883,7 +10883,7 @@
         "x": 6,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -10901,10 +10901,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "G15JM0"
+      "legacyCode": "G15IM0"
     },
     {
       "id": "tile_H_15",
@@ -10912,7 +10912,7 @@
         "x": 7,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -10933,7 +10933,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "H15JO0"
+      "legacyCode": "H15IO0"
     },
     {
       "id": "tile_I_15",
@@ -10941,7 +10941,7 @@
         "x": 8,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -10962,7 +10962,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I15JM0"
+      "legacyCode": "I15IM0"
     },
     {
       "id": "tile_J_15",
@@ -10970,7 +10970,7 @@
         "x": 9,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": "Monster",
       "sides": [
@@ -10991,7 +10991,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "J15JO3",
+      "legacyCode": "J15IO3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 32
@@ -11003,7 +11003,7 @@
         "x": 10,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -11024,7 +11024,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K15JR0"
+      "legacyCode": "K15IR0"
     },
     {
       "id": "tile_L_15",
@@ -11032,7 +11032,7 @@
         "x": 11,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -11053,7 +11053,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "L15JT0"
+      "legacyCode": "L15IT0"
     },
     {
       "id": "tile_M_15",
@@ -11061,7 +11061,7 @@
         "x": 12,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -11082,7 +11082,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M15JN0"
+      "legacyCode": "M15IN0"
     },
     {
       "id": "tile_N_15",
@@ -11090,7 +11090,7 @@
         "x": 13,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -11111,7 +11111,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N15JN3",
+      "legacyCode": "N15IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 31
@@ -11123,7 +11123,7 @@
         "x": 14,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -11144,7 +11144,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "O15JY1",
+      "legacyCode": "O15IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 31
@@ -11214,7 +11214,7 @@
         "x": 17,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -11235,7 +11235,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "R15JU0"
+      "legacyCode": "R15IU0"
     },
     {
       "id": "tile_S_15",
@@ -11243,7 +11243,7 @@
         "x": 18,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -11264,7 +11264,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S15JK0"
+      "legacyCode": "S15IK0"
     },
     {
       "id": "tile_T_15",
@@ -11272,7 +11272,7 @@
         "x": 19,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -11293,7 +11293,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T15JM0"
+      "legacyCode": "T15IM0"
     },
     {
       "id": "tile_U_15",
@@ -11307,7 +11307,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Bridge"
         },
         {
           "side": "Right",
@@ -11330,7 +11330,7 @@
         "x": 21,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -11351,7 +11351,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V15JO0"
+      "legacyCode": "V15IO0"
     },
     {
       "id": "tile_W_15",
@@ -11359,13 +11359,13 @@
         "x": 22,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -11380,7 +11380,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W15JK0"
+      "legacyCode": "W15IK0"
     },
     {
       "id": "tile_X_15",
@@ -11388,7 +11388,7 @@
         "x": 23,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -11409,7 +11409,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X15JK0"
+      "legacyCode": "X15IK0"
     },
     {
       "id": "tile_Y_15",
@@ -11417,13 +11417,13 @@
         "x": 24,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -11438,7 +11438,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y15JK0"
+      "legacyCode": "Y15IK0"
     },
     {
       "id": "tile_Z_15",
@@ -11446,7 +11446,7 @@
         "x": 25,
         "y": 14
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -11467,7 +11467,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z15JM0"
+      "legacyCode": "Z15IM0"
     },
     {
       "id": "tile_A_16",
@@ -11475,7 +11475,7 @@
         "x": 0,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -11485,7 +11485,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Bottom",
@@ -11496,7 +11496,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A16JO0"
+      "legacyCode": "A16IO0"
     },
     {
       "id": "tile_B_16",
@@ -11504,28 +11504,28 @@
         "x": 1,
         "y": 15
       },
-      "type": "Lower",
-      "blockPath": "None",
+      "type": "StairsEW",
+      "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairTop"
         }
       ],
-      "legacyCode": "B16JK0"
+      "legacyCode": "B16GP0"
     },
     {
       "id": "tile_C_16",
@@ -11551,7 +11551,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         }
       ],
       "legacyCode": "C16JS0"
@@ -11576,7 +11576,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -11620,13 +11620,13 @@
         "x": 5,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -11641,7 +11641,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "F16JO0"
+      "legacyCode": "F16IO0"
     },
     {
       "id": "tile_G_16",
@@ -11649,7 +11649,7 @@
         "x": 6,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -11670,7 +11670,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G16JM0"
+      "legacyCode": "G16IM0"
     },
     {
       "id": "tile_H_16",
@@ -11678,7 +11678,7 @@
         "x": 7,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -11699,7 +11699,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "H16JO0"
+      "legacyCode": "H16IO0"
     },
     {
       "id": "tile_I_16",
@@ -11707,7 +11707,7 @@
         "x": 8,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -11728,7 +11728,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I16JM0"
+      "legacyCode": "I16IM0"
     },
     {
       "id": "tile_J_16",
@@ -11736,7 +11736,7 @@
         "x": 9,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -11757,7 +11757,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "J16JT0"
+      "legacyCode": "J16IT0"
     },
     {
       "id": "tile_K_16",
@@ -11765,7 +11765,7 @@
         "x": 10,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -11786,7 +11786,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K16JS1",
+      "legacyCode": "K16IS1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 32
@@ -11980,7 +11980,7 @@
         "x": 17,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -12001,7 +12001,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "R16JO0"
+      "legacyCode": "R16IO0"
     },
     {
       "id": "tile_S_16",
@@ -12009,7 +12009,7 @@
         "x": 18,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12030,7 +12030,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S16JK0"
+      "legacyCode": "S16IK0"
     },
     {
       "id": "tile_T_16",
@@ -12038,7 +12038,7 @@
         "x": 19,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -12059,7 +12059,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T16JM0"
+      "legacyCode": "T16IM0"
     },
     {
       "id": "tile_U_16",
@@ -12096,7 +12096,7 @@
         "x": 21,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -12117,7 +12117,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V16JT0"
+      "legacyCode": "V16IT0"
     },
     {
       "id": "tile_W_16",
@@ -12125,7 +12125,7 @@
         "x": 22,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12139,14 +12139,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W16JK0"
+      "legacyCode": "W16IK0"
     },
     {
       "id": "tile_X_16",
@@ -12154,7 +12154,7 @@
         "x": 23,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12175,7 +12175,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X16JK0"
+      "legacyCode": "X16IK0"
     },
     {
       "id": "tile_Y_16",
@@ -12183,7 +12183,7 @@
         "x": 24,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12197,14 +12197,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y16JK0"
+      "legacyCode": "Y16IK0"
     },
     {
       "id": "tile_Z_16",
@@ -12212,7 +12212,7 @@
         "x": 25,
         "y": 15
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -12233,7 +12233,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z16JM0"
+      "legacyCode": "Z16IM0"
     },
     {
       "id": "tile_A_17",
@@ -12241,7 +12241,7 @@
         "x": 0,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -12251,7 +12251,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -12262,7 +12262,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A17JO0"
+      "legacyCode": "A17IO0"
     },
     {
       "id": "tile_B_17",
@@ -12276,19 +12276,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B17DK0"
@@ -12299,7 +12299,7 @@
         "x": 2,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": "Chest",
       "sides": [
@@ -12309,7 +12309,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -12317,10 +12317,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C17JL1",
+      "legacyCode": "C17IL1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 8
@@ -12338,19 +12338,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "D17DK0"
@@ -12361,7 +12361,7 @@
         "x": 4,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -12379,10 +12379,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "E17JL0"
+      "legacyCode": "E17IL0"
     },
     {
       "id": "tile_F_17",
@@ -12390,7 +12390,7 @@
         "x": 5,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12411,7 +12411,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "F17JK0"
+      "legacyCode": "F17IK0"
     },
     {
       "id": "tile_G_17",
@@ -12419,7 +12419,7 @@
         "x": 6,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -12440,7 +12440,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G17JM0"
+      "legacyCode": "G17IM0"
     },
     {
       "id": "tile_H_17",
@@ -12448,7 +12448,7 @@
         "x": 7,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -12469,7 +12469,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "H17JO0"
+      "legacyCode": "H17IO0"
     },
     {
       "id": "tile_I_17",
@@ -12477,7 +12477,7 @@
         "x": 8,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12498,7 +12498,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I17JK0"
+      "legacyCode": "I17IK0"
     },
     {
       "id": "tile_J_17",
@@ -12506,7 +12506,7 @@
         "x": 9,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -12527,7 +12527,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J17JL0"
+      "legacyCode": "J17IL0"
     },
     {
       "id": "tile_K_17",
@@ -12535,7 +12535,7 @@
         "x": 10,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -12556,7 +12556,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K17JL0"
+      "legacyCode": "K17IL0"
     },
     {
       "id": "tile_L_17",
@@ -12564,7 +12564,7 @@
         "x": 11,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -12585,7 +12585,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L17JL0"
+      "legacyCode": "L17IL0"
     },
     {
       "id": "tile_M_17",
@@ -12593,7 +12593,7 @@
         "x": 12,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": null,
       "sides": [
@@ -12614,7 +12614,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M17JY0"
+      "legacyCode": "M17IY0"
     },
     {
       "id": "tile_N_17",
@@ -12709,7 +12709,7 @@
         "x": 16,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -12730,7 +12730,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "Q17JU0"
+      "legacyCode": "Q17IU0"
     },
     {
       "id": "tile_R_17",
@@ -12738,7 +12738,7 @@
         "x": 17,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12759,7 +12759,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R17JK0"
+      "legacyCode": "R17IK0"
     },
     {
       "id": "tile_S_17",
@@ -12767,7 +12767,7 @@
         "x": 18,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -12788,7 +12788,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S17JN0"
+      "legacyCode": "S17IN0"
     },
     {
       "id": "tile_T_17",
@@ -12796,8 +12796,8 @@
         "x": 19,
         "y": 16
       },
-      "type": "Lower",
-      "blockPath": "South",
+      "type": "Upper",
+      "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
@@ -12810,14 +12810,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T17JN0"
+      "legacyCode": "T17IK0"
     },
     {
       "id": "tile_U_17",
@@ -12864,7 +12864,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -12889,19 +12889,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "W17DK0"
@@ -12912,7 +12912,7 @@
         "x": 23,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -12922,7 +12922,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -12930,10 +12930,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "X17JK0"
+      "legacyCode": "X17IK0"
     },
     {
       "id": "tile_Y_17",
@@ -12947,19 +12947,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "Y17DK0"
@@ -12970,7 +12970,7 @@
         "x": 25,
         "y": 16
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -12988,10 +12988,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Z17JM0"
+      "legacyCode": "Z17IM0"
     },
     {
       "id": "tile_A_18",
@@ -12999,7 +12999,7 @@
         "x": 0,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -13020,7 +13020,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A18JO0"
+      "legacyCode": "A18IO0"
     },
     {
       "id": "tile_B_18",
@@ -13028,13 +13028,13 @@
         "x": 1,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -13042,14 +13042,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B18JK0"
+      "legacyCode": "B18IK0"
     },
     {
       "id": "tile_C_18",
@@ -13057,7 +13057,7 @@
         "x": 2,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": "Monster",
       "sides": [
@@ -13078,7 +13078,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C18JS3",
+      "legacyCode": "C18IS3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 8
@@ -13090,13 +13090,13 @@
         "x": 3,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -13111,7 +13111,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "D18JO0"
+      "legacyCode": "D18IO0"
     },
     {
       "id": "tile_E_18",
@@ -13119,7 +13119,7 @@
         "x": 4,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13140,7 +13140,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "E18JK0"
+      "legacyCode": "E18IK0"
     },
     {
       "id": "tile_F_18",
@@ -13148,7 +13148,7 @@
         "x": 5,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13169,7 +13169,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "F18JK0"
+      "legacyCode": "F18IK0"
     },
     {
       "id": "tile_G_18",
@@ -13177,7 +13177,7 @@
         "x": 6,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -13198,7 +13198,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G18JM0"
+      "legacyCode": "G18IM0"
     },
     {
       "id": "tile_H_18",
@@ -13206,7 +13206,7 @@
         "x": 7,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -13227,7 +13227,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "H18JT0"
+      "legacyCode": "H18IT0"
     },
     {
       "id": "tile_I_18",
@@ -13235,7 +13235,7 @@
         "x": 8,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -13256,7 +13256,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I18JN0"
+      "legacyCode": "I18IN0"
     },
     {
       "id": "tile_J_18",
@@ -13264,7 +13264,7 @@
         "x": 9,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -13285,7 +13285,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J18JN0"
+      "legacyCode": "J18IN0"
     },
     {
       "id": "tile_K_18",
@@ -13293,7 +13293,7 @@
         "x": 10,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -13314,7 +13314,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K18JN0"
+      "legacyCode": "K18IN0"
     },
     {
       "id": "tile_L_18",
@@ -13322,7 +13322,7 @@
         "x": 11,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -13343,7 +13343,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L18JN3",
+      "legacyCode": "L18IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 34
@@ -13355,7 +13355,7 @@
         "x": 12,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -13376,7 +13376,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M18JY1",
+      "legacyCode": "M18IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 34
@@ -13446,7 +13446,7 @@
         "x": 15,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -13467,7 +13467,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "P18JU0"
+      "legacyCode": "P18IU0"
     },
     {
       "id": "tile_Q_18",
@@ -13475,7 +13475,7 @@
         "x": 16,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13496,7 +13496,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q18JK0"
+      "legacyCode": "Q18IK0"
     },
     {
       "id": "tile_R_18",
@@ -13504,7 +13504,7 @@
         "x": 17,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13525,7 +13525,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R18JK0"
+      "legacyCode": "R18IK0"
     },
     {
       "id": "tile_S_18",
@@ -13533,7 +13533,7 @@
         "x": 18,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -13543,7 +13543,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -13554,7 +13554,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S18JL0"
+      "legacyCode": "S18IL0"
     },
     {
       "id": "tile_T_18",
@@ -13568,19 +13568,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "T18DK0"
@@ -13592,7 +13592,7 @@
         "y": 17
       },
       "type": "Lower",
-      "blockPath": "NorthWest",
+      "blockPath": "North",
       "spawnType": "Monster",
       "sides": [
         {
@@ -13609,10 +13609,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "U18JU3",
+      "legacyCode": "U18JL3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 20
@@ -13624,7 +13624,7 @@
         "x": 21,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13645,7 +13645,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V18JK0"
+      "legacyCode": "V18IK0"
     },
     {
       "id": "tile_W_18",
@@ -13653,13 +13653,13 @@
         "x": 22,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -13674,7 +13674,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W18JK0"
+      "legacyCode": "W18IK0"
     },
     {
       "id": "tile_X_18",
@@ -13682,7 +13682,7 @@
         "x": 23,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13703,7 +13703,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X18JK0"
+      "legacyCode": "X18IK0"
     },
     {
       "id": "tile_Y_18",
@@ -13711,13 +13711,13 @@
         "x": 24,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -13732,7 +13732,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y18JK0"
+      "legacyCode": "Y18IK0"
     },
     {
       "id": "tile_Z_18",
@@ -13740,7 +13740,7 @@
         "x": 25,
         "y": 17
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -13761,7 +13761,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z18JM0"
+      "legacyCode": "Z18IM0"
     },
     {
       "id": "tile_A_19",
@@ -13769,7 +13769,7 @@
         "x": 0,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -13779,7 +13779,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -13790,7 +13790,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A19JT0"
+      "legacyCode": "A19IT0"
     },
     {
       "id": "tile_B_19",
@@ -13804,19 +13804,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "B19DK0"
@@ -13827,7 +13827,7 @@
         "x": 2,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -13845,10 +13845,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "C19JL0"
+      "legacyCode": "C19IL0"
     },
     {
       "id": "tile_D_19",
@@ -13856,7 +13856,7 @@
         "x": 3,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13877,7 +13877,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "D19JK0"
+      "legacyCode": "D19IK0"
     },
     {
       "id": "tile_E_19",
@@ -13885,7 +13885,7 @@
         "x": 4,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13906,7 +13906,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "E19JK0"
+      "legacyCode": "E19IK0"
     },
     {
       "id": "tile_F_19",
@@ -13914,7 +13914,7 @@
         "x": 5,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13935,7 +13935,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "F19JK0"
+      "legacyCode": "F19IK0"
     },
     {
       "id": "tile_G_19",
@@ -13943,7 +13943,7 @@
         "x": 6,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -13964,7 +13964,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G19JK0"
+      "legacyCode": "G19IK0"
     },
     {
       "id": "tile_H_19",
@@ -13972,7 +13972,7 @@
         "x": 7,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -13993,7 +13993,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H19JL0"
+      "legacyCode": "H19IL0"
     },
     {
       "id": "tile_I_19",
@@ -14001,7 +14001,7 @@
         "x": 8,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -14022,7 +14022,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I19JL0"
+      "legacyCode": "I19IL0"
     },
     {
       "id": "tile_J_19",
@@ -14030,7 +14030,7 @@
         "x": 9,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -14051,7 +14051,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "J19JL0"
+      "legacyCode": "J19IL0"
     },
     {
       "id": "tile_K_19",
@@ -14059,7 +14059,7 @@
         "x": 10,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -14080,7 +14080,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K19JL0"
+      "legacyCode": "K19IL0"
     },
     {
       "id": "tile_L_19",
@@ -14088,7 +14088,7 @@
         "x": 11,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -14109,7 +14109,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L19JR0"
+      "legacyCode": "L19IR0"
     },
     {
       "id": "tile_M_19",
@@ -14204,7 +14204,7 @@
         "x": 15,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -14225,7 +14225,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "P19JO0"
+      "legacyCode": "P19IO0"
     },
     {
       "id": "tile_Q_19",
@@ -14233,7 +14233,7 @@
         "x": 16,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14254,7 +14254,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q19JK0"
+      "legacyCode": "Q19IK0"
     },
     {
       "id": "tile_R_19",
@@ -14262,7 +14262,7 @@
         "x": 17,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14283,7 +14283,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R19JK0"
+      "legacyCode": "R19IK0"
     },
     {
       "id": "tile_S_19",
@@ -14291,7 +14291,7 @@
         "x": 18,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14312,7 +14312,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S19JK0"
+      "legacyCode": "S19IK0"
     },
     {
       "id": "tile_T_19",
@@ -14320,13 +14320,13 @@
         "x": 19,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -14341,7 +14341,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T19JM0"
+      "legacyCode": "T19IM0"
     },
     {
       "id": "tile_U_19",
@@ -14382,7 +14382,7 @@
         "x": 21,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouthWest",
       "spawnType": null,
       "sides": [
@@ -14403,7 +14403,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "V19JV0"
+      "legacyCode": "V19IV0"
     },
     {
       "id": "tile_W_19",
@@ -14411,7 +14411,7 @@
         "x": 22,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -14432,7 +14432,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "W19JT0"
+      "legacyCode": "W19IT0"
     },
     {
       "id": "tile_X_19",
@@ -14440,7 +14440,7 @@
         "x": 23,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14461,7 +14461,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X19JK0"
+      "legacyCode": "X19IK0"
     },
     {
       "id": "tile_Y_19",
@@ -14469,7 +14469,7 @@
         "x": 24,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14490,7 +14490,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y19JK0"
+      "legacyCode": "Y19IK0"
     },
     {
       "id": "tile_Z_19",
@@ -14498,7 +14498,7 @@
         "x": 25,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -14519,7 +14519,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z19JM0"
+      "legacyCode": "Z19IM0"
     },
     {
       "id": "tile_A_20",
@@ -14527,7 +14527,7 @@
         "x": 0,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -14548,7 +14548,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A20JU0"
+      "legacyCode": "A20IU0"
     },
     {
       "id": "tile_B_20",
@@ -14556,13 +14556,13 @@
         "x": 1,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": "Monster",
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -14577,7 +14577,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B20JK3",
+      "legacyCode": "B20IK3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 5
@@ -14589,7 +14589,7 @@
         "x": 2,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -14610,7 +14610,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C20JN0"
+      "legacyCode": "C20IN0"
     },
     {
       "id": "tile_D_20",
@@ -14618,7 +14618,7 @@
         "x": 3,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -14639,7 +14639,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "D20JN0"
+      "legacyCode": "D20IN0"
     },
     {
       "id": "tile_E_20",
@@ -14647,7 +14647,7 @@
         "x": 4,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -14668,7 +14668,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "E20JN0"
+      "legacyCode": "E20IN0"
     },
     {
       "id": "tile_F_20",
@@ -14676,7 +14676,7 @@
         "x": 5,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -14697,7 +14697,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "F20JN0"
+      "legacyCode": "F20IN0"
     },
     {
       "id": "tile_G_20",
@@ -14705,7 +14705,7 @@
         "x": 6,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14726,7 +14726,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G20JK0"
+      "legacyCode": "G20IK0"
     },
     {
       "id": "tile_H_20",
@@ -14734,7 +14734,7 @@
         "x": 7,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14755,7 +14755,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H20JK0"
+      "legacyCode": "H20IK0"
     },
     {
       "id": "tile_I_20",
@@ -14763,7 +14763,7 @@
         "x": 8,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -14784,7 +14784,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I20JM0"
+      "legacyCode": "I20IM0"
     },
     {
       "id": "tile_J_20",
@@ -14792,7 +14792,7 @@
         "x": 9,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -14813,7 +14813,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "J20JO0"
+      "legacyCode": "J20IO0"
     },
     {
       "id": "tile_K_20",
@@ -14821,7 +14821,7 @@
         "x": 10,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14835,14 +14835,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "K20JK0"
+      "legacyCode": "K20IK0"
     },
     {
       "id": "tile_L_20",
@@ -14850,7 +14850,7 @@
         "x": 11,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -14871,7 +14871,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "L20JM0"
+      "legacyCode": "L20IM0"
     },
     {
       "id": "tile_M_20",
@@ -14966,7 +14966,7 @@
         "x": 15,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -14987,7 +14987,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "P20JK0"
+      "legacyCode": "P20IK0"
     },
     {
       "id": "tile_Q_20",
@@ -14995,7 +14995,7 @@
         "x": 16,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -15016,7 +15016,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q20JK0"
+      "legacyCode": "Q20IK0"
     },
     {
       "id": "tile_R_20",
@@ -15024,7 +15024,7 @@
         "x": 17,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -15045,7 +15045,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R20JK0"
+      "legacyCode": "R20IK0"
     },
     {
       "id": "tile_S_20",
@@ -15053,7 +15053,7 @@
         "x": 18,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -15074,7 +15074,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S20JN0"
+      "legacyCode": "S20IN0"
     },
     {
       "id": "tile_T_20",
@@ -15082,7 +15082,7 @@
         "x": 19,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -15103,7 +15103,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T20JM0"
+      "legacyCode": "T20IM0"
     },
     {
       "id": "tile_U_20",
@@ -15111,7 +15111,7 @@
         "x": 20,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": null,
       "sides": [
@@ -15132,7 +15132,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "U20JW0"
+      "legacyCode": "U20IW0"
     },
     {
       "id": "tile_V_20",
@@ -15140,7 +15140,7 @@
         "x": 21,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -15161,7 +15161,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V20JL0"
+      "legacyCode": "V20IL0"
     },
     {
       "id": "tile_W_20",
@@ -15169,7 +15169,7 @@
         "x": 22,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -15190,7 +15190,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W20JP0"
+      "legacyCode": "W20IP0"
     },
     {
       "id": "tile_X_20",
@@ -15198,7 +15198,7 @@
         "x": 23,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -15219,7 +15219,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X20JN0"
+      "legacyCode": "X20IN0"
     },
     {
       "id": "tile_Y_20",
@@ -15227,7 +15227,7 @@
         "x": 24,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -15248,7 +15248,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y20JN0"
+      "legacyCode": "Y20IN0"
     },
     {
       "id": "tile_Z_20",
@@ -15256,7 +15256,7 @@
         "x": 25,
         "y": 19
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -15277,7 +15277,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z20JS0"
+      "legacyCode": "Z20IS0"
     },
     {
       "id": "tile_A_21",
@@ -15285,7 +15285,7 @@
         "x": 0,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -15306,7 +15306,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A21JT0"
+      "legacyCode": "A21IT0"
     },
     {
       "id": "tile_B_21",
@@ -15314,7 +15314,7 @@
         "x": 1,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -15335,7 +15335,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B21JS1",
+      "legacyCode": "B21IS1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 5
@@ -15347,7 +15347,7 @@
         "x": 2,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -15368,7 +15368,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "C21JU0"
+      "legacyCode": "C21IU0"
     },
     {
       "id": "tile_D_21",
@@ -15376,7 +15376,7 @@
         "x": 3,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -15397,7 +15397,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "D21JP0"
+      "legacyCode": "D21IP0"
     },
     {
       "id": "tile_E_21",
@@ -15405,7 +15405,7 @@
         "x": 4,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -15426,7 +15426,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "E21JP0"
+      "legacyCode": "E21IP0"
     },
     {
       "id": "tile_F_21",
@@ -15434,7 +15434,7 @@
         "x": 5,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -15455,7 +15455,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "F21JP0"
+      "legacyCode": "F21IP0"
     },
     {
       "id": "tile_G_21",
@@ -15463,7 +15463,7 @@
         "x": 6,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -15484,7 +15484,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G21JK0"
+      "legacyCode": "G21IK0"
     },
     {
       "id": "tile_H_21",
@@ -15492,7 +15492,7 @@
         "x": 7,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -15513,7 +15513,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H21JK0"
+      "legacyCode": "H21IK0"
     },
     {
       "id": "tile_I_21",
@@ -15521,7 +15521,7 @@
         "x": 8,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -15542,7 +15542,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I21JM0"
+      "legacyCode": "I21IM0"
     },
     {
       "id": "tile_J_21",
@@ -15550,7 +15550,7 @@
         "x": 9,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -15560,7 +15560,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
@@ -15571,7 +15571,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "J21JO0"
+      "legacyCode": "J21IO0"
     },
     {
       "id": "tile_K_21",
@@ -15579,13 +15579,13 @@
         "x": 10,
         "y": 20
       },
-      "type": "Lower",
-      "blockPath": "East",
+      "type": "StairsSN",
+      "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairTop"
         },
         {
           "side": "Right",
@@ -15593,14 +15593,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
-      "legacyCode": "K21JM0"
+      "legacyCode": "K21FQ0"
     },
     {
       "id": "tile_L_21",
@@ -15608,7 +15608,7 @@
         "x": 11,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -15622,14 +15622,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "L21JO0"
+      "legacyCode": "L21IO0"
     },
     {
       "id": "tile_M_21",
@@ -15637,7 +15637,7 @@
         "x": 12,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -15658,7 +15658,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M21JR0"
+      "legacyCode": "M21IR0"
     },
     {
       "id": "tile_N_21",
@@ -15738,7 +15738,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
@@ -15753,7 +15753,7 @@
         "x": 16,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -15774,7 +15774,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "Q21JT0"
+      "legacyCode": "Q21IT0"
     },
     {
       "id": "tile_R_21",
@@ -15782,7 +15782,7 @@
         "x": 17,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -15803,7 +15803,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R21JS0"
+      "legacyCode": "R21IS0"
     },
     {
       "id": "tile_S_21",
@@ -15811,7 +15811,7 @@
         "x": 18,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": null,
       "sides": [
@@ -15832,7 +15832,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "S21JW0"
+      "legacyCode": "S21IW0"
     },
     {
       "id": "tile_T_21",
@@ -15840,13 +15840,13 @@
         "x": 19,
         "y": 20
       },
-      "type": "Lower",
-      "blockPath": "NorthSouth",
+      "type": "Upper",
+      "blockPath": "South",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
@@ -15861,7 +15861,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T21JP0"
+      "legacyCode": "T21IN0"
     },
     {
       "id": "tile_U_21",
@@ -15869,7 +15869,7 @@
         "x": 20,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -15890,7 +15890,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U21JP0"
+      "legacyCode": "U21IP0"
     },
     {
       "id": "tile_V_21",
@@ -15898,7 +15898,7 @@
         "x": 21,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -15919,7 +15919,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V21JK0"
+      "legacyCode": "V21IK0"
     },
     {
       "id": "tile_W_21",
@@ -15927,7 +15927,7 @@
         "x": 22,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -15948,7 +15948,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W21JP0"
+      "legacyCode": "W21IP0"
     },
     {
       "id": "tile_X_21",
@@ -15956,7 +15956,7 @@
         "x": 23,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -15977,7 +15977,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X21JL0"
+      "legacyCode": "X21IL0"
     },
     {
       "id": "tile_Y_21",
@@ -15985,7 +15985,7 @@
         "x": 24,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -16006,7 +16006,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y21JP0"
+      "legacyCode": "Y21IP0"
     },
     {
       "id": "tile_Z_21",
@@ -16014,7 +16014,7 @@
         "x": 25,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -16035,7 +16035,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z21JR0"
+      "legacyCode": "Z21IR0"
     },
     {
       "id": "tile_A_22",
@@ -16043,7 +16043,7 @@
         "x": 0,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": "Chest",
       "sides": [
@@ -16064,7 +16064,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "A22JW1",
+      "legacyCode": "A22IW1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 4
@@ -16076,7 +16076,7 @@
         "x": 1,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": "Monster",
       "sides": [
@@ -16097,7 +16097,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "B22JP3",
+      "legacyCode": "B22IP3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 4
@@ -16109,7 +16109,7 @@
         "x": 2,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -16130,7 +16130,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "C22JS0"
+      "legacyCode": "C22IS0"
     },
     {
       "id": "tile_D_22",
@@ -16225,7 +16225,7 @@
         "x": 6,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -16246,7 +16246,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "G22JO0"
+      "legacyCode": "G22IO0"
     },
     {
       "id": "tile_H_22",
@@ -16254,7 +16254,7 @@
         "x": 7,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -16275,7 +16275,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H22JK0"
+      "legacyCode": "H22IK0"
     },
     {
       "id": "tile_I_22",
@@ -16283,7 +16283,7 @@
         "x": 8,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -16304,7 +16304,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I22JM0"
+      "legacyCode": "I22IM0"
     },
     {
       "id": "tile_J_22",
@@ -16312,7 +16312,7 @@
         "x": 9,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -16322,7 +16322,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Bottom",
@@ -16333,7 +16333,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "J22JT0"
+      "legacyCode": "J22IT0"
     },
     {
       "id": "tile_K_22",
@@ -16347,11 +16347,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -16359,7 +16359,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         }
       ],
       "legacyCode": "K22JK0"
@@ -16376,19 +16376,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "L22DK0"
@@ -16399,7 +16399,7 @@
         "x": 12,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -16417,10 +16417,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "M22JM0"
+      "legacyCode": "M22IM0"
     },
     {
       "id": "tile_N_22",
@@ -16467,7 +16467,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -16492,19 +16492,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "P22DK0"
@@ -16515,7 +16515,7 @@
         "x": 16,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": "Chest",
       "sides": [
@@ -16533,10 +16533,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Q22JP1",
+      "legacyCode": "Q22IP1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 19
@@ -16548,7 +16548,7 @@
         "x": 17,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": "Monster",
       "sides": [
@@ -16569,7 +16569,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R22JP3",
+      "legacyCode": "R22IP3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 19
@@ -16581,7 +16581,7 @@
         "x": 18,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -16602,7 +16602,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S22JP0"
+      "legacyCode": "S22IP0"
     },
     {
       "id": "tile_T_22",
@@ -16610,7 +16610,7 @@
         "x": 19,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -16631,7 +16631,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T22JP0"
+      "legacyCode": "T22IP0"
     },
     {
       "id": "tile_U_22",
@@ -16639,7 +16639,7 @@
         "x": 20,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -16660,7 +16660,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U22JP0"
+      "legacyCode": "U22IP0"
     },
     {
       "id": "tile_V_22",
@@ -16668,7 +16668,7 @@
         "x": 21,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -16689,7 +16689,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V22JM0"
+      "legacyCode": "V22IM0"
     },
     {
       "id": "tile_W_22",
@@ -16697,7 +16697,7 @@
         "x": 22,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": null,
       "sides": [
@@ -16718,7 +16718,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "W22JW0"
+      "legacyCode": "W22IW0"
     },
     {
       "id": "tile_X_22",
@@ -16726,7 +16726,7 @@
         "x": 23,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -16747,7 +16747,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X22JM0"
+      "legacyCode": "X22IM0"
     },
     {
       "id": "tile_Y_22",
@@ -16755,7 +16755,7 @@
         "x": 24,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": "Chest",
       "sides": [
@@ -16776,7 +16776,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "Y22JW1",
+      "legacyCode": "Y22IW1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 17
@@ -16788,7 +16788,7 @@
         "x": 25,
         "y": 21
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": "Monster",
       "sides": [
@@ -16809,7 +16809,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z22JM3",
+      "legacyCode": "Z22IM3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 18
@@ -16995,7 +16995,7 @@
         "x": 6,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
@@ -17016,7 +17016,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "G23JO0"
+      "legacyCode": "G23IO0"
     },
     {
       "id": "tile_H_23",
@@ -17024,7 +17024,7 @@
         "x": 7,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -17045,7 +17045,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H23JK0"
+      "legacyCode": "H23IK0"
     },
     {
       "id": "tile_I_23",
@@ -17053,7 +17053,7 @@
         "x": 8,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -17074,7 +17074,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I23JS0"
+      "legacyCode": "I23IS0"
     },
     {
       "id": "tile_J_23",
@@ -17150,7 +17150,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -17158,7 +17158,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
@@ -17173,7 +17173,7 @@
         "x": 12,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
@@ -17194,7 +17194,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "M23JQ0"
+      "legacyCode": "M23IQ0"
     },
     {
       "id": "tile_N_23",
@@ -17266,7 +17266,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -17289,7 +17289,7 @@
         "x": 16,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -17310,7 +17310,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "Q23JU0"
+      "legacyCode": "Q23IU0"
     },
     {
       "id": "tile_R_23",
@@ -17318,7 +17318,7 @@
         "x": 17,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -17339,7 +17339,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R23JR0"
+      "legacyCode": "R23IR0"
     },
     {
       "id": "tile_S_23",
@@ -17347,7 +17347,7 @@
         "x": 18,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": null,
       "sides": [
@@ -17368,7 +17368,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "S23JW0"
+      "legacyCode": "S23IW0"
     },
     {
       "id": "tile_T_23",
@@ -17376,7 +17376,7 @@
         "x": 19,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -17397,7 +17397,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T23JP0"
+      "legacyCode": "T23IP0"
     },
     {
       "id": "tile_U_23",
@@ -17405,7 +17405,7 @@
         "x": 20,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -17426,7 +17426,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U23JP0"
+      "legacyCode": "U23IP0"
     },
     {
       "id": "tile_V_23",
@@ -17434,7 +17434,7 @@
         "x": 21,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -17455,7 +17455,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V23JN0"
+      "legacyCode": "V23IN0"
     },
     {
       "id": "tile_W_23",
@@ -17463,7 +17463,7 @@
         "x": 22,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -17484,7 +17484,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W23JP0"
+      "legacyCode": "W23IP0"
     },
     {
       "id": "tile_X_23",
@@ -17492,7 +17492,7 @@
         "x": 23,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
@@ -17513,7 +17513,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X23JN0"
+      "legacyCode": "X23IN0"
     },
     {
       "id": "tile_Y_23",
@@ -17521,7 +17521,7 @@
         "x": 24,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -17542,7 +17542,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y23JP0"
+      "legacyCode": "Y23IP0"
     },
     {
       "id": "tile_Z_23",
@@ -17550,7 +17550,7 @@
         "x": 25,
         "y": 22
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -17571,7 +17571,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z23JM0"
+      "legacyCode": "Z23IM0"
     },
     {
       "id": "tile_A_24",
@@ -17728,7 +17728,7 @@
         "x": 5,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -17742,14 +17742,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Left",
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "F24JU0"
+      "legacyCode": "F24IU0"
     },
     {
       "id": "tile_G_24",
@@ -17757,7 +17757,7 @@
         "x": 6,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -17778,7 +17778,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "G24JK0"
+      "legacyCode": "G24IK0"
     },
     {
       "id": "tile_H_24",
@@ -17786,7 +17786,7 @@
         "x": 7,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -17807,7 +17807,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H24JM0"
+      "legacyCode": "H24IM0"
     },
     {
       "id": "tile_I_24",
@@ -17906,13 +17906,13 @@
         "x": 11,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "West",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Right",
@@ -17920,14 +17920,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Left",
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "L24JO0"
+      "legacyCode": "L24IO0"
     },
     {
       "id": "tile_M_24",
@@ -17935,7 +17935,7 @@
         "x": 12,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -17956,7 +17956,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "M24JM0"
+      "legacyCode": "M24IM0"
     },
     {
       "id": "tile_N_24",
@@ -18022,7 +18022,7 @@
         "x": 15,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -18043,7 +18043,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "P24JK0"
+      "legacyCode": "P24IK0"
     },
     {
       "id": "tile_Q_24",
@@ -18051,7 +18051,7 @@
         "x": 16,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -18072,7 +18072,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q24JK0"
+      "legacyCode": "Q24IK0"
     },
     {
       "id": "tile_R_24",
@@ -18080,7 +18080,7 @@
         "x": 17,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -18101,7 +18101,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R24JS0"
+      "legacyCode": "R24IS0"
     },
     {
       "id": "tile_S_24",
@@ -18109,7 +18109,7 @@
         "x": 18,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -18130,7 +18130,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "S24JU0"
+      "legacyCode": "S24IU0"
     },
     {
       "id": "tile_T_24",
@@ -18138,7 +18138,7 @@
         "x": 19,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -18152,14 +18152,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T24JL0"
+      "legacyCode": "T24IL0"
     },
     {
       "id": "tile_U_24",
@@ -18167,7 +18167,7 @@
         "x": 20,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -18188,7 +18188,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U24JL0"
+      "legacyCode": "U24IL0"
     },
     {
       "id": "tile_V_24",
@@ -18196,7 +18196,7 @@
         "x": 21,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -18210,14 +18210,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V24JL0"
+      "legacyCode": "V24IL0"
     },
     {
       "id": "tile_W_24",
@@ -18225,7 +18225,7 @@
         "x": 22,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -18246,7 +18246,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W24JL0"
+      "legacyCode": "W24IL0"
     },
     {
       "id": "tile_X_24",
@@ -18254,7 +18254,7 @@
         "x": 23,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "North",
       "spawnType": null,
       "sides": [
@@ -18268,14 +18268,14 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X24JL0"
+      "legacyCode": "X24IL0"
     },
     {
       "id": "tile_Y_24",
@@ -18283,7 +18283,7 @@
         "x": 24,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -18304,7 +18304,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y24JR0"
+      "legacyCode": "Y24IR0"
     },
     {
       "id": "tile_Z_24",
@@ -18312,7 +18312,7 @@
         "x": 25,
         "y": 23
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
@@ -18333,7 +18333,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "Z24JQ0"
+      "legacyCode": "Z24IQ0"
     },
     {
       "id": "tile_A_25",
@@ -18490,28 +18490,28 @@
         "x": 5,
         "y": 24
       },
-      "type": "Lower",
-      "blockPath": "West",
+      "type": "StairsSN",
+      "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairTop"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         },
         {
           "side": "Left",
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "F25JO0"
+      "legacyCode": "F25FQ0"
     },
     {
       "id": "tile_G_25",
@@ -18519,7 +18519,7 @@
         "x": 6,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -18537,10 +18537,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
-      "legacyCode": "G25JK0"
+      "legacyCode": "G25IK0"
     },
     {
       "id": "tile_H_25",
@@ -18548,7 +18548,7 @@
         "x": 7,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -18569,7 +18569,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H25JM0"
+      "legacyCode": "H25IM0"
     },
     {
       "id": "tile_I_25",
@@ -18664,28 +18664,28 @@
         "x": 11,
         "y": 24
       },
-      "type": "Lower",
-      "blockPath": "West",
+      "type": "StairsSN",
+      "blockPath": "EastWest",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairTop"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         },
         {
           "side": "Left",
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "L25JO0"
+      "legacyCode": "L25FQ0"
     },
     {
       "id": "tile_M_25",
@@ -18693,7 +18693,7 @@
         "x": 12,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -18711,10 +18711,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
-      "legacyCode": "M25JK0"
+      "legacyCode": "M25IK0"
     },
     {
       "id": "tile_N_25",
@@ -18722,7 +18722,7 @@
         "x": 13,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
@@ -18743,7 +18743,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N25JR0"
+      "legacyCode": "N25IR0"
     },
     {
       "id": "tile_O_25",
@@ -18761,7 +18761,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Bottom",
@@ -18780,7 +18780,7 @@
         "x": 15,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -18798,10 +18798,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         }
       ],
-      "legacyCode": "P25JK0"
+      "legacyCode": "P25IK0"
     },
     {
       "id": "tile_Q_25",
@@ -18809,7 +18809,7 @@
         "x": 16,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "East",
       "spawnType": null,
       "sides": [
@@ -18830,7 +18830,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q25JM0"
+      "legacyCode": "Q25IM0"
     },
     {
       "id": "tile_R_25",
@@ -18838,7 +18838,7 @@
         "x": 17,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWestNorth",
       "spawnType": "Chest",
       "sides": [
@@ -18859,7 +18859,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "R25JW1",
+      "legacyCode": "R25IW1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 16
@@ -18871,7 +18871,7 @@
         "x": 18,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": "Monster",
       "sides": [
@@ -18881,7 +18881,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
@@ -18892,7 +18892,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "S25JK3",
+      "legacyCode": "S25IK3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 16
@@ -18910,19 +18910,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "T25DK0"
@@ -18943,15 +18943,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "U25JK0"
@@ -18968,19 +18968,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "V25DK0"
@@ -19001,15 +19001,15 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Wall"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "W25JK0"
@@ -19026,19 +19026,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "X25DK0"
@@ -19049,7 +19049,7 @@
         "x": 24,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "None",
       "spawnType": null,
       "sides": [
@@ -19067,10 +19067,10 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         }
       ],
-      "legacyCode": "Y25JK0"
+      "legacyCode": "Y25IK0"
     },
     {
       "id": "tile_Z_25",
@@ -19078,7 +19078,7 @@
         "x": 25,
         "y": 24
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "EastSouth",
       "spawnType": null,
       "sides": [
@@ -19099,7 +19099,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z25JS0"
+      "legacyCode": "Z25IS0"
     },
     {
       "id": "tile_A_26",
@@ -19258,7 +19258,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Right",
@@ -19281,7 +19281,7 @@
         "x": 6,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -19302,7 +19302,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "G26JT0"
+      "legacyCode": "G26IT0"
     },
     {
       "id": "tile_H_26",
@@ -19310,7 +19310,7 @@
         "x": 7,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -19331,7 +19331,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "H26JN3",
+      "legacyCode": "H26IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 11
@@ -19343,7 +19343,7 @@
         "x": 8,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -19364,7 +19364,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "I26JY1",
+      "legacyCode": "I26IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 11
@@ -19440,7 +19440,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Right",
@@ -19463,7 +19463,7 @@
         "x": 12,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -19484,7 +19484,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "M26JT0"
+      "legacyCode": "M26IT0"
     },
     {
       "id": "tile_N_26",
@@ -19492,7 +19492,7 @@
         "x": 13,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -19513,7 +19513,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "N26JN3",
+      "legacyCode": "N26IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 12
@@ -19525,7 +19525,7 @@
         "x": 14,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -19546,7 +19546,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "O26JY1",
+      "legacyCode": "O26IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 12
@@ -19558,7 +19558,7 @@
         "x": 15,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -19579,7 +19579,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "P26JT0"
+      "legacyCode": "P26IT0"
     },
     {
       "id": "tile_Q_26",
@@ -19587,7 +19587,7 @@
         "x": 16,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -19608,7 +19608,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Q26JN3",
+      "legacyCode": "Q26IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 13
@@ -19620,7 +19620,7 @@
         "x": 17,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -19641,7 +19641,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "R26JY1",
+      "legacyCode": "R26IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 13
@@ -19653,7 +19653,7 @@
         "x": 18,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "SouthWest",
       "spawnType": null,
       "sides": [
@@ -19674,7 +19674,7 @@
           "edgeProperty": "Wall"
         }
       ],
-      "legacyCode": "S26JT0"
+      "legacyCode": "S26IT0"
     },
     {
       "id": "tile_T_26",
@@ -19682,13 +19682,13 @@
         "x": 19,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -19703,7 +19703,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "T26JN0"
+      "legacyCode": "T26IN0"
     },
     {
       "id": "tile_U_26",
@@ -19711,13 +19711,13 @@
         "x": 20,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Right",
@@ -19732,7 +19732,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "U26JN0"
+      "legacyCode": "U26IN0"
     },
     {
       "id": "tile_V_26",
@@ -19740,13 +19740,13 @@
         "x": 21,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -19761,7 +19761,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "V26JN0"
+      "legacyCode": "V26IN0"
     },
     {
       "id": "tile_W_26",
@@ -19769,13 +19769,13 @@
         "x": 22,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Right",
@@ -19790,7 +19790,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "W26JN0"
+      "legacyCode": "W26IN0"
     },
     {
       "id": "tile_X_26",
@@ -19798,13 +19798,13 @@
         "x": 23,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
@@ -19819,7 +19819,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "X26JN0"
+      "legacyCode": "X26IN0"
     },
     {
       "id": "tile_Y_26",
@@ -19827,7 +19827,7 @@
         "x": 24,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "South",
       "spawnType": "Monster",
       "sides": [
@@ -19848,7 +19848,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Y26JN3",
+      "legacyCode": "Y26IN3",
       "spawnZone": {
         "type": "Monster",
         "seedId": 14
@@ -19860,7 +19860,7 @@
         "x": 25,
         "y": 25
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthEastSouth",
       "spawnType": "Chest",
       "sides": [
@@ -19881,7 +19881,7 @@
           "edgeProperty": "Basic"
         }
       ],
-      "legacyCode": "Z26JY1",
+      "legacyCode": "Z26IY1",
       "spawnZone": {
         "type": "Chest",
         "seedId": 14
