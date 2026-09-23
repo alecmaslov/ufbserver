@@ -1400,6 +1400,7 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 }
 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string, enemy: CharacterState) {
+    const wasAlive = character.stats.health.current > 0;   // a hit on a corpse must not run the death branch again (double waves)
     if(amount < 0 && enemy != null && enemy.ambush) amount *= 2;   // Data Avenger striking from invisibility (ultimates.ts)
     let extra = character.stats.health.add(amount);
     if(amount < 0) {
@@ -1411,7 +1412,7 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
         AddUserData(USER_DATA_TYPE.DAMAGE_HEAL, character, amount);
     }
 
-    if(character.stats.health.current <= 0) {
+    if(wasAlive && character.stats.health.current <= 0) {
 
         if(enemy != null)
             AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);
@@ -1479,6 +1480,8 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                 character.connected = false;
                 if(aliveCount == 0) {
                     room.StopAIChecking();
+                } else {
+                    room.CheckLastStanding();   // party match: the last hero alive wins
                 }
 
             }
@@ -1698,11 +1701,14 @@ export function getOpenTilePosition(tileId: string, room: UfbRoom, moverTileId =
     const blocked = new Set<string>(GetObstacleTileIds(moverTileId, room));
     room.state.map.spawnEntities.forEach(entity => { if(entity.type == "Portal") blocked.add(entity.tileId); });
     const passable = [EDGE_TYPE.BASIC, EDGE_TYPE.BRIDGE, EDGE_TYPE.STAIR];
+    // only tiles a character can stand on: bridge / stair / void tiles aren't pathfinder nodes, so aiming at one
+    // made the monster's path search throw and its turn was skipped
+    const standable = (t: TileState) => !/Bridge|Stairs|Void/.test(t.type);
     const dirs = ["top", "right", "down", "left"];   // walls[] order
     for(let i = 0; i < dirs.length; i++) {
         if(passable.indexOf(desTile.walls[i]) == -1) continue;
         const id = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, dirs[i]);
-        if(id && room.state.map.tiles.has(id) && !blocked.has(id)) return id;
+        if(id && room.state.map.tiles.has(id) && !blocked.has(id) && standable(room.state.map.tiles.get(id))) return id;
     }
     return "";
 }

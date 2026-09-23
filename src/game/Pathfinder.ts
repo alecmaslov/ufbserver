@@ -42,8 +42,10 @@ export class Pathfinder {
   }
 
   find(from: string, to: string): FindPathResult {
-    const _path = this._pathFinder.find(from, to);
     try {
+      // Bridge and stair tiles aren't nodes (links jump over them), and ngraph throws for unknown ids.
+      if (!this._navGraph.hasNode(from) || !this._navGraph.hasNode(to)) throw new Error(`no graph node for ${!this._navGraph.hasNode(from) ? from : to}`);
+      const _path = this._pathFinder.find(from, to);
       const {cost, featherCount} = getPathCost(_path, this._navGraph);
       const path: PathStep[] = _path.map((node) => {
         return {
@@ -52,6 +54,9 @@ export class Pathfinder {
         };
       });
       path.reverse();
+      // ngraph queues neighbours before checking `blocked`, so an unreachable goal can come back as a lone [goal] with
+      // no route to it: that is "no path", not a zero-length one
+      if (from !== to && (path.length < 2 || path[0].tileId !== from)) throw new Error(`no path from ${from} to ${to}`);
       return {
         foundPath: true,
         cost,

@@ -316,19 +316,19 @@ export class UfbRoom extends Room<UfbRoomState> {
     // custom state change actions
     incrementTurn() {
         tickInvisibility(this.state.characters.get(this.state.currentCharacterId));   // ultimates.ts
-        const n = this.state.turnOrder.length;
-        const nextPlayerIndex =
-            (this.state.turnOrder.indexOf(this.state.currentCharacterId) + 1) %
-            n;
-        // could compute nextPlayerIndex from turn instead, but this works if turnOrder length changes
-        this.state.currentCharacterId = this.state.turnOrder[nextPlayerIndex];
-        const currentCharacter = this.state.characters.get(this.state.currentCharacterId);
-
-        // CHECK DEAD
-        if(currentCharacter.stats.health.current == 0) {
-            // CHECK USER WIN???--here?
-            this.incrementTurn();
+        // Next living character in turn order. Dead characters are skipped here, in one pass: the old version recursed,
+        // then carried on with the dead one (re-broadcasting TURN_CHANGED once per dead monster and resetting its energy).
+        const order = this.state.turnOrder;
+        const n = order.length;
+        let idx = order.indexOf(this.state.currentCharacterId);
+        let currentCharacter: CharacterState | undefined;
+        for (let step = 0; step < n && !currentCharacter; step++) {
+            idx = (idx + 1) % n;
+            const c = this.state.characters.get(order[idx]);
+            if (c && c.stats.health.current > 0) currentCharacter = c;
         }
+        if (!currentCharacter) return;   // nobody alive: the game is already over
+        this.state.currentCharacterId = order[idx];
 
         this.state.turn++;
 
@@ -338,8 +338,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         const mana = currentCharacter.items.find(it => it.id == ITEMTYPE.MANA);
         const melee = currentCharacter.items.find(it => it.id == ITEMTYPE.MELEE);
 
-        mana.count = currentCharacter.stats.maxMana;
-        melee.count = currentCharacter.stats.maxMelee;
+        if (mana) mana.count = currentCharacter.stats.maxMana;
+        if (melee) melee.count = currentCharacter.stats.maxMelee;
 
         this.isTurnStartEquip = true;
         this.isTurnStartStack = true;
@@ -1706,62 +1706,53 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
     }
 
+    /** Monster waves after the three blue monsters placed by initMap. Each wave's first type appears in no other wave,
+     *  which is how RespawnMonster tells which waves are already out (works for resumed solo saves too). */
+    static readonly WAVES = [
+        [MONSTER_TYPE.WASP_GREEN, MONSTER_TYPE.EARWIG_GREEN, MONSTER_TYPE.SPIDER_BLUE],
+        [MONSTER_TYPE.CENTIPEDE_GREEN, MONSTER_TYPE.SPIDER_GREEN, MONSTER_TYPE.EARWIG_YELLOW],
+        [MONSTER_TYPE.WASP_YELLOW, MONSTER_TYPE.CENTIPEDE_YELLOW, MONSTER_TYPE.SPIDER_YELLOW],
+    ];
+
+    /** Called on every monster death: once the board is clear, send the next wave, or end the game if none is left.
+     *  (Waves used to be chosen from dead/alive counts per colour, which re-triggered a wave on later deaths.) */
     RespawnMonster() {
-        const {blue, green, yellow, blueLive, greenLive, yellowLive} = GetMonsterDeadCount(this);
-        const monsterZones = this.spawnZoneArray.filter(zone => zone.type == SpawnZoneType.Monster).sort(() => Math.random() - 0.5);
-        console.log("monster zone:   ", monsterZones.length)
-        if(blueLive == 0 && green == 0) {
-            // CREATE GREEN MONSTERS
-            const mTypes = [
-                MONSTER_TYPE.WASP_GREEN,
-                MONSTER_TYPE.EARWIG_GREEN,
-                MONSTER_TYPE.SPIDER_BLUE,
-            ];
-            mTypes.forEach((_type, i) => {
-                this.CreateMonster(_type, monsterZones[i]);
-            })
+        let alive = 0; const classes = new Set<string>();
+        this.state.characters.forEach(c => {
+            if (c.type != USER_TYPE.MONSTER) return;
+            classes.add(c.characterClass);
+            if (c.stats.health.current > 0) alive++;
+        });
+        if (alive > 0) return;
+        const next = UfbRoom.WAVES.findIndex(w => !classes.has(MONSTERS[w[0]].characterClass));
+        if (next >= 0) {
+            const monsterZones = this.spawnZoneArray.filter(zone => zone.type == SpawnZoneType.Monster).sort(() => Math.random() - 0.5);
+            UfbRoom.WAVES[next].forEach((_type, i) => this.CreateMonster(_type, monsterZones[i]));
+            return;
         }
-        else if(blueLive == 0 && green == 2)
-        {
-            // CREATE GREEN MONSTERS
-            const mTypes = [
-                MONSTER_TYPE.CENTIPEDE_GREEN,
-                MONSTER_TYPE.SPIDER_GREEN,
-                MONSTER_TYPE.EARWIG_YELLOW
-            ];
-            mTypes.forEach((_type, i) => {
-                this.CreateMonster(_type, monsterZones[i]);
-            })
-        }
-        else if(blueLive == 0 && greenLive == 0 && green == 4 && yellow == 1){
-                // CREATE GREEN MONSTERS
-                const mTypes = [
-                    MONSTER_TYPE.WASP_YELLOW,
-                    MONSTER_TYPE.CENTIPEDE_YELLOW,
-                    MONSTER_TYPE.SPIDER_YELLOW,
-                ];
-                mTypes.forEach((_type, i) => {
-                    this.CreateMonster(_type, monsterZones[i]);
-                })
-        } else if(blueLive == 0 && greenLive == 0 && yellowLive == 0 && yellow == 4) {
-            // WIN PLAYER (in solo mode) // check solo mode
-            let characterId = "";
-            this.state.characters.forEach(character => {
-                if(character.type == USER_TYPE.USER && character.stats.health.current > 0) {
-                    characterId = character.id;
-                }
-            });
+        // Every wave is dead: every hero still standing wins.
+        const survivors: CharacterState[] = [];
+        this.state.characters.forEach(c => { if (c.type == USER_TYPE.USER && c.stats.health.current > 0) survivors.push(c); });
+        this.EndWithVictory(survivors);
+    }
 
-            const winner = this.state.characters.get(characterId);
-            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
-                characterId,
-                endType: END_TYPE.VICTORY,
-                summary: winner ? buildEndSummary(winner, true) : undefined
-            });
-            if (winner) this.BankGold(winner, true);
-            this.StopAIChecking();
-        }
+    /** Party match (2+ heroes): when only one hero is left alive, that hero wins. */
+    CheckLastStanding() {
+        const heroes: CharacterState[] = [];
+        this.state.characters.forEach(c => { if (c.type == USER_TYPE.USER) heroes.push(c); });
+        const alive = heroes.filter(c => c.stats.health.current > 0);
+        if (heroes.length >= 2 && alive.length == 1) this.EndWithVictory(alive);
+    }
 
+    private ended = false;
+    EndWithVictory(winners: CharacterState[]) {
+        if (this.ended) return;
+        this.ended = true;
+        winners.forEach(w => {
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, { characterId: w.id, endType: END_TYPE.VICTORY, summary: buildEndSummary(w, true) });
+            this.BankGold(w, true);
+        });
+        this.StopAIChecking();
     }
 
     CreateMonster(type: number, monsterZone: SpawnZone) {
