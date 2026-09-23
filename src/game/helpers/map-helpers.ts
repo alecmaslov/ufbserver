@@ -5,6 +5,7 @@ import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterSt
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
 import { UfbRoom } from "#game/UfbRoom";
+import { canMelee } from "#game/line-of-sight";
 import { Coordinates, PathStep } from "#shared-types";
 import { shuffleArray } from "#utils/collections";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
@@ -1511,11 +1512,22 @@ export function IsEquipPower(character : CharacterState, powerId: number) {
     return isEquiped;
 }
 
+/**
+ * Is this enemy close enough to swing at?
+ *
+ * This used to be Manhattan distance of 1, which counted a hero standing one level above you, or
+ * on the far side of a wall or a ravine, as adjacent. It now asks whether a melee attack could
+ * actually land: next to you, level with you, and nothing solid in between.
+ *
+ * Every caller is a combat one — the punch handler and the Revenge counter-attacks — so the
+ * stricter reading is wanted in all of them. If you could not reach someone to hit them, you
+ * cannot reach them to hit them back either.
+ */
 export function IsEnemyAdjacent(character: CharacterState, enemy : CharacterState, room : UfbRoom) {
     const currentTile = room.state.map.tiles.get(character.currentTileId);
     const enemyTile = room.state.map.tiles.get(enemy.currentTileId);
-    const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
-    return r == 1;
+    if (!currentTile || !enemyTile) return false;
+    return canMelee(currentTile as any, enemyTile as any);
 }
 
 export function IsEmptyTile(tileId: string, room: UfbRoom){
