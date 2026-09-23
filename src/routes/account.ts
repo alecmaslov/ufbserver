@@ -109,7 +109,18 @@ const me: Handler = async (req: any, res: any) => {
     res.send({ user: publicUser(req.user), heroes: await rosterFor(req.user.id), record: data ?? null });
 };
 
-const buyHero: Handler = async (req: any, res: any) => {
+/**
+ * Superseded by the figurine claim. A hero is a physical toy bought with real money, so there is
+ * nothing here to buy — POST /account/figurine/claim with the code from the box instead.
+ *
+ * Kept as an explicit refusal rather than deleted: with the gold cost gone this endpoint would
+ * otherwise hand out heroes for nothing, which is the paywall wide open.
+ */
+const buyHero: Handler = async (_req: any, res: any) => {
+    res.status(410).send({ error: "USE_CLAIM_CODE" });
+};
+
+const buyHeroLegacy: Handler = async (req: any, res: any) => {
     const className = String(req.body.className ?? "");
     const hero = HERO_CATALOGUE.find((h) => h.className === className || h.slug === className);
     if (!hero) { res.status(400).send({ error: "UNKNOWN_HERO" }); return; }

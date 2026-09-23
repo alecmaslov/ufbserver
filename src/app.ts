@@ -15,6 +15,7 @@ import user from "#routes/user";
 import lobby from "#routes/lobby";
 import account from "#routes/account";
 import skillTree from "#routes/skill-tree";
+import figurine from "#routes/figurine";
 import solo from "#routes/solo";
 
 import { Server } from "@colyseus/core";
@@ -47,6 +48,7 @@ app.use("/lobby", lobby);
 app.use("/user", user);
 app.use("/account", account);
 app.use("/account/skill-tree", skillTree);
+app.use("/account/figurine", figurine);
 app.use("/solo", solo);
 
 if (DEV_MODE) {

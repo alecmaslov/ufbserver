@@ -36,6 +36,7 @@ model User {
   // opposite relation field (back-reference)
   userData      UserData? // 1:1
   characterData CharacterData[]
+  figurines     Figurine[]
 
   @@map("user")
 }
@@ -243,6 +244,7 @@ model Character {
 
   characterData CharacterData[]
   skills        CharacterSkill[]
+  figurine      Figurine?
 
   /// the three elements rolled when this figurine was bought, in slot order; permanent
   elements  Json?
@@ -444,4 +446,30 @@ model CharacterSkill {
   @@unique([characterId, slot, nodeIndex])
   @@index([characterId])
   @@map("character_skill")
+}
+
+/// A physical figurine: the thing a player actually buys, with an NFC chip in it.
+///
+/// This is the paywall. A hero is not bought with gold — it is claimed by proving you hold the
+/// figurine, either by tapping its chip or by entering the code that shipped in the box. The
+/// claim code is only ever stored hashed, because a readable code is free inventory.
+///
+/// Progress belongs to the figurine, not the account: the Character and its skill tree hang off
+/// this row, so releasing a figurine and re-claiming it on another account carries the tree with
+/// it. That matches how a physical toy behaves when it is resold.
+model Figurine {
+  id          String    @id // serial, printed on the box
+  className   String // which hero this figurine is
+  claimHash   String    @unique // sha256 of the claim code; the code is never stored
+  nfcUid      String?   @unique // the chip's own id, recorded the first time it is tapped
+  ownerId     String? // the account holding it now, if any
+  characterId String?   @unique // the character it carries, created on first claim
+  claimedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  owner     User?      @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  character Character? @relation(fields: [characterId], references: [id], onDelete: SetNull)
+
+  @@index([ownerId])
+  @@map("figurine")
 }
