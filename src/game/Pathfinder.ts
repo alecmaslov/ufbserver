@@ -6,6 +6,7 @@ import { TileType } from "@prisma/client";
 import createGraph, { Graph } from "ngraph.graph";
 import { aStar, PathFinder as NGraphPathFinder } from "ngraph.path";
 import { UfbRoomState } from "./schema/UfbRoomState";
+import type { CharacterState } from "./schema/CharacterState";
 
 export type NavGraphLinkData = {
   energyCost: number;
@@ -25,11 +26,12 @@ export class Pathfinder {
   private _navGraph: Graph<any, NavGraphLinkData> = null;
   private _pathFinder: NGraphPathFinder<any> = null;
 
-  static fromMapState(room: UfbRoomState, isFeather = false): Pathfinder {
+  /** passThrough: characters that don't block (the monster AI uses it to tell what is boxing it in). */
+  static fromMapState(room: UfbRoomState, isFeather = false, passThrough?: (c: CharacterState) => boolean): Pathfinder {
 
     const p = new Pathfinder();
     p._mapState = room.map;
-    p._navGraph = p.getGraph(room, isFeather);
+    p._navGraph = p.getGraph(room, isFeather, passThrough);
     p._pathFinder = aStar(p._navGraph, {
       distance(fromNode, toNode, link) {
         return link.data.energyCost;
@@ -74,7 +76,7 @@ export class Pathfinder {
     }
   }
   
-  getGraph(room: UfbRoomState, isFeather = false): Graph<any, NavGraphLinkData> {
+  getGraph(room: UfbRoomState, isFeather = false, passThrough?: (c: CharacterState) => boolean): Graph<any, NavGraphLinkData> {
     const mapState: MapState = room.map;
     var characters = room.characters;
 
@@ -82,7 +84,7 @@ export class Pathfinder {
     const mover = characters.get(room.currentCharacterId);
     const ghost = !!mover && mover.invisible > 0;   // Data Avenger's invisibility: pass through, but still can't stop on someone
     characters.forEach((character) => {
-      if(!ghost && character.id != room.currentCharacterId && character.stats.health.current > 0) {
+      if(!ghost && character.id != room.currentCharacterId && character.stats.health.current > 0 && !passThrough?.(character)) {
         banTileIds.push(character.currentTileId);
       }
     });

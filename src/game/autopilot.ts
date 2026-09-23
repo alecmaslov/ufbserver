@@ -4,7 +4,7 @@
  * punch an adjacent monster, then end the turn. It never moves, spends gold, uses powers or attacks another player.
  */
 import { ITEMTYPE, USER_TYPE } from "#assets/resources";
-import { addItemToCharacter, getCountFromItem, IsEnemyAdjacent, setCharacterHealth } from "#game/helpers/map-helpers";
+import { addItemToCharacter, getCountFromItem, setCharacterHealth } from "#game/helpers/map-helpers";
 import type { CharacterState } from "#game/schema/CharacterState";
 import type { UfbRoom } from "#game/UfbRoom";
 
@@ -25,7 +25,7 @@ export function autopilotTurn(room: UfbRoom, hero: CharacterState): number {
     if (hero.stats.energy.current > 2 && (melee > 0 || mana > 0)) {
         let target: CharacterState | undefined;
         room.state.characters.forEach((c) => {
-            if (!target && c.type == USER_TYPE.MONSTER && c.stats.health.current > 0 && IsEnemyAdjacent(hero, c, room)) target = c;
+            if (!target && c.type == USER_TYPE.MONSTER && c.stats.health.current > 0 && room.canPunch(hero, c)) target = c;   // line of sight, as for players
         });
         if (target) {
             room.AIPunchAttack(hero, target, melee > 0 ? -1 : -100);   // the monsters' punch: roll, damage, defence stacks

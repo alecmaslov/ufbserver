@@ -6,7 +6,7 @@ import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
 import { computePayout, MatchMode } from "#game/payout";
-import { buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { getTileIdByDirection, buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -27,6 +27,7 @@ import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { discardSolo, loadSolo, persistSolo, type SoloInfo } from "#game/solo-save";
 import { autopilotTurn, RECONNECT_GRACE } from "#game/autopilot";
+import { canMelee } from "#game/line-of-sight";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
@@ -773,25 +774,35 @@ export class UfbRoom extends Room<UfbRoomState> {
             let nearTileId = "";
             let isAjuacent = false;
 
-            const nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
+            let nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
             const obstacleTileIds = GetObstacleTileIds(selectedMonster.currentTileId, this);
             console.log("near character id: ", nearCharcterId);
+            let movePath: PathStep[] = [];   // where to walk this step (a route to a punching spot, or as close as it can get)
 
             if(nearCharcterId != "") {
-                const enemy = this.state.characters.get(nearCharcterId);
-                nearTileId = getOpenTilePosition(enemy.currentTileId, this, selectedMonster.currentTileId);
-                isAjuacent = IsEnemyAdjacent(selectedMonster, enemy, this);
-                // nearTileId = enemy.currentTileId;
+                let enemy = this.state.characters.get(nearCharcterId);
+                // punching needs line of sight: same level, no wall or ravine between (line-of-sight.ts)
+                isAjuacent = this.canPunch(selectedMonster, enemy);
+                let goal = isAjuacent ? null : this.meleeGoal(selectedMonster, enemy);
+                if (!isAjuacent && !goal) {
+                    const boxed = this.boxedInPlan(selectedMonster, enemy);
+                    console.log("boxed in:", selectedMonster.displayName, boxed.blocker ? `by hero ${boxed.blocker.displayName}` : boxed.approach ? "by monsters, approaching" : "no route");
+                    if (boxed.blocker) {
+                        // another hero is in the way: go for that hero instead
+                        nearCharcterId = boxed.blocker.id; enemy = boxed.blocker;
+                        isAjuacent = this.canPunch(selectedMonster, enemy);
+                        goal = isAjuacent ? null : this.meleeGoal(selectedMonster, enemy);
+                    }
+                    if (!isAjuacent && !goal && boxed.approach) movePath = boxed.approach;
+                }
+                if (goal) { nearTileId = goal.tileId; movePath = goal.path; }
             }
 
             console.log("near tile id: ", nearTileId);
 
 
-            if(!isAjuacent && nearTileId != "") {
-                const { path, cost } = this.getPathFinder().find(
-                    selectedMonster.currentTileId,
-                    nearTileId
-                );
+            if(!isAjuacent && movePath.length > 1) {
+                const path = movePath;
                 console.log("ai move : ", path);
 
                 let isBomb = false;
@@ -890,6 +901,55 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
     }
 
+    /** Can `a` punch `b` from where it stands? Adjacent, same level, no wall or ravine between. */
+    canPunch(a: CharacterState, b: CharacterState) {
+        const tiles = this.state.map.tiles;
+        return canMelee(tiles.get(a.currentTileId) as any, tiles.get(b.currentTileId) as any);
+    }
+
+    /** The best tile to punch `target` from: next to it, free, standable, in line of sight, shortest route first. */
+    meleeGoal(monster: CharacterState, target: CharacterState): { tileId: string; path: PathStep[] } | null {
+        const tiles = this.state.map.tiles, tt = tiles.get(target.currentTileId);
+        if (!tt) return null;
+        const blocked = new Set<string>(GetObstacleTileIds(monster.currentTileId, this));
+        this.state.map.spawnEntities.forEach(e => { if (e.type == "Portal") blocked.add(e.tileId); });
+        const pf = this.getPathFinder();
+        let best: { tileId: string; path: PathStep[]; cost: number } | null = null;
+        for (const dir of ["top", "right", "down", "left"]) {
+            const id = getTileIdByDirection(tiles, tt.coordinates, dir); const n = id ? tiles.get(id) : undefined;
+            if (!n || blocked.has(n.id) || /Bridge|Stairs|Void/.test(n.type) || !canMelee(n as any, tt as any)) continue;
+            const r = pf.find(monster.currentTileId, n.id);
+            if (r.foundPath && (!best || r.cost < best.cost)) best = { tileId: n.id, path: r.path, cost: r.cost };
+        }
+        return best;
+    }
+
+    /**
+     * The monster can't reach its target. Find out what is boxing it in: route again letting heroes pass — if that works,
+     * the first hero on the route is in the way (the monster goes for them instead). Otherwise other monsters are the
+     * wall: take the route that ignores monsters as far as the first occupied tile, to get as close as possible.
+     */
+    boxedInPlan(monster: CharacterState, target: CharacterState): { blocker?: CharacterState; approach?: PathStep[] } {
+        const occupant = (tileId: string) => {
+            let who: CharacterState | undefined;
+            this.state.characters.forEach(c => { if (c.id != monster.id && c.stats.health.current > 0 && c.currentTileId == tileId) who = c; });
+            return who;
+        };
+        /** The route up to (not including) the first occupied tile. */
+        const prefix = (path: PathStep[]) => {
+            const out: PathStep[] = [];
+            for (const step of path) { if (out.length && occupant(step.tileId)) break; out.push(step); }
+            return out.length > 1 ? out : undefined;
+        };
+        const heroesPass = Pathfinder.fromMapState(this.state, false, c => c.type == USER_TYPE.USER).find(monster.currentTileId, target.currentTileId);
+        if (heroesPass.foundPath) {
+            const blocker = heroesPass.path.slice(1).map(p => occupant(p.tileId)).find(c => c && c.type == USER_TYPE.USER && c.id != target.id);
+            if (blocker) return { blocker, approach: prefix(heroesPass.path) };
+        }
+        const monstersPass = Pathfinder.fromMapState(this.state, false, c => c.type == USER_TYPE.MONSTER || c.id == target.id).find(monster.currentTileId, target.currentTileId);
+        return { approach: monstersPass.foundPath ? prefix(monstersPass.path) : undefined };
+    }
+
     checkBombPos(idx: any, monster: CharacterState){
         
         if(idx != -1) {
@@ -985,6 +1045,9 @@ export class UfbRoom extends Room<UfbRoomState> {
     }
 
     AIPunchAttack (ai: CharacterState, target : CharacterState, id: number ) {
+        // Same rule as a player's punch: adjacent, same level, no wall or ravine between. The AI only picks legal
+        // targets, but this is the server-side guard (players are refused in the punch handler).
+        if (!this.canPunch(ai, target)) { console.log("AIPunchAttack refused: no line of sight", ai.displayName, "->", target.displayName); this.DoActionMonster(); return; }
         // SELECT ARROW? OR BOMB? -100: melee, 
         const pm = getPowerMoveFromId(id);
 
