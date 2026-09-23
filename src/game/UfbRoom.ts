@@ -13,6 +13,7 @@ import {
     AdjacencyListItemState,
     MoveItemEntity,
     TileState,
+    SpawnEntity,
 } from "#game/schema/MapState";
 import { UfbRoomState } from "#game/schema/UfbRoomState";
 import { SpawnEntityConfig, UFBMap } from "#game/types/map-types";
@@ -34,6 +35,7 @@ import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
 import { nanoid } from "nanoid";
 
+const ENTITIES_ROOT = "Entities/";   // prefab root for spawned entities (same as map-helpers)
 const DEFAULT_SPAWN_ENTITY_CONFIG: SpawnEntityConfig = {
     chests: 16,
     itemBags: 8,
@@ -1805,12 +1807,35 @@ export class UfbRoom extends Room<UfbRoomState> {
         if (next >= 0) {
             const monsterZones = this.spawnZoneArray.filter(zone => zone.type == SpawnZoneType.Monster).sort(() => Math.random() - 0.5);
             UfbRoom.WAVES[next].forEach((_type, i) => this.CreateMonster(_type, monsterZones[i]));
+            this.SpawnItemBags(UfbRoom.BAGS_PER_WAVE);   // fresh loot with every new wave
             return;
         }
         // Every wave is dead: every hero still standing wins.
         const survivors: CharacterState[] = [];
         this.state.characters.forEach(c => { if (c.type == USER_TYPE.USER && c.stats.health.current > 0) survivors.push(c); });
         this.EndWithVictory(survivors);
+    }
+
+    static BAGS_PER_WAVE = 4;
+    /**
+     * Drop item bags on free chest spawn zones (no entity, no living character on the tile). Chests never come back,
+     * so without this the board is looted out in the first few turns and LUCK OF THE DRAW can't be finished.
+     */
+    SpawnItemBags(count: number) {
+        const busy = new Set<string>();
+        this.state.map.spawnEntities.forEach((e) => busy.add(e.tileId));
+        this.state.characters.forEach((c) => { if (c.stats.health.current > 0) busy.add(c.currentTileId); });
+        const free = this.spawnZoneArray.filter((z) => z.type == SpawnZoneType.Chest && !busy.has(z.tileId)).sort(() => Math.random() - 0.5);
+        free.slice(0, count).forEach((zone, i) => {
+            const bag = new SpawnEntity();
+            bag.id = `${zone.id}_bag${this.state.turn}_${i}`;
+            bag.gameId = `bag_${this.state.turn}_${i}`;
+            bag.prefabAddress = `${ENTITIES_ROOT}ItemBag`;
+            bag.tileId = zone.tileId;
+            bag.type = "Chest";
+            bag.parameters = `{"seedId" : "${zone.seedId}"}`;
+            this.state.map.spawnEntities.push(bag);
+        });
     }
 
     /** Party match (2+ heroes): when only one hero is left alive, that hero wins. */
