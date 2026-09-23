@@ -1,6 +1,6 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { canMelee } from "#game/line-of-sight";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { sightChecker, addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -1186,8 +1186,11 @@ export const messageHandlers: MessageHandlers = {
             extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
         }
 
+        // only tiles the move can actually reach: in range and in line of sight (same rule as PowerMoveCommand)
+        const range = powermove != null? Math.max(powermove.range + extraDamage.range, 1) : 1;
+        const sees = sightChecker(room, range);
         client.send( SERVER_TO_CLIENT_MESSAGE.SET_HIGHLIGHT_RECT, {
-            tileIds : getHighLightTileIds(room, character.currentTileId, powermove != null? Math.max(powermove.range + extraDamage.range, 1) : 1)
+            tileIds : getHighLightTileIds(room, character.currentTileId, range).filter((id: string) => id == character.currentTileId || sees(character.currentTileId, id))
         });
     },
 

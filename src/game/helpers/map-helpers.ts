@@ -5,7 +5,7 @@ import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterSt
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
 import { SpawnEntityConfig } from "#game/types/map-types";
 import { UfbRoom } from "#game/UfbRoom";
-import { canMelee } from "#game/line-of-sight";
+import { canMelee, canShoot, tileIndex, type LosTile } from "#game/line-of-sight";
 import { Coordinates, PathStep } from "#shared-types";
 import { shuffleArray } from "#utils/collections";
 import { ArraySchema, MapSchema } from "@colyseus/schema";
@@ -1384,14 +1384,31 @@ function getDirectFromCoord(x: number, y: number) : number {
     return (1 - y) * (x == 0? 0 : 1) + (2 - x) * (y == 0? 0 : 1);
 }
 
+/**
+ * Line of sight for a move of the given range, the same rule PowerMoveCommand applies to its target: range 1 is melee
+ * (adjacent, same level, no wall or ravine), anything longer is ranged (one level up or down at most, no wall in the way).
+ * Build it once per attack — the tile lookup is O(map).
+ */
+export function sightChecker(room: UfbRoom, range: number) {
+    const tiles = room.state.map.tiles;
+    const all: LosTile[] = []; tiles.forEach(t => all.push(t as unknown as LosTile));
+    const at = tileIndex(all);
+    return (fromTileId: string, toTileId: string) => {
+        const from = tiles.get(fromTileId) as unknown as LosTile, to = tiles.get(toTileId) as unknown as LosTile;
+        return range <= 1 ? canMelee(from, to) : canShoot(from, to, at);
+    };
+}
+
+/** Everyone an area attack from `character` reaches: within range and in its line of sight. */
 export function getCharacterIdsInArea(character: CharacterState, range: number, room : UfbRoom) : string[] {
     let ids: string[] = [];
+    const sees = sightChecker(room, range);
     room.state.characters.forEach(c => {
         if(c.id != character.id) {
             const currentTile = room.state.map.tiles.get(character.currentTileId);
             const enemyTile = room.state.map.tiles.get(c.currentTileId);
             const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
-            if(r <= range) {
+            if(r <= range && sees(currentTile.id, enemyTile.id)) {
                 ids.push(c.id);
             }
         }
