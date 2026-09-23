@@ -3,7 +3,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
-import { addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -53,6 +53,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     isTurnStartEquip: boolean = true;
     isTurnStartStack: boolean = true;
     isTurnStartForScreen: boolean = true;
+    banked = new Set<string>();   // characters whose end-of-game gold has been written
 
     roomOption: UfbRoomOptions;
     inviteToken: string;
@@ -697,7 +698,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
             if(nearCharcterId != "") {
                 const enemy = this.state.characters.get(nearCharcterId);
-                nearTileId = getOpenTilePosition(enemy.currentTileId, this);
+                nearTileId = getOpenTilePosition(enemy.currentTileId, this, selectedMonster.currentTileId);
                 isAjuacent = IsEnemyAdjacent(selectedMonster, enemy, this);
                 // nearTileId = enemy.currentTileId;
             }
@@ -1675,10 +1676,13 @@ export class UfbRoom extends Room<UfbRoomState> {
                 }
             });
 
+            const winner = this.state.characters.get(characterId);
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
                 characterId,
-                endType: END_TYPE.VICTORY
+                endType: END_TYPE.VICTORY,
+                summary: winner ? buildEndSummary(winner, true) : undefined
             });
+            if (winner) this.BankGold(winner, true);
             this.StopAIChecking();
         }
 
@@ -1958,6 +1962,62 @@ export class UfbRoom extends Room<UfbRoomState> {
             const playerId = this.sessionIdToPlayerId.get(key);
             this.SaveCharacterData(playerId, key);
         })
+    }
+
+    /**
+     * Bank a finished game onto the player's account: gold (doubled on a win) plus lifetime stats.
+     * Guests have no account row, so nothing is stored for them. Runs once per character per game.
+     */
+    async BankGold(character: CharacterState, win: boolean) {
+        if (character.type != USER_TYPE.USER || this.banked.has(character.id)) return;
+        this.banked.add(character.id);
+        const summary = buildEndSummary(character, win);
+        try {
+            const user = await db.user.findFirst({ where: { id: character.id } });
+            if (!user) {
+                console.log(`guest ${character.id} finished (${win ? "win" : "loss"}) — ${summary.total} gold not banked`);
+                return;
+            }
+            await db.user.update({ where: { id: user.id }, data: { gold: { increment: summary.total } } });
+            await db.userData.upsert({
+                where: { userId: user.id },
+                create: { userId: user.id, gold: summary.total, collect_golds: summary.total, battles: 1, wins: win ? 1 : 0, losses: win ? 0 : 1 },
+                update: {
+                    gold: { increment: summary.total },
+                    collect_golds: { increment: summary.total },
+                    battles: { increment: 1 },
+                    wins: { increment: win ? 1 : 0 },
+                    losses: { increment: win ? 0 : 1 },
+                    kills: { increment: character.stats.kills },
+                    damage_taken: { increment: character.stats.damage_taken },
+                    damage_deal: { increment: character.stats.damage_deal },
+                    damage_heal: { increment: character.stats.damage_heal },
+                    used_energies: { increment: character.stats.used_energy },
+                    used_stacks: { increment: character.stats.used_stack },
+                    traveled_tiles: { increment: character.stats.traveled_tile },
+                    item_bags: { increment: character.stats.itemBox },
+                    chests: { increment: character.stats.bags },
+                },
+            });
+            const token = await db.character.findFirst({ where: { ownerId: user.id, className: character.characterClass } });
+            if (token) {
+                await db.characterData.updateMany({
+                    where: { characterId: token.id, userId: user.id },
+                    data: {
+                        gold: { increment: summary.total }, collect_golds: { increment: summary.total },
+                        battles: { increment: 1 }, wins: { increment: win ? 1 : 0 }, losses: { increment: win ? 0 : 1 },
+                        kills: { increment: character.stats.kills }, damage_taken: { increment: character.stats.damage_taken },
+                        damage_deal: { increment: character.stats.damage_deal }, damage_heal: { increment: character.stats.damage_heal },
+                        used_energies: { increment: character.stats.used_energy }, used_stacks: { increment: character.stats.used_stack },
+                        traveled_tiles: { increment: character.stats.traveled_tile }, item_bags: { increment: character.stats.itemBox },
+                        chests: { increment: character.stats.bags },
+                    },
+                });
+            }
+            console.log(`banked ${summary.total} gold for ${user.email} (${win ? "win x2" : "loss"})`);
+        } catch (e) {
+            console.error("BankGold failed", e);
+        }
     }
 
     async SaveCharacterData(playerId: string, sessionId: string = ""){

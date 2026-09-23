@@ -1440,8 +1440,10 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
 
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
                     characterId: character.id,
-                    endType : END_TYPE.DEFEAT
+                    endType : END_TYPE.DEFEAT,
+                    summary: buildEndSummary(character, false)
                 });
+                room.BankGold(character, false);
 
                 if(enemy != null){
                     room.notify(
@@ -1648,12 +1650,12 @@ export function IsYellowMonster(key: string) {
     key == MONSTERS[MONSTER_TYPE.CENTIPEDE_YELLOW].characterClass; 
 }
 
-export function getPortalPosition(data: SpawnEntity, room: UfbRoom) {
+export function getPortalPosition(data: SpawnEntity, room: UfbRoom, moverTileId = "") {
     
     let tileId = getNextPortalTilePosition(data, room);
 
     if(tileId != "") {
-        tileId = getOpenTilePosition(tileId, room);
+        tileId = getOpenTilePosition(tileId, room, moverTileId);
     }
     return tileId;
 }
@@ -1673,20 +1675,20 @@ export function getNextPortalTilePosition(data: SpawnEntity, room: UfbRoom): str
     return tileId;
 }
 
-export function getOpenTilePosition(tileId: string, room: UfbRoom) : string {
-    
+/** First free tile next to `tileId` (not walled off, no living character, no portal); "" if none. */
+export function getOpenTilePosition(tileId: string, room: UfbRoom, moverTileId = "") : string {
     const desTile = room.state.map.tiles.get(tileId);
-
-    if(desTile.walls[0] == EDGE_TYPE.BASIC) {   //TOP
-        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "top");
-    } else if(desTile.walls[1] == EDGE_TYPE.BASIC) {   //RIGHT
-        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "right");
-    } else if(desTile.walls[2] == EDGE_TYPE.BASIC) {   //DOWN
-        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "down");
-    } else if(desTile.walls[3] == EDGE_TYPE.BASIC) {   //LEFT
-        tileId = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, "left");
+    if(!desTile) return "";
+    const blocked = new Set<string>(GetObstacleTileIds(moverTileId, room));
+    room.state.map.spawnEntities.forEach(entity => { if(entity.type == "Portal") blocked.add(entity.tileId); });
+    const passable = [EDGE_TYPE.BASIC, EDGE_TYPE.BRIDGE, EDGE_TYPE.STAIR];
+    const dirs = ["top", "right", "down", "left"];   // walls[] order
+    for(let i = 0; i < dirs.length; i++) {
+        if(passable.indexOf(desTile.walls[i]) == -1) continue;
+        const id = getTileIdByDirection(room.state.map.tiles, desTile.coordinates, dirs[i]);
+        if(id && room.state.map.tiles.has(id) && !blocked.has(id)) return id;
     }
-    return tileId;
+    return "";
 }
 
 export function getDiceTypeFromStack(stackId: number) : number {
@@ -1725,20 +1727,43 @@ export function getCountFromItem(id: number, items: ArraySchema<Item>){
 }
 
 export function getTotalGoldAtEnd(character: CharacterState){
-    let gold = character.stats.coin;
+    return buildEndSummary(character, false).total;
+}
 
-    character.powers.forEach(p => {
-        gold += p.sell;
-    });
-    character.items.forEach(i => {
-        if(!(i.id == ITEMTYPE.MANA || i.id == ITEMTYPE.MELEE))
-            gold += i.sell;
-    });
-    character.stacks.forEach(s => {
-        gold += s.sell;
-    })
+/**
+ * End-of-game payout (UFB User Account deck, "Earning Gold"): when a player is killed or wins, their
+ * whole inventory is sold to the merchant; carried gold + the sale is banked. A win doubles it.
+ */
+export function buildEndSummary(character: CharacterState, win: boolean) {
+    const sold: { id: number; count: number; gold: number; kind: "item" | "power" | "stack" }[] = [];
+    let sale = 0;
+    const add = (kind: "item" | "power" | "stack", id: number, count: number, sell: number) => {
+        if (count <= 0 || sell <= 0) return;
+        const gold = sell * count;
+        sale += gold;
+        sold.push({ id, count, gold, kind });
+    };
+    character.powers.forEach(p => add("power", p.id, p.count, p.sell));
+    character.items.forEach(i => { if (i.id != ITEMTYPE.MANA && i.id != ITEMTYPE.MELEE) add("item", i.id, i.count, i.sell); });
+    character.stacks.forEach(s => add("stack", s.id, s.count, s.sell));
 
-    return gold;
+    const carried = character.stats.coin;
+    const subtotal = carried + sale;
+    return {
+        carried,
+        sale,
+        subtotal,
+        multiplier: win ? 2 : 1,
+        total: win ? subtotal * 2 : subtotal,
+        sold: sold.sort((a, b) => b.gold - a.gold).slice(0, 12),
+        stats: {
+            kills: character.stats.kills,
+            chests: character.stats.bags,
+            damageDealt: character.stats.damage_deal,
+            damageTaken: character.stats.damage_taken,
+            tiles: character.stats.traveled_tile,
+        },
+    };
 }
 
 export function AddUserData(type: number, character: CharacterState, amount: number){

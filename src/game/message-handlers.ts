@@ -453,9 +453,14 @@ export const messageHandlers: MessageHandlers = {
 
         room.state.map.spawnEntities.forEach(entity => {
             if(entity.tileId == desTile.id && entity.type == "Portal") {
-                portalNextTileId = getNextPortalTilePosition(entity, room);
+                portalNextTileId = getPortalPosition(entity, room, character.currentTileId) || "blocked";
             }
         })
+
+        if(portalNextTileId == "blocked") {
+            room.notify(client, "The portal exit is blocked — you can't step on it right now.", "error");
+            return;
+        }
 
         if(character.stats.energy.current == 0) {
             room.notify(

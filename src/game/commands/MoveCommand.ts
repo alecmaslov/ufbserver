@@ -36,12 +36,12 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         let desTileId = message.tileId;
         this.state.map.spawnEntities.forEach(entity => {
             if(entity.tileId == message.tileId && entity.type == "Portal") {
-                message.tileId = getPortalPosition(entity, this.room);
+                message.tileId = getPortalPosition(entity, this.room, character.currentTileId);
             }
         })
 
         if( message.tileId == "" ) {
-            this.room.notify(client, "You can not move there.", "error");
+            this.room.notify(client, "The portal exit is blocked.", "error");
             return;
         }
 
