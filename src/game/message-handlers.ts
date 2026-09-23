@@ -170,6 +170,7 @@ export const messageHandlers: MessageHandlers = {
         console.log(`Init spawn Tile id: ${message.tileId}, destination: ${message.destination}, playerId: ${message.playerId}`);
         console.log("init spawn logic.....")
         room.startTurnTime = Date.now();
+        room.spawnedIds.add(message.playerId);
         room.dispatcher.dispatch(new JoinCommand(), {
             client, message
         });

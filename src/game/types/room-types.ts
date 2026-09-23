@@ -13,6 +13,10 @@ export interface UfbRoomCreateOptions {
     isPrivate: string;
     turnIds: string[];
     rules: UfbRoomRules;
+    /** single-player run: one human, room locked, saved so it can be resumed (see solo-save.ts) */
+    solo?: boolean;
+    /** with solo: restore the owner's saved run instead of starting a new one */
+    resume?: boolean;
 }
 
 export interface UfbRoomJoinOptions {

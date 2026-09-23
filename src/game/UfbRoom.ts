@@ -22,6 +22,7 @@ import { UfbRoomOptions } from "./types/room-types";
 import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, itemResults, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, TURN_TIME, USER_TYPE } from "#assets/resources";
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
+import { discardSolo, loadSolo, persistSolo, type SoloInfo } from "#game/solo-save";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
@@ -54,6 +55,8 @@ export class UfbRoom extends Room<UfbRoomState> {
     isTurnStartStack: boolean = true;
     isTurnStartForScreen: boolean = true;
     banked = new Set<string>();   // characters whose end-of-game gold has been written
+    solo: SoloInfo | null = null;       // single-player run that is saved for resuming (solo-save.ts)
+    spawnedIds = new Set<string>();     // players who have dropped onto the board (initSpawnMove)
 
     roomOption: UfbRoomOptions;
     inviteToken: string;
@@ -68,19 +71,44 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.inviteToken = options.createOptions.isPrivate ? nanoid(8) : undefined;
 
         console.log("onCreate options", options.createOptions);
-        try {
-            await this.initMap(options.createOptions?.mapName ?? "kraken");
-        } catch (err) {
-            console.error(err);
+        const ownerId = options.joinOptions?.playerId;
+        if (options.createOptions?.solo && ownerId) {
+            this.solo = { ownerId, resumed: false };
+            this.maxClients = 1;
+        }
+        if (this.solo && options.createOptions.resume) {
+            // Resume: the saved state replaces a fresh map. onAuth still checks the joiner owns ownerId.
+            const saved = await loadSolo(ownerId);
+            if (!saved) throw new Error("NO_SAVED_GAME");
+            this.setState(saved.state);
+            await this.attachSavedMap();
+            this.solo.resumed = true;
+            this.spawnedIds.add(ownerId);
+            this.isTurnStartEquip = saved.extra.isTurnStartEquip;
+            this.isTurnStartStack = saved.extra.isTurnStartStack;
+            this.isTurnStartForScreen = true;
+            this.startTurnTime = Date.now();
+        } else {
+            try {
+                await this.initMap(options.createOptions?.mapName ?? "kraken");
+            } catch (err) {
+                console.error(err);
+            }
         }
         registerMessageHandlers(this);
+        this.onMessage("abandonSolo", (client) => {
+            if (!this.solo || this.sessionIdToPlayerId.get(client.sessionId) !== this.solo.ownerId) return;
+            const id = this.solo.ownerId; this.solo = null;   // no more saves for this room
+            discardSolo(id).catch((e) => console.error("abandonSolo", e));
+        });
         console.log(`created room ${this.roomId}`);
 
-
-        this.state.turnOrder.clear();
-        options.createOptions.turnIds.forEach(id => {
-            this.state.turnOrder.push(id);
-        })
+        if (!this.solo?.resumed) {
+            this.state.turnOrder.clear();
+            options.createOptions.turnIds.forEach(id => {
+                this.state.turnOrder.push(id);
+            })
+        }
 
         this.aiInterval = setInterval(() => {
             this.aiChecking();
@@ -128,6 +156,20 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
         this.sessionIdToPlayerId.set(client.sessionId, playerId);
         console.log(client.sessionId, "joined!..........");
+
+        // Resumed solo run: the hero is already in the saved state — reattach it instead of spawning a new one.
+        const saved = this.solo?.resumed && playerId === this.solo.ownerId ? this.state.characters.get(playerId) : undefined;
+        if (saved) {
+            saved.sessionId = client.sessionId;
+            saved.connected = true;
+            this.startTurnTime = Date.now();
+            this.broadcast(
+                SERVER_TO_CLIENT_MESSAGE.TURN_CHANGED,
+                { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime: TURN_TIME },
+                { afterNextPatch: true }
+            );
+            return;
+        }
 
         const tile = await db.tile.findFirst({
             where: {
@@ -188,6 +230,8 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         const playerId = this.sessionIdToPlayerId.get(client.sessionId);
         const player = this.state.characters.get(playerId);
+
+        if (this.solo && playerId === this.solo.ownerId) await persistSolo(this);   // quitting keeps the run (or clears it if it's over)
 
         // player.connected = false;
  
@@ -301,6 +345,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         this.startTurnTime = Date.now();
         console.log("turn time ", this.startTurnTime);
+        if (this.solo) persistSolo(this);   // autosave at every turn change
     }
 
     resetTurn() {
@@ -310,6 +355,16 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     // @kyle - Implemented map loading from database
     // it should have the same exact functionality
+    /** For a resumed solo run: the map's tiles and entities come from the save; load only what lives outside the schema. */
+    async attachSavedMap() {
+        const map = await db.ufbMap.findFirst({
+            where: { name: this.state.map.name },
+            include: { tiles: { include: { fromTileAdjacencies: true } } },
+        });
+        this.spawnZoneArray = await db.spawnZone.findMany({ where: { tile: { mapId: map.id } } });
+        this.state.map._map = map as any;
+    }
+
     async initMap(mapName: string) {
         const map = await db.ufbMap.findFirst({
             where: {

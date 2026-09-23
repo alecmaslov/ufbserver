@@ -14,6 +14,7 @@ import nft from "#routes/nft";
 import user from "#routes/user";
 import lobby from "#routes/lobby";
 import account from "#routes/account";
+import solo from "#routes/solo";
 
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
@@ -44,6 +45,7 @@ app.use("/nft", nft);
 app.use("/lobby", lobby);
 app.use("/user", user);
 app.use("/account", account);
+app.use("/solo", solo);
 
 if (DEV_MODE) {
     console.log("🚧🚧 Warning: DEV_MODE is enabled! 🚧🚧");

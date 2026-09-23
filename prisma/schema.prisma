@@ -31,33 +31,33 @@ model User {
   createdAt       DateTime    @default(now())
   client          Client[]
   character       Character[]
-  
-    // opposite relation field (back-reference)
-  userData        UserData?    // 1:1
-  characterData   CharacterData[]
+
+  // opposite relation field (back-reference)
+  userData      UserData? // 1:1
+  characterData CharacterData[]
 
   @@map("user")
 }
 
 model UserData {
-  id             String  @id @default(cuid())
-  gold           Int     @default(0)
-  losses         Int     @default(0)
-  wins           Int     @default(0)
-  kills          Int     @default(0)
-  battles        Int     @default(0)
-  damage_taken   Int     @default(0)
-  item_bags      Int     @default(0)
-  used_energies  Int     @default(0) // fixed typo: energe -> energy
-  damage_deal    Int     @default(0)
-  used_stacks    Int     @default(0)
-  damage_heal    Int     @default(0)
-  collect_golds  Int     @default(0)
-  traveled_tiles Int     @default(0)
-  chests         Int     @default(0)
+  id             String @id @default(cuid())
+  gold           Int    @default(0)
+  losses         Int    @default(0)
+  wins           Int    @default(0)
+  kills          Int    @default(0)
+  battles        Int    @default(0)
+  damage_taken   Int    @default(0)
+  item_bags      Int    @default(0)
+  used_energies  Int    @default(0) // fixed typo: energe -> energy
+  damage_deal    Int    @default(0)
+  used_stacks    Int    @default(0)
+  damage_heal    Int    @default(0)
+  collect_golds  Int    @default(0)
+  traveled_tiles Int    @default(0)
+  chests         Int    @default(0)
 
-  userId         String  @unique
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_data")
 }
@@ -108,11 +108,26 @@ model GameSessionState {
   @@map("gamesessionstate")
 }
 
+/// The one saved solo game a player can resume (guest "web-…" id or account id). A snapshot of the room state.
+model SoloSave {
+  ownerId     String   @id
+  mapName     String
+  heroClass   String
+  displayName String
+  turn        Int
+  state       Bytes    @db.MediumBlob
+  extra       String   @db.Text
+  updatedAt   DateTime @updatedAt
+
+  @@map("solo_save")
+}
+
 model Asset {
   objectKey   String        @id
   bucketName  String
   region      String
   bundleAsset BundleAsset[]
+
   @@map("asset")
 }
 
@@ -137,6 +152,7 @@ model UfbMap {
   resourceAddress String?
   isPublished     Boolean @default(false)
   tiles           Tile[]
+
   @@map("ufbmap")
 }
 
@@ -167,6 +183,7 @@ model SpawnZone {
   seedId Int
   tileId String        @unique
   tile   Tile          @relation(fields: [tileId], references: [id], onDelete: Cascade)
+
   @@map("spawnzone")
 }
 
@@ -213,7 +230,7 @@ model CharacterClass {
 
 model Character {
   id             String         @id @default(cuid())
-  name           String         
+  name           String
   traits         Json?
   ownerId        String?
   nftId          String?        @unique
@@ -223,7 +240,7 @@ model Character {
   nft            Nft?           @relation(fields: [nftId], references: [id])
   owner          User?          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  characterData   CharacterData[]
+  characterData CharacterData[]
 
   @@index([className], map: "character_token_className_fkey")
   @@index([ownerId], map: "character_token_ownerId_fkey")
@@ -232,23 +249,23 @@ model Character {
 
 ////
 model CharacterTest {
-  id             String         @id @default(cuid())
-  name           String         @unique
-  traits         Json?
-  ownerId        String?
-  nftId          String?        @unique
-  className      String
-  maxEnergy      String
-  energy         String
-  maxHealth      String
-  health         String
-  ultimate       String
-  maxUltimate    String
-  gold           String
-  melee          String
-  maxMelee       String
-  mana           String
-  maxMana        String
+  id          String  @id @default(cuid())
+  name        String  @unique
+  traits      Json?
+  ownerId     String?
+  nftId       String? @unique
+  className   String
+  maxEnergy   String
+  energy      String
+  maxHealth   String
+  health      String
+  ultimate    String
+  maxUltimate String
+  gold        String
+  melee       String
+  maxMelee    String
+  mana        String
+  maxMana     String
 
   @@index([className], map: "character_token_className_fkey")
   @@index([ownerId], map: "character_token_ownerId_fkey")
@@ -256,38 +273,38 @@ model CharacterTest {
 }
 
 model CharacterData {
-  id             String  @id @default(cuid())
-  gold           Int     @default(0)
-  losses         Int     @default(0)
-  wins           Int     @default(0)
-  kills          Int     @default(0)
-  battles        Int     @default(0)
-  damage_taken   Int     @default(0)
-  item_bags      Int     @default(0)
-  used_energies  Int     @default(0) // fixed typo: energe -> energy
-  damage_deal    Int     @default(0)
-  used_stacks    Int     @default(0)
-  damage_heal    Int     @default(0)
-  collect_golds  Int     @default(0)
-  traveled_tiles Int     @default(0)
-  chests         Int     @default(0)
+  id             String @id @default(cuid())
+  gold           Int    @default(0)
+  losses         Int    @default(0)
+  wins           Int    @default(0)
+  kills          Int    @default(0)
+  battles        Int    @default(0)
+  damage_taken   Int    @default(0)
+  item_bags      Int    @default(0)
+  used_energies  Int    @default(0) // fixed typo: energe -> energy
+  damage_deal    Int    @default(0)
+  used_stacks    Int    @default(0)
+  damage_heal    Int    @default(0)
+  collect_golds  Int    @default(0)
+  traveled_tiles Int    @default(0)
+  chests         Int    @default(0)
 
-  maxEnergy      Int     @default(0)
-  energy         Int     @default(0)
-  maxHealth      Int     @default(0)
-  health         Int     @default(0)
-  ultimate       Int     @default(0)
-  maxUltimate    Int     @default(0)
-  maxMelee       Int     @default(0)
-  maxMana        Int     @default(0)
+  maxEnergy   Int @default(0)
+  energy      Int @default(0)
+  maxHealth   Int @default(0)
+  health      Int @default(0)
+  ultimate    Int @default(0)
+  maxUltimate Int @default(0)
+  maxMelee    Int @default(0)
+  maxMana     Int @default(0)
 
-  userId         String
-  characterId    String
+  userId      String
+  characterId String
 
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  character      Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, characterId])  // One per character per user
+  @@unique([userId, characterId]) // One per character per user
   @@map("character_data")
 }
 
@@ -344,11 +361,13 @@ model Item {
   category    String
   description String?
   nftId       String? @unique
+
   @@map("item")
 }
 
 model ItemBehavior {
   id String @id @default(cuid())
+
   @@map("itembehavior")
 }
 
