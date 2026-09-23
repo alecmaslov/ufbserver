@@ -8,6 +8,7 @@ import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, IT
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEmptyTile, IsEnemyAdjacent, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
+import { breakAmbush, isInvisible } from "#game/ultimates";
 
 type OnPowerMoveCommandPayload = {
     client: Client;
@@ -29,6 +30,10 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         if(!enemy){
             this.room.notify(client, "Enemy are not in room game!", "error");
             return; 
+        }
+        if(enemy.id !== character.id && isInvisible(enemy)) {
+            this.room.notify(client, `${enemy.displayName} is invisible — you can't target them.`, "error");
+            return;
         }
 
         const powerMoveId = message.powerMoveId;
@@ -430,6 +435,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         if(target == enemy && target.stats.health.current <= 0) {
             this.room.RewardFromMonster(character, target, client);
         }
+        breakAmbush(character);
       
         console.log("send attack broadcast");
 

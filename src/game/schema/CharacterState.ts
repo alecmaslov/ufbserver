@@ -113,6 +113,9 @@ export class CharacterState extends Schema {
     @type([Item]) stacks : ArraySchema<Item> = new ArraySchema<Item>();
     @type([Item]) equipSlots: ArraySchema<Item> = new ArraySchema<Item>();
     @type([Quest]) quests : ArraySchema<Quest> = new ArraySchema<Quest>();
+    // Keep new fields at the end: solo saves (encodeAll) decode by field index.
+    @type("int8") invisible: number = 0;     // Data Avenger's ultimate: turns of invisibility left (see ultimates.ts)
+    @type("boolean") ambush: boolean = false; // her next attack deals double damage and breaks invisibility
 
 }
 

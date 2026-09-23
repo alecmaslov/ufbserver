@@ -1388,6 +1388,7 @@ export function getCharacterIdsInArea(character: CharacterState, range: number, 
 }
 
 export function setCharacterHealth(character : CharacterState, amount : number, room : UfbRoom, client: Client, type: string, enemy: CharacterState) {
+    if(amount < 0 && enemy != null && enemy.ambush) amount *= 2;   // Data Avenger striking from invisibility (ultimates.ts)
     let extra = character.stats.health.add(amount);
     if(amount < 0) {
         character.stats.ultimate.add(2 * Math.abs(amount));
@@ -1519,7 +1520,7 @@ export function GetNearestPlayerId( currentTileId: string, room: UfbRoom) {
     let id = "";
     let range = 100;
     room.state.characters.forEach(character => {
-        if(character.type == USER_TYPE.USER && character.stats.health.current > 0 && !character.stats.isRevive) {
+        if(character.type == USER_TYPE.USER && character.stats.health.current > 0 && !character.stats.isRevive && !(character.invisible > 0)) {
             const enemyTile = room.state.map.tiles.get(character.currentTileId);
             const r = Math.abs(enemyTile.coordinates.x - currentTile.coordinates.x) + Math.abs(enemyTile.coordinates.y - currentTile.coordinates.y);
             if(range > r) {

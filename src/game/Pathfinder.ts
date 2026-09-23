@@ -74,8 +74,10 @@ export class Pathfinder {
     var characters = room.characters;
 
     let banTileIds: string[] = [];
+    const mover = characters.get(room.currentCharacterId);
+    const ghost = !!mover && mover.invisible > 0;   // Data Avenger's invisibility: pass through, but still can't stop on someone
     characters.forEach((character) => {
-      if(character.id != room.currentCharacterId && character.stats.health.current > 0) {
+      if(!ghost && character.id != room.currentCharacterId && character.stats.health.current > 0) {
         banTileIds.push(character.currentTileId);
       }
     });

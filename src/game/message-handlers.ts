@@ -16,6 +16,8 @@ import { getRandomElements } from "#utils/collections";
 import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { UnEquipCommand } from "./commands/UnEquipCommand";
 import { SpawnZoneType } from "@prisma/client";
+import { breakAmbush, isInvisible, useUltimate } from "./ultimates";
+import { DEV_MODE } from "#config";
 
 
 type MessageHandler<TMessage> = (
@@ -353,6 +355,11 @@ export const messageHandlers: MessageHandlers = {
 
     },
 
+    // HERO ULTIMATES (ultimates.ts)
+    [CLIENT_SERVER_MESSAGE.USE_ULTIMATE]: (room, client, message) => {
+        useUltimate(room, client, message);
+    },
+
     // SET STAB ATTACK PART
     [CLIENT_SERVER_MESSAGE.SET_STAB_ATTACK]:(room, client, message) => {
         const itemId = message.itemId;
@@ -376,6 +383,11 @@ export const messageHandlers: MessageHandlers = {
                 "You don't have enough item to move there!",
                 "error"
             );
+            return;
+        }
+
+        if(isInvisible(enemy)) {
+            room.notify(client, `${enemy.displayName} is invisible — you can't target them.`, "error");
             return;
         }
 
@@ -438,6 +450,7 @@ export const messageHandlers: MessageHandlers = {
         if(enemy.stats.health.current <= 0) {
             room.RewardFromMonster(character, enemy, client);
         }
+        breakAmbush(character);
 
         setTimeout(() => {
             room.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {characterId: character.id}, {except: client})
@@ -1456,6 +1469,14 @@ export const messageHandlers: MessageHandlers = {
 };
 
 export function registerMessageHandlers(room: UfbRoom) {
+    // Local testing only (DEV_MODE=true): fill a hero's ultimate gauge so every ultimate can be exercised.
+    if (DEV_MODE) room.onMessage<any>("DEV_FILL_ULTIMATE", (client, message) => {
+        const c = getCharacterById(room, message?.characterId); if (c) c.stats.ultimate.setToMax();
+    });
+    if (DEV_MODE) room.onMessage<any>("DEV_PLACE", (client, message) => {
+        const c = getCharacterById(room, message?.characterId); const t = room.state.map.tiles.get(message?.tileId);
+        if (c && t) { c.coordinates.x = t.coordinates.x; c.coordinates.y = t.coordinates.y; c.currentTileId = t.id; }
+    });
     for (const messageType in messageHandlers) {
         const handler = messageHandlers[messageType];
         room.onMessage<any>(messageType, (client, message) => {

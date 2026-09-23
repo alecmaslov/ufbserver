@@ -1,4 +1,5 @@
 import { Jwt, UserJwt } from "#auth";
+import { tickInvisibility } from "#game/ultimates";
 import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
@@ -307,6 +308,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     // custom state change actions
     incrementTurn() {
+        tickInvisibility(this.state.characters.get(this.state.currentCharacterId));   // ultimates.ts
         const n = this.state.turnOrder.length;
         const nextPlayerIndex =
             (this.state.turnOrder.indexOf(this.state.currentCharacterId) + 1) %
