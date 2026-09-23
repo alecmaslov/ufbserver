@@ -2123,9 +2123,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         damage_heal: {
                             increment: player.stats.damage_heal
                         },
-                        collect_golds: {
-                            increment: gold
-                        },
+                        // collect_golds is credited by BankGold when the game ends, not on a disconnect
                         traveled_tiles: {
                             increment: player.stats.traveled_tile
                         },
@@ -2137,14 +2135,8 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                 console.log("udpated --------------")
 
-                await db.user.update({
-                    where: {
-                        id: user.id
-                    },
-                    data: {
-                        gold: gold
-                    }
-                });
+                // account gold is only written by BankGold at the end of a game (win or death), never here:
+                // this path runs when a player disconnects mid-game, and overwriting gold wiped their balance.
 
                 console.log("udpated --------------")
 
@@ -2153,7 +2145,6 @@ export class UfbRoom extends Room<UfbRoomState> {
                         userId: user.id
                     },
                     data: {
-                        gold,
                         losses: {
                             increment: player.stats.health.current > 0? 0 : 1
                         },
@@ -2184,9 +2175,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         damage_heal: {
                             increment: player.stats.damage_heal
                         },
-                        collect_golds: {
-                            increment: gold
-                        },
+                        // collect_golds is credited by BankGold when the game ends, not on a disconnect
                         traveled_tiles: {
                             increment: player.stats.traveled_tile
                         },
