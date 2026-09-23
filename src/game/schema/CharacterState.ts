@@ -117,6 +117,7 @@ export class CharacterState extends Schema {
     @type("int8") invisible: number = 0;     // Data Avenger's ultimate: turns of invisibility left (see ultimates.ts)
     @type("boolean") ambush: boolean = false; // her next attack deals double damage and breaks invisibility
     @type("int8") questsCompleted: number = 0; // this match; sets how many hard quests the merchant offers
+    @type("int8") chargeBonus: number = 0;     // Charge stack rolled at turn start: bonus damage on the next attack
 
 }
 

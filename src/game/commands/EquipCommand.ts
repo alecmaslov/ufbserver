@@ -87,7 +87,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                     powerIds: [],
                     costList: [],
                     stackCostList: [],
-                    result: move.result
+                    result: { ...move.result }   // a copy: this used to be the shared table entry, and the bonus below mutated it
                 };
 
                 move.powerIds.forEach((pid : number) => {
@@ -109,7 +109,8 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
                 });
 
                 powermove.range += extraDamage.range;
-                powermove.result.health = !!powermove.result.health? powermove.result.health - extraDamage.damage : - extraDamage.damage;
+                // shown with the equip bonus on attacks only (buffs deal no damage)
+                if ((powermove.result as any).dice || (powermove.result.health ?? 0) < 0) powermove.result.health = (powermove.result.health ?? 0) - extraDamage.damage;
 
                 clientMessage.powermoves.push(powermove);
             }

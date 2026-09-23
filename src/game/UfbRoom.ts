@@ -1,4 +1,5 @@
 import { Quest } from "#game/schema/CharacterState";
+import { applyTurnStartStack } from "#game/turn-stacks";
 import { Jwt, UserJwt } from "#auth";
 import { tickInvisibility } from "#game/ultimates";
 import { DEV_MODE } from "#config";
@@ -628,26 +629,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                 return;
             }
 
-            // AI MONSTER ITEM
-            let isItemUse = false;
-            selectedMonster.items.forEach(p => {
-                if(p.id == ITEMTYPE.POTION && p.count > 0) {
-                    isItemUse = true
-                    selectedMonster.stats.health.add(5);
-                    this.sendBroadcastStats(5, 'heart');
-                    p.count--;
-                } else if(p.id == ITEMTYPE.ELIXIR && p.count > 0) {
-                    isItemUse = true;
-                    selectedMonster.stats.energy.add(10);
-                    addStackToCharacter(STACKTYPE.Cure, 1, selectedMonster, null, this);
-                    addStackToCharacter(STACKTYPE.Dodge, 1, selectedMonster, null, this);
-                    p.count--;
-                }
-            })
-            if(isItemUse) {
-                this.DoActionMonster()
-                return;
-            }
+            // Monsters can't use items (rules). They still carry them: that's loot for whoever kills them.
 
             // AI MONSTER STACK
             if(this.isTurnStartEquip) {
@@ -764,6 +746,19 @@ export class UfbRoom extends Room<UfbRoomState> {
                     });
                     
                     console.log("------------------turn stack of monster........")
+
+                    // Apply what was rolled (monsters used to roll Burn/Void/Cure/... and never take the effect or spend
+                    // the stack), exactly as a player's SET_STACK_ON_START does.
+                    stackList.forEach((st: any, i: number) => {
+                        if (selectedMonster.stats.health.current <= 0) return;
+                        addStackToCharacter(st.id, -1, selectedMonster, null, this);
+                        applyTurnStartStack(this, selectedMonster, st.id, diceResult[i]?.diceData ?? [], null);
+                    });
+                    if (selectedMonster.stats.health.current <= 0) {   // burned / voided to death: its turn ends here
+                        this.isMonsterActive = false;
+                        setTimeout(() => { this.isMonsterActive = true; this.incrementTurn(); }, 2500);
+                        return;
+                    }
 
                     this.DoActionMonster(3);
                     return;

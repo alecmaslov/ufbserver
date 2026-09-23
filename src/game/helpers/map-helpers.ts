@@ -756,12 +756,15 @@ export function getEquipBonusDamage(id: number, character: CharacterState){
         range : 0
     };
 
+    // Rules: Sword / Ax / Spear +1 damage at level 2 and +2 at level 3, Crossbow +1, Bow +1 / +2 range — passive
+    // while equipped, for every move of that power family (id % 12). This had been switched off (damage = 0) and
+    // was keyed to the move's own image, so a level-1 move of a level-2 weapon never got it.
+    if (id < 0) return extraDamage;
     character.equipSlots.forEach(slot => {
-        if(id >= 0) {
-            if(slot.id == id && !!EQUIP_EXTRA_BONUS[id]){
-                extraDamage.damage = 0;
-                extraDamage.range = EQUIP_EXTRA_BONUS[id].range;
-            }
+        const bonus = EQUIP_EXTRA_BONUS[slot.id];
+        if (bonus && slot.id % 12 === id % 12) {
+            extraDamage.damage = Math.max(extraDamage.damage, bonus.damage);
+            extraDamage.range = Math.max(extraDamage.range, bonus.range);
         }
     })
 

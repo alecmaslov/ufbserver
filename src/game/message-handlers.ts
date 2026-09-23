@@ -18,6 +18,7 @@ import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverM
 import { UnEquipCommand } from "./commands/UnEquipCommand";
 import { SpawnZoneType } from "@prisma/client";
 import { breakAmbush, isInvisible, useUltimate } from "./ultimates";
+import { applyTurnStartStack } from "./turn-stacks";
 import { DEV_MODE } from "#config";
 
 
@@ -556,11 +557,9 @@ export const messageHandlers: MessageHandlers = {
         const character = getCharacterById(room, characterId);
         const pm = getPowerMoveFromId(powerMoveId, extraItemId);
 
-        let extraDamage = getEquipBonusDamage(pm.powerImageId, character);
-
-        const health = !!pm.result.health? (pm.result.health - extraDamage.damage) : 0;
-
-        let deltaCount = diceCount - health - enemyDiceCount;
+        // Only the dice are blocked here: the move's fixed damage (and equip bonus / Charge) already landed in
+        // PowerMoveCommand. This used to subtract the fixed part again, counting it twice.
+        let deltaCount = diceCount - enemyDiceCount;
 
         if(enemy == null) {
             room.notify(
@@ -1367,7 +1366,8 @@ export const messageHandlers: MessageHandlers = {
                 (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Ice2) && !IsEquipPower(character, POWERTYPE.Ice3)) ||
                 (stack.id == STACKTYPE.Cure && stack.count > 0) ||
                 (stack.id == STACKTYPE.Slow && stack.count > 0) || 
-                (stack.id == STACKTYPE.Pump && stack.count > 0)
+                (stack.id == STACKTYPE.Pump && stack.count > 0) ||
+                (stack.id == STACKTYPE.Charge && stack.count > 0 && !(character?.chargeBonus > 0))
             ) {
                 if(stackList.length < 3) {
                     stackList.push({
@@ -1437,97 +1437,8 @@ export const messageHandlers: MessageHandlers = {
         }
         const diceData = rolls.splice(k, 1)[0].dice;
 
-        character.stacks.forEach(stack => {
-            if(stack.id == stackId) {
-                addStackToCharacter(stack.id, -1, character, client, room);
-            }
-        });
-
-        if(stackId == STACKTYPE.Cure) {
-            
-            // Only the overheal becomes gold (health.add returns the new HP, which used to be paid out whole).
-            const hp = character.stats.health;
-            const extra = Math.max(0, hp.current + diceData[0].diceCount - hp.max);
-            hp.add(diceData[0].diceCount);
-            if(extra > 0) {
-                character.stats.coin += extra;
-                setQuestResult(QUESTTYPE.GLITTER, extra, character);
-            }
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: diceData[0].diceCount,
-                type: "heart"
-            });
-
-            room.sendBroadcastStats(diceData[0].diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, client);
-
-        } else if(stackId == STACKTYPE.Void) {
-            setCharacterHealth(character, -diceData[1].diceCount, room, client, "heart", null);
-            character.stats.ultimate.add(-diceData[0].diceCount);
-            
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[1].diceCount,
-                type: "heart"
-            });
-
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[0].diceCount,
-                type: "ultimate"
-            });
-
-            room.sendBroadcastStats(-diceData[1].diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, client);
-            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
-
-
-        } else if(stackId == STACKTYPE.Burn) {
-            setCharacterHealth(character, -diceData[0].diceCount, room, client, "heart", null);
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[0].diceCount,
-                type: "heart"
-            });
-            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, client);
-        } else if(stackId == STACKTYPE.Freeze) {
-            setCharacterEnergy(character, diceData[0].diceCount, room, client);
-
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: diceData[0].diceCount,
-                type: "energy"
-            });
-            room.sendBroadcastStats(diceData[0].diceCount, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
-        } else if(stackId == STACKTYPE.Charge) {
-            setCharacterEnergy(character, -diceData[0].diceCount, room, client);
-
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[0].diceCount,
-                type: "energy"
-            });
-            
-            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
-
-        } else if(stackId == STACKTYPE.Slow) {
-            setCharacterEnergy(character, -diceData[1].diceCount, room, client);
-
-            character.stats.ultimate.add(-diceData[0].diceCount);
-            
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[1].diceCount,
-                type: "energy"
-            });
-
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: -diceData[0].diceCount,
-                type: "ultimate"
-            });
-            room.sendBroadcastStats(-diceData[1].diceCount, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
-            room.sendBroadcastStats(-diceData[0].diceCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
-
-        } else if(stackId == STACKTYPE.Pump) {
-            character.stats.ultimate.add(diceData[0].diceCount);
-            client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: diceData[0].diceCount,
-                type: "ultimate"
-            });
-            room.sendBroadcastStats(diceData[0].diceCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
-        }
+        addStackToCharacter(stackId, -1, character, client, room);
+        applyTurnStartStack(room, character, stackId, diceData, client);
     },
 
     [CLIENT_SERVER_MESSAGE.GET_EQUIP_SLOT_LIST]: (room, client, message) => {

@@ -10,6 +10,7 @@ import { CLIENT_SERVER_MESSAGE, SERVER_TO_CLIENT_MESSAGE } from "#assets/serverM
 import { addItemToCharacter, addStackToCharacter, getCharacterIdsInArea, getCountFromItem, getDiceCount, getEquipBonusDamage, getPerkEffectDamage, getPowerMoveFromId, IsEmptyTile, IsEnemyAdjacent, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { PathStep } from "#shared-types";
 import { breakAmbush, isInvisible } from "#game/ultimates";
+import { IsArrowItem, IsBombItem } from "#game/helpers/map-helpers";
 
 type OnPowerMoveCommandPayload = {
     client: Client;
@@ -40,11 +41,48 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
         const powerMoveId = message.powerMoveId;
 
         let powermove = getPowerMoveFromId(powerMoveId, message.extraItemId);
+        if (!powermove) { this.room.notify(client, "Unknown power move.", "error"); return; }
 
+        // Ranged moves fire ammo from your inventory (rules: "The Bow fires arrows from your inventory", "The Cannon
+        // launches bombs and caltrops from your inventory"). The move lists a Random* placeholder; spend the arrow /
+        // bomb the player picked (extraItemId), or a plain one, and apply that ammo's damage and stack.
+        const AMMO_SLOTS = [ITEMTYPE.RandomArrow, ITEMTYPE.RandomBomb, ITEMTYPE.RandomArrowOrBomb];
+        const slot = powermove.costList.find((c: any) => AMMO_SLOTS.includes(c.id));
+        if (slot) {
+            const fits = (id: number) => slot.id == ITEMTYPE.RandomArrow ? IsArrowItem(id) : slot.id == ITEMTYPE.RandomBomb ? IsBombItem(id) : (IsArrowItem(id) || IsBombItem(id));
+            const has = (id: number) => character.items.some((it) => it.id == id && it.count > 0);
+            const plain = slot.id == ITEMTYPE.RandomBomb ? ITEMTYPE.BOMB : ITEMTYPE.ARROW;
+            const ammo = message.extraItemId > 0 && fits(message.extraItemId) && has(message.extraItemId) ? message.extraItemId
+                : has(plain) ? plain : (character.items.find((it) => it.count > 0 && fits(it.id))?.id ?? -1);
+            if (ammo < 0) {
+                this.room.notify(client, `You need ${slot.id == ITEMTYPE.RandomBomb ? "a bomb" : slot.id == ITEMTYPE.RandomArrow ? "an arrow" : "an arrow or a bomb"} for ${powermove.name}.`, "error");
+                return;
+            }
+            powermove = getPowerMoveFromId(powerMoveId, ammo);   // adds the ammo to the cost and its damage / stack to the result
+            powermove.costList = powermove.costList.filter((c: any) => !AMMO_SLOTS.includes(c.id));
+        }
+
+        // Attack moves (they roll dice or deal damage) get the equipped weapon's bonus and any Charge; buffs don't, so
+        // a buff never hurts whoever receives it.
+        const isAttack = !!powermove.result.dice || (powermove.result.health ?? 0) < 0;
         let extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
-
-        powermove.result.health = !!powermove.result.health? (powermove.result.health - extraDamage.damage) : -extraDamage.damage;
+        if (isAttack) {
+            const charge = character.chargeBonus > 0 ? character.chargeBonus : 0;   // Charge stack: bonus on the next attack
+            powermove.result.health = (powermove.result.health ?? 0) - extraDamage.damage - charge;
+            if (charge) character.chargeBonus = 0;
+        }
         powermove.range += extraDamage.range;
+
+        // Reach: attacks and buffs on someone else need them within range (at least adjacent); a buff on yourself
+        // always works. The server never checked distance before.
+        if (enemy.id !== character.id) {
+            const a = this.room.state.map.tiles.get(character.currentTileId), b = this.room.state.map.tiles.get(enemy.currentTileId);
+            const reach = Math.max(1, powermove.range);
+            if (a && b && Math.abs(a.coordinates.x - b.coordinates.x) + Math.abs(a.coordinates.y - b.coordinates.y) > reach) {
+                this.room.notify(client, `${enemy.displayName} is out of range for ${powermove.name} (${reach}).`, "error");
+                return;
+            }
+        }
 
         // Targeting: you have to be able to see something to hit it.
         //
