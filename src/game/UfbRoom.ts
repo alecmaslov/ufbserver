@@ -26,6 +26,7 @@ import { ADD_EXTRA_TYPE, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_TURN_BONUS, GOOD_
 import { CharacterState, Item } from "./schema/CharacterState";
 import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpers/room-helpers";
 import { discardSolo, loadSolo, persistSolo, type SoloInfo } from "#game/solo-save";
+import { autopilotTurn, RECONNECT_GRACE } from "#game/autopilot";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
@@ -66,6 +67,8 @@ export class UfbRoom extends Room<UfbRoomState> {
     banked = new Set<string>();   // characters whose end-of-game gold has been written
     solo: SoloInfo | null = null;       // single-player run that is saved for resuming (solo-save.ts)
     spawnedIds = new Set<string>();     // players who have dropped onto the board (initSpawnMove)
+    awaySince = new Map<string, number>();   // heroes whose player disconnected: since when (the hero stays on the board)
+    autopiloting = false;
 
     roomOption: UfbRoomOptions;
     inviteToken: string;
@@ -180,6 +183,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             return;
         }
 
+        // Rejoining a match (e.g. after the reconnection grace ran out): the hero is still on the board — reattach it.
+        // Health is untouched, so a dead (and already banked) hero comes back as a spectator, never resurrected.
+        const back = this.state.characters.get(playerId);
+        if (back && back.type == USER_TYPE.USER) {
+            back.sessionId = client.sessionId;
+            this.welcomeBack(client, back);
+            return;
+        }
+
         const tile = await db.tile.findFirst({
             where: {
                 // x_y_mapId: {
@@ -241,40 +253,32 @@ export class UfbRoom extends Room<UfbRoomState> {
         const player = this.state.characters.get(playerId);
 
         if (this.solo && playerId === this.solo.ownerId) await persistSolo(this);   // quitting keeps the run (or clears it if it's over)
+        if (!player) return;
 
-        // player.connected = false;
- 
-        try {
-            if (consented) {
-                throw new Error("consented leave");
-            }
-
-            // allow disconnected client to reconnect into this room until 20 seconds
-            if(player.connected) {
-                console.log(client.sessionId, "wait for ... onLeave");
-                await this.allowReconnection(client, 20);
-            }
-
-            console.log(client.sessionId, "solve for ... onLeave");
-     
-            console.log("connect failed");
-            // client returned! let's re-activate it.
-     
-            await this.SaveCharacterData(playerId, client.sessionId);
-
-            console.log("saved character data");
-        
-            // this.state.characters.delete(playerId);
-            // this.sessionIdToPlayerId.delete(client.sessionId);
-
-        } catch (e) {
-     
-            console.log("connect failed");
-            await this.SaveCharacterData(playerId, client.sessionId);
-            // 20 seconds expired. let's remove the client.
-            // this.state.characters.delete(playerId);
-            // this.sessionIdToPlayerId.delete(client.sessionId);
+        // The hero stays on the board either way (still attackable, still in turn order; an away hero's turn is played by
+        // the autopilot, see checkUserTimer). A dropped connection keeps its seat for RECONNECT_GRACE seconds; after that,
+        // or after quitting, the player can still rejoin by room code (onJoin reattaches the hero).
+        const alive = player.stats.health.current > 0;
+        player.connected = false;
+        this.awaySince.set(playerId, Date.now());
+        if (!consented && alive) {
+            try {
+                const again = await this.allowReconnection(client, RECONNECT_GRACE);   // the reconnected client (same session id)
+                this.welcomeBack(again, player);
+                return;
+            } catch (e) { /* grace ran out */ }
         }
+        await this.SaveCharacterData(playerId, client.sessionId);
+    }
+
+    /** A player is back (reconnected within the grace, or rejoined later): wake their hero and bring their client up to date. */
+    welcomeBack(client: Client, hero: CharacterState) {
+        hero.connected = true;
+        this.awaySince.delete(hero.id);
+        this.sessionIdToPlayerId.set(client.sessionId, hero.id);
+        client.send("rejoined", { spawned: this.spawnedIds.has(hero.id), dead: hero.stats.health.current <= 0 });
+        const left = Math.max(1, TURN_TIME - (Date.now() - this.startTurnTime) / 1000);
+        client.send(SERVER_TO_CLIENT_MESSAGE.TURN_CHANGED, { turn: this.state.turn, characterId: this.state.currentCharacterId, curTime: left }, { afterNextPatch: true });
     }
 
 
@@ -937,6 +941,20 @@ export class UfbRoom extends Room<UfbRoomState> {
         if(this.startTurnTime > 0) {
             const duration = (Date.now() - this.startTurnTime) / 1000;
             // console.log(duration, "check timer....")
+            const hero = this.state.characters.get(this.state.currentCharacterId);
+            const away = hero ? this.awaySince.get(hero.id) : undefined;
+            if (hero && away !== undefined) {
+                // Player disconnected: wait RECONNECT_GRACE seconds (from the later of turn start and the drop), then the
+                // autopilot plays a cautious turn so the table isn't left waiting out the full turn timer.
+                if (this.autopiloting || (Date.now() - Math.max(this.startTurnTime, away)) / 1000 < RECONNECT_GRACE) return;
+                this.autopiloting = true;
+                const turn = this.state.turn;
+                setTimeout(() => {
+                    this.autopiloting = false;
+                    if (this.state.turn === turn && this.state.currentCharacterId === hero.id) this.incrementTurn();
+                }, autopilotTurn(this, hero));
+                return;
+            }
             if(duration > TURN_TIME){
                 this.incrementTurn();
             }
