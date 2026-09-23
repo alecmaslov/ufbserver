@@ -5,6 +5,7 @@ import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
+import { computePayout, MatchMode } from "#game/payout";
 import { buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
@@ -1749,8 +1750,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         if (this.ended) return;
         this.ended = true;
         winners.forEach(w => {
-            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, { characterId: w.id, endType: END_TYPE.VICTORY, summary: buildEndSummary(w, true) });
-            this.BankGold(w, true);
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, { characterId: w.id, endType: END_TYPE.VICTORY, summary: this.FinishSummary(w, 1) });
+            this.BankGoldAt(w, 1);
         });
         this.StopAIChecking();
     }
@@ -2057,7 +2058,108 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
     }
 
+    /**
+     * Kills, split by what was killed. `character.kills` counts both together, but a player is
+     * worth four times a monster, so the payout needs them apart.
+     */
+    killLog = new Map<string, { players: number; monsters: number }>();
+
+    RecordKill(killerId: string, victimType: number) {
+        const k = this.killLog.get(killerId) ?? { players: 0, monsters: 0 };
+        if (victimType == USER_TYPE.USER) k.players++; else k.monsters++;
+        this.killLog.set(killerId, k);
+    }
+
+    /**
+     * Heroes the match started with. Dead heroes stay in state, so this does not shrink.
+     *
+     * A solo match counts as a field of two: you against the dungeon. Without that, the only hero
+     * present is always "first of one" and dying would pay the winner's terms.
+     */
+    FieldSize(): number {
+        if (this.solo) return 2;
+        let n = 0;
+        this.state.characters.forEach(c => { if (c.type == USER_TYPE.USER) n++; });
+        return Math.max(1, n);
+    }
+
+    /**
+     * Where a hero finishes when they are killed: just behind everyone still standing.
+     * In solo there is nobody still standing, but the dungeon won, so it is last place.
+     */
+    PlaceForDeath(aliveCount: number): number {
+        return this.solo ? 2 : aliveCount + 1;
+    }
+
+    /** A round is one pass through the turn order. Used only for the anti-quit guard. */
+    Rounds(): number {
+        return Math.floor(this.state.turn / Math.max(1, this.state.turnOrder.length));
+    }
+
+    /** Live matches are not built yet, so a room is either solo or a party. */
+    MatchMode(): MatchMode { return this.solo ? "solo" : "party"; }
+
+    /**
+     * What this character walks away with, and why — the same object the client shows on the end
+     * screen and the one BankGoldAt pays out, so the two can never disagree.
+     */
+    FinishSummary(character: CharacterState, place: number, fieldSize = this.FieldSize()) {
+        const base = buildEndSummary(character, place === 1);
+        const k = this.killLog.get(character.id) ?? { players: 0, monsters: 0 };
+        const payout = computePayout({
+            carried: base.carried, sale: base.sale,
+            playerKills: k.players, monsterKills: k.monsters,
+            place, fieldSize, mode: this.MatchMode(), rounds: this.Rounds(),
+        });
+        const { multiplier, total, ...rest } = base;
+        return {
+            ...rest, place, fieldSize, mode: this.MatchMode(),
+            playerKills: k.players, monsterKills: k.monsters,
+            participation: payout.participation, earned: payout.earned,
+            placeMultiplier: payout.placeMultiplier, placeBonus: payout.placeBonus,
+            modeMultiplier: payout.modeMultiplier,
+            total: payout.total,
+        };
+    }
+
+    /** Bank a finish at a known placement. 1 is the winner. */
+    async BankGoldAt(character: CharacterState, place: number, fieldSize = this.FieldSize()) {
+        if (character.type != USER_TYPE.USER || this.banked.has(character.id)) return;
+        this.banked.add(character.id);
+        const summary = this.FinishSummary(character, place, fieldSize);
+        try {
+            const user = await db.user.findFirst({ where: { id: character.id } });
+            if (!user) {
+                console.log(`guest ${character.id} finished ${place}/${fieldSize} — ${summary.total} gold not banked`);
+                return;
+            }
+            await db.user.update({ where: { id: user.id }, data: { gold: { increment: summary.total } } });
+            await db.userData.upsert({
+                where: { userId: user.id },
+                create: {
+                    userId: user.id, gold: summary.total, collect_golds: summary.total,
+                    battles: 1, wins: place === 1 ? 1 : 0, losses: place === 1 ? 0 : 1,
+                },
+                update: {
+                    gold: { increment: summary.total },
+                    collect_golds: { increment: summary.total },
+                    battles: { increment: 1 },
+                    wins: { increment: place === 1 ? 1 : 0 },
+                    losses: { increment: place === 1 ? 0 : 1 },
+                },
+            });
+            console.log(`${character.displayName} finished ${place}/${fieldSize} (${this.MatchMode()}) — banked ${summary.total}`);
+        } catch (e) {
+            console.error("BankGoldAt failed", e);
+        }
+    }
+
+    /** @deprecated placement decides the payout now; kept so older call sites keep working. */
     async BankGold(character: CharacterState, win: boolean) {
+        return this.BankGoldAt(character, win ? 1 : this.FieldSize());
+    }
+
+    async BankGoldLegacy(character: CharacterState, win: boolean) {
         if (character.type != USER_TYPE.USER || this.banked.has(character.id)) return;
         this.banked.add(character.id);
         const summary = buildEndSummary(character, win);

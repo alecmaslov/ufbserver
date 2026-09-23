@@ -1414,8 +1414,10 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
 
     if(wasAlive && character.stats.health.current <= 0) {
 
-        if(enemy != null)
+        if(enemy != null) {
             AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);
+            room.RecordKill(enemy.id, character.type);   // a player kill pays four times a monster
+        }
 
         if(character.type == USER_TYPE.MONSTER) {
             room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEAD_MONSTER, {characterId : character.id});                
@@ -1455,12 +1457,15 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                     }
                 })
 
+                // aliveCount is taken after this death, so the dying hero finishes just behind
+                // everyone still standing — or last, in solo, where the dungeon is the opponent.
+                const place = room.PlaceForDeath(aliveCount);
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.GAME_END_STATUS, {
                     characterId: character.id,
                     endType : END_TYPE.DEFEAT,
-                    summary: buildEndSummary(character, false)
+                    summary: room.FinishSummary(character, place)
                 });
-                room.BankGold(character, false);
+                room.BankGoldAt(character, place);
 
                 if(enemy != null){
                     room.notify(
