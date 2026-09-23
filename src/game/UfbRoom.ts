@@ -1,4 +1,4 @@
-import { Jwt } from "#auth";
+import { Jwt, UserJwt } from "#auth";
 import { DEV_MODE } from "#config";
 import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
@@ -152,6 +152,9 @@ export class UfbRoom extends Room<UfbRoomState> {
             options.joinOptions.displayName
         );
 
+        // A signed-in player brings their hero's level: the stat ceilings bought with gold apply here.
+        await this.applyHeroLevel(character, playerId, options.joinOptions.characterClass ?? "kirin");
+
         // Players who join after the room was created (join-by-code) take their turn after the last human,
         // before the monsters. Unity's lobby passed everyone in createOptions.turnIds; the web client joins late.
         if (this.state.turnOrder.indexOf(character.id) === -1) {
@@ -232,6 +235,15 @@ export class UfbRoom extends Room<UfbRoomState> {
     }
 
     onAuth(client: Client, options: Record<string, any>) {
+        // Playing as an account (playerId is a user id) requires that account's session token, so nobody
+        // can join under someone else's id and bank gold or stats onto it. Guests use "web-…" ids.
+        const playerId = options?.joinOptions?.playerId as string | undefined;
+        if (playerId && !playerId.startsWith("web-")) {
+            if (UserJwt.userId(options?.joinOptions?.accountToken) !== playerId) {
+                console.log("auth failed: account token does not match playerId", playerId);
+                return false;
+            }
+        }
         if (DEV_MODE) {
             return true;
         }
@@ -1968,6 +1980,28 @@ export class UfbRoom extends Room<UfbRoomState> {
      * Bank a finished game onto the player's account: gold (doubled on a win) plus lifetime stats.
      * Guests have no account row, so nothing is stored for them. Runs once per character per game.
      */
+    /** Raise a player's stat ceilings to the level they have bought for that hero (accounts only). */
+    async applyHeroLevel(character: CharacterState, playerId: string, characterClass: string) {
+        if (playerId.startsWith("web-")) return;   // guest: always level 1
+        try {
+            const owned = await db.character.findFirst({
+                where: { ownerId: playerId, className: { in: [characterClass, characterClass.replace(/^./, (c) => c.toUpperCase())] } },
+                include: { characterData: true },
+            });
+            const data = owned?.characterData?.[0];
+            if (!owned || !data) return;
+            character.stats.health.max = data.maxHealth; character.stats.health.current = data.maxHealth;
+            character.stats.energy.max = data.maxEnergy; character.stats.energy.current = data.maxEnergy;
+            character.stats.ultimate.max = data.maxUltimate;
+            character.stats.maxMelee = data.maxMelee; character.stats.maxMana = data.maxMana;
+            const melee = character.items.find(i => i.id == ITEMTYPE.MELEE); if (melee) melee.count = data.maxMelee;
+            const mana = character.items.find(i => i.id == ITEMTYPE.MANA); if (mana) mana.count = data.maxMana;
+            console.log(`${character.displayName} joined as ${owned.className} level ${owned.level} (hp ${data.maxHealth})`);
+        } catch (e) {
+            console.error("applyHeroLevel failed", e);
+        }
+    }
+
     async BankGold(character: CharacterState, win: boolean) {
         if (character.type != USER_TYPE.USER || this.banked.has(character.id)) return;
         this.banked.add(character.id);
