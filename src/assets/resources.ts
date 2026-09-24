@@ -2327,7 +2327,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Charge] : {
         level : 1,
         name : "Charge",
-        description: "Use 1 charge stack with your next attack. Double ultimate move gage.",
+        description: "At the beginning of your turn, roll a d4 to gain energy.",
         cost: 2,
         sell: 1,
         anti: -1
@@ -2415,7 +2415,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Charge2] : {
         level : 1,
         name : "Charge2",
-        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        description: "At the beginning of your turn, roll a d4 to gain energy.",
         cost: 3,
         sell: -1,
         anti: -1
@@ -2455,7 +2455,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Pump] : {
         level : 1,
         name : "Pump",
-        description: "At the beginning your turn, use 1 item to gain ultimate",
+        description: "At the beginning of your turn, roll a d4: that much bonus damage on your next attack.",
         cost: 2,
         sell: 1,
         anti: -1

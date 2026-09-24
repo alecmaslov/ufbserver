@@ -9,11 +9,13 @@ export class RangedValueState extends Schema {
     @type("number") max: number = 0;
     @type("number") min: number = 0;
 
+    /** Energy may sit above its max (Elixir, Charge, Ice Tea… give extra moves this turn); the turn-start refill resets it. */
+    overflow = false;
+
     add(amount: number) {
         this.current += amount;
-        let total = this.current;
-        this.current = Math.max(this.min, Math.min(this.current, this.max));
-        return total = this.current;
+        this.current = Math.max(this.min, this.overflow ? this.current : Math.min(this.current, this.max));
+        return this.current;
     }
 
     setToMax() {
@@ -37,10 +39,10 @@ export class CharacterStatsState extends Schema {
         DEFAULT_HEALTH,
         DEFAULT_HEALTH
     );
-    @type(RangedValueState) energy: RangedValueState = new RangedValueState(
+    @type(RangedValueState) energy: RangedValueState = Object.assign(new RangedValueState(
         DEFAULT_ENERGY,
         DEFAULT_ENERGY
-    );
+    ), { overflow: true });
     @type(RangedValueState) ultimate: RangedValueState = new RangedValueState(
         0,
         DEFAULT_ULTIMATE
@@ -117,7 +119,7 @@ export class CharacterState extends Schema {
     @type("int8") invisible: number = 0;     // Data Avenger's ultimate: turns of invisibility left (see ultimates.ts)
     @type("boolean") ambush: boolean = false; // her next attack deals double damage and breaks invisibility
     @type("int8") questsCompleted: number = 0; // this match; sets how many hard quests the merchant offers
-    @type("int8") chargeBonus: number = 0;     // Charge stack rolled at turn start: bonus damage on the next attack
+    @type("int8") pumpBonus: number = 0;       // Pump stack rolled at turn start: bonus damage on the next attack (was chargeBonus; same slot)
 
 }
 

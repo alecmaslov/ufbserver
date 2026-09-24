@@ -1756,12 +1756,10 @@ export function getOpenTilePosition(tileId: string, room: UfbRoom, moverTileId =
 }
 
 export function getDiceTypeFromStack(stackId: number) : number {
-    if(stackId == STACKTYPE.Cure || stackId == STACKTYPE.Burn || stackId == STACKTYPE.Freeze || stackId == STACKTYPE.Charge){
+    if(stackId == STACKTYPE.Cure || stackId == STACKTYPE.Burn || stackId == STACKTYPE.Freeze || stackId == STACKTYPE.Charge || stackId == STACKTYPE.Pump){
         return DICE_TYPE.DICE_4;
     } else if(stackId == STACKTYPE.Void || stackId == STACKTYPE.Slow){
         return DICE_TYPE.DICE_6_4
-    } else if(stackId == STACKTYPE.Pump){
-        return DICE_TYPE.DICE_6
     }
     else{
         return DICE_TYPE.DICE_4;

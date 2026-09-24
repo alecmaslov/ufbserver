@@ -45,9 +45,10 @@ export function applyTurnStartStack(room: UfbRoom, character: CharacterState, st
         tell(-d0, "energy");
         room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
     } else if (stackId == STACKTYPE.Charge) {
-        // Rules: "Bonus damage on your next attack (rolls a d4)" (it used to drain energy)
-        character.chargeBonus = Math.min(127, (character.chargeBonus ?? 0) + d0);
-        tell(d0, "stack");
+        // Rulebook: Charge gives +d4 energy at the start of your turn
+        character.stats.energy.add(d0);
+        tell(d0, "energy");
+        room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
     } else if (stackId == STACKTYPE.Slow) {
         setCharacterEnergy(character, -d1, room, client);
         character.stats.ultimate.add(-d0);
@@ -55,8 +56,8 @@ export function applyTurnStartStack(room: UfbRoom, character: CharacterState, st
         room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
         room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
     } else if (stackId == STACKTYPE.Pump) {
-        character.stats.ultimate.add(d0);
-        tell(d0, "ultimate");
-        room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
+        // Bonus damage on your next attack (d4); it waits until you attack
+        character.pumpBonus = Math.min(127, (character.pumpBonus ?? 0) + d0);
+        tell(d0, "stack");
     }
 }

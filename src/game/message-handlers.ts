@@ -369,13 +369,15 @@ export const messageHandlers: MessageHandlers = {
             addStackToCharacter(STACKTYPE.Charge, 1, character, client, room)
 
         } else if(itemId == ITEMTYPE.FLAME_CHILI) {
+            // Rules: +1 Burn stack and +10 ultimate
             character.stats.ultimate.add(10);
             sendStatsToClient(10, ADD_EXTRA_TYPE.ULTIMATE, client);
 
             addStackToCharacter(STACKTYPE.Burn, 1, character, client, room);
         } else if(itemId == ITEMTYPE.ICE_TEA) {
-            character.stats.ultimate.add(10);
-            sendStatsToClient(10, ADD_EXTRA_TYPE.ULTIMATE, client);
+            // Rules: +1 Freeze stack and +5 energy (it used to give +10 ultimate, like the Flame Chili)
+            character.stats.energy.add(5);
+            sendStatsToClient(5, ADD_EXTRA_TYPE.ENERGY, client);
 
             addStackToCharacter(STACKTYPE.Freeze, 1, character, client, room);
 
@@ -1367,8 +1369,8 @@ export const messageHandlers: MessageHandlers = {
                 (stack.id == STACKTYPE.Freeze && stack.count > 0 && !IsEquipPower(character, POWERTYPE.Ice2) && !IsEquipPower(character, POWERTYPE.Ice3)) ||
                 (stack.id == STACKTYPE.Cure && stack.count > 0) ||
                 (stack.id == STACKTYPE.Slow && stack.count > 0) || 
-                (stack.id == STACKTYPE.Pump && stack.count > 0) ||
-                (stack.id == STACKTYPE.Charge && stack.count > 0 && !(character?.chargeBonus > 0))
+                (stack.id == STACKTYPE.Pump && stack.count > 0 && !(character?.pumpBonus > 0)) ||
+                (stack.id == STACKTYPE.Charge && stack.count > 0)
             ) {
                 if(stackList.length < 3) {
                     stackList.push({

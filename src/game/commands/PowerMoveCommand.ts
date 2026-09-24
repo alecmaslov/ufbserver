@@ -62,14 +62,14 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             powermove.costList = powermove.costList.filter((c: any) => !AMMO_SLOTS.includes(c.id));
         }
 
-        // Attack moves (they roll dice or deal damage) get the equipped weapon's bonus and any Charge; buffs don't, so
+        // Attack moves (they roll dice or deal damage) get the equipped weapon's bonus and any Pump; buffs don't, so
         // a buff never hurts whoever receives it.
         const isAttack = !!powermove.result.dice || (powermove.result.health ?? 0) < 0;
         let extraDamage = getEquipBonusDamage(powermove.powerImageId, character);
         if (isAttack) {
-            const charge = character.chargeBonus > 0 ? character.chargeBonus : 0;   // Charge stack: bonus on the next attack
-            powermove.result.health = (powermove.result.health ?? 0) - extraDamage.damage - charge;
-            if (charge) character.chargeBonus = 0;
+            const pump = character.pumpBonus > 0 ? character.pumpBonus : 0;   // Pump stack: bonus on the next attack
+            powermove.result.health = (powermove.result.health ?? 0) - extraDamage.damage - pump;
+            if (pump) character.pumpBonus = 0;
         }
         powermove.range += extraDamage.range;
 
