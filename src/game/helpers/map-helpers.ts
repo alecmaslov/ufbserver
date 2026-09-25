@@ -1235,7 +1235,8 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
  * Alec's rules (2026-09-25): shoved into a wall (or a bridge / stair side, the map edge, an occupied tile) = 1 damage and
  * the target stays put. Shoved off a cliff = it drops to the tile below and takes 2 damage. Edges between levels are
  * one-way: Cliff on the upper tile's side, Wall on the lower tile's side, so pulling someone up a cliff is a wall hit.
- * Ravine (Slow + slide across) and Void (2 damage + Void stack) are unchanged.
+ * Shoved into a void tile = 2 damage + 1 Void stack, and the target stays at the edge; a wall in front of the void is
+ * still just a wall hit. Ravine (Slow + slide across) is unchanged.
  */
 export function resolvePushPull(room: UfbRoom, client: Client | null, from: CharacterState, target: CharacterState, perkType: number,
                                 result: { wallType: number; desTileId: string; desCoodinate: CoordinatesState } | null) {
@@ -1254,7 +1255,10 @@ export function resolvePushPull(room: UfbRoom, client: Client | null, from: Char
     };
     if (result == null || !result.desTileId) { hurt(1); return; }   // off the edge of the board: like a wall
     const free = IsEmptyTile(result.desTileId, room);
-    switch (result.wallType) {
+    // Sides facing a void tile are normally "Void" edges; go by the tile too, so an open or cliff edge into a void counts.
+    const intoVoid = room.state.map.tiles.get(result.desTileId)?.type === "Void";
+    const edge = intoVoid && [EDGE_TYPE.BASIC, EDGE_TYPE.CLIFF, EDGE_TYPE.RAVINE].includes(result.wallType) ? EDGE_TYPE.VOID : result.wallType;
+    switch (edge) {
         case EDGE_TYPE.BASIC:
             if (free) moveTo(); else hurt(1);
             break;
@@ -1266,9 +1270,8 @@ export function resolvePushPull(room: UfbRoom, client: Client | null, from: Char
             if (free) moveTo();
             break;
         case EDGE_TYPE.VOID:
-            setCharacterHealth(target, -2, room, client, "heart", from);
+            hurt(2);
             addStackToCharacter(STACKTYPE.Void, 1, target, client, room);
-            room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
             break;
         default:   // WALL, NULL, BRIDGE, STAIR
             hurt(1);
