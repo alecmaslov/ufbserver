@@ -1228,6 +1228,53 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
 
 }
 
+/**
+ * What a Push or Pull does once getPerkEffectDamage has found where the target would go. Shared by players' power moves,
+ * perk attacks and monster attacks (they had three drifting copies).
+ *
+ * Alec's rules (2026-09-25): shoved into a wall (or a bridge / stair side, the map edge, an occupied tile) = 1 damage and
+ * the target stays put. Shoved off a cliff = it drops to the tile below and takes 2 damage. Edges between levels are
+ * one-way: Cliff on the upper tile's side, Wall on the lower tile's side, so pulling someone up a cliff is a wall hit.
+ * Ravine (Slow + slide across) and Void (2 damage + Void stack) are unchanged.
+ */
+export function resolvePushPull(room: UfbRoom, client: Client | null, from: CharacterState, target: CharacterState, perkType: number,
+                                result: { wallType: number; desTileId: string; desCoodinate: CoordinatesState } | null) {
+    if (perkType != PERKTYPE.Push && perkType != PERKTYPE.Pull) return;
+    const hurt = (n: number) => {
+        setCharacterHealth(target, -n, room, client, "heart", from);
+        room.sendBroadcastStats(-n, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
+    };
+    const moveTo = () => {
+        target.coordinates.x = result.desCoodinate.x;
+        target.coordinates.y = result.desCoodinate.y;
+        target.currentTileId = result.desTileId;
+        const path: PathStep[] = [{ tileId: result.desTileId }];
+        room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, { characterId: target.id, path });
+        room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, { characterId: target.id, perkId: perkType, tileId: result.desTileId });
+    };
+    if (result == null || !result.desTileId) { hurt(1); return; }   // off the edge of the board: like a wall
+    const free = IsEmptyTile(result.desTileId, room);
+    switch (result.wallType) {
+        case EDGE_TYPE.BASIC:
+            if (free) moveTo(); else hurt(1);
+            break;
+        case EDGE_TYPE.CLIFF:
+            if (free) { moveTo(); hurt(2); } else hurt(1);
+            break;
+        case EDGE_TYPE.RAVINE:
+            addStackToCharacter(STACKTYPE.Slow, 1, target, client, room);
+            if (free) moveTo();
+            break;
+        case EDGE_TYPE.VOID:
+            setCharacterHealth(target, -2, room, client, "heart", from);
+            addStackToCharacter(STACKTYPE.Void, 1, target, client, room);
+            room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
+            break;
+        default:   // WALL, NULL, BRIDGE, STAIR
+            hurt(1);
+    }
+}
+
 export function setPerkEffectDamage(character: CharacterState, enemy : CharacterState, room: UfbRoom, client: Client, perkType: number, range: number = 1){
     let target = enemy;
     
@@ -1258,122 +1305,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
             const result = getPerkEffectDamage(character, enemy, room, perkType);
             console.log("perk: ", result);
             if(perkType != PERKTYPE.Vampire){
-                if(result == null || result.desTileId == "") {
-                    setCharacterHealth(enemy, -1, room, client, "heart", character);
-
-                    // if(enemy.stats.health.current == 0) {
-                    //     room.RewardFromMonster(character, enemy, client);
-                    // }
-                    room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
-                } else {
-                    let isEmptyTile = IsEmptyTile(result.desTileId, room);
-
-                    if(result.wallType == EDGE_TYPE.BASIC) {
-
-                        if(isEmptyTile) {
-                            // CHANGE POSITION
-
-                            target.coordinates.x = result.desCoodinate.x;
-                            target.coordinates.y = result.desCoodinate.y;
-                            target.currentTileId = result.desTileId;
-
-                            const path: PathStep[] = [{
-                                tileId: result.desTileId
-                            }];
-                            console.log("move tile")
-                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                characterId : target.id,
-                                path
-                            });
-
-                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                characterId : target.id,
-                                perkId: perkType,
-                                tileId: result.desTileId
-                            });
-
-                        } else {
-                            setCharacterHealth(target, -1, room, client, "heart", character);
-
-                            // if(target == enemy && target.stats.health.current == 0) {
-                            //     room.RewardFromMonster(character, target, client);
-                            // }
-                            room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
-                        }
-
-                    } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.STAIR 
-                        || result.wallType == EDGE_TYPE.CLIFF) {
-                        setCharacterHealth(target, -1, room, client, "heart", character);
-
-                        // if(target == enemy && target.stats.health.current == 0) {
-                        //     room.RewardFromMonster(character, target, client);
-                        // }
-                        room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
-                    } else if(result.wallType == EDGE_TYPE.RAVINE) {
-                        addStackToCharacter(STACKTYPE.Slow, 1, target, client);
-
-                        // CHANGE POSITION
-                        if(isEmptyTile) {
-                            target.coordinates.x = result.desCoodinate.x;
-                            target.coordinates.y = result.desCoodinate.y;
-                            target.currentTileId = result.desTileId;
-
-                            const path: PathStep[] = [{
-                                tileId: result.desTileId
-                            }];
-                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                characterId : target.id,
-                                path
-                            });
-
-                            room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                characterId : target.id,
-                                perkId: perkType,
-                                tileId: result.desTileId
-                            });
-                        }
-
-                    } else if(result.wallType == EDGE_TYPE.CLIFF) {
-                        setCharacterHealth(target, -1, room, client, "heart", character);
-                        
-                        room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
-
-                        // if(target == enemy && target.stats.health.current == 0) {
-                        //     room.RewardFromMonster(character, target, client);
-                        // }
-
-                        // CHANGE POSITION
-                        // if(isEmptyTile) {
-                        //     target.coordinates.x = result.desCoodinate.x;
-                        //     target.coordinates.y = result.desCoodinate.y;
-                        //     target.currentTileId = result.desTileId;
-
-                        //     const path: PathStep[] = [{
-                        //         tileId: result.desTileId
-                        //     }];
-                        //     room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                        //         characterId : target.id,
-                        //         path
-                        //     });
-
-                        //     client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                        //         characterId : target.id,
-                        //         perkId: perkType,
-                        //         tileId: result.desTileId
-                        //     });
-                        // }
-
-                    } else if(result.wallType == EDGE_TYPE.VOID) {
-                        setCharacterHealth(target, -2, room, client, "heart", character);
-
-                        // if(target == enemy && target.stats.health.current == 0) {
-                        //     room.RewardFromMonster(character, target, client);
-                        // }
-
-                        addStackToCharacter(STACKTYPE.Void, 1, target, client);
-                        room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
-                    }
-                }
+                resolvePushPull(room, client, character, target, perkType, result);
             }
 
         }

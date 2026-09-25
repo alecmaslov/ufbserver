@@ -1721,7 +1721,6 @@
       "legacyCode": "G03IP1",
       "spawnZone": {
         "type": "Chest"
-     
       }
     },
     {
@@ -2044,7 +2043,6 @@
       "legacyCode": "R03IR1",
       "spawnZone": {
         "type": "Chest"
-    
       }
     },
     {
@@ -2454,7 +2452,6 @@
       "legacyCode": "F04JP2",
       "spawnZone": {
         "type": "Monster"
-    
       }
     },
     {
@@ -2805,7 +2802,6 @@
       "legacyCode": "R04IK1",
       "spawnZone": {
         "type": "Chest"
- 
       }
     },
     {
@@ -2838,8 +2834,7 @@
       "legacyCode": "S04IL0",
       "spawnZone": {
         "type": "Monster"
-   
-	}
+      }
     },
     {
       "id": "tile_T_4",
@@ -3161,7 +3156,6 @@
       "legacyCode": "D05IW0",
       "spawnZone": {
         "type": "Chest"
-   
       }
     },
     {
@@ -3397,7 +3391,6 @@
       "legacyCode": "L05IK1",
       "spawnZone": {
         "type": "Chest"
-
       }
     },
     {
@@ -3459,7 +3452,6 @@
       "legacyCode": "N05JT0",
       "spawnZone": {
         "type": "Monster"
-  
       }
     },
     {
@@ -3579,7 +3571,6 @@
       "legacyCode": "R05IN1",
       "spawnZone": {
         "type": "Chest"
- 
       }
     },
     {
@@ -3612,7 +3603,6 @@
       "legacyCode": "S05IM1",
       "spawnZone": {
         "type": "Chest"
-
       }
     },
     {
@@ -3999,7 +3989,7 @@
         "y": 5
       },
       "type": "Upper",
-	"blockPath": "North",
+      "blockPath": "North",
       "spawnType": null,
       "sides": [
         {
@@ -4718,7 +4708,6 @@
       "legacyCode": "E07JY0",
       "spawnZone": {
         "type": "Chest"
-
       }
     },
     {
@@ -4741,7 +4730,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Left",
@@ -5487,11 +5476,11 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Right",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         },
         {
           "side": "Bottom",
@@ -5528,7 +5517,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Ravine"
+          "edgeProperty": "Basic"
         }
       ],
       "legacyCode": "G08IS0"
@@ -5621,7 +5610,6 @@
       "legacyCode": "J08IK1",
       "spawnZone": {
         "type": "Chest"
- 
       }
     },
     {
@@ -5973,7 +5961,6 @@
       "legacyCode": "V08JX1",
       "spawnZone": {
         "type": "Chest"
-
       }
     },
     {
@@ -6093,7 +6080,6 @@
       "legacyCode": "Z08JQ2",
       "spawnZone": {
         "type": "Monster"
-
       }
     },
     {
@@ -6126,7 +6112,6 @@
       "legacyCode": "A09JO0",
       "spawnZone": {
         "type": "Monster"
-   
       }
     },
     {
@@ -6333,7 +6318,6 @@
       "legacyCode": "H09JN2",
       "spawnZone": {
         "type": "Monster"
- 
       }
     },
     {
@@ -6366,7 +6350,6 @@
       "legacyCode": "I09JY1",
       "spawnZone": {
         "type": "Chest"
-  
       }
     },
     {
@@ -6428,7 +6411,6 @@
       "legacyCode": "K09JW1",
       "spawnZone": {
         "type": "Chest"
-  
       }
     },
     {
@@ -6490,7 +6472,6 @@
       "legacyCode": "M09JL2",
       "spawnZone": {
         "type": "Monster"
- 
       }
     },
     {
@@ -6934,7 +6915,7 @@
         "x": 2,
         "y": 9
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -7248,7 +7229,6 @@
       "legacyCode": "M10JQ0",
       "spawnZone": {
         "type": "Monster"
- 
       }
     },
     {
@@ -7716,7 +7696,6 @@
       "legacyCode": "C11JX1",
       "spawnZone": {
         "type": "Chest"
-
       }
     },
     {
@@ -12647,7 +12626,7 @@
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Left",
@@ -12929,7 +12908,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Cliff"
         },
         {
           "side": "Right",
@@ -13371,7 +13350,7 @@
         },
         {
           "side": "Right",
-          "edgeProperty": "Basic"
+          "edgeProperty": "null"
         },
         {
           "side": "Bottom",
@@ -13390,25 +13369,25 @@
         "x": 15,
         "y": 17
       },
-      "type": "Lower",
+      "type": "StairsSN",
       "blockPath": "NorthEast",
       "spawnType": null,
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Wall"
+          "edgeProperty": "StairTop"
         },
         {
           "side": "Right",
-          "edgeProperty": "Wall"
+          "edgeProperty": "None"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "Basic"
+          "edgeProperty": "StairBottom"
         },
         {
           "side": "Left",
-          "edgeProperty": "Basic"
+          "edgeProperty": "None"
         }
       ],
       "legacyCode": "P18JR0"
@@ -13437,7 +13416,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Cliff"
+          "edgeProperty": "null"
         }
       ],
       "legacyCode": "Q18IO0"
@@ -13883,7 +13862,7 @@
         "x": 6,
         "y": 18
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthWest",
       "spawnType": null,
       "sides": [
@@ -14150,7 +14129,7 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "Basic"
+          "edgeProperty": "Stair"
         },
         {
           "side": "Right",
@@ -15287,7 +15266,7 @@
         "x": 2,
         "y": 20
       },
-      "type": "Lower",
+      "type": "Upper",
       "blockPath": "NorthSouth",
       "spawnType": null,
       "sides": [
@@ -18455,7 +18434,7 @@
       ],
       "legacyCode": "F25JV1",
       "spawnZone": {
-        "type" : "Chest"
+        "type": "Chest"
       }
     },
     {

@@ -7,7 +7,7 @@ import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
 import { computePayout, MatchMode } from "#game/payout";
-import { getTileIdByDirection, buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { getTileIdByDirection, buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, resolvePushPull, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -1478,117 +1478,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                     } else {
                         const result = getPerkEffectDamage(character, enemy, this, powermove.result[key]);
                         console.log(result);
-                        if(result.desTileId == "") {
-                            setCharacterHealth(target, -1, this, null, "heart", from);
-
-                            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                characterId: target.id,
-                                score: -1,
-                                type: "heart_e",
-                            });
-                        } else {
-                            let isEmptyTile = IsEmptyTile(result.desTileId, this);
-                            if(result.wallType == EDGE_TYPE.BASIC) {
-        
-                                if(isEmptyTile) {
-                                    // CHANGE POSITION
-        
-                                    target.coordinates.x = result.desCoodinate.x;
-                                    target.coordinates.y = result.desCoodinate.y;
-                                    target.currentTileId = result.desTileId;
-        
-                                    const path: PathStep[] = [{
-                                        tileId: result.desTileId
-                                    }];
-        
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                        characterId : target.id,
-                                        path
-                                    });
-    
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                        characterId : target.id,
-                                        perkId: powermove.result[key],
-                                        tileId: result.desTileId
-                                    });
-        
-                                } else {
-                                    setCharacterHealth(target, -1, this, null, "heart", from);
-        
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                        characterId: target.id,
-                                        score: -1,
-                                        type: "heart_e",
-                                    });
-                                }
-        
-                            } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.STAIR) {
-                                setCharacterHealth(target, -1, this, null, "heart", from);
-        
-                                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                    characterId: target.id,
-                                    score: -1,
-                                    type: "heart_e",
-                                });
-                            } else if(result.wallType == EDGE_TYPE.RAVINE) {
-                                addStackToCharacter(STACKTYPE.Slow, 1, target, null, this);
-        
-                                // CHANGE POSITION
-                                if(isEmptyTile) {
-                                    target.coordinates.x = result.desCoodinate.x;
-                                    target.coordinates.y = result.desCoodinate.y;
-                                    target.currentTileId = result.desTileId;
-        
-                                    const path: PathStep[] = [{
-                                        tileId: result.desTileId
-                                    }];
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                        characterId : target.id,
-                                        path
-                                    });
-    
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                        characterId : target.id,
-                                        perkId: powermove.result[key],
-                                        tileId: result.desTileId
-                                    });
-                                }
-        
-                            } else if(result.wallType == EDGE_TYPE.CLIFF) {
-        
-                                setCharacterHealth(target, -1, this, null, "heart", from);
-
-                                // CHANGE POSITION
-                                if(isEmptyTile) {
-                                    target.coordinates.x = result.desCoodinate.x;
-                                    target.coordinates.y = result.desCoodinate.y;
-                                    target.currentTileId = result.desTileId;
-        
-                                    const path: PathStep[] = [{
-                                        tileId: result.desTileId
-                                    }];
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, {
-                                        characterId : target.id,
-                                        path
-                                    });
-    
-                                    this.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, {
-                                        characterId : target.id,
-                                        perkId: powermove.result[key],
-                                        tileId: result.desTileId
-                                    });
-                                }
-        
-                            } else if(result.wallType == EDGE_TYPE.VOID) {
-                                setCharacterHealth(target, -2, this, null, "heart", from);
-                                addStackToCharacter(STACKTYPE.Void, 1, target, null, this);
-                                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                                    characterId: target.id,
-                                    score: -2,
-                                    type: "heart_e",
-                                });
-                            }
-                        }
+                        resolvePushPull(this, null, from, target, powermove.result[key], result);
                     }
                 }
 
