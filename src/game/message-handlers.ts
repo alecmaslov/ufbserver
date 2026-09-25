@@ -135,10 +135,7 @@ export const messageHandlers: MessageHandlers = {
             room.notify(client, "It's not your turn!", "error");
             return;
         }
-        room.incrementTurn();
-
-        // END TURN,,, remain energy will convert ultimate value
-        player.stats.ultimate.add(player.stats.energy.current);
+        room.incrementTurn();   // converts the leftover energy to ultimate
     },
 
     changeMap: async (room, client, message) => {
@@ -465,30 +462,30 @@ export const messageHandlers: MessageHandlers = {
         if(itemId == ITEMTYPE.ARROW){
             setCharacterHealth(enemy, -2, room, client, "heart", character);
 
-            room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY);
+            room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
         } else if(itemId == ITEMTYPE.BOMB_ARROW){
             setCharacterHealth(enemy, -6, room, client, "heart", character);
 
-            room.sendBroadcastStats(-6, ADD_EXTRA_TYPE.HEART_ENEMY);
+            room.sendBroadcastStats(-6, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
 
             // PERK PART
             setPerkEffectDamage(character, enemy, room, client, PERKTYPE.Push);
 
         } else if(itemId == ITEMTYPE.FIRE_ARROW){
             setCharacterHealth(enemy, -3, room, client, "heart", character);
-            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.HEART_ENEMY);
+            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
             addStackToCharacter(STACKTYPE.Burn, 1, enemy, client);
 
         } else if(itemId == ITEMTYPE.ICE_ARROW){
             setCharacterHealth(enemy, -3, room, client, "heart", character);
 
             enemy.stats.ultimate.current -= 3;
-            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.HEART_ENEMY);
-            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
+            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
+            room.sendBroadcastStats(-3, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, null, enemy.id);
             addStackToCharacter(STACKTYPE.Freeze, 1, enemy, client);
         } else if(itemId == ITEMTYPE.VOID_ARROW){
             setCharacterHealth(enemy, -4, room, client, "heart", character);
-            room.sendBroadcastStats(-4, ADD_EXTRA_TYPE.HEART_ENEMY);
+            room.sendBroadcastStats(-4, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
             addStackToCharacter(STACKTYPE.Void, 1, enemy, client);
         }
 
@@ -588,7 +585,7 @@ export const messageHandlers: MessageHandlers = {
 
                 deltaCount += enemyDiceCount;
 
-                room.sendBroadcastStats(-enemyDiceCount, ADD_EXTRA_TYPE.HEART);
+                room.sendBroadcastStats(-enemyDiceCount, ADD_EXTRA_TYPE.HEART, null, character.id);
 
             } else {
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.ENEMY_DICE_ROLL, {
@@ -606,11 +603,12 @@ export const messageHandlers: MessageHandlers = {
         if(deltaCount > 0) {
             setCharacterHealth(enemy, -deltaCount, room, client, "heart", character);   // the attacker is `character` (was `enemy`); charges its ultimate
 
-            room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.HEART_ENEMY);
-            room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
+            room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
+            room.sendBroadcastStats(-deltaCount, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, null, enemy.id);
 
             if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
                 room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: enemy.id,
                     score: 1,
                     type: "stack_e",
                 });
@@ -1160,6 +1158,7 @@ export const messageHandlers: MessageHandlers = {
         const character = getCharacterById(room, message.characterId);
         setCharacterHealth(character, -4, room, client, "heart", null);
         client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+            characterId: character.id,
             score: -4,
             type: "heart",
         });

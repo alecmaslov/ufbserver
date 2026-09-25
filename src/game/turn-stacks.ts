@@ -15,7 +15,7 @@ type Dice = { type: number; diceCount: number }[];
  */
 export function applyTurnStartStack(room: UfbRoom, character: CharacterState, stackId: number, diceData: Dice, client: Client | null) {
     const d0 = diceData[0]?.diceCount ?? 0, d1 = diceData[1]?.diceCount ?? 0;
-    const tell = (score: number, type: string) => { if (client) client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, { score, type }); };
+    const tell = (score: number, type: string) => { if (client) client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, { score, type, characterId: character.id }); };
 
     if (stackId == STACKTYPE.Cure) {
         // Only the overheal becomes gold.
@@ -27,34 +27,34 @@ export function applyTurnStartStack(room: UfbRoom, character: CharacterState, st
             setQuestResult(QUESTTYPE.GLITTER, extra, character);
         }
         tell(d0, "heart");
-        room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.HEART_ENEMY, client);
+        room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Void) {
         // Drains health (d4) and ultimate (d6)
         setCharacterHealth(character, -d1, room, client, "heart", null);
         character.stats.ultimate.add(-d0);
         tell(-d1, "heart"); tell(-d0, "ultimate");
-        room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.HEART_ENEMY, client);
-        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
+        room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
+        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Burn) {
         setCharacterHealth(character, -d0, room, client, "heart", null);
         tell(-d0, "heart");
-        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.HEART_ENEMY, client);
+        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Freeze) {
         // "roll a dice to subtract from energy" — this used to ADD energy
         setCharacterEnergy(character, -d0, room, client);
         tell(-d0, "energy");
-        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
+        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Charge) {
         // Rulebook: Charge gives +d4 energy at the start of your turn
         character.stats.energy.add(d0);
         tell(d0, "energy");
-        room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
+        room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.ENERGY_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Slow) {
         setCharacterEnergy(character, -d1, room, client);
         character.stats.ultimate.add(-d0);
         tell(-d1, "energy"); tell(-d0, "ultimate");
-        room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
-        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
+        room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.ENERGY_ENEMY, client, character.id);
+        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Pump) {
         // Bonus damage on your next attack (d4); it waits until you attack
         character.pumpBonus = Math.min(127, (character.pumpBonus ?? 0) + d0);

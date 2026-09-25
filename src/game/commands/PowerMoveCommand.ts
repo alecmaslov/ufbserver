@@ -160,12 +160,14 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             } else if(key == "light") {
                 setCharacterEnergy(character, -powermove.light, this.room, client);
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: character.id,
                     score: -powermove.light,
                     type: "energy",
                 });
             } else if(key == "coin") {
                 character.stats.coin -= powermove.coin;
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: character.id,
                     score: -powermove.coin,
                     type: "coin",
                 });
@@ -179,11 +181,13 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
                         if(item.id == ITEMTYPE.MELEE) {
                             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                characterId: character.id,
                                 score: -item.count,
                                 type: "melee",
                             });
                         } else if(item.id == ITEMTYPE.MANA) {
                             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                characterId: character.id,
                                 score: -item.count,
                                 type: "mana",
                             });
@@ -227,17 +231,17 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 //     this.room.RewardFromMonster(character, target, client);
                 // }
 
-                this.room.sendBroadcastStats(powermove.result.health, target == character? ADD_EXTRA_TYPE.HEART : ADD_EXTRA_TYPE.HEART_ENEMY);
+                this.room.sendBroadcastStats(powermove.result.health, target == character? ADD_EXTRA_TYPE.HEART : ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
             } else if(key == "energy") {
                 target.stats.energy.add(powermove.result.energy);
-                this.room.sendBroadcastStats(powermove.result.energy, target == character? ADD_EXTRA_TYPE.ENERGY : ADD_EXTRA_TYPE.ENERGY_ENEMY);
+                this.room.sendBroadcastStats(powermove.result.energy, target == character? ADD_EXTRA_TYPE.ENERGY : ADD_EXTRA_TYPE.ENERGY_ENEMY, null, target.id);
             } else if(key == "coin") {
                 target.stats.coin += powermove.result.coin;
                 setQuestResult(QUESTTYPE.GLITTER, powermove.result.coin, target);
-                this.room.sendBroadcastStats(powermove.result.coin, ADD_EXTRA_TYPE.COIN);
+                this.room.sendBroadcastStats(powermove.result.coin, ADD_EXTRA_TYPE.COIN, null, target.id);
             } else if(key == "ultimate") {
                 target.stats.ultimate.add(powermove.result.ultimate);
-                this.room.sendBroadcastStats(powermove.result.ultimate, target == character? ADD_EXTRA_TYPE.ULTIMATE : ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
+                this.room.sendBroadcastStats(powermove.result.ultimate, target == character? ADD_EXTRA_TYPE.ULTIMATE : ADD_EXTRA_TYPE.ULTIMATE_ENEMY, null, target.id);
             } else if((key == "perkId" || key == "perkId1") && target == enemy) {
 
                 if(powermove.result[key] == PERKTYPE.AreaOfEffect) {
@@ -266,7 +270,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         if(powermove.result[key] != PERKTYPE.Vampire){
                             if(result == null || result.desTileId == "") {
                                 setCharacterHealth(target, -1, this.room, client, "heart", from);
-                                this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                                this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                             } else {
                                 let isEmptyTile = IsEmptyTile(result.desTileId, this.room);
                                 console.log("perk attack wall type....... : ", result.wallType);
@@ -297,7 +301,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             
                                     } else {
                                         setCharacterHealth(target, -1, this.room, client, "heart", from);
-                                        this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                                        this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                                     }
             
                                 } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.CLIFF) {
@@ -306,11 +310,11 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     // if(target == enemy && target.stats.health.current == 0) {
                                     //     this.room.RewardFromMonster(character, target, client);
                                     // }
-                                    this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                                    this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                                 } else if(result.wallType == EDGE_TYPE.STAIR) {
 
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
-                                    this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                                    this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                                 } else if(result.wallType == EDGE_TYPE.RAVINE) {
                                     addStackToCharacter(STACKTYPE.Slow, 1, target, client);
             
@@ -339,7 +343,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             
                                     setCharacterHealth(target, -1, this.room, client, "heart", from);
     
-                                    this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                                    this.room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
 
                                     // if(target == enemy && target.stats.health.current == 0) {
                                     //     this.room.RewardFromMonster(character, target, client);
@@ -373,7 +377,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                                     //     this.room.RewardFromMonster(character, target, client);
                                     // }
                                     addStackToCharacter(STACKTYPE.Void, 1, target, client);
-                                    this.room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY);
+                                    this.room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                                 }
                             }
                         }
@@ -408,13 +412,13 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                     ctn += item.count;
                     
                     if(id == ITEMTYPE.MELEE) {
-                        this.room.sendBroadcastStats(item.count, ADD_EXTRA_TYPE.MELEE);
+                        this.room.sendBroadcastStats(item.count, ADD_EXTRA_TYPE.MELEE, null, target.id);
                     } else if(id == ITEMTYPE.MANA) {
-                        this.room.sendBroadcastStats(item.count, ADD_EXTRA_TYPE.MANA);
+                        this.room.sendBroadcastStats(item.count, ADD_EXTRA_TYPE.MANA, null, target.id);
                     }
                 })
 
-                this.room.sendBroadcastStats(ctn, ADD_EXTRA_TYPE.ITEM);
+                this.room.sendBroadcastStats(ctn, ADD_EXTRA_TYPE.ITEM, null, target.id);
             } else if(key == "stacks") {
                 let ctn = 0;
                 powermove.result.stacks.forEach((stack : any) => {
@@ -438,7 +442,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                 })
                 console.log("use stack....", ctn);
                 if(ctn > 0) {
-                    this.room.sendBroadcastStats(ctn, ADD_EXTRA_TYPE.STACK)
+                    this.room.sendBroadcastStats(ctn, ADD_EXTRA_TYPE.STACK, null, target.id);
                 }
             } else if(key == "dice") {
                 if(target == enemy) {
@@ -464,7 +468,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
                         // if(target == enemy && target.stats.health.current == 0) {
                         //     this.room.RewardFromMonster(character, target, client);
                         // }
-                        this.room.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY);
+                        this.room.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
 
                         if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this.room)) {
 
@@ -487,8 +491,8 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             console.log("vampirecount: ", message.vampireCount);
             setCharacterHealth(character, message.vampireCount, this.room, client, "heart", from);
             setCharacterHealth(target, -message.diceCount, this.room, client, "heart", from);
-            this.room.sendBroadcastStats(message.vampireCount, ADD_EXTRA_TYPE.HEART);
-            this.room.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY);
+            this.room.sendBroadcastStats(message.vampireCount, ADD_EXTRA_TYPE.HEART, null, character.id);
+            this.room.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
         }
 
         if(target == enemy && target.stats.health.current <= 0) {

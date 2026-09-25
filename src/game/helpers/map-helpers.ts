@@ -975,6 +975,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
             state.stats.health.add(5);
             if(client != null){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: state.id,
                     score: 5,
                     type: "heart"
                 });
@@ -985,6 +986,7 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
             state.stats.energy.add(3);
             if(client != null){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: state.id,
                     score: 3,
                     type: "energy"
                 });
@@ -1262,7 +1264,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                     // if(enemy.stats.health.current == 0) {
                     //     room.RewardFromMonster(character, enemy, client);
                     // }
-                    room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                    room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
                 } else {
                     let isEmptyTile = IsEmptyTile(result.desTileId, room);
 
@@ -1296,7 +1298,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                             // if(target == enemy && target.stats.health.current == 0) {
                             //     room.RewardFromMonster(character, target, client);
                             // }
-                            room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                            room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                         }
 
                     } else if(result.wallType == EDGE_TYPE.WALL || result.wallType == EDGE_TYPE.BRIDGE || result.wallType == EDGE_TYPE.NULL || result.wallType == EDGE_TYPE.STAIR 
@@ -1306,7 +1308,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                         // if(target == enemy && target.stats.health.current == 0) {
                         //     room.RewardFromMonster(character, target, client);
                         // }
-                        room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                        room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                     } else if(result.wallType == EDGE_TYPE.RAVINE) {
                         addStackToCharacter(STACKTYPE.Slow, 1, target, client);
 
@@ -1334,7 +1336,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                     } else if(result.wallType == EDGE_TYPE.CLIFF) {
                         setCharacterHealth(target, -1, room, client, "heart", character);
                         
-                        room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY);
+                        room.sendBroadcastStats(-1, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
 
                         // if(target == enemy && target.stats.health.current == 0) {
                         //     room.RewardFromMonster(character, target, client);
@@ -1369,7 +1371,7 @@ export function setPerkEffectDamage(character: CharacterState, enemy : Character
                         // }
 
                         addStackToCharacter(STACKTYPE.Void, 1, target, client);
-                        room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY);
+                        room.sendBroadcastStats(-2, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
                     }
                 }
             }

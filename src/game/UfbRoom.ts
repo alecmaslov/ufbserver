@@ -324,7 +324,18 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     // custom state change actions
     incrementTurn() {
-        tickInvisibility(this.state.characters.get(this.state.currentCharacterId));   // ultimates.ts
+        const ending = this.state.characters.get(this.state.currentCharacterId);
+        tickInvisibility(ending);   // ultimates.ts
+        // Alec's rule: unused energy at the end of any turn (player or monster, ended by button, timer or autopilot)
+        // becomes ultimate. This used to happen only when a player pressed End turn.
+        if (ending && ending.stats.health.current > 0 && ending.stats.energy.current > 0) {
+            const left = ending.stats.energy.current;
+            const before = ending.stats.ultimate.current;
+            ending.stats.ultimate.add(left);
+            ending.stats.energy.current = 0;
+            const gained = ending.stats.ultimate.current - before;
+            if (gained > 0) this.sendBroadcastStats(gained, ADD_EXTRA_TYPE.ULTIMATE, null, ending.id);
+        }
         // Next living character in turn order. Dead characters are skipped here, in one pass: the old version recursed,
         // then carried on with the dead one (re-broadcasting TURN_CHANGED once per dead monster and resetting its energy).
         const order = this.state.turnOrder;
@@ -850,7 +861,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
                         
-                        this.sendBroadcastStats(-Math.min(monsterPath.length, energy));
+                        this.sendBroadcastStats(-Math.min(monsterPath.length, energy), ADD_EXTRA_TYPE.ENERGY_ENEMY, null, selectedMonster.id);
                         
                         if(isBomb) {
                             this.DoActionMonster(6);
@@ -955,15 +966,15 @@ export class UfbRoom extends Room<UfbRoomState> {
             const result = itemResults[moveEntity.itemId];
             if(!!result.energy) {
                 monster.stats.energy.add(result.energy);
-                this.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY);
+                this.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY, null, monster.id);
             }
             if(!!result.heart) {
                 setCharacterHealth(monster, result.heart, this, null, "heart", enemy);
-                this.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY);
+                this.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY, null, monster.id);
             }
             if(!!result.ultimate) {
                 monster.stats.ultimate.add(result.ultimate);
-                this.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY);
+                this.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, null, monster.id);
             }
 
             if(!!result.stackId) {
@@ -972,7 +983,8 @@ export class UfbRoom extends Room<UfbRoomState> {
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     score: 1,
                     type: "stack_e",
-                    stackId: result.stackId
+                    stackId: result.stackId,
+                    characterId: monster.id,
                 });
             }
 
@@ -1018,19 +1030,15 @@ export class UfbRoom extends Room<UfbRoomState> {
         }
     }
 
-    sendBroadcastStats(score : number, type: string = 'energy', client : Client = null) {
-
+    /** Floating +/- number. `characterId` is whose stat changed: the client draws the number over that piece
+     *  (without it, every client drew it over its own hero — a monster's step cost looked like the player losing energy). */
+    sendBroadcastStats(score : number, type: string = 'energy', client : Client = null, characterId?: string) {
+        const msg = characterId ? { score, type, characterId } : { score, type };
         if(client == null) {
-            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: score,
-                type: type
-            })
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, msg)
         }
         else{
-            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                score: score,
-                type: type
-            }, {except : client});
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, msg, {except : client});
         }
     }
 
@@ -1148,11 +1156,13 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                     if(item.id == ITEMTYPE.MELEE) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: character.id,
                             score: -item.count * diceTimes,
                             type: "melee",
                         });
                     } else if(item.id == ITEMTYPE.MANA) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: character.id,
                             score: -item.count * diceTimes,
                             type: "mana",
                         });
@@ -1174,6 +1184,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             } else if(key == "energy") {
                 target.stats.energy.add(powermove.result.energy);
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: target.id,
                     score: powermove.result.energy,
                     type: target == character? "energy_e" : "energy",
                 });
@@ -1198,7 +1209,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                     } else {
                         setCharacterHealth(enemy, -message.diceCount, this, null, "heart", from);
-                        this.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY);
+                        this.sendBroadcastStats(-message.diceCount, ADD_EXTRA_TYPE.HEART_ENEMY, null, enemy.id);
 
                         if(getCountFromItem(STACKTYPE.Revenge, enemy.stacks) > 0 && IsEnemyAdjacent(character, enemy, this)) {
                             addStackToCharacter(STACKTYPE.Revenge, -1, enemy, null, this);
@@ -1374,11 +1385,13 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                     if(item.id == ITEMTYPE.MELEE) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: character.id,
                             score: -item.count,
                             type: "melee",
                         });
                     } else if(item.id == ITEMTYPE.MANA) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: character.id,
                             score: -item.count,
                             type: "mana",
                         });
@@ -1413,12 +1426,14 @@ export class UfbRoom extends Room<UfbRoomState> {
                 setCharacterHealth(target, powermove.result.health, this, null, "heart", from);
 
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: target.id,
                     score: powermove.result.health,
                     type: target == character? "heart_e" : "heart",
                 });
             } else if(key == "energy") {
                 target.stats.energy.add(powermove.result.energy);
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: target.id,
                     score: powermove.result.energy,
                     type: target == character? "energy_e" : "energy",
                 });
@@ -1427,12 +1442,14 @@ export class UfbRoom extends Room<UfbRoomState> {
                 setQuestResult(QUESTTYPE.GLITTER, powermove.result.coin, target);
                 
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: target.id,
                     score: powermove.result.coin,
                     type: "coin",
                 });
             } else if(key == "ultimate") {
                 target.stats.ultimate.add(powermove.result.ultimate);
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: target.id,
                     score: powermove.result.ultimate,
                     type: target == character? "ultimate_e" : "ultimate",
                 });
@@ -1465,6 +1482,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                             setCharacterHealth(target, -1, this, null, "heart", from);
 
                             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                characterId: target.id,
                                 score: -1,
                                 type: "heart_e",
                             });
@@ -1498,6 +1516,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                     setCharacterHealth(target, -1, this, null, "heart", from);
         
                                     this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                        characterId: target.id,
                                         score: -1,
                                         type: "heart_e",
                                     });
@@ -1507,6 +1526,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 setCharacterHealth(target, -1, this, null, "heart", from);
         
                                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                    characterId: target.id,
                                     score: -1,
                                     type: "heart_e",
                                 });
@@ -1563,6 +1583,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                                 setCharacterHealth(target, -2, this, null, "heart", from);
                                 addStackToCharacter(STACKTYPE.Void, 1, target, null, this);
                                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                                    characterId: target.id,
                                     score: -2,
                                     type: "heart_e",
                                 });
@@ -1597,17 +1618,20 @@ export class UfbRoom extends Room<UfbRoomState> {
                     
                     if(id == ITEMTYPE.MELEE) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: target.id,
                             score: item.count,
                             type: "melee",
                         });
                     } else if(id == ITEMTYPE.MANA) {
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: target.id,
                             score: item.count,
                             type: "mana",
                         });
                     }
                 })
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: target.id,
                     score: ctn,
                     type: "item",
                 });
@@ -1635,6 +1659,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                 console.log("use stack....")
                 if(ctn > 0) {
                     this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        characterId: target.id,
                         score: ctn,
                         type: "stack",
                     });
@@ -1661,6 +1686,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                         setCharacterHealth(enemy, -message.diceCount, this, null, "heart", from);
 
                         this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                            characterId: enemy.id,
                             score: -message.diceCount,
                             type: "heart",
                         });
@@ -1689,6 +1715,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             setCharacterHealth(character, message.vampireCount, this, null, "heart", from);
             
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                characterId: character.id,
                 score: message.vampireCount,
                 type: "heart_e",
             });
@@ -1730,6 +1757,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
                 deltaCount += enemyDiceCount;
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: character.id,
                     score: -enemyDiceCount,
                     type: "heart_e",
                 });
@@ -1754,11 +1782,13 @@ export class UfbRoom extends Room<UfbRoomState> {
             setCharacterHealth(character, -deltaCount, this, null, "heart", enemy);   // charges enemy's ultimate
 
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                characterId: character.id,
                 score: -deltaCount,
                 type: "heart",
             });
             if(pm != null && !!pm.result.stacks && pm.result.stacks.length > 0){
                 this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                    characterId: character.id,
                     score: 1,
                     type: "stack",
                 });

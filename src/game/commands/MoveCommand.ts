@@ -157,18 +157,20 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     setCharacterEnergy(character, result.energy, this.room, client);
                     
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        characterId: character.id,
                         score: result.energy,
                         type: "energy"
                     });
-                    this.room.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY, client);
+                    this.room.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY, client, character.id);
                 }
                 if(!!result.heart) {
                     setCharacterHealth(character, result.heart, this.room, client, "heart", enemy);
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        characterId: character.id,
                         score: result.heart,
                         type: "heart"
                     });
-                    this.room.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY, client);
+                    this.room.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
 
                     if(character.stats.health.current <= 0) {
                         this.room.RewardFromMonster(enemy, character, client);
@@ -176,8 +178,9 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 }
                 if(!!result.ultimate) {
                     character.stats.ultimate.add(result.ultimate);
-                    this.room.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client);
+                    this.room.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client, character.id);
                     client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        characterId: character.id,
                         score: result.ultimate,
                         type: "ultimate"
                     });
@@ -187,6 +190,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                     addStackToCharacter(result.stackId, 1, character, client);
     
                     this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                        characterId: character.id,
                         score: 1,
                         type: "stack",
                         stackId: result.stackId
@@ -216,6 +220,7 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         }
         if(energy != 0) {
             client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                characterId: character.id,
                 score: energy,
                 type: "energy"
             });
