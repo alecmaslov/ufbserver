@@ -1735,19 +1735,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "H03DY0"
@@ -2755,19 +2755,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "Q04DK0"
@@ -4838,19 +4838,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "J07DK0"
@@ -8760,19 +8760,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "N12DV0"
@@ -10988,19 +10988,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "L15DK0"
@@ -11104,19 +11104,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "P15DK0"
@@ -11716,19 +11716,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "K16DK0"
@@ -11890,19 +11890,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "Q16DK0"
@@ -13810,19 +13810,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "E19DY0"
@@ -15794,19 +15794,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "U21DX0"
@@ -15835,7 +15835,7 @@
         },
         {
           "side": "Left",
-          "edgeProperty": "Wall"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "V21JV1",
@@ -17558,19 +17558,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "C24DY0"
@@ -18211,19 +18211,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "Y24DV0"
@@ -19061,19 +19061,19 @@
       "sides": [
         {
           "side": "Top",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Right",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Bottom",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         },
         {
           "side": "Left",
-          "edgeProperty": "null"
+          "edgeProperty": "Void"
         }
       ],
       "legacyCode": "B26DW0"

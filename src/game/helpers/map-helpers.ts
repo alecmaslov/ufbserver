@@ -1235,15 +1235,23 @@ export function getPerkEffectDamage(character: CharacterState, enemy : Character
  * Alec's rules (2026-09-25): shoved into a wall (or a bridge / stair side, the map edge, an occupied tile) = 1 damage and
  * the target stays put. Shoved off a cliff = it drops to the tile below and takes 2 damage. Edges between levels are
  * one-way: Cliff on the upper tile's side, Wall on the lower tile's side, so pulling someone up a cliff is a wall hit.
- * Shoved into a void tile = 2 damage + 1 Void stack, and the target stays at the edge; a wall in front of the void is
- * still just a wall hit. Ravine (Slow + slide across) is unchanged.
+ * Shoved into a void tile = 2 damage + 1 Void stack; nobody can stand on a void, so the target stays where it was.
+ * Shoved into another player or monster = both take 1 damage and nobody moves. Ravine: Slow stack, then slides across.
  */
 export function resolvePushPull(room: UfbRoom, client: Client | null, from: CharacterState, target: CharacterState, perkType: number,
                                 result: { wallType: number; desTileId: string; desCoodinate: CoordinatesState } | null) {
     if (perkType != PERKTYPE.Push && perkType != PERKTYPE.Pull) return;
-    const hurt = (n: number) => {
-        setCharacterHealth(target, -n, room, client, "heart", from);
-        room.sendBroadcastStats(-n, ADD_EXTRA_TYPE.HEART_ENEMY, null, target.id);
+    const hurt = (n: number, who: CharacterState = target) => {
+        setCharacterHealth(who, -n, room, client, "heart", from);
+        room.sendBroadcastStats(-n, ADD_EXTRA_TYPE.HEART_ENEMY, null, who.id);
+    };
+    // Blocked landing: the target takes 1, and so does anyone alive standing there (a chest, merchant or body just
+    // blocks). The attacker is left out: pulling an adjacent target aims it at the puller's own tile.
+    const collide = () => {
+        hurt(1);
+        room.state.characters.forEach((c) => {
+            if (c.id !== target.id && c.id !== from.id && c.currentTileId === result.desTileId && c.stats.health.current > 0) hurt(1, c);
+        });
     };
     const moveTo = () => {
         target.coordinates.x = result.desCoodinate.x;
@@ -1260,14 +1268,14 @@ export function resolvePushPull(room: UfbRoom, client: Client | null, from: Char
     const edge = intoVoid && [EDGE_TYPE.BASIC, EDGE_TYPE.CLIFF, EDGE_TYPE.RAVINE].includes(result.wallType) ? EDGE_TYPE.VOID : result.wallType;
     switch (edge) {
         case EDGE_TYPE.BASIC:
-            if (free) moveTo(); else hurt(1);
+            if (free) moveTo(); else collide();
             break;
         case EDGE_TYPE.CLIFF:
-            if (free) { moveTo(); hurt(2); } else hurt(1);
+            if (free) { moveTo(); hurt(2); } else collide();
             break;
         case EDGE_TYPE.RAVINE:
             addStackToCharacter(STACKTYPE.Slow, 1, target, client, room);
-            if (free) moveTo();
+            if (free) moveTo(); else collide();
             break;
         case EDGE_TYPE.VOID:
             hurt(2);
