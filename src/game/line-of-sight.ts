@@ -6,7 +6,8 @@
  *   - a melee attack reaches an adjacent tile on the same level only. Not up or down a level, not
  *     through a wall, not across a ravine.
  *   - a ranged weapon may reach one level up or down, but never through a wall, and never from
- *     ground level over an upper-level tile to ground beyond it.
+ *     ground level over an upper-level tile to ground beyond it. Shooting over a cliff edge is fine
+ *     (Alec, 2026-09-25: ranged powers should have that advantage).
  *   - in short: you have to be able to see something to target it.
  *
  * All of this reads data the maps already carry, so there is no schema change behind it. A tile's
@@ -16,6 +17,9 @@
  *
  * Pure on purpose: it takes tiles and returns answers, touching no room, no client and no clock,
  * so it can be tested against a real map without standing a game up.
+ *
+ * The web client carries a copy (easteregg.fun client/src/los.ts) to show where a move can actually hit and to grey
+ * out moves that can't land. Change both together.
  */
 import { EDGE_TYPE } from "#assets/resources";
 
@@ -49,7 +53,8 @@ export function sideToward(a: Coord, b: Coord): number {
 
 const wallOn = (tile: LosTile, side: number): number => {
     const w = tile.walls?.[side];
-    return w === undefined || w === null ? EDGE_TYPE.NULL : w;
+    if (w === undefined || w === null) return EDGE_TYPE.NULL;
+    return w > 127 ? w - 256 : w;   // walls are uint8 in the room state, so "no edge" (-1) arrives as 255
 };
 
 /**
@@ -153,7 +158,10 @@ export function hasLineOfSight(from: LosTile, to: LosTile, tileAt: TileAt): bool
         if (tile.id !== from.id && tile.id !== to.id && tileLevel(tile) > ceiling) return false;
         if (tile.id !== prev.id) {
             if (!adjacent(prev.coordinates, tile.coordinates)) { prev = tile; continue; }
-            if (BLOCKS_SIGHT.has(edgeBetween(prev, tile))) return false;
+            // A level change is a cliff face, not a wall: the lower tile's side of it is marked Wall (so a push into it
+            // hurts), but you can see and shoot over the edge — the upper deck's advantage. Only walls between two
+            // tiles on the same level block sight; looking through higher ground is the ceiling test above.
+            if (tileLevel(prev) === tileLevel(tile) && BLOCKS_SIGHT.has(edgeBetween(prev, tile))) return false;
             prev = tile;
         }
     }
