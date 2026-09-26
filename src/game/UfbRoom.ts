@@ -162,12 +162,19 @@ export class UfbRoom extends Room<UfbRoomState> {
      * scripts/i18n-ui.mjs collects them from this repo.
      */
     notify(client: Client, message: string, notificationType: string = "info", vars?: Record<string, string | number>) {
+        // to the player whose action it answers — "It's not your turn!" is nobody else's business
+        if (client) client.send("notification", this.notification(message, notificationType, vars));
+        else console.log(`notify without a client (dropped): ${message}`);
+    }
+
+    /** A toast for everyone in the room (e.g. a hero was killed). */
+    notifyAll(message: string, notificationType: string = "info", vars?: Record<string, string | number>) {
+        this.broadcast("notification", this.notification(message, notificationType, vars));
+    }
+
+    private notification(message: string, type: string, vars?: Record<string, string | number>) {
         const filled = vars ? message.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m)) : message;
-        this.broadcast("notification", {
-            type: notificationType,
-            message: filled,
-            ...(vars ? { key: message, vars } : {}),
-        });
+        return { type, message: filled, ...(vars ? { key: message, vars } : {}) };
     }
 
     async onJoin(client: Client, options: UfbRoomOptions) {
@@ -259,7 +266,7 @@ export class UfbRoom extends Room<UfbRoomState> {
             this.state.currentCharacterId = playerId;
             console.log("first player, setting current player id to", playerId);
         }
-        this.notify(client, "Welcome to the game, " + playerId + "!");
+        this.notify(client, "Welcome to the game, {name}!", "info", { name: character.displayName });
     }
 
     async onLeave(client: Client, consented: boolean) {
@@ -1369,7 +1376,7 @@ export class UfbRoom extends Room<UfbRoomState> {
 
         console.log("check isResult : ", isResult, powermove);
         if(!isResult) {
-            this.notify(null, "Your item is not enough!", "error");
+            console.log(`${character.displayName} can't pay for ${powermove.name}`);   // a monster: no one to tell
             this.broadcast(SERVER_TO_CLIENT_MESSAGE.AI_END_ATTACK, {
                 characterId: character.id,
             })

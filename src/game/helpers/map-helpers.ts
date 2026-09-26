@@ -1440,15 +1440,13 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                 room.BankGoldAt(character, place);
 
                 if(enemy != null){
-                    room.notify(
-                        client,
+                    room.notifyAll(
                         "{name} was killed by {killer}",
                         "error",
                         { name: character.displayName, killer: enemy.displayName }
                     );
                 } else{
-                    room.notify(
-                        client,
+                    room.notifyAll(
                         "{name} was killed.",
                         "error",
                         { name: character.displayName }
