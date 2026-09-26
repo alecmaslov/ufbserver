@@ -20,7 +20,7 @@ import { safetyNet } from "#middleware/safetyNet";
 import { validate } from "#middleware/validate";
 import { HERO_CATALOGUE, statsForLevel } from "#routes/account";
 import { createId } from "@paralleldrive/cuid2";
-import { createHash, timingSafeEqual } from "crypto";
+import { createHash, randomInt, timingSafeEqual } from "crypto";
 import { Handler, Router } from "express";
 import rateLimit from "express-rate-limit";
 import { body } from "express-validator";
@@ -40,6 +40,16 @@ const apiLimiter = rateLimit({
 /** Codes are case-insensitive and ignore the dashes people type back in. */
 export const normaliseCode = (raw: string) =>
     String(raw ?? "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+// no vowels, no 0/O/1/I — a code gets read off cardboard and typed in by hand
+const CODE_ALPHABET = "23456789ACDEFGHJKLMNPQRTUVWXYZ";
+
+/** A new claim code, XXXX-XXXX-XXXX-XXXX. Show it once and store only hashCode(code). */
+export function makeClaimCode(): string {
+    let out = "";
+    for (let i = 0; i < 16; i++) out += CODE_ALPHABET[randomInt(CODE_ALPHABET.length)];
+    return out.match(/.{4}/g)!.join("-");
+}
 
 export const hashCode = (raw: string) =>
     createHash("sha256").update(normaliseCode(raw)).digest("hex");

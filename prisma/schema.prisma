@@ -467,9 +467,114 @@ model Figurine {
   claimedAt   DateTime?
   createdAt   DateTime  @default(now())
 
+  // inventory (admin): where the physical toy is. Claiming doesn't change it — a sold figurine is
+  // claimed by whoever holds it, which may not be the buyer.
+  status    String   @default("in_stock") // in_stock | reserved | sold | shipped | returned | lost | retired
+  batch     String? // production run / label, e.g. "2026-10 first run"
+  notes     String?  @db.Text
+  saleId    String?
+  updatedAt DateTime @default(now()) @updatedAt
+
   owner     User?      @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   character Character? @relation(fields: [characterId], references: [id], onDelete: SetNull)
+  sale      Sale?      @relation(fields: [saleId], references: [id], onDelete: SetNull)
 
   @@index([ownerId])
+  @@index([saleId])
+  @@index([status])
   @@map("figurine")
+}
+
+/// A sale of one or more figurines. Entered by hand in the admin today; a store webhook will create
+/// these later (channel = the store, orderRef = its order number, unique per channel).
+model Sale {
+  id         String     @id @default(cuid())
+  channel    String     @default("manual")
+  orderRef   String?
+  buyerName  String?
+  buyerEmail String?
+  shipTo     String?    @db.Text
+  totalCents Int?
+  currency   String     @default("USD")
+  soldAt     DateTime   @default(now())
+  shippedAt  DateTime?
+  notes      String?    @db.Text
+  createdAt  DateTime   @default(now())
+  figurines  Figurine[]
+
+  @@unique([channel, orderRef])
+  @@index([soldAt])
+  @@map("sale")
+}
+
+/// One match, written by UfbRoom as it starts and finishes (admin → game stats).
+model MatchRecord {
+  id        String        @id @default(cuid())
+  roomId    String
+  mode      String // solo | party
+  mapName   String
+  startedAt DateTime      @default(now())
+  endedAt   DateTime?
+  endReason String? // victory | defeat | abandoned
+  turns     Int           @default(0)
+  rounds    Int           @default(0)
+  humans    Int           @default(0)
+  players   MatchPlayer[]
+
+  @@index([startedAt])
+  @@map("match_record")
+}
+
+/// One hero in a match. playerId is the account id, or a guest's "web-…" id.
+model MatchPlayer {
+  id           String      @id @default(cuid())
+  matchId      String
+  playerId     String
+  isGuest      Boolean     @default(true)
+  heroClass    String
+  heroLevel    Int         @default(1)
+  lang         String? // language of the page the player joined from
+  place        Int?
+  result       String? // win | died | quit | unfinished
+  diedTurn     Int?
+  killedBy     String?
+  damageDealt  Int         @default(0)
+  damageTaken  Int         @default(0)
+  healed       Int         @default(0)
+  tilesMoved   Int         @default(0)
+  energyUsed   Int         @default(0)
+  stacksUsed   Int         @default(0)
+  playerKills  Int         @default(0)
+  monsterKills Int         @default(0)
+  goldEarned   Int         @default(0)
+  turnsPlayed  Int         @default(0)
+  moves        Json? // { "Sword Strike": 3, … }
+  items        Json? // items used { "Potion": 1 }
+  equipped     Json? // power names equipped when the match ended for them
+  joinedAt     DateTime    @default(now())
+  endedAt      DateTime?
+  match        MatchRecord @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, playerId])
+  @@index([heroClass])
+  @@index([playerId])
+  @@map("match_player")
+}
+
+/// Language menu events (client/src/lang.ts). No IP or account is stored; vid is a random browser id.
+model LangEvent {
+  id        BigInt   @id @default(autoincrement())
+  type      String // switch | view
+  vid       String   @db.VarChar(64)
+  lang      String   @db.VarChar(8) // language of the page it was sent from
+  fromLang  String?  @db.VarChar(8)
+  toLang    String?  @db.VarChar(8)
+  source    String?  @db.VarChar(16) // menu | offer
+  path      String   @db.VarChar(191)
+  browser   String?  @db.VarChar(32) // navigator.language
+  createdAt DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([createdAt])
+  @@map("lang_event")
 }

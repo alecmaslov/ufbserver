@@ -429,7 +429,7 @@ export const messageHandlers: MessageHandlers = {
         }
 
         if(isInvisible(enemy)) {
-            room.notify(client, `${enemy.displayName} is invisible — you can't target them.`, "error");
+            room.notify(client, "{name} is invisible — you can't target them.", "error", { name: enemy.displayName });
             return;
         }
 
@@ -952,7 +952,7 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
         if (character.quests.length >= MAX_ACTIVE_QUESTS) {
-            room.notify(client, `You already have ${MAX_ACTIVE_QUESTS} quests — finish one first.`, "error");
+            room.notify(client, "You already have {n} quests — finish one first.", "error", { n: MAX_ACTIVE_QUESTS });
             return;
         }
         if (room.questVisit.get(character.id) === visit) {
@@ -1004,7 +1004,8 @@ export const messageHandlers: MessageHandlers = {
             if(q.id == message.questId){
                 const progress = q.id == QUESTTYPE.GLITTER ? character.stats.coin : q.complete;   // gold held right now
                 if (!(q.target > 0) || progress < q.target) {
-                    room.notify(client, q.id == QUESTTYPE.GLITTER ? `You need ${q.target} gold in your purse to cash this in.` : "That quest isn't finished yet.", "error");
+                    if (q.id == QUESTTYPE.GLITTER) room.notify(client, "You need {n} gold in your purse to cash this in.", "error", { n: q.target });
+                    else room.notify(client, "That quest isn't finished yet.", "error");
                     return;
                 }
                 if (ITEMDETAIL[q.itemId]) addItemToCharacter(q.itemId, 1, character, client);
@@ -1060,7 +1061,7 @@ export const messageHandlers: MessageHandlers = {
             if(remainCoin < coin || it1 == null || it1.count == 0 || it2 == null || it2.count == 0) {
                 room.notify(
                     client,
-                    `You don't have enough ${remainCoin < coin? "gold" : "count"} to craft item!`,
+                    (remainCoin < coin ? "You don't have enough gold to craft that item!" : "You don't have enough items to craft that!"),
                     "error"
                 );
                 return;
@@ -1069,7 +1070,7 @@ export const messageHandlers: MessageHandlers = {
                 if(it1.id == it2.id && it1.count < 2) {
                     room.notify(
                         client,
-                        `You don't have enough ${remainCoin < coin? "gold" : "count"} to craft item!`,
+                        (remainCoin < coin ? "You don't have enough gold to craft that item!" : "You don't have enough items to craft that!"),
                         "error"
                     );
                     return;
@@ -1114,7 +1115,7 @@ export const messageHandlers: MessageHandlers = {
                 if(it1.id == it2.id && it1.count < 2) {
                     room.notify(
                         client,
-                        `You don't have enough ${remainCoin < coin? "gold" : "count"} to craft item!`,
+                        (remainCoin < coin ? "You don't have enough gold to craft that item!" : "You don't have enough items to craft that!"),
                         "error"
                     );
                     return;

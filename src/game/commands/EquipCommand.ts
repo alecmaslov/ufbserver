@@ -28,7 +28,7 @@ export class EquipCommand extends Command<UfbRoom, OnEquipCommandPayload> {
             return;
         }
         if (character.equipSlots.length >= MAX_EQUIP_SLOTS) {   // uncapped slots stacked a turn-start bonus per power
-            this.room.notify(client, `You can equip at most ${MAX_EQUIP_SLOTS} powers — unequip one first.`, "error");
+            this.room.notify(client, "You can equip at most {n} powers — unequip one first.", "error", { n: MAX_EQUIP_SLOTS });
             return;
         }
 

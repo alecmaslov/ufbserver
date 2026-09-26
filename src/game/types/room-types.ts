@@ -20,6 +20,7 @@ export interface UfbRoomCreateOptions {
 }
 
 export interface UfbRoomJoinOptions {
+    lang?: string;          // page language of the web client (en, ja, es, fr, de, ru, zh), for match stats
     token: string;
     playerId: string;
     displayName: string;

@@ -17,6 +17,8 @@ import account from "#routes/account";
 import skillTree from "#routes/skill-tree";
 import figurine from "#routes/figurine";
 import solo from "#routes/solo";
+import admin from "#routes/admin";
+import i18n from "#routes/i18n";
 
 import { Server } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
@@ -29,6 +31,9 @@ import { LobbyRoom } from "#game/rooms/LobbyRoom";
 import { WaitingRoom } from "#game/rooms/WaitingRoom";
 
 const app = express();
+// Nginx is the only way in (ufb-api listens on 127.0.0.1). Trust it for X-Forwarded-For so the rate
+// limits count each visitor, not every visitor as one "127.0.0.1".
+app.set("trust proxy", "loopback");
 
 app.use(json());
 app.use(cors({
@@ -50,6 +55,8 @@ app.use("/account", account);
 app.use("/account/skill-tree", skillTree);
 app.use("/account/figurine", figurine);
 app.use("/solo", solo);
+app.use("/i18n", i18n);
+app.use("/admin", admin);   // secret header from Nginx + basic auth there; see routes/admin.ts
 
 if (DEV_MODE) {
     console.log("🚧🚧 Warning: DEV_MODE is enabled! 🚧🚧");

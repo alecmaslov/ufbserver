@@ -10,21 +10,11 @@
  */
 import db from "#db";
 import { HERO_CATALOGUE } from "#routes/account";
-import { hashCode, normaliseCode } from "#routes/figurine";
-import { randomInt } from "crypto";
+import { hashCode, makeClaimCode as makeCode, normaliseCode } from "#routes/figurine";
 
 const APPLY = process.argv.includes("--apply");
 const className = process.argv[2];
 const count = Number(process.argv[3] ?? 0);
-
-// no vowels, no 0/O/1/I — a code gets read off cardboard and typed in by hand
-const ALPHABET = "23456789ACDEFGHJKLMNPQRTUVWXYZ";
-
-function makeCode(): string {
-    let out = "";
-    for (let i = 0; i < 16; i++) out += ALPHABET[randomInt(ALPHABET.length)];
-    return out.match(/.{4}/g)!.join("-");
-}
 
 async function main() {
     const hero = HERO_CATALOGUE.find((h) => h.className === className || h.slug === className);

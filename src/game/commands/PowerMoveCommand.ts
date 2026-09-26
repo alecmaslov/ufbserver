@@ -34,7 +34,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             return; 
         }
         if(enemy.id !== character.id && isInvisible(enemy)) {
-            this.room.notify(client, `${enemy.displayName} is invisible — you can't target them.`, "error");
+            this.room.notify(client, "{name} is invisible — you can't target them.", "error", { name: enemy.displayName });
             return;
         }
 
@@ -55,7 +55,8 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             const ammo = message.extraItemId > 0 && fits(message.extraItemId) && has(message.extraItemId) ? message.extraItemId
                 : has(plain) ? plain : (character.items.find((it) => it.count > 0 && fits(it.id))?.id ?? -1);
             if (ammo < 0) {
-                this.room.notify(client, `You need ${slot.id == ITEMTYPE.RandomBomb ? "a bomb" : slot.id == ITEMTYPE.RandomArrow ? "an arrow" : "an arrow or a bomb"} for ${powermove.name}.`, "error");
+                const need = slot.id == ITEMTYPE.RandomBomb ? "You need a bomb for {move}." : slot.id == ITEMTYPE.RandomArrow ? "You need an arrow for {move}." : "You need an arrow or a bomb for {move}.";
+                this.room.notify(client, need, "error", { move: powermove.name });
                 return;
             }
             powermove = getPowerMoveFromId(powerMoveId, ammo);   // adds the ammo to the cost and its damage / stack to the result
@@ -79,7 +80,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             const a = this.room.state.map.tiles.get(character.currentTileId), b = this.room.state.map.tiles.get(enemy.currentTileId);
             const reach = Math.max(1, powermove.range);
             if (a && b && Math.abs(a.coordinates.x - b.coordinates.x) + Math.abs(a.coordinates.y - b.coordinates.y) > reach) {
-                this.room.notify(client, `${enemy.displayName} is out of range for ${powermove.name} (${reach}).`, "error");
+                this.room.notify(client, "{name} is out of range for {move} ({reach}).", "error", { name: enemy.displayName, move: powermove.name, reach });
                 return;
             }
         }
@@ -203,6 +204,7 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
 
         console.log("------ check cost ppart======")
 
+        this.room.matchStats?.move(character.id, powermove.name);
         this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.DEFENCE_ATTACK, {
             pm: powermove,
             originId: character.id,

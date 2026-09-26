@@ -1436,19 +1436,22 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
                     endType : END_TYPE.DEFEAT,
                     summary: room.FinishSummary(character, place)
                 });
+                room.matchStats?.died(character, enemy);
                 room.BankGoldAt(character, place);
 
                 if(enemy != null){
                     room.notify(
                         client,
-                        `${character.displayName} was killed by ${enemy.displayName}`,
-                        "error"
+                        "{name} was killed by {killer}",
+                        "error",
+                        { name: character.displayName, killer: enemy.displayName }
                     );
                 } else{
                     room.notify(
                         client,
-                        `${character.displayName} was killed.`,
-                        "error"
+                        "{name} was killed.",
+                        "error",
+                        { name: character.displayName }
                     );
                 }
 

@@ -1,4 +1,5 @@
 import { Quest } from "#game/schema/CharacterState";
+import { MatchStats } from "#game/match-stats";
 import { applyTurnStartStack } from "#game/turn-stacks";
 import { Jwt, UserJwt } from "#auth";
 import { tickInvisibility } from "#game/ultimates";
@@ -111,6 +112,7 @@ export class UfbRoom extends Room<UfbRoomState> {
                 console.error(err);
             }
         }
+        this.matchStats = new MatchStats(this, options.createOptions?.mapName ?? "kraken");
         registerMessageHandlers(this);
         this.onMessage("abandonSolo", (client) => {
             if (!this.solo || this.sessionIdToPlayerId.get(client.sessionId) !== this.solo.ownerId) return;
@@ -153,10 +155,18 @@ export class UfbRoom extends Room<UfbRoomState> {
         return id;
     }
 
-    notify(client: Client, message: string, notificationType: string = "info") {
+    /**
+     * A toast for the players. `message` is English; with `vars` it is a template ("{name} is out of
+     * range") so the web client can translate it — the client gets the template as `key`, the values,
+     * and the filled English for older clients. Keep templates as plain literals: the client's
+     * scripts/i18n-ui.mjs collects them from this repo.
+     */
+    notify(client: Client, message: string, notificationType: string = "info", vars?: Record<string, string | number>) {
+        const filled = vars ? message.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m)) : message;
         this.broadcast("notification", {
             type: notificationType,
-            message,
+            message: filled,
+            ...(vars ? { key: message, vars } : {}),
         });
     }
 
@@ -178,6 +188,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         if (saved) {
             saved.sessionId = client.sessionId;
             saved.connected = true;
+            this.matchStats.join(saved, { lang: options.joinOptions.lang });
             this.startTurnTime = Date.now();
             this.broadcast(
                 SERVER_TO_CLIENT_MESSAGE.TURN_CHANGED,
@@ -220,7 +231,8 @@ export class UfbRoom extends Room<UfbRoomState> {
         );
 
         // A signed-in player brings their hero's level: the stat ceilings bought with gold apply here.
-        await this.applyHeroLevel(character, playerId, options.joinOptions.characterClass ?? "kirin");
+        const level = await this.applyHeroLevel(character, playerId, options.joinOptions.characterClass ?? "kirin");
+        this.matchStats.join(character, { lang: options.joinOptions.lang, level });
 
         // Players who join after the room was created (join-by-code) take their turn after the last human,
         // before the monsters. Unity's lobby passed everyone in createOptions.turnIds; the web client joins late.
@@ -289,6 +301,9 @@ export class UfbRoom extends Room<UfbRoomState> {
 
     async onDispose() {
         console.log("room", this.roomId, "disposing...");
+        const heroes: CharacterState[] = [];
+        this.state.characters.forEach(c => { if (c.type == USER_TYPE.USER) heroes.push(c); });
+        this.matchStats?.close(this.ended ? "victory" : heroes.length && heroes.every(h => h.stats.health.current <= 0) ? "defeat" : "abandoned");
         this.StopAIChecking();
         this.dispatcher.stop();
         console.log(this.sessionIdToPlayerId, this.sessionIdToPlayerId.size);
@@ -1764,6 +1779,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     }
 
     private ended = false;
+    matchStats!: MatchStats;
     EndWithVictory(winners: CharacterState[]) {
         if (this.ended) return;
         this.ended = true;
@@ -1959,15 +1975,15 @@ export class UfbRoom extends Room<UfbRoomState> {
      * Guests have no account row, so nothing is stored for them. Runs once per character per game.
      */
     /** Raise a player's stat ceilings to the level they have bought for that hero (accounts only). */
-    async applyHeroLevel(character: CharacterState, playerId: string, characterClass: string) {
-        if (playerId.startsWith("web-")) return;   // guest: always level 1
+    async applyHeroLevel(character: CharacterState, playerId: string, characterClass: string): Promise<number> {
+        if (playerId.startsWith("web-")) return 1;   // guest: always level 1
         try {
             const owned = await db.character.findFirst({
                 where: { ownerId: playerId, className: { in: [characterClass, characterClass.replace(/^./, (c) => c.toUpperCase())] } },
                 include: { characterData: true },
             });
             const data = owned?.characterData?.[0];
-            if (!owned || !data) return;
+            if (!owned || !data) return 1;
             character.stats.health.max = data.maxHealth; character.stats.health.current = data.maxHealth;
             character.stats.energy.max = data.maxEnergy; character.stats.energy.current = data.maxEnergy;
             character.stats.ultimate.max = data.maxUltimate;
@@ -1975,9 +1991,11 @@ export class UfbRoom extends Room<UfbRoomState> {
             const melee = character.items.find(i => i.id == ITEMTYPE.MELEE); if (melee) melee.count = data.maxMelee;
             const mana = character.items.find(i => i.id == ITEMTYPE.MANA); if (mana) mana.count = data.maxMana;
             console.log(`${character.displayName} joined as ${owned.className} level ${owned.level} (hp ${data.maxHealth})`);
+            return owned.level;
         } catch (e) {
             console.error("applyHeroLevel failed", e);
         }
+        return 1;
     }
 
     /**
@@ -2049,6 +2067,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         if (character.type != USER_TYPE.USER || this.banked.has(character.id)) return;
         this.banked.add(character.id);
         const summary = this.FinishSummary(character, place, fieldSize);
+        this.matchStats.finish(character, place, summary);
         try {
             const user = await db.user.findFirst({ where: { id: character.id } });
             if (!user) {
