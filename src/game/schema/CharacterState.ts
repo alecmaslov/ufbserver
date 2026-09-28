@@ -120,6 +120,11 @@ export class CharacterState extends Schema {
     @type("boolean") ambush: boolean = false; // her next attack deals double damage and breaks invisibility
     @type("int8") questsCompleted: number = 0; // this match; sets how many hard quests the merchant offers
     @type("int8") pumpBonus: number = 0;       // Pump stack rolled at turn start: bonus damage on the next attack (was chargeBonus; same slot)
+    // ---- monsters, Normal difficulty only (monster-ai.ts). Hard mode leaves all four at their defaults. ----
+    @type("int8") aware: number = 0;           // 0 unaware, 1 alert (red "!" over its head), 2 searching (yellow "?")
+    @type("string") homeTileId: string = "";   // the spawn zone it was placed on: where it patrols and returns to
+    @type("string") lastSeenTileId: string = ""; // where it last saw a hero, or was hit from
+    @type("int8") searchTurns: number = 0;     // turns already spent searching that tile
 
 }
 

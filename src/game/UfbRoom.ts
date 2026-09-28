@@ -31,6 +31,7 @@ import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpe
 import { discardSolo, loadSolo, persistSolo, type SoloInfo } from "#game/solo-save";
 import { autopilotTurn, RECONNECT_GRACE } from "#game/autopilot";
 import { canMelee } from "#game/line-of-sight";
+import { AWARE, beginMonsterTurn, difficultyOf, refreshAwareness, routeTo, spot, tileLookup, usesSight } from "#game/monster-ai";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
@@ -106,6 +107,9 @@ export class UfbRoom extends Room<UfbRoomState> {
             this.isTurnStartForScreen = true;
             this.startTurnTime = Date.now();
         } else {
+            // Difficulty is fixed when the room is made: Normal gives the monsters eyes (monster-ai.ts), Hard is the
+            // old always-aware AI. A resumed solo save carries its own setting in the state it decodes.
+            this.state.difficulty = difficultyOf(options.createOptions?.difficulty);
             try {
                 await this.initMap(options.createOptions?.mapName ?? "kraken");
             } catch (err) {
@@ -386,6 +390,9 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.isTurnStartEquip = true;
         this.isTurnStartStack = true;
         this.isTurnStartForScreen = true;
+        // Normal difficulty: re-check every monster's line of sight for the new turn — invisibility that just ran out,
+        // or a hero who was shoved into the open, changes who is being hunted (monster-ai.ts).
+        refreshAwareness(this);
         console.log("turn orders:", n, this.state.currentCharacterId);
 
         this.broadcast(
@@ -643,6 +650,24 @@ export class UfbRoom extends Room<UfbRoomState> {
         return Pathfinder.fromMapState(this.state, isFeather);
     }
 
+    /** Normal mode: where each monster decided to head this turn, so the AI's two-second ticks share one decision. */
+    private monsterPlans = new Map<string, { turn: number; gotoTileId: string }>();
+
+    /**
+     * The tile this monster is heading for, decided once per turn.
+     *
+     * aiChecking runs on an interval for as long as a monster is acting, so the awareness bookkeeping in
+     * beginMonsterTurn (giving up a search, choosing a patrol tile) has to be pinned to the turn or it would
+     * run several times over and the monster would give up in the same turn it lost sight.
+     */
+    monsterPlan(monster: CharacterState): string {
+        const cached = this.monsterPlans.get(monster.id);
+        if (cached && cached.turn === this.state.turn) return cached.gotoTileId;
+        const gotoTileId = beginMonsterTurn(this, monster);
+        this.monsterPlans.set(monster.id, { turn: this.state.turn, gotoTileId });
+        return gotoTileId;
+    }
+
     // @amin - AI Monsters checking..
     aiChecking() {
         try
@@ -803,11 +828,24 @@ export class UfbRoom extends Room<UfbRoomState> {
             // AI MONSTER MOVEMENT LOGIC
             let nearTileId = "";
             let isAjuacent = false;
+            let movePath: PathStep[] = [];   // where to walk this step (a route to a punching spot, or as close as it can get)
 
-            let nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
+            // Hard mode: every monster always knows where every hero is, wherever they are. Normal mode: it hunts only
+            // what it can see, searches where it last saw someone, then walks home and patrols (monster-ai.ts).
+            let nearCharcterId: string;
+            if (usesSight(this)) {
+                const goto = this.monsterPlan(selectedMonster);
+                // Re-checked every tick, not just at turn start: walking round a corner can bring a hero into view
+                // halfway through the monster's own turn.
+                const seen = spot(selectedMonster, this, tileLookup(this));
+                if (seen) { selectedMonster.aware = AWARE.ALERT; selectedMonster.lastSeenTileId = seen.currentTileId; selectedMonster.searchTurns = 0; }
+                nearCharcterId = seen ? seen.id : "";
+                if (nearCharcterId == "") movePath = routeTo(this, selectedMonster, goto);
+            } else {
+                nearCharcterId = GetNearestPlayerId(selectedMonster.currentTileId, this);
+            }
             const obstacleTileIds = GetObstacleTileIds(selectedMonster.currentTileId, this);
             console.log("near character id: ", nearCharcterId);
-            let movePath: PathStep[] = [];   // where to walk this step (a route to a punching spot, or as close as it can get)
 
             if(nearCharcterId != "") {
                 let enemy = this.state.characters.get(nearCharcterId);

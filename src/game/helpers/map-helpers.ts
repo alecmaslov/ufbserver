@@ -1,5 +1,6 @@
 import { ADD_EXTRA_TYPE, BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, USER_DATA_TYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { alertToAttack, refreshAwareness } from "#game/monster-ai";
 import { NavGraphLinkData } from "#game/Pathfinder";
 import { CharacterState, CoordinatesState, Item } from "#game/schema/CharacterState";
 import { AdjacencyListItemState, MapState, SpawnEntity, TileState } from "#game/schema/MapState";
@@ -503,6 +504,7 @@ export function spawnMonster(
     character.characterClass = characterClass;
     character.characterId = createId();
     character.currentTileId = tileId;
+    character.homeTileId = tileId;   // its spawn zone: where Normal-mode monsters patrol and return to (monster-ai.ts)
 
     if(!!type) {
         character.type = type;
@@ -1257,6 +1259,7 @@ export function resolvePushPull(room: UfbRoom, client: Client | null, from: Char
         target.coordinates.x = result.desCoodinate.x;
         target.coordinates.y = result.desCoodinate.y;
         target.currentTileId = result.desTileId;
+        refreshAwareness(room);   // a shove can land someone in plain sight (monster-ai.ts)
         const path: PathStep[] = [{ tileId: result.desTileId }];
         room.broadcast(SERVER_TO_CLIENT_MESSAGE.SET_CHARACTER_POSITION, { characterId: target.id, path });
         room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_PERK_TOAST, { characterId: target.id, perkId: perkType, tileId: result.desTileId });
@@ -1383,7 +1386,11 @@ export function setCharacterHealth(character : CharacterState, amount : number, 
         AddUserData(USER_DATA_TYPE.DAMAGE_HEAL, character, amount);
     }
 
+    // Normal mode: being hit is being noticed, even by something it never saw (monster-ai.ts).
+    if(amount < 0 && character.stats.health.current > 0) alertToAttack(room, character, enemy);
+
     if(wasAlive && character.stats.health.current <= 0) {
+        character.aware = 0;   // no "!" or "?" left hanging over a corpse
 
         if(enemy != null) {
             AddUserData(USER_DATA_TYPE.KILLS, enemy, 1);

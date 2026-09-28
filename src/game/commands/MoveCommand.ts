@@ -10,6 +10,7 @@ import { ADD_EXTRA_TYPE, EDGE_TYPE, ITEMTYPE, QUESTTYPE, USER_DATA_TYPE, USER_TY
 import { MoveItemEntity } from "#game/schema/MapState";
 import { Item } from "#game/schema/CharacterState";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
+import { refreshAwareness } from "#game/monster-ai";
 
 type OnMoveCommandPayload = {
     client: Client;
@@ -272,6 +273,10 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //         2
         //     )}`
         // );
+
+        // Normal difficulty: whoever just moved may have walked into (or out of) a monster's line of sight, so the
+        // "!" and "?" markers change on the mover's own turn, not at the next turn change (monster-ai.ts).
+        refreshAwareness(this.room);
 
         this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
         if (character.stats.energy.current == 0) {

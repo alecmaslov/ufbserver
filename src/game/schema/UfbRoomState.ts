@@ -13,4 +13,6 @@ export class UfbRoomState extends Schema {
   /** turnOrder contains character ids */
   @type(["string"]) turnOrder: ArraySchema<string> = new ArraySchema<string>();
   @type("string") currentCharacterId: string = "";
+  /** "normal" (monsters hunt only what they can see — monster-ai.ts) or "hard" (every monster always knows). */
+  @type("string") difficulty: string = "normal";
 }
