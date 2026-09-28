@@ -49,6 +49,20 @@ export const SEARCH_TURNS = 1;
 /** Bridge and stair tiles are links in the nav graph rather than nodes, so nothing can be routed to one. */
 const standable = (t: { type: string }) => t.type != "Void" && !/Bridge|Stairs/.test(t.type);
 
+/**
+ * Portal tiles, which a monster may walk across but must never stop on.
+ *
+ * Only a player's move runs through MoveCommand, which is what swaps the destination for the far portal's
+ * exit — so a monster that ended its turn on a portal would simply stand there, and while it stood there
+ * nobody could step onto that tile, quietly taking the portal out of the game. Crossing one is harmless and
+ * is allowed on purpose: making them solid would wall monsters out of anywhere a portal sits in a corridor.
+ */
+export function portalTiles(room: UfbRoom): Set<string> {
+    const out = new Set<string>();
+    room.state.map.spawnEntities.forEach((e) => { if (e.type == "Portal") out.add(e.tileId); });
+    return out;
+}
+
 export type Difficulty = "normal" | "hard";
 export const difficultyOf = (v: unknown): Difficulty => (v === "hard" ? "hard" : "normal");
 /** Hard mode keeps the old always-aware AI, so everything here is skipped. */
@@ -168,8 +182,12 @@ export function beginMonsterTurn(room: UfbRoom, monster: CharacterState): string
 export function routeTo(room: UfbRoom, monster: CharacterState, tileId: string): PathStep[] {
     if (!tileId || tileId == monster.currentTileId) return [];
     const pf = room.getPathFinder();
-    const direct = pf.find(monster.currentTileId, tileId);
-    if (direct.foundPath && direct.path.length > 1) return direct.path;
+    const portals = portalTiles(room);
+    // A hero last seen standing on a portal, or a spawn zone beside one: aim next to it, not at it.
+    if (!portals.has(tileId)) {
+        const direct = pf.find(monster.currentTileId, tileId);
+        if (direct.foundPath && direct.path.length > 1) return trimPortalEnd(direct.path, portals);
+    }
 
     const goal = room.state.map.tiles.get(tileId);
     if (!goal) return [];
@@ -179,10 +197,18 @@ export function routeTo(room: UfbRoom, monster: CharacterState, tileId: string):
     for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
         const n = tileAt({ x: goal.coordinates.x + dx, y: goal.coordinates.y + dy });
         if (!n || !standable(n)) continue;
+        if (portals.has(n.id)) continue;
         const r = pf.find(monster.currentTileId, n.id);
-        if (r.foundPath && r.path.length > 1 && r.cost < bestCost) { bestCost = r.cost; best = r.path; }
+        if (r.foundPath && r.path.length > 1 && r.cost < bestCost) { bestCost = r.cost; best = trimPortalEnd(r.path, portals); }
     }
     return best;
+}
+
+/** Drop any portal tiles off the end of a route, so the walk finishes somewhere the monster may stand. */
+export function trimPortalEnd(path: PathStep[], portals: Set<string>): PathStep[] {
+    let end = path.length;
+    while (end > 1 && portals.has(path[end - 1].tileId)) end--;
+    return end === path.length ? path : path.slice(0, end);
 }
 
 /** A tile to wander to near the spawn zone, so an idle monster looks like it is guarding something. */
@@ -193,9 +219,10 @@ export function patrolTarget(room: UfbRoom, monster: CharacterState): string {
     const taken = new Set<string>();
     room.state.characters.forEach((c) => { if (c.id != monster.id && alive(c)) taken.add(c.currentTileId); });
 
+    const portals = portalTiles(room);
     const candidates: TileState[] = [];
     tiles.forEach((t) => {
-        if (t.id == monster.currentTileId || taken.has(t.id)) return;
+        if (t.id == monster.currentTileId || taken.has(t.id) || portals.has(t.id)) return;
         if (!standable(t)) return;
         if (dist(t.coordinates, home.coordinates) > PATROL_RADIUS) return;
         candidates.push(t);

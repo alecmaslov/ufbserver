@@ -31,7 +31,7 @@ import { getCharacterById, getItemIdsByLevel, getPowerIdsByLevel } from "./helpe
 import { discardSolo, loadSolo, persistSolo, type SoloInfo } from "#game/solo-save";
 import { autopilotTurn, RECONNECT_GRACE } from "#game/autopilot";
 import { canMelee } from "#game/line-of-sight";
-import { AWARE, beginMonsterTurn, difficultyOf, refreshAwareness, routeTo, spot, tileLookup, usesSight } from "#game/monster-ai";
+import { AWARE, beginMonsterTurn, difficultyOf, portalTiles, refreshAwareness, routeTo, spot, tileLookup, trimPortalEnd, usesSight } from "#game/monster-ai";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { CharacterMovedMessage } from "./message-types";
 import { PathStep } from "#shared-types";
@@ -899,6 +899,11 @@ export class UfbRoom extends Room<UfbRoomState> {
                         }
                     }
 
+
+                    // Wherever the walk ended up being cut short — energy, a bomb, another character in the way —
+                    // it must not finish on a portal: only a player's move teleports, so a monster would just sit
+                    // there and no one could step onto that tile again (monster-ai.ts).
+                    monsterPath = trimPortalEnd(monsterPath, portalTiles(this));
 
                     fillPathWithCoords(monsterPath, this.state.map);
 
