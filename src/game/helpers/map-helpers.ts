@@ -1,4 +1,4 @@
-import { ADD_EXTRA_TYPE, BAN_STACKS, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, USER_DATA_TYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
+import { ADD_EXTRA_TYPE, BAN_STACKS, CRYSTAL_PARTS, DICE_TYPE, EDGE_TYPE, END_TYPE, EQUIP_EXTRA_BONUS, ITEMDETAIL, ITEMTYPE, MONSTER_TYPE, MONSTERS, PERKTYPE, POWERCOSTS, powermoves, powers, POWERTYPE, QUESTTYPE, stacks, STACKTYPE, USER_DATA_TYPE, USER_TYPE, WALL_DIRECT } from "#assets/resources";
 import { SERVER_TO_CLIENT_MESSAGE } from "#assets/serverMessages";
 import { alertToAttack, refreshAwareness } from "#game/monster-ai";
 import { NavGraphLinkData } from "#game/Pathfinder";
@@ -963,39 +963,37 @@ export function addItemToCharacter(id: number, count : number, state: CharacterS
     
     if(count > 0){
 
-        if(id == ITEMTYPE.HEART_PIECE) {
-            if(itemCount != 0 && (itemCount + 1) % 4 == 0){
-                addItemToCharacter(ITEMTYPE.HEART_CRYSTAL, 1, state, client);
-            }
-        } else if(id == ITEMTYPE.ENERGY_SHARD){
-            if(itemCount != 0 && (itemCount + 1) % 3 == 0){
-                console.log("added energy crystal...")
-                addItemToCharacter(ITEMTYPE.ENERGY_CRYSTAL, 1, state, client);
-            }
+        const part = CRYSTAL_PARTS[id];
+        if(part) {
+            // Every `per`th piece completes a crystal. Counted across the whole pickup rather than off the last one:
+            // a loot box or a craft can hand over two pieces at once, and that used to be worth at most one crystal.
+            const made = Math.floor((itemCount + count) / part.per) - Math.floor(itemCount / part.per);
+            if(made > 0) addItemToCharacter(part.crystal, made, state, client);
         } else if(id == ITEMTYPE.HEART_CRYSTAL){
-            state.stats.health.max += 5;
-            state.stats.health.add(5);
+            // Per crystal, not per pickup: two at once (a double loot box, four pieces in one go) is +10, not +5.
+            const gain = 5 * count;
+            state.stats.health.max += gain;
+            state.stats.health.add(gain);
             if(client != null){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     characterId: state.id,
-                    score: 5,
+                    score: gain,
                     type: "heart"
                 });
             }
-            setQuestResult(QUESTTYPE.LIFE, 1, state);
+            setQuestResult(QUESTTYPE.LIFE, count, state);
         } else if(id == ITEMTYPE.ENERGY_CRYSTAL){
-            state.stats.energy.max += 3;
-            state.stats.energy.add(3);
+            const gain = 3 * count;
+            state.stats.energy.max += gain;
+            state.stats.energy.add(gain);
             if(client != null){
                 client.send(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
                     characterId: state.id,
-                    score: 3,
+                    score: gain,
                     type: "energy"
                 });
             }
-            setQuestResult(QUESTTYPE.ENERGY, 1, state);
-
-            console.log("added energy crystal...", count)
+            setQuestResult(QUESTTYPE.ENERGY, count, state);
         }
     }
 

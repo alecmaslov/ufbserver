@@ -2632,6 +2632,16 @@ export const powers: { [key: number]: { level: number, name: string} } = {
     },
 }
 
+/**
+ * How many pieces make a crystal: 4 Heart Pieces for a Heart Crystal (+5 max health), 3 Energy Shards for an
+ * Energy Crystal (+3 max energy). The web client draws the part-filled crystal from these, so they live here
+ * with the rest of the rules tables rather than being written out twice.
+ */
+export const CRYSTAL_PARTS: {[pieceId: number]: {crystal: number, per: number}} = {
+    [ITEMTYPE.HEART_PIECE]: { crystal: ITEMTYPE.HEART_CRYSTAL, per: 4 },
+    [ITEMTYPE.ENERGY_SHARD]: { crystal: ITEMTYPE.ENERGY_CRYSTAL, per: 3 },
+};
+
 export const itemResults: {[key: number]: {heart?: number, energy?: number, ultimate?: number, stackId?: number, powerId?: number, perkId?: number}} = {
     [ITEMTYPE.BOMB]: {
         heart: -3
