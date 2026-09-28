@@ -8,7 +8,7 @@ import { MoveCommand } from "#game/commands/MoveCommand";
 import { EquipCommand } from "./commands/EquipCommand";
 import { ItemCommand } from "./commands/ItemCommand";
 import { JoinCommand } from "./commands/JoinCommand";
-import { Item, Quest } from "#game/schema/CharacterState";
+import { CharacterState, Item, Quest } from "#game/schema/CharacterState";
 import { ADD_EXTRA_TYPE, CRAFTS_ITEM, DICE_TYPE, EDGE_TYPE, EQUIP_TURN_BONUS, GOOD_STACKS, ITEMDETAIL, ITEMTYPE, PERKTYPE, POWERCOSTS, POWERTYPE, QUESTS, QUESTTYPE, STACKTYPE, TURN_TIME, featherStep, itemResults, powermoves, powers, stacks } from "#assets/resources";
 import { PathStep, PowerMove } from "#shared-types";
 import { MoveItemEntity, SpawnEntity } from "./schema/MapState";
@@ -37,6 +37,24 @@ const merchantVisit = (room: UfbRoom, c: { currentTileId: string }) => {
     const m = room.state.map.spawnEntities.find((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
     return m ? `${room.state.turn}:${m.id}` : "";
 };
+/**
+ * The merchant takes a job before it does business: buying, selling and crafting are closed until the shopper
+ * has accepted a quest on this visit.
+ *
+ * Returns the refusal, or "" when trade is allowed. It lets them straight through whenever taking a quest is
+ * not actually possible — already holding the maximum, or nothing on offer they don't already have — so the
+ * gate can never lock someone out of the shop entirely.
+ */
+export const questGateFor = (room: UfbRoom, c: CharacterState): string => {
+    const visit = merchantVisit(room, c);
+    if (!visit) return "";                                       // not standing on a merchant; other checks cover that
+    if (room.questVisit.get(c.id) === visit) return "";          // took one on this visit
+    if (c.quests.length >= MAX_ACTIVE_QUESTS) return "";         // can't take another
+    const takeable = (room.questOffers.get(c.id) ?? []).some((q) => !c.quests.some((h) => h.id === q.id));
+    if (!takeable) return "";                                    // nothing left to take
+    return "The merchant wants a job taken before any trading.";
+};
+
 /** Is there a merchant on the character's tile? */
 const atMerchant = (room: UfbRoom, c: { currentTileId: string }) =>
     room.state.map.spawnEntities.some((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
@@ -724,6 +742,9 @@ export const messageHandlers: MessageHandlers = {
                 max: MAX_ACTIVE_QUESTS,
                 active: shopper.quests.length,
                 acceptedThisVisit: room.questVisit.get(shopper.id) === merchantVisit(room, shopper),
+                // Buying, selling and crafting are closed until a job is taken. Computed by the same questGate the
+                // trade handlers enforce, so the shop front and the server can never disagree about what is open.
+                locked: !!questGateFor(room, shopper),
             } : undefined,
         };
 
@@ -733,6 +754,8 @@ export const messageHandlers: MessageHandlers = {
     [CLIENT_SERVER_MESSAGE.MERCHANT_BUY_ITEM]: (room, client, message) => {
         const character = actor(room, client, message);
         if (!character) return;
+        const gate = questGateFor(room, character);
+        if (gate) { room.notify(client, gate, "error"); return; }
         const type = message.type;
         const id = message.id;
         if (!atMerchant(room, character) || room.state.currentCharacterId !== character.id) {
@@ -830,6 +853,8 @@ export const messageHandlers: MessageHandlers = {
     [CLIENT_SERVER_MESSAGE.MERCHANT_SELL_ITEM]: (room, client, message) => {
         const character = actor(room, client, message);
         if (!character) return;
+        const gate = questGateFor(room, character);
+        if (gate) { room.notify(client, gate, "error"); return; }
         const type = message.type;
         const id = message.id;
         if (!atMerchant(room, character) || room.state.currentCharacterId !== character.id) {
@@ -1027,6 +1052,8 @@ export const messageHandlers: MessageHandlers = {
     [CLIENT_SERVER_MESSAGE.MERCHANT_ADDCRAFTITEM]: (room, client, message) => {
         const character = actor(room, client, message);
         if (!character) return;
+        const gate = questGateFor(room, character);
+        if (gate) { room.notify(client, gate, "error"); return; }
         if (!atMerchant(room, character) || room.state.currentCharacterId !== character.id) {
             room.notify(client, "You can only craft at a merchant you're standing on, on your turn.", "error");
             return;
