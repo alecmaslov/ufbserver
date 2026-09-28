@@ -28,6 +28,9 @@ export class MatchStats {
     private killers = new Map<string, string>();
     private diedTurn = new Map<string, number>();
     private finished = new Set<string>();
+    /** Turns each hero actually took. It used to record the room's round count, which made every
+     *  per-turn figure in a report about 4x too big in a solo game (one hero, three monsters). */
+    private turns = new Map<string, number>();
     private joined = new Set<string>();
     private closed = false;
     /** Each hero's writes run in order: a finish must not overtake the insert of its own row. */
@@ -43,6 +46,12 @@ export class MatchStats {
     }
 
     constructor(private room: Room, private mapName: string) {}
+
+    /** A hero's turn began. Called from UfbRoom.incrementTurn, which is the only place a turn changes. */
+    tookTurn(heroId: string) {
+        if (!heroId) return;
+        this.turns.set(heroId, (this.turns.get(heroId) ?? 0) + 1);
+    }
 
     /** The record is created with the first hero, so rooms nobody joins leave no trace. */
     private record(): Promise<string | null> {
@@ -95,7 +104,7 @@ export class MatchStats {
             tilesMoved: s.traveled_tile, energyUsed: s.used_energy, stacksUsed: s.used_stack,
             playerKills: summary.playerKills ?? 0, monsterKills: summary.monsterKills ?? 0,
             goldEarned: summary.total ?? 0,
-            turnsPlayed: this.room.Rounds(),
+            turnsPlayed: this.turns.get(hero.id) ?? 0,
             moves: this.moves.get(hero.id) ?? {},
             equipped: (hero.equipSlots ?? []).map((p: any) => p?.name).filter(Boolean),
             endedAt: new Date(),
@@ -126,7 +135,7 @@ export class MatchStats {
                             damageDealt: s.damage_deal, damageTaken: s.damage_taken, healed: s.damage_heal,
                             tilesMoved: s.traveled_tile, energyUsed: s.used_energy, stacksUsed: s.used_stack,
                         } : {}),
-                        turnsPlayed: this.room.Rounds(),
+                        turnsPlayed: this.turns.get(hero.id) ?? 0,
                         moves: this.moves.get(id) ?? {},
                     },
                 });

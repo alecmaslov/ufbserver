@@ -390,6 +390,7 @@ export class UfbRoom extends Room<UfbRoomState> {
         this.isTurnStartEquip = true;
         this.isTurnStartStack = true;
         this.isTurnStartForScreen = true;
+        this.matchStats?.tookTurn(this.state.currentCharacterId);   // for the per-turn figures in match-report
         // Normal difficulty: re-check every monster's line of sight for the new turn — invisibility that just ran out,
         // or a hero who was shoved into the open, changes who is being hunted (monster-ai.ts).
         refreshAwareness(this);
