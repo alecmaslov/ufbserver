@@ -12,7 +12,9 @@ export const DICE_TYPE : {[key : string] : number} = {
     DICE_6 : 1,
     DICE_4 : 2,
     DICE_6_6 : 3,
-    DICE_6_4 : 4
+    DICE_6_4 : 4,
+    // Added 2026-09-29 for Void, which now takes a d4 off health and a d4 off energy (turn-stacks.ts).
+    DICE_4_4 : 5
 }
 
 export const WALL_DIRECT : {[key : string] : number} = {
@@ -2359,7 +2361,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Void] : {
         level : 1,
         name : "Void",
-        description: "At the beginning of your turn, roll a dice to take damage from 1 Void stack.",
+        description: "At the beginning of your turn, roll two d4: one comes off your health, the other off your energy.",
         cost: -1,
         sell: -1,
         anti: STACKTYPE.Cure

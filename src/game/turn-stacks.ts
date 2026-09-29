@@ -29,12 +29,14 @@ export function applyTurnStartStack(room: UfbRoom, character: CharacterState, st
         tell(d0, "heart");
         room.sendBroadcastStats(d0, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Void) {
-        // Drains health (d4) and ultimate (d6)
-        setCharacterHealth(character, -d1, room, client, "heart", null);
-        character.stats.ultimate.add(-d0);
-        tell(-d1, "heart"); tell(-d0, "ultimate");
-        room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
-        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, client, character.id);
+        // Alec's rule (2026-09-29): Void drains health (d4) and energy (d4). It used to take the second roll off
+        // the ultimate gauge, which did nothing — taking damage charges the ultimate by twice the damage
+        // (map-helpers setCharacterHealth), so a Void roll handed back more than it drained.
+        setCharacterHealth(character, -d0, room, client, "heart", null);
+        setCharacterEnergy(character, -d1, room, client);
+        tell(-d0, "heart"); tell(-d1, "energy");
+        room.sendBroadcastStats(-d0, ADD_EXTRA_TYPE.HEART_ENEMY, client, character.id);
+        room.sendBroadcastStats(-d1, ADD_EXTRA_TYPE.ENERGY_ENEMY, client, character.id);
     } else if (stackId == STACKTYPE.Burn) {
         setCharacterHealth(character, -d0, room, client, "heart", null);
         tell(-d0, "heart");

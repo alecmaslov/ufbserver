@@ -58,6 +58,52 @@ export const questGateFor = (room: UfbRoom, c: CharacterState): string => {
 /** Is there a merchant on the character's tile? */
 const atMerchant = (room: UfbRoom, c: { currentTileId: string }) =>
     room.state.map.spawnEntities.some((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
+const merchantOn = (room: UfbRoom, c: { currentTileId: string }) =>
+    room.state.map.spawnEntities.find((e) => e.tileId === c.currentTileId && e.type === SpawnZoneType.Merchant);
+
+/**
+ * A merchant's stock.
+ *
+ * Alec's rule (2026-09-29): what a merchant carries is single use. It is drawn once, the first time anyone
+ * opens the shop, and a line that is bought is gone — for everyone, and for good, including after the
+ * merchant packs up and reappears somewhere else. So the stock lives on the entity (its `inventory`
+ * parameter, which is schema state and therefore survives a solo save) rather than being rolled fresh on
+ * every visit, which is what let the same Elixir be bought over and over.
+ */
+export type StockLine = { kind: "item" | "power" | "stack"; id: number };
+/**
+ * The shelf as recorded, or null when this merchant has never been opened.
+ *
+ * An empty array is a real answer — a merchant that has been bought out stays bought out. Treating empty
+ * as "not recorded yet" would have quietly restocked it on the next visit, which is the opposite of the rule.
+ */
+const readStock = (e: SpawnEntity): StockLine[] | null => {
+    try { const p = JSON.parse(e.parameters || "{}"); return Array.isArray(p.inventory) ? p.inventory : null; }
+    catch { return null; }
+};
+const writeStock = (e: SpawnEntity, stock: StockLine[]) => {
+    let p: any = {};
+    try { p = JSON.parse(e.parameters || "{}"); } catch { p = {}; }
+    p.inventory = stock;
+    e.parameters = JSON.stringify(p);
+};
+/** Is the line still on the shelf? Asked before the price is checked, so "sold out" beats "can't afford". */
+const inStock = (e: SpawnEntity | undefined, kind: StockLine["kind"], id: number): boolean => {
+    if (!e) return false;
+    const stock = readStock(e);
+    if (!stock) return true;   // an old merchant with no stock recorded: don't refuse the sale
+    return stock.some((x) => x.kind === kind && x.id === id);
+};
+/** Take the line off the shelf, once the sale is certain. */
+const takeFromStock = (e: SpawnEntity | undefined, kind: StockLine["kind"], id: number) => {
+    if (!e) return;
+    const stock = readStock(e);
+    if (!stock) return;
+    const i = stock.findIndex((x) => x.kind === kind && x.id === id);
+    if (i < 0) return;
+    stock.splice(i, 1);
+    writeStock(e, stock);
+};
 
 type MessageHandler<TMessage> = (
     room: UfbRoom,
@@ -531,17 +577,22 @@ export const messageHandlers: MessageHandlers = {
             }
         })
 
+        // A refusal is still answered, with `blocked` set: the client puts the move panel up with Move greyed
+        // out and says why. Returning nothing left it stuck in its "preview" phase with no panel on screen.
+        const refuse = (reason: string) => {
+            client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVE_POINT, {
+                characterId: character.id, path: [{ tileId: tileId }], cost: 0, featherCount: 0,
+                portalNextTileId: "", blocked: reason,
+            });
+        };
+
         if(portalNextTileId == "blocked") {
-            room.notify(client, "The portal exit is blocked — you can't step on it right now.", "error");
+            refuse("The portal exit is blocked — there is nowhere to come out.");
             return;
         }
 
         if(character.stats.energy.current == 0) {
-            room.notify(
-                client,
-                "You don't have enough energy to move there!",
-                "error"
-            );
+            refuse("You don't have enough energy to move there!");
             return;
         }
 
@@ -644,6 +695,19 @@ export const messageHandlers: MessageHandlers = {
     },
 
     getMerchantData: (room, client, message) => {
+        const shopperNow = getClientCharacter(room, client);
+        const entity = shopperNow ? merchantOn(room, shopperNow) : undefined;
+
+        // Alec's rule (2026-09-29): powers come off at the door. You walk into the shop with everything in
+        // your bag, so it can all be sold or forged, and you choose what to put back on when you leave.
+        // Free — the usual 2 energy to unequip would be a toll for shopping.
+        if (shopperNow && entity && shopperNow.equipSlots.length > 0) {
+            const taken = [...shopperNow.equipSlots].map((p) => p.id);
+            while (shopperNow.equipSlots.length > 0) shopperNow.equipSlots.deleteAt(0);
+            taken.forEach((id) => addPowerToCharacter(id, 1, shopperNow));
+            taken.forEach((id) => client.send(SERVER_TO_CLIENT_MESSAGE.UNEQUIP_POWER_RECEIVED, { playerId: shopperNow.id, powerId: id }));
+        }
+
         const itemData1 : Item[] = [];
         const itemData2 : Item[] = [];
         const itemData : Item[] = [];
@@ -664,8 +728,8 @@ export const messageHandlers: MessageHandlers = {
                 itemData.push(item);
             }
         });
-        const randomItem1 = getRandomElements(itemData1, 3);
-        const randomItem2 = getRandomElements(itemData2, 3);
+        let randomItem1 = getRandomElements(itemData1, 3);
+        let randomItem2 = getRandomElements(itemData2, 3);
 
         const powerData : Item[] = [];
         Object.keys(powers).forEach(key => {
@@ -680,7 +744,7 @@ export const messageHandlers: MessageHandlers = {
                 powerData.push(power);
             }
         });
-        const randomPower = getRandomElements(powerData, 3);
+        let randomPower = getRandomElements(powerData, 3);
 
         const stackData : Item[] = [];
         Object.keys(stacks).forEach(key => {
@@ -696,14 +760,40 @@ export const messageHandlers: MessageHandlers = {
                 stackData.push(stack);
             }
         });
-        const randomStack = getRandomElements(stackData, 3);
+        let randomStack = getRandomElements(stackData, 3);
 
-        const questData : Quest[] = [];
+        // First opening of this merchant writes the shelf down; every opening after that reads it back, minus
+        // whatever has been bought (sellFromStock).
+        if (entity) {
+            const recorded = readStock(entity);
+            if (recorded) {
+                const pick = <T extends { id: number }>(all: T[], kind: StockLine["kind"]) =>
+                    recorded.filter((x) => x.kind === kind).map((x) => all.find((c) => c.id === x.id)).filter((x): x is T => !!x);
+                randomItem1 = pick(itemData1, "item");
+                randomItem2 = pick(itemData2, "item");
+                randomPower = pick(powerData, "power");
+                randomStack = pick(stackData, "stack");
+            } else {
+                writeStock(entity, [
+                    ...[...randomItem1, ...randomItem2].map((i) => ({ kind: "item" as const, id: i.id })),
+                    ...randomPower.map((i) => ({ kind: "power" as const, id: i.id })),
+                    ...randomStack.map((i) => ({ kind: "stack" as const, id: i.id })),
+                ]);
+            }
+        }
+
+        // The three jobs are drawn once per visit and then held: the shop front is redrawn after every
+        // purchase, and a fresh roll each time would shuffle the board under the shopper's finger.
+        const visitNow = shopperNow ? merchantVisit(room, shopperNow) : "";
+        const heldOffers = shopperNow && visitNow && room.questOfferVisit.get(shopperNow.id) === visitNow
+            ? room.questOffers.get(shopperNow.id) : undefined;
+
+        const questData : Quest[] = heldOffers ?? [];
         // Difficulty ladder (per match): 0 completed → 3 normal, 1 → 2 normal + 1 hard, 2 → 1 + 2, 3+ → 3 hard.
         const hardOffers = Math.min(3, getClientCharacter(room, client)?.questsCompleted ?? 0);
         const Qarray = getRandomElements(Object.keys(QUESTS).map(key => QUESTS[Number(key)]), 3);
         
-        for(let i = 0; i < 3; i++) {
+        for(let i = 0; heldOffers === undefined && i < 3; i++) {
             const quest = new Quest();
             quest.id = Qarray[i].id;
             quest.name = Qarray[i].title;
@@ -726,8 +816,8 @@ export const messageHandlers: MessageHandlers = {
 
             questData.push(quest);
         }
-        const shopper = getClientCharacter(room, client);
-        if (shopper) room.questOffers.set(shopper.id, questData);
+        const shopper = shopperNow;
+        if (shopper) { room.questOffers.set(shopper.id, questData); if (visitNow) room.questOfferVisit.set(shopper.id, visitNow); }
 
         const getMerchantDataDataMessage = {
             items: itemData,
@@ -767,6 +857,19 @@ export const messageHandlers: MessageHandlers = {
             room.notify(client, "The merchant doesn't sell that.", "error");
             return;
         }
+        // Alec's rule (2026-09-29): stock is single use. Sold out is checked before the price, so a shopper who
+        // is also short of gold is told the real reason; the line only leaves the shelf once the sale is certain,
+        // so a refused purchase never eats it and two taps on one row can't buy it twice.
+        const stall = merchantOn(room, character);
+        if (!inStock(stall, type as StockLine["kind"], id)) {
+            room.notify(client, "That one is sold — the merchant has no more.", "error");
+            return;
+        }
+        if (character.stats.coin < price) {
+            room.notify(client, "You don't have enough gold for that.", "error");
+            return;
+        }
+        takeFromStock(stall, type as StockLine["kind"], id);
         
         let msg: any = {
             items: [],
@@ -847,6 +950,8 @@ export const messageHandlers: MessageHandlers = {
         }
 
         client.send(SERVER_TO_CLIENT_MESSAGE.MERCHANT_RESULT, msg);
+        // and redraw the shop, so the row that was just bought is gone rather than sitting there tappable
+        messageHandlers.getMerchantData(room, client, { characterId: character.id, tileId: character.currentTileId });
 
     },
 
@@ -1410,7 +1515,16 @@ export const messageHandlers: MessageHandlers = {
                     const dice: any = {
                         diceData : []
                     }
-                    if(diceType == DICE_TYPE.DICE_6_4) {
+                    if(diceType == DICE_TYPE.DICE_4_4) {
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                    } else if(diceType == DICE_TYPE.DICE_6_4) {
                         dice.diceData.push({
                             type: DICE_TYPE.DICE_6,
                             diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)

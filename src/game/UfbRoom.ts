@@ -68,6 +68,7 @@ export class UfbRoom extends Room<UfbRoomState> {
     stackDice = new Map<string, { id: number; dice: { type: number; diceCount: number }[] }[]>();   // turn-start stack rolls
     equipBonusTurn = new Map<string, number>();                                     // turn number the equip bonus was paid
     questVisit = new Map<string, string>();                                         // "turn:merchant" of the visit a quest was accepted on
+    questOfferVisit = new Map<string, string>();                                    // the visit questOffers was drawn for, so a redraw of the shop keeps the same three jobs
     isTurnStartStack: boolean = true;
     isTurnStartForScreen: boolean = true;
     banked = new Set<string>();   // characters whose end-of-game gold has been written
@@ -352,16 +353,14 @@ export class UfbRoom extends Room<UfbRoomState> {
     incrementTurn() {
         const ending = this.state.characters.get(this.state.currentCharacterId);
         tickInvisibility(ending);   // ultimates.ts
-        // Alec's rule: unused energy at the end of any turn (player or monster, ended by button, timer or autopilot)
-        // becomes ultimate. This used to happen only when a player pressed End turn.
-        if (ending && ending.stats.health.current > 0 && ending.stats.energy.current > 0) {
-            const left = ending.stats.energy.current;
-            const before = ending.stats.ultimate.current;
-            ending.stats.ultimate.add(left);
-            ending.stats.energy.current = 0;
-            const gained = ending.stats.ultimate.current - before;
-            if (gained > 0) this.sendBroadcastStats(gained, ADD_EXTRA_TYPE.ULTIMATE, null, ending.id);
-        }
+        // Alec's rule (changed 2026-09-29): unused energy is NOT burned into the ultimate gauge at the end of a
+        // turn. It stays on the character, along with any melee and mana tokens, so it can be spent on items and
+        // power moves while somebody else is moving (message-handlers: those have no turn check). It is topped
+        // back up to the maximum at the start of the character's own next turn, below — so leftover energy buys
+        // off-turn actions rather than banking into the next turn.
+        //
+        // The ultimate gauge still fills from combat: 2 per point of damage taken and 1 per point dealt
+        // (map-helpers setCharacterHealth), plus Flame Chili / Ice Tea and the moves that grant it.
         // Next living character in turn order. Dead characters are skipped here, in one pass: the old version recursed,
         // then carried on with the dead one (re-broadcasting TURN_CHANGED once per dead monster and resetting its energy).
         const order = this.state.turnOrder;
@@ -764,7 +763,16 @@ export class UfbRoom extends Room<UfbRoomState> {
                             const dice: any = {
                                 diceData : []
                             }
-                            if(diceType == DICE_TYPE.DICE_6_4) {
+                            if(diceType == DICE_TYPE.DICE_4_4) {
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                        dice.diceData.push({
+                            type: DICE_TYPE.DICE_4,
+                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                        })
+                    } else if(diceType == DICE_TYPE.DICE_6_4) {
                                 dice.diceData.push({
                                     type: DICE_TYPE.DICE_6,
                                     diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)

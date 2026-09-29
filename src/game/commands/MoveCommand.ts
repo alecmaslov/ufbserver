@@ -34,15 +34,19 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         //     this.room.notify(client, "It's not your turn!", "error");
         //     return;
         // }
-        let desTileId = message.tileId;
-        this.state.map.spawnEntities.forEach(entity => {
-            if(entity.tileId == message.tileId && entity.type == "Portal") {
-                message.tileId = getPortalPosition(entity, this.room, character.currentTileId);
-            }
-        })
-
-        if( message.tileId == "" ) {
-            this.room.notify(client, "The portal exit is blocked.", "error");
+        const desTileId = message.tileId;
+        // Walking onto a portal is two things: the walk, then using the portal. The walk is an ordinary move to
+        // the portal's own tile (desTileId), and the warp is applied at the bottom of this method, once the
+        // character has arrived — so the client can animate the two separately (PORTAL_USED).
+        //
+        // This used to rewrite message.tileId to the far side before pathfinding while still routing to
+        // desTileId, so the character walked onto the portal and stopped there: portals did nothing at all.
+        // Only heroes are taken by a portal; a monster may cross one but never uses it (monster-ai.ts).
+        const portalHere = this.state.map.spawnEntities.find(
+            (e) => e.tileId == desTileId && e.type == "Portal"
+        );
+        if (portalHere && character.type == USER_TYPE.USER && getPortalPosition(portalHere, this.room, character.currentTileId) == "") {
+            this.room.notify(client, "The portal exit is blocked — there is nowhere to come out.", "error");
             return;
         }
 
@@ -279,6 +283,28 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
         refreshAwareness(this.room);
 
         this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.CHARACTER_MOVED, characterMovedMessage);
+
+        // Landed on a portal: it takes you. The exit is worked out now rather than when the move was planned,
+        // because somebody else may have stepped into it in the meantime; if it has closed up, the hero simply
+        // stays on the portal.
+        if (portalHere && character.type == USER_TYPE.USER && character.currentTileId == desTileId) {
+            const exitId = getPortalPosition(portalHere, this.room, character.currentTileId);
+            const exitTile = exitId ? this.state.map.tiles.get(exitId) : undefined;
+            if (exitTile) {
+                character.currentTileId = exitTile.id;
+                character.coordinates.x = exitTile.coordinates.x;
+                character.coordinates.y = exitTile.coordinates.y;
+                refreshAwareness(this.room);   // coming out somewhere else changes who can see you
+                this.room.broadcast(SERVER_TO_CLIENT_MESSAGE.PORTAL_USED, {
+                    characterId: character.id,
+                    fromTileId: desTileId,
+                    toTileId: exitTile.id,
+                });
+            } else {
+                this.room.notify(client, "The portal exit is blocked — there is nowhere to come out.", "error");
+            }
+        }
+
         if (character.stats.energy.current == 0) {
             this.room.notify(client, "You are too tired to continue.");
             //this.room.incrementTurn();

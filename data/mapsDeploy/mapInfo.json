@@ -2,5 +2,9 @@
   {
     "name": "kraken",
     "path": "Maps/kraken/map"
+  },
+  {
+    "name": "kaiju",
+    "path": "Maps/kaiju/map"
   }
 ]

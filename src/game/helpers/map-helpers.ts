@@ -216,7 +216,9 @@ interface MerchantEntityParameters {
     seedId: number;
     merchantIndex: number;
     merchantName: string;
-    inventory: string[];
+    /** The shelf, written the first time the shop is opened (message-handlers readStock/writeStock). Absent
+     *  means "never opened"; an empty array means "bought out", which is not the same thing. */
+    inventory?: { kind: "item" | "power" | "stack"; id: number }[];
 }
 
 
@@ -315,7 +317,7 @@ export function initializeSpawnEntities(
                 seedId: zone.seedId,
                 merchantIndex: i,
                 merchantName: `Merchant ${i}`,
-                inventory: [],
+                // no `inventory` yet: the first shopper to open the shop rolls it and writes it down
             };
             
             const merchantEntity = new SpawnEntity();
@@ -1709,7 +1711,9 @@ export function getOpenTilePosition(tileId: string, room: UfbRoom, moverTileId =
 export function getDiceTypeFromStack(stackId: number) : number {
     if(stackId == STACKTYPE.Cure || stackId == STACKTYPE.Burn || stackId == STACKTYPE.Freeze || stackId == STACKTYPE.Charge || stackId == STACKTYPE.Pump){
         return DICE_TYPE.DICE_4;
-    } else if(stackId == STACKTYPE.Void || stackId == STACKTYPE.Slow){
+    } else if(stackId == STACKTYPE.Void){
+        return DICE_TYPE.DICE_4_4;   // Alec's rule 2026-09-29: d4 off health, d4 off energy (turn-stacks.ts)
+    } else if(stackId == STACKTYPE.Slow){
         return DICE_TYPE.DICE_6_4
     }
     else{

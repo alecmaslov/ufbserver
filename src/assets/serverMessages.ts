@@ -38,6 +38,9 @@ export const SERVER_TO_CLIENT_MESSAGE = {
     RESPAWN_MERCHANT : "respawnMerchant",
     UNEQUIP_POWER_RECEIVED : "unEquipPowerReceived",
     CHARACTER_MOVED : "characterMoved",
+    /** A hero walked onto a portal and it took them: sent straight after CHARACTER_MOVED so the client can
+     *  animate the walk, then the warp (MoveCommand). */
+    PORTAL_USED : "PORTAL_USED",
     SET_HIGHLIGHT_RECT : "setHighLightRect",
     SET_DICE_ROLL : "SET_DICE_ROLL",
     ENEMY_DICE_ROLL: "ENEMY_DICE_ROLL",
