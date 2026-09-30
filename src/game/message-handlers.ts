@@ -87,6 +87,24 @@ const writeStock = (e: SpawnEntity, stock: StockLine[]) => {
     p.inventory = stock;
     e.parameters = JSON.stringify(p);
 };
+/**
+ * The shelf as it was first laid out, sold lines included.
+ *
+ * `inventory` only holds what is left, which is what the sale checks read. The shop front wants the whole
+ * shelf so a bought line can stay where it was with SOLD on it instead of vanishing between taps. Written
+ * once, beside the inventory; a merchant recorded before this existed has no shelf, and then what is left
+ * is all we can show — which is exactly how it behaved before.
+ */
+const readShelf = (e: SpawnEntity): StockLine[] | null => {
+    try { const p = JSON.parse(e.parameters || "{}"); return Array.isArray(p.shelf) ? p.shelf : null; }
+    catch { return null; }
+};
+const writeShelf = (e: SpawnEntity, shelf: StockLine[]) => {
+    let p: any = {};
+    try { p = JSON.parse(e.parameters || "{}"); } catch { p = {}; }
+    p.shelf = shelf;
+    e.parameters = JSON.stringify(p);
+};
 /** Is the line still on the shelf? Asked before the price is checked, so "sold out" beats "can't afford". */
 const inStock = (e: SpawnEntity | undefined, kind: StockLine["kind"], id: number): boolean => {
     if (!e) return false;
@@ -767,18 +785,26 @@ export const messageHandlers: MessageHandlers = {
         if (entity) {
             const recorded = readStock(entity);
             if (recorded) {
+                // Lay the shop out from the whole shelf, flagging what has gone, so a sale leaves a SOLD
+                // line rather than a hole. Older merchants have no shelf recorded: fall back to what is left.
+                const shelf = readShelf(entity) ?? recorded;
+                const left = (kind: StockLine["kind"], id: number) => recorded.some((x) => x.kind === kind && x.id === id);
                 const pick = <T extends { id: number }>(all: T[], kind: StockLine["kind"]) =>
-                    recorded.filter((x) => x.kind === kind).map((x) => all.find((c) => c.id === x.id)).filter((x): x is T => !!x);
+                    shelf.filter((x) => x.kind === kind)
+                        .map((x) => { const c = all.find((y) => y.id === x.id); return c ? { ...c, sold: !left(kind, x.id) } : null; })
+                        .filter((x): x is T & { sold: boolean } => !!x);
                 randomItem1 = pick(itemData1, "item");
                 randomItem2 = pick(itemData2, "item");
                 randomPower = pick(powerData, "power");
                 randomStack = pick(stackData, "stack");
             } else {
-                writeStock(entity, [
+                const lines = [
                     ...[...randomItem1, ...randomItem2].map((i) => ({ kind: "item" as const, id: i.id })),
                     ...randomPower.map((i) => ({ kind: "power" as const, id: i.id })),
                     ...randomStack.map((i) => ({ kind: "stack" as const, id: i.id })),
-                ]);
+                ];
+                writeStock(entity, lines);
+                writeShelf(entity, lines);
             }
         }
 
