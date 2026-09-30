@@ -1504,57 +1504,57 @@ export const messageHandlers: MessageHandlers = {
                 (stack.id == STACKTYPE.Pump && stack.count > 0 && !(character?.pumpBonus > 0)) ||
                 (stack.id == STACKTYPE.Charge && stack.count > 0)
             ) {
-                if(stackList.length < 3) {
-                    stackList.push({
-                        id : stack.id,
-                        count: 1
-                    });
+                // Every eligible stack rolls, and they all go over in one message so the client can throw the
+                // whole handful of dice together. This used to stop after three, silently skipping the rest.
+                stackList.push({
+                    id : stack.id,
+                    count: 1
+                });
 
-                    const diceType = getDiceTypeFromStack(stack.id);
-            
-                    const dice: any = {
-                        diceData : []
-                    }
-                    if(diceType == DICE_TYPE.DICE_4_4) {
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_4,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                        })
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_4,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                        })
-                    } else if(diceType == DICE_TYPE.DICE_6_4) {
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_6,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                        })
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_4,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                        })
-                    } else if(diceType == DICE_TYPE.DICE_4) {
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_4,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
-                        })
-                    } else if(diceType == DICE_TYPE.DICE_6_6){
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_6,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                        });
-                        dice.diceData.push({
-                            type: DICE_TYPE.DICE_6,
-                            diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
-                        });
-                    } else{
-                        dice.diceData.push({
-                            type: diceType,
-                            diceCount: getDiceCount(Math.random(), diceType)
-                        });
-                    }
-                    diceResult.push(dice);
+                const diceType = getDiceTypeFromStack(stack.id);
+        
+                const dice: any = {
+                    diceData : []
                 }
+                if(diceType == DICE_TYPE.DICE_4_4) {
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_4,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                    })
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_4,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                    })
+                } else if(diceType == DICE_TYPE.DICE_6_4) {
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_6,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                    })
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_4,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                    })
+                } else if(diceType == DICE_TYPE.DICE_4) {
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_4,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_4)
+                    })
+                } else if(diceType == DICE_TYPE.DICE_6_6){
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_6,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                    });
+                    dice.diceData.push({
+                        type: DICE_TYPE.DICE_6,
+                        diceCount: getDiceCount(Math.random(), DICE_TYPE.DICE_6)
+                    });
+                } else{
+                    dice.diceData.push({
+                        type: diceType,
+                        diceCount: getDiceCount(Math.random(), diceType)
+                    });
+                }
+                diceResult.push(dice);
                 
             }
         });

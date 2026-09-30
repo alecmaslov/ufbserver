@@ -1042,55 +1042,33 @@ function applyStack(id: number, count : number, state: CharacterState, client: C
     }
 
     // ADD BAN STACK LOGIC
-    if(!!BAN_STACKS[id] && count > 0) {
+    // Opposites annihilate one for one: 3 Freeze meeting 1 Burn leaves 2 Freeze and adds no Burn.
+    // Whatever is left of the incoming stack after the trade carries on and is added below.
+    // `!!BAN_STACKS[id]` was wrong here: Void's opposite is Cure, whose id is 0, so the check went falsy
+    // and Void landing on Cure never cancelled (Cure landing on Void did). Test for the key, not the value.
+    if(BAN_STACKS[id] !== undefined && count > 0) {
         const banStack = state.stacks.find(st => st.id == BAN_STACKS[id]);
         const banIdx = state.stacks.findIndex(st => st.id == BAN_STACKS[id]);
         if(banStack != null && banStack.count > 0) {
+            const cancelled = Math.min(count, banStack.count);
+            // Everyone watching sees the clash over that piece, not just whoever owns it.
+            const clash = {
+                characterId : state.id,
+                stack1 : id,
+                stack2 : banStack.id,
+                count1 : count,
+                count2 : banStack.count,
+                cancelled,
+            };
+            if(room != null) room.broadcast(SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, clash);
+            else if(client != null) client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, clash);
+
             if(banStack.count >= count) {
-                if(client != null) {
-                    client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
-                        characterId : state.id,
-                        stack1 : id,
-                        stack2 : banStack.id,
-                        count1 : count,
-                        count2 : banStack.count
-                    });
-                } else {
-                    room.broadcast(
-                        SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
-                            characterId : state.id,
-                            stack1 : id,
-                            stack2 : banStack.id,
-                            count1 : count,
-                            count2 : banStack.count
-                        }
-                    )
-                }
                 banStack.count -= count;
                 return;
-            } else {
-                if(client != null) {
-                    client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
-                        characterId : state.id,
-                        stack1 : id,
-                        stack2 : banStack.id,
-                        count1 : count,
-                        count2 : banStack.count
-                    });
-                } else {
-                    room.broadcast(
-                        SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
-                            characterId : state.id,
-                            stack1 : id,
-                            stack2 : banStack.id,
-                            count1 : count,
-                            count2 : banStack.count
-                        }
-                    )
-                }
-                count -= banStack.count;
-                banStack.count = 0;
             }
+            count -= banStack.count;
+            banStack.count = 0;
             state.stacks.deleteAt(banIdx);
             state.stacks.push(banStack);
         }

@@ -3285,7 +3285,7 @@ export const EQUIP_TURN_BONUS = {
     [POWERTYPE.Shield3]: {
         stacks: [
             {
-                id: STACKTYPE.Steady,
+                id: STACKTYPE.Reflect,
                 count : 1
             },
             {
@@ -3322,6 +3322,12 @@ export const EQUIP_TURN_BONUS = {
         stacks: [
             {
                 id: STACKTYPE.Cure,
+                count : 1
+            }
+        ],
+        items: [
+            {
+                id: ITEMTYPE.POTION,
                 count : 1
             }
         ]
