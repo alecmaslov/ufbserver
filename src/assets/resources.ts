@@ -2305,7 +2305,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Dodge] : {
         level : 1,
         name : "Dodge",
-        description: "Use 1 Dodge stack to avoid being damaged from 1 bomb or arrow.",
+        description: "Use 1 Dodge stack to ignore the damage from 1 bomb or arrow. Any stack it carries still lands.",
         cost: 4,
         sell: 2,
         anti: STACKTYPE.Slow
@@ -2321,7 +2321,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Steady] : {
         level : 1,
         name : "Steady",
-        description: "Use 1 steady stack to avoid 1 push or pull perk.",
+        description: "Use 1 Steady stack to shrug off one Push or Pull.",
         cost: 2,
         sell: 1,
         anti: -1
@@ -2337,7 +2337,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Block] : {
         level : 1,
         name : "Block",
-        description: "Use 1 block stack to roll 1 dice and subtract damage from the next attack.",
+        description: "Use 1 Block stack to cut the damage of an attack by a d4.",
         cost: 4,
         sell: 2,
         anti: -1
@@ -2345,7 +2345,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Reflect] : {
         level : 1,
         name : "Reflect",
-        description: "When hit with magic, use 1 reflect stack to subtract from the damage and deal it in revenge damage.",
+        description: "Use 1 Reflect stack to negate one stack from any attack.",
         cost: 6,
         sell: 3,
         anti: -1
@@ -2393,7 +2393,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Revenge] : {
         level : 1,
         name : "Revenge",
-        description: "When hit with a melee attack, roll 1 dice roll to deal revenge damage.",
+        description: "When an adjacent enemy hits you in melee, hit back for a d4.",
         cost: 4,
         sell: 2,
         anti: -1
@@ -3294,11 +3294,19 @@ export const EQUIP_TURN_BONUS = {
             }
         ]
     },
-    [POWERTYPE.Armor3]: {
+    [POWERTYPE.Armor2]: {
         stacks: [
             {
                 id: STACKTYPE.Block,
                 count : 1
+            }
+        ]
+    },
+    [POWERTYPE.Armor3]: {
+        stacks: [
+            {
+                id: STACKTYPE.Block,
+                count : 2
             }
         ]
     },

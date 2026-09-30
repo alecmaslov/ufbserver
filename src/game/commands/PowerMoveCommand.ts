@@ -313,7 +313,9 @@ export class PowerMoveCommand extends Command<UfbRoom, OnPowerMoveCommandPayload
             } else if(key == "stacks") {
                 let ctn = 0;
                 powermove.result.stacks.forEach((stack : any) => {
-                    if(target == enemy && getCountFromItem(STACKTYPE.Reflect, enemy.stacks) > stack.count) {
+                    // Reflect negates a stack one for one, so holding exactly as many as are incoming has to
+                    // be enough: `>` meant a lone Reflect stack never stopped a single incoming stack.
+                    if(target == enemy && getCountFromItem(STACKTYPE.Reflect, enemy.stacks) >= stack.count) {
                         addStackToCharacter(STACKTYPE.Reflect, -stack.count, enemy, client);
 
                         client.send( SERVER_TO_CLIENT_MESSAGE.RECEIVE_BAN_STACK, {
