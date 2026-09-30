@@ -1,6 +1,6 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { canMelee } from "#game/line-of-sight";
-import { sightChecker, addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
+import { moveMerchantFrom, sightChecker, addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
 import { Client } from "@colyseus/core";
@@ -1057,14 +1057,10 @@ export const messageHandlers: MessageHandlers = {
         client.send(SERVER_TO_CLIENT_MESSAGE.MERCHANT_RESULT, msg);
     },
 
+    // Walking away from the shop deliberately. Ending the turn on the merchant does the same thing from
+    // UfbRoom.incrementTurn, so the merchant moves on either way.
     leaveMerchant: (room, client, message) => {
-        let randomTileId = GetRandomFreeTileId(message.tileId, room, SpawnZoneType.Merchant);
-        // CHANGE ENTITY POSITION.
-        room.state.map.spawnEntities.map((entity: SpawnEntity, id) =>  {
-            if(entity.tileId == message.tileId && entity.type == SpawnZoneType.Merchant && randomTileId != "") {
-                entity.tileId = randomTileId;
-            }
-        });
+        moveMerchantFrom(room, message.tileId);
     },
 
     setActiveQuest: (room, client, message) => {

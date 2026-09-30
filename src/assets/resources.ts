@@ -2313,7 +2313,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Cure] : {
         level : 1,
         name : "Cure",
-        description: "At the beginning of your turn, roll a dice to recover health or cancel a void stack.",
+        description: "At the start of your turn, roll a d4 to recover that much health. Any overheal is paid as gold.",
         cost: 4,
         sell: 2,
         anti: STACKTYPE.Void
@@ -2369,7 +2369,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Burn] : {
         level : 1,
         name : "Burn",
-        description: "At the beginning of your turn, roll a dice to take damage from 1 fire stack.",
+        description: "At the start of your turn, roll a d4 and take that much damage.",
         cost: 4,
         sell: -1,
         anti: STACKTYPE.Freeze
@@ -2377,7 +2377,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Freeze] : {
         level : 1,
         name : "Freeze",
-        description: "At the beginning of your turn, roll a dice to subtract from energy.",
+        description: "At the start of your turn, roll a d4 and lose that much energy.",
         cost: 4,
         sell: -1,
         anti: STACKTYPE.Burn
@@ -2385,7 +2385,7 @@ export const stacks : { [key: number]: { level: number, name: string, descriptio
     [STACKTYPE.Slow] : {
         level : 1,
         name : "Slow",
-        description: "At the beginning of your turni roll a dice to subtract your energy and from your ultimate move gage.",
+        description: "At the start of your turn, roll a d6 off your ultimate gauge and a d4 off your energy.",
         cost: -1,
         sell: -1,
         anti: STACKTYPE.Dodge

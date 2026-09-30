@@ -1546,6 +1546,27 @@ export function GetObstacleTileIds(currentTileId: string, room: UfbRoom) {
     return tileIds;
 }
 
+/**
+ * Send the merchant on the tile `tileId` somewhere else, and tell everyone so the board can animate it.
+ *
+ * The merchant moves on once its visitor's turn is over, however that turn ended. This used to hang off a
+ * `leaveMerchant` message the client only sent from the panel's Leave button, so pressing End turn — or
+ * letting the clock run out — left the merchant sitting on the tile for good.
+ *
+ * Returns the tile it went to, or "" if there was no merchant here or nowhere free to go.
+ */
+export function moveMerchantFrom(room: UfbRoom, tileId: string): string {
+    if (!tileId) return "";
+    const merchant = room.state.map.spawnEntities.find(
+        (e: SpawnEntity) => e.tileId == tileId && e.type == SpawnZoneType.Merchant);
+    if (!merchant) return "";
+    const to = GetRandomFreeTileId(tileId, room, SpawnZoneType.Merchant);
+    if (!to) return "";
+    merchant.tileId = to;
+    room.broadcast(SERVER_TO_CLIENT_MESSAGE.MERCHANT_MOVED, { id: merchant.id, fromTileId: tileId, toTileId: to });
+    return to;
+}
+
 export function GetRandomFreeTileId(currentTileId: string, room: UfbRoom, type: SpawnZoneType): string {
     const tileIds: string[] = [];
     const characterTileIds: string[] = [];

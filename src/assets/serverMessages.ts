@@ -67,6 +67,8 @@ export const SERVER_TO_CLIENT_MESSAGE = {
     EQUIP_BONUS_LIST: "EQUIP_BONUS_LIST",
 
     MERCHANT_RESULT: "MERCHANT_RESULT",
+    /** The merchant packed up and set off for another tile: { fromTileId, toTileId }. */
+    MERCHANT_MOVED: "MERCHANT_MOVED",
     SET_STAB_ATTACK: "SET_STAB_ATTACK",
     ULTIMATE_USED: "ULTIMATE_USED"
 }

@@ -8,7 +8,7 @@ import db from "#db";
 import { Pathfinder } from "#game/Pathfinder";
 import { RoomCache } from "#game/RoomCache";
 import { computePayout, MatchMode } from "#game/payout";
-import { getTileIdByDirection, buildEndSummary, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, resolvePushPull, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
+import { getTileIdByDirection, buildEndSummary, moveMerchantFrom, addItemToCharacter, addPowerToCharacter, addStackToCharacter, fillPathWithCoords, getArrowBombCount, getCharacterIdsInArea, getCountFromItem, getDiceCount, getDiceTypeFromStack, GetMonsterDeadCount, GetNearestPlayerId, GetNearestTileId, GetObstacleTileIds, getOpenTilePosition, getPerkEffectDamage, getPowerMoveFromId, getTotalGoldAtEnd, resolvePushPull, initializeSpawnEntities, IsBlueMonster, IsEmptyTile, IsEnemyAdjacent, IsEquipPower, IsGreenMonster, IsYellowMonster, setCharacterEnergy, setCharacterHealth, setQuestResult, spawnCharacter, spawnMonster } from "#game/helpers/map-helpers";
 import { registerMessageHandlers } from "#game/message-handlers";
 import {
     AdjacencyListItemState,
@@ -353,6 +353,10 @@ export class UfbRoom extends Room<UfbRoomState> {
     incrementTurn() {
         const ending = this.state.characters.get(this.state.currentCharacterId);
         tickInvisibility(ending);   // ultimates.ts
+        // The merchant packs up once whoever was standing on it is done, whether they pressed End turn,
+        // let the clock run out or dropped the connection. It used to wait on a client `leaveMerchant`
+        // that only the panel's Leave button ever sent.
+        if (ending) moveMerchantFrom(this, ending.currentTileId);
         // Alec's rule (changed 2026-09-29): unused energy is NOT burned into the ultimate gauge at the end of a
         // turn. It stays on the character, along with any melee and mana tokens, so it can be spent on items and
         // power moves while somebody else is moving (message-handlers: those have no turn check). It is topped
