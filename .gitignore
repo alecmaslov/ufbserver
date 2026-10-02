@@ -4,3 +4,7 @@ out
 tools/map-tool/data/output2
 tools/map-tool/data/output
 cache/
+# TLS material never belongs in git (see infra/SECURITY-AUDIT.md M1)
+.ssl/
+*.pem
+*.key
