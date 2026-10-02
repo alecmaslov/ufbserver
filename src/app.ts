@@ -88,8 +88,13 @@ const colyseusServer = new Server({
     }),
 });
 
-colyseusServer.listen(API_PORT, undefined, undefined, () => {
-    console.log(`✨ UFB Server listening on port ${API_PORT} ✨`);
+// Bind loopback only. Nginx is the sole client (proxy_pass http://127.0.0.1:8080),
+// so a public bind buys nothing and leaves the firewall as the only thing between
+// the internet and this process. Override with API_HOST if that ever changes.
+const API_HOST = process.env.API_HOST ?? "127.0.0.1";
+
+colyseusServer.listen(API_PORT, API_HOST, undefined, () => {
+    console.log(`✨ UFB Server listening on ${API_HOST}:${API_PORT} ✨`);
     colyseusServer.define("lobby", LobbyRoom);
     colyseusServer.define("waiting", WaitingRoom);
     colyseusServer.define("ufbRoom", UfbRoom);
