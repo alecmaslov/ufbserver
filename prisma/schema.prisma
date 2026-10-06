@@ -578,3 +578,25 @@ model LangEvent {
   @@index([createdAt])
   @@map("lang_event")
 }
+
+/// How often each tile of a map has been stood on, across every match ever played on it.
+///
+/// The recording half of "the Easter Egg": the rarely-trodden tiles are the ones that will one day
+/// carry a small chance of triggering it. Recorded from the day this shipped even though nothing
+/// reads it yet, because the history is the part that cannot be backfilled — a heatmap is noise
+/// until there is real traffic through it, and it only accumulates if you start.
+///
+/// Keyed by map NAME rather than UfbMap.id: that is what the room is created with
+/// (createOptions.mapName) and what MatchRecord already stores, so the two line up without a lookup.
+/// Bridges, stairs and void never appear here — nothing can stand on them.
+model TileStep {
+  mapName   String   @db.VarChar(64)
+  tileId    String   @db.VarChar(64)
+  steps     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@id([mapName, tileId])
+  /// The lookup the trigger will want: the least-trodden tiles of one map.
+  @@index([mapName, steps])
+  @@map("tile_step")
+}

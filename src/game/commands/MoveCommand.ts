@@ -246,6 +246,17 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
             if (steps > 0 && character.type == USER_TYPE.USER) {
                 AddUserData(USER_DATA_TYPE.TRAVELED_TILE, character, steps);
                 setQuestResult(QUESTTYPE.TRAVELER, steps, character);
+                // Easter Egg heatmap. path[0] is the tile they were already standing on, so it is
+                // skipped or every move would count its origin twice. Bridges and stairs are
+                // crossings rather than places to stand, and void cannot be stood on at all — the
+                // same exclusions the rest of the game uses. Counted in memory; MatchStats writes
+                // the totals once the match closes, so nothing here touches the database.
+                const stood: string[] = [];
+                for (let i = 1; i < path.length; i++) {
+                    const t = this.state.map.tiles.get(path[i].tileId);
+                    if (t && t.type != "Void" && !/Bridge|Stairs/.test(t.type)) stood.push(t.id);
+                }
+                this.room.matchStats?.stepped(stood);
             }
             const lastTile = this.state.map.tiles.get(path[path.length - 1].tileId);
             character.coordinates.x = lastTile.coordinates.x;

@@ -25,6 +25,8 @@ const LANG = /^(en|ja|es|fr|de|ru|zh|ko|ar|pt)$/;
 export class MatchStats {
     private id: Promise<string | null> | null = null;
     private moves = new Map<string, Record<string, number>>();
+    /** tileId -> times a hero stood on it this match (Easter Egg heatmap; flushed in close()). */
+    private steps = new Map<string, number>();
     private killers = new Map<string, string>();
     private diedTurn = new Map<string, number>();
     private finished = new Set<string>();
@@ -113,7 +115,39 @@ export class MatchStats {
     }
 
     /** The room is going away. Heroes that never finished are "quit" (left) or "unfinished". */
+    /**
+     * Tiles a hero stood on this move, for the Easter Egg heatmap.
+     *
+     * Counted in memory and written once at the end of the match rather than a row update per step:
+     * a single move can cross a dozen tiles, and this must never put a database round-trip on the
+     * movement path. Losing a match's worth of steps to a crash is fine — it is a heatmap.
+     *
+     * Only heroes are recorded. Monsters now roam the whole board every turn (monster-ai.ts), so
+     * counting them would drown the signal in AI pathing and make "rarely visited by a player"
+     * meaningless.
+     */
+    stepped(tileIds: Iterable<string>) {
+        for (const id of tileIds) if (id) this.steps.set(id, (this.steps.get(id) ?? 0) + 1);
+    }
+
+    /** Fold this match's step counts into the per-map totals. Fire-and-forget, like everything here. */
+    private flushSteps() {
+        if (!this.steps.size) return;
+        const rows = [...this.steps];
+        this.steps.clear();
+        // One upsert per tile. A match touches tens of tiles, not thousands, and this runs after the
+        // room has closed, so the cost is invisible to play.
+        Promise.all(rows.map(([tileId, n]) =>
+            db.tileStep.upsert({
+                where: { mapName_tileId: { mapName: this.mapName, tileId } },
+                create: { mapName: this.mapName, tileId, steps: n },
+                update: { steps: { increment: n } },
+            }),
+        )).catch(log("steps"));
+    }
+
     close(reason: "victory" | "defeat" | "abandoned") {
+        this.flushSteps();
         if (this.closed || this.joined.size === 0) return;   // nobody joined: no record to close
         this.closed = true;
         const humans = [...this.joined];
