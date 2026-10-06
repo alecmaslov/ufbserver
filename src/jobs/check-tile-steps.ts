@@ -28,11 +28,11 @@ const check = (label: string, got: unknown, want: unknown) => {
 
 const MAP = "__check_tile_steps";
 
-/** The slice of UfbRoom that MatchStats actually reads. */
-const fakeRoom = () => ({
-    roomId: "check", solo: true,
+/** The slice of UfbRoom that MatchStats actually reads. Party by default — solo records nothing. */
+const fakeRoom = (mode: "solo" | "party" = "party") => ({
+    roomId: "check", solo: mode === "solo",
     state: { turn: 0, map: { name: MAP }, characters: new Map() },
-    Rounds: () => 0, MatchMode: () => "solo",
+    Rounds: () => 0, MatchMode: () => mode,
 }) as unknown as ConstructorParameters<typeof MatchStats>[0];
 
 const totals = async () => Object.fromEntries(
@@ -73,6 +73,14 @@ async function main() {
     m3.close("abandoned");
     await new Promise((r) => setTimeout(r, 300));
     check("a match where nobody moved changes nothing", await totals(), { a: 1, b: 4, c: 3, d: 1 });
+
+    say("\n== solo games are excluded entirely ==");
+    const solo = new MatchStats(fakeRoom("solo"), MAP);
+    solo.stepped(["a", "a", "a", "e", "e"]);
+    solo.close("victory");
+    await new Promise((r) => setTimeout(r, 600));
+    check("a solo run records nothing at all", await totals(), { a: 1, b: 4, c: 3, d: 1 });
+    check("and invents no new tiles", (await totals()).e, undefined);
 
     const gone = await db.tileStep.deleteMany({ where: { mapName: MAP } });
     say(`\ncleaned up ${gone.count} test rows`);

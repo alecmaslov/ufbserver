@@ -251,10 +251,20 @@ export class MoveCommand extends Command<UfbRoom, OnMoveCommandPayload> {
                 // crossings rather than places to stand, and void cannot be stood on at all — the
                 // same exclusions the rest of the game uses. Counted in memory; MatchStats writes
                 // the totals once the match closes, so nothing here touches the database.
+                //
+                // Spawn zones are excluded too (Alec, 2026-10-06): every entity tile, which covers
+                // merchants, chests/loot, portals and monster spawns. Those are destinations the map
+                // itself creates traffic to, so they would always rank as well-trodden and would
+                // never be rare — and a merchant or chest tile is already a reward, so an easter egg
+                // there would land on top of one. Excluding them keeps the heatmap a measure of
+                // where players choose to walk.
+                const spawnTiles = new Set<string>();
+                this.state.map.spawnEntities.forEach((e: { tileId: string }) => spawnTiles.add(e.tileId));
                 const stood: string[] = [];
                 for (let i = 1; i < path.length; i++) {
                     const t = this.state.map.tiles.get(path[i].tileId);
-                    if (t && t.type != "Void" && !/Bridge|Stairs/.test(t.type)) stood.push(t.id);
+                    if (!t || spawnTiles.has(t.id)) continue;
+                    if (t.type != "Void" && !/Bridge|Stairs/.test(t.type)) stood.push(t.id);
                 }
                 this.room.matchStats?.stepped(stood);
             }

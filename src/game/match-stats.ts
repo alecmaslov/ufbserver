@@ -124,9 +124,15 @@ export class MatchStats {
      *
      * Only heroes are recorded. Monsters now roam the whole board every turn (monster-ai.ts), so
      * counting them would drown the signal in AI pathing and make "rarely visited by a player"
-     * meaningless.
+     * meaningless. MoveCommand enforces that; it also drops spawn-zone tiles.
+     *
+     * Solo games are excluded entirely (Alec, 2026-10-06), and the check lives here rather than at
+     * the call site so there is exactly one place it can go wrong. Solo is where the heatmap would
+     * be easiest to shape deliberately: one player, no witnesses, walking a chosen route over and
+     * over. Party games cost other people's time to manipulate.
      */
     stepped(tileIds: Iterable<string>) {
+        if (this.room.MatchMode() === "solo") return;
         for (const id of tileIds) if (id) this.steps.set(id, (this.steps.get(id) ?? 0) + 1);
     }
 

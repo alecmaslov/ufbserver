@@ -588,7 +588,17 @@ model LangEvent {
 ///
 /// Keyed by map NAME rather than UfbMap.id: that is what the room is created with
 /// (createOptions.mapName) and what MatchRecord already stores, so the two line up without a lookup.
-/// Bridges, stairs and void never appear here — nothing can stand on them.
+///
+/// What is deliberately NOT counted (Alec, 2026-10-06), because each would corrupt the signal:
+///   - solo games entirely — one player with no witnesses is where the heatmap would be easiest to
+///     shape on purpose; party games cost other people's time to manipulate (gated in MatchStats);
+///   - monster movement — they roam the whole board every turn now, which would drown out where
+///     players choose to walk;
+///   - every spawn-zone tile: merchants, chests/loot, portals and monster spawns. The map creates
+///     traffic to those, so they could never rank as rare, and they are already rewards in their
+///     own right;
+///   - bridges, stairs and void — crossings, not places to stand;
+///   - the tile a move starts from, which is already counted by the move that ended there.
 model TileStep {
   mapName   String   @db.VarChar(64)
   tileId    String   @db.VarChar(64)
