@@ -3,8 +3,7 @@
  *
  * Hard mode is the game as it has always played: every monster knows where every hero is and walks
  * straight at them from turn one. Normal mode gives each monster eyes. It hunts only what it can
- * actually see, investigates where a hero was last seen, and otherwise goes home and patrols the
- * spawn zone it was placed on.
+ * actually see, investigates where a hero was last seen, and otherwise roams the board.
  *
  * Alec's rules (2026-09-28):
  *   - a monster notices a hero when that hero is within SIGHT_RANGE tiles of it with a clear line of
@@ -12,14 +11,17 @@
  *   - on its next turn it moves toward where it last saw that hero.
  *   - when it can no longer see anyone, a yellow "?" flashes instead: it has lost the trail. It gets
  *     one turn to search the tile it last saw someone on, and if nobody has come into view by the
- *     turn after that, it walks back to its spawn zone.
- *   - an idle monster patrols within a couple of tiles of that zone.
+ *     turn after that, it goes back to roaming.
+ *   - an idle monster roams the whole board, spending its full energy each turn (Alec, 2026-10-06).
+ *     This replaced a patrol bounded to two tiles from the spawn zone, which made idle monsters
+ *     shuffle on the spot. Normal mode is meaningfully busier as a result: the far side of the board
+ *     is no longer quiet, and monsters wander into heroes rather than waiting to be found.
  *   - being hit counts as being noticed, even from cover: an arrow out of the dark alerts the
  *     monster to the tile it was fired from.
  *
  * Sight is the same line-of-sight the attack rules use (line-of-sight.ts), so a monster can see what
  * it could shoot: round a cliff edge, but never through a wall. The range cap on top of it is what
- * keeps the far side of the board quiet.
+ * stops a monster reacting to a hero it merely shares a sightline with across the whole board.
  *
  * The awareness lives on CharacterState (`aware`, `homeTileId`, `lastSeenTileId`, `searchTurns`)
  * rather than in a map on the room, so it survives a solo save and resume, and so the web client can
@@ -34,16 +36,14 @@ import type { PathStep } from "#shared-types";
 
 /** `aware` on a monster, and what the client draws for it. */
 export const AWARE = {
-    UNAWARE: 0,   // nothing over its head: patrolling or heading home
+    UNAWARE: 0,   // nothing over its head: roaming
     ALERT: 1,     // flashing red "!" — it can see a hero right now
     SEARCHING: 2, // flashing yellow "?" — it saw one a moment ago and has lost them
 } as const;
 
 /** How far a monster can notice a hero, in tiles. Straight-line distance, on top of line of sight. */
 export const SIGHT_RANGE = 6;
-/** How far from its spawn zone an idle monster wanders. */
-export const PATROL_RADIUS = 2;
-/** Turns spent searching the last-seen tile before giving up and going home. */
+/** Turns spent searching the last-seen tile before giving up and going back to roaming. */
 export const SEARCH_TURNS = 1;
 
 /** Bridge and stair tiles are links in the nav graph rather than nodes, so nothing can be routed to one. */
@@ -141,8 +141,8 @@ export function alertToAttack(room: UfbRoom, monster: CharacterState, attacker: 
  * Advance a monster's awareness for the turn it is starting, and say where it should head.
  *
  * Called once per monster turn (UfbRoom.monsterPlan caches it): UfbRoom.aiChecking ticks every two
- * seconds while a monster acts, and the bookkeeping here — giving up the search, choosing a patrol
- * tile — must happen once a turn, not once a tick.
+ * seconds while a monster acts, and the bookkeeping here — giving up the search, choosing somewhere to
+ * roam — must happen once a turn, not once a tick.
  *
  * Returns the tile to walk toward when there is nobody to chase, or "" for nothing to do. Chasing is
  * decided fresh on every tick by the caller, since the monster may walk into view of someone.
@@ -167,9 +167,10 @@ export function beginMonsterTurn(room: UfbRoom, monster: CharacterState): string
         monster.searchTurns = 0;
     }
 
-    const home = monster.homeTileId;
-    if (!home) return "";
-    return monster.currentTileId != home ? home : patrolTarget(room, monster);
+    // Nothing in view and no trail to follow: roam. It no longer walks back to its spawn zone first —
+    // homeTileId is still recorded on the state (the client and the save rely on the field existing)
+    // but routing no longer reads it.
+    return roamTarget(room, monster);
 }
 
 /**
@@ -211,23 +212,36 @@ export function trimPortalEnd(path: PathStep[], portals: Set<string>): PathStep[
     return end === path.length ? path : path.slice(0, end);
 }
 
-/** A tile to wander to near the spawn zone, so an idle monster looks like it is guarding something. */
-export function patrolTarget(room: UfbRoom, monster: CharacterState): string {
+/**
+ * Somewhere on the map to wander to, for a monster with nothing better to do.
+ *
+ * This replaced a patrol that stayed within two tiles of the spawn zone, which made idle monsters
+ * shuffle on the spot — Alec's call (2026-10-06) is that they roam the whole board instead.
+ *
+ * Energy is what makes it a roam rather than a teleport: UfbRoom walks at most `energy` steps of the
+ * route each turn (`path.slice(0, min(path.length, energy))`), so a distant target simply means the
+ * monster spends everything it has walking and picks up again next turn. Candidates at least `energy`
+ * away in straight-line distance are preferred for exactly that reason — a path is never shorter than
+ * that distance, so choosing one guarantees the whole turn's energy is used. The nearer tiles are a
+ * fallback for small or heavily walled maps where nothing is far enough.
+ */
+export function roamTarget(room: UfbRoom, monster: CharacterState): string {
     const tiles = room.state.map.tiles;
-    const home = tiles.get(monster.homeTileId);
-    if (!home) return "";
+    const here = tiles.get(monster.currentTileId);
     const taken = new Set<string>();
     room.state.characters.forEach((c) => { if (c.id != monster.id && alive(c)) taken.add(c.currentTileId); });
 
     const portals = portalTiles(room);
-    const candidates: TileState[] = [];
+    const reach = Math.max(1, monster.stats.energy.current);
+    const far: TileState[] = [];
+    const near: TileState[] = [];
     tiles.forEach((t) => {
         if (t.id == monster.currentTileId || taken.has(t.id) || portals.has(t.id)) return;
         if (!standable(t)) return;
-        if (dist(t.coordinates, home.coordinates) > PATROL_RADIUS) return;
-        candidates.push(t);
+        if (here && dist(t.coordinates, here.coordinates) >= reach) far.push(t); else near.push(t);
     });
+    const pool = far.length ? far : near;
     // One tile picked at random rather than the best of them: a monster that stands still for a turn
-    // because the tile it fancied is walled off is a fine patrol too.
-    return candidates.length ? candidates[Math.floor(Math.random() * candidates.length)].id : "";
+    // because the tile it fancied is walled off is a fine roam too.
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)].id : "";
 }

@@ -15,7 +15,7 @@ import { CharacterState } from "#game/schema/CharacterState";
 import { Pathfinder } from "#game/Pathfinder";
 import { EDGE_TYPE, USER_TYPE } from "#assets/resources";
 import { getNextPortalTilePosition, getOpenTilePosition, getPortalPosition } from "#game/helpers/map-helpers";
-import { patrolTarget, routeTo, trimPortalEnd } from "#game/monster-ai";
+import { roamTarget, routeTo, trimPortalEnd } from "#game/monster-ai";
 
 const MAP = process.argv[2] ?? "kraken";
 const EDGE: Record<string, number> = {
@@ -149,11 +149,11 @@ say("\n== monsters may cross a portal but never stop on one ==");
     const cut = long.slice(0, long.findIndex((p) => p.tileId === midTile.id) + 1);
     check("a walk cut short on a portal is trimmed back", trimPortalEnd(cut, portalIds).map((p) => p.tileId).pop() !== midTile.id, true);
 
-    // patrol never offers one either
+    // roaming never offers one either
     m.homeTileId = run[3].id;
     const offered = new Set<string>();
-    for (let i = 0; i < 60; i++) { const t = patrolTarget(room, m); if (t) offered.add(t); }
-    check("patrol never picks a portal", [...offered].filter((id) => portalIds.has(id)), []);
+    for (let i = 0; i < 60; i++) { const t = roamTarget(room, m); if (t) offered.add(t); }
+    check("roaming never picks a portal", [...offered].filter((id) => portalIds.has(id)), []);
 
     state.characters.delete("m1");
     state.currentCharacterId = "";

@@ -18,7 +18,7 @@ import { CharacterState } from "#game/schema/CharacterState";
 import { Pathfinder } from "#game/Pathfinder";
 import { EDGE_TYPE, USER_TYPE } from "#assets/resources";
 import { edgeBetween, type LosTile } from "#game/line-of-sight";
-import { AWARE, beginMonsterTurn, canSpot, patrolTarget, refreshAwareness, routeTo, spot, tileLookup, PATROL_RADIUS, SIGHT_RANGE } from "#game/monster-ai";
+import { AWARE, beginMonsterTurn, canSpot, roamTarget, refreshAwareness, routeTo, spot, tileLookup, SIGHT_RANGE } from "#game/monster-ai";
 
 const MAP = process.argv[2] ?? "kraken";
 const EDGE: Record<string, number> = {
@@ -143,24 +143,31 @@ moveTo(m, spotted);   // it walks there and finds nobody
 
 goto = beginMonsterTurn(room, m);
 check("next turn, still nobody -> UNAWARE (marker off)", m.aware, AWARE.UNAWARE);
-check("and it heads home", goto, home.id);
 check("the memory is cleared", m.lastSeenTileId, "");
-const homeRoute = routeTo(room, m, goto);
-check("with a route home", homeRoute[homeRoute.length - 1]?.tileId, home.id);
+// It no longer walks back to the spawn zone first: a cold trail goes straight back to roaming.
+check("and it goes back to roaming, not home", goto !== home.id && goto !== "", true);
+const roamRoute = routeTo(room, m, goto);
+check("with a route to wherever it picked", roamRoute[roamRoute.length - 1]?.tileId, goto);
 
-// ---- patrol ----
-say("\n== idle patrol stays near the spawn zone ==");
+// ---- roam ----
+say("\n== idle monsters roam the whole board ==");
 moveTo(m, home);
 const offered = new Set<string>();
-for (let i = 0; i < 60; i++) { const p = patrolTarget(room, m); if (p) offered.add(p); }
-const strayed = [...offered].map((id) => state.map.tiles.get(id)!).filter((t) => gap(t, home) > PATROL_RADIUS);
-check(`every patrol tile is within ${PATROL_RADIUS} of home`, strayed.length, 0);
-check("and there is more than one of them", offered.size > 1, true);
-check("it never patrols onto a tile it can't stand on", [...offered].filter((id) => /Void|Bridge|Stairs/.test(state.map.tiles.get(id)!.type)).length, 0);
+for (let i = 0; i < 60; i++) { const p = roamTarget(room, m); if (p) offered.add(p); }
+check("it offers somewhere to go", offered.size > 1, true);
+check("it never roams onto a tile it can't stand on", [...offered].filter((id) => /Void|Bridge|Stairs/.test(state.map.tiles.get(id)!.type)).length, 0);
+check("it never picks the tile it is already on", offered.has(m.currentTileId), false);
+// The point of the change: targets are far enough that the whole turn's energy is spent walking.
+// UfbRoom slices the route to `energy` steps, and a path is never shorter than the straight-line
+// distance, so every offer being >= energy away means no turn is wasted shuffling.
+const reach = Math.max(1, m.stats.energy.current);
+const shortHops = [...offered].map((id) => state.map.tiles.get(id)!).filter((t) => gap(t, state.map.tiles.get(m.currentTileId)!) < reach);
+check(`every roam target is at least ${reach} away (a full turn of walking)`, shortHops.length, 0);
+check("and it ranges well beyond the old 2-tile patrol", [...offered].some((id) => gap(state.map.tiles.get(id)!, home) > 2), true);
 say(`  (offered: ${[...offered].map((id) => name(state.map.tiles.get(id)!)).sort().join(" ")})`);
 
 // ---- spotted again ----
-say("\n== spotted again mid-patrol ==");
+say("\n== spotted again mid-roam ==");
 moveTo(h, run[2]);
 refreshAwareness(room);
 check("straight back to ALERT", m.aware, AWARE.ALERT);
