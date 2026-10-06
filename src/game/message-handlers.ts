@@ -597,10 +597,13 @@ export const messageHandlers: MessageHandlers = {
 
         // A refusal is still answered, with `blocked` set: the client puts the move panel up with Move greyed
         // out and says why. Returning nothing left it stuck in its "preview" phase with no panel on screen.
+        // isFeather is echoed back so the client can tell two previews of the same tile apart. It asks
+        // for both the walked and the flown route and offers the player the choice, and matching the
+        // replies on arrival order would break the moment one of them was refused.
         const refuse = (reason: string) => {
             client.send(SERVER_TO_CLIENT_MESSAGE.SET_MOVE_POINT, {
                 characterId: character.id, path: [{ tileId: tileId }], cost: 0, featherCount: 0,
-                portalNextTileId: "", blocked: reason,
+                portalNextTileId: "", blocked: reason, isFeather: !!message.isFeather,
             });
         };
 
@@ -625,7 +628,8 @@ export const messageHandlers: MessageHandlers = {
             path,
             cost: cost - featherStep * featherCount,
             featherCount,
-            portalNextTileId
+            portalNextTileId,
+            isFeather: !!message.isFeather,
         });
     },
 
