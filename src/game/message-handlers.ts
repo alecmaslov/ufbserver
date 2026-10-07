@@ -1,5 +1,7 @@
 import { UfbRoom } from "#game/UfbRoom";
 import { canMelee } from "#game/line-of-sight";
+import { alertToAttack, refreshAwareness } from "#game/monster-ai";
+import { bombPlacement, isBomb, occupantOf, bombTargets, DROP_BONUS } from "#game/bombs";
 import { moveMerchantFrom, sightChecker, addItemToCharacter, addPowerToCharacter, addStackToCharacter, updateStrengthQuest, coordToGameId, fillPathWithCoords, getCountFromItem, getDiceCount, getDiceTypeFromStack, getEquipBonusDamage, getItemCountFromCharacter, getNextPortalTilePosition, getOpenTilePosition, getPortalPosition, getPowerMoveFromId, GetRandomFreeTileId, getTileIdByDirection, IsEnemyAdjacent, IsEquipPower, sendStatsToClient, setCharacterEnergy, setCharacterHealth, setPerkEffectDamage, setQuestResult } from "#game/helpers/map-helpers";
 import { getCharacterById, getClientCharacter, getHighLightTileIds, getItemIdsByLevel, getPowerIdsByLevel, getQuestTargetValue } from "./helpers/room-helpers";
 import { CharacterMovedMessage, GetResourceDataMessage, MoveItemMessage, SetMoveItemMessage, SpawnInitMessage } from "#game/message-types";
@@ -316,26 +318,18 @@ export const messageHandlers: MessageHandlers = {
 
         const directions = [0, 0, 0, 0];
 
-        // BOMB — and every other bomb. The use handler below accepts all five kinds, but this
-        // "where can I put it" query only ever answered for the plain one, so an ice, fire, void or
-        // caltrop bomb came back with no legal direction and could not be placed anywhere.
-        if(itemId == ITEMTYPE.BOMB || itemId == ITEMTYPE.ICE_BOMB || itemId == ITEMTYPE.FIRE_BOMB
-            || itemId == ITEMTYPE.VOID_BOMB || itemId == ITEMTYPE.CALTROP_BOMB) {
-            const conditions = [
-                "top",
-                "right",
-                "down",
-                "left"
-            ];
-            conditions.forEach((cond, i) => {
-                const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, cond)
-                const target = id ? room.state.map.tiles.get(id) : undefined;
-                // A bomb goes where you could reach to put one down: an adjacent tile on your own
-                // level with nothing solid in between. Without the `id` test this offered placement
-                // off the edge of the board, since an empty id matches no spawn entity either.
-                if(target
-                    && canMelee(currentTile as any, target as any)
-                    && room.state.map.spawnEntities.findIndex(entity => entity.tileId == id) == -1) {
+        // BOMB — and every other bomb. The rules now live in game/bombs.ts so that this query and
+        // SET_MOVE_ITEM cannot disagree: the client used to ignore this reply entirely and guess the
+        // four neighbours itself, while SET_MOVE_ITEM validated nothing at all.
+        let bombPlant: string[] = [], bombDrop: string[] = [];
+        if(isBomb(itemId)) {
+            const targets = bombTargets(room, character);
+            bombPlant = targets.plant; bombDrop = targets.drop;
+            // The direction mask is still filled in for anything that reads it, but tile ids are
+            // what the client highlights -- a mask cannot distinguish a plant from a drop.
+            ["top", "right", "down", "left"].forEach((cond, i) => {
+                const id = getTileIdByDirection(room.state.map.tiles, currentTile.coordinates, cond);
+                if(id && (bombPlant.includes(id) || bombDrop.includes(id))) {
                     directions[i] = 1;
                 }
             })
@@ -376,7 +370,8 @@ export const messageHandlers: MessageHandlers = {
             ...directionData
         }
 
-        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_MOVEITEM, movemessage);
+        // plant/drop are the authoritative answer; the direction mask is kept for compatibility.
+        client.send(SERVER_TO_CLIENT_MESSAGE.RECEIVE_MOVEITEM, { ...movemessage, plant: bombPlant, drop: bombDrop });
     },
 
     [CLIENT_SERVER_MESSAGE.SET_MOVE_ITEM]:(room, client, message) => {
@@ -405,24 +400,42 @@ export const messageHandlers: MessageHandlers = {
             return;
         }
 
-        addItemToCharacter(itemId, -1, character, client);
+        // Bombs take their own path, validated BEFORE anything is spent. This handler used to trust
+        // message.tileId outright, so a bomb could be placed on any tile of the map, through a wall,
+        // across a ravine, onto a different level, onto a chest or onto another player -- and
+        // placing onto an existing bomb silently deleted it while still charging for the attempt.
+        if(isBomb(itemId)) {
+            const where = bombPlacement(room, character, room.state.map.tiles.get(tileId));
+            if(!where.mode) {
+                room.notify(client, where.why, "error");
+                return;
+            }
 
-        if(itemId == ITEMTYPE.BOMB || itemId == ITEMTYPE.ICE_BOMB || itemId == ITEMTYPE.FIRE_BOMB || itemId == ITEMTYPE.VOID_BOMB || itemId == ITEMTYPE.CALTROP_BOMB) {
-            const idx = room.state.map.moveItemEntities.findIndex(mItem => mItem.tileId == tileId)
-            if(idx == -1) {
+            addItemToCharacter(itemId, -1, character, client);
+            setCharacterEnergy(character, -1, room, client);
+            sendStatsToClient(-1, ADD_EXTRA_TYPE.ENERGY, client);
+
+            if(where.mode == "plant") {
+                // It lies in wait on an empty tile until something walks onto it.
                 const entity : MoveItemEntity = new MoveItemEntity();
                 entity.itemId = itemId;
                 entity.tileId = tileId;
                 entity.playerId = character.id;
                 room.state.map.moveItemEntities.push(entity);
             } else {
-                room.state.map.moveItemEntities.deleteAt(idx);
+                // Dropped from the level above: it goes off now, on whoever is standing down there,
+                // and hits harder for the fall. Nothing is left behind -- no trap to walk into.
+                const victim = occupantOf(room, tileId)!;
+                room.applyBombTo(itemId, victim, character, DROP_BONUS);
+                alertToAttack(room, victim, character);   // a bomb out of nowhere is worth turning round for
+                refreshAwareness(room);
             }
+            return;
+        }
 
-            setCharacterEnergy(character, -1, room, client);
-            sendStatsToClient(-1, ADD_EXTRA_TYPE.ENERGY, client);
+        addItemToCharacter(itemId, -1, character, client);
 
-        } else if(itemId == ITEMTYPE.POTION) {
+        if(itemId == ITEMTYPE.POTION) {
             console.log("user posion item")
             // Healing past max health pays the overflow as gold. setCharacterHealth returns the new HP, not the
             // overflow, so work the overheal out before healing (it used to pay the whole HP as gold).

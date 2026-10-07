@@ -95,6 +95,43 @@ export function canMelee(from: LosTile | undefined, to: LosTile | undefined): bo
 }
 
 /**
+ * Dropping something over the edge onto an adjacent tile below (Alec, 2026-10-07): bombs thrown down
+ * a level, which hit harder for the fall.
+ *
+ * This is `canMelee` with the level test inverted, and it works because of the asymmetry described
+ * above: a level change is a cliff face, so the LOWER tile's side of it is marked Wall while the
+ * upper side is open. Reaching down over the edge is therefore already legal geometry, and the same
+ * `BLOCKS_MOVEMENT` test keeps a real wall between two different levels blocking.
+ *
+ * Whether anything is standing on `to` is not a question about geometry, so it is checked by the
+ * caller (game/bombs.ts) — a drop requires a target, a plant requires an empty tile.
+ */
+export function canDropOnto(from: LosTile | undefined, to: LosTile | undefined): boolean {
+    if (!from || !to || from.id === to.id) return false;
+    if (!adjacent(from.coordinates, to.coordinates)) return false;
+    if (tileLevel(from) <= tileLevel(to)) return false;   // must be going DOWN
+    // No edge test, deliberately, and for the same reason hasLineOfSight skips one across a level
+    // change: the cliff face IS the edge here, and the lower tile records it as Wall. edgeBetween
+    // takes the more restrictive of the two sides, so testing it would block every drop that exists
+    // — which is what the first version of this function did.
+    //
+    // Known simplification: a parapet recorded on the UPPER tile's own side would not stop a drop.
+    // Distinguishing that from the cliff marking needs per-side data the map is not consistent
+    // about (see edgeBetween), and shooting over the edge already ignores it.
+    return true;
+}
+
+/**
+ * Tiles something can be left lying on.
+ *
+ * Bridges and stairs are crossings rather than places — a bomb on a stair has no meaningful
+ * position — and void is not a surface at all. The same rule the monster AI uses to pick where it
+ * can stand, which is the right instinct: if a hero cannot stand there, a bomb cannot sit there.
+ */
+export const plantable = (tile: LosTile | undefined): boolean =>
+    !!tile && tile.type !== "Void" && !/Bridge|Stairs/.test(tile.type);
+
+/**
  * Every tile a straight line from `a` to `b` passes through, the two ends included.
  *
  * A supercover walk rather than a plain Bresenham: when the line crosses a corner it takes both

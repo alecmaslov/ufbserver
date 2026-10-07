@@ -1036,52 +1036,64 @@ export class UfbRoom extends Room<UfbRoomState> {
         return { approach: monstersPass.foundPath ? prefix(monstersPass.path) : undefined };
     }
 
-    checkBombPos(idx: any, monster: CharacterState){
-        
-        if(idx != -1) {
-            const moveEntity: MoveItemEntity = this.state.map.moveItemEntities[idx];
-            const enemy = this.state.characters.get(moveEntity.playerId);
-            const result = itemResults[moveEntity.itemId];
-            if(!!result.energy) {
-                monster.stats.energy.add(result.energy);
-                this.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY, null, monster.id);
-            }
-            if(!!result.heart) {
-                setCharacterHealth(monster, result.heart, this, null, "heart", enemy);
-                this.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY, null, monster.id);
-            }
-            if(!!result.ultimate) {
-                monster.stats.ultimate.add(result.ultimate);
-                this.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, null, monster.id);
-            }
+    /**
+     * Apply one bomb's effects to whoever it went off on.
+     *
+     * Shared by a bomb walked into (checkBombPos, below) and one dropped from the level above
+     * (SET_MOVE_ITEM), which is the same bomb doing `bonus` more damage for the fall. Having one
+     * path means a new bomb type cannot behave differently depending on how it reached its victim.
+     *
+     * Only the health component takes the bonus. An ice bomb's energy drain and a caltrop's Slow are
+     * properties of the bomb, not of how far it fell.
+     */
+    applyBombTo(itemId: number, victim: CharacterState, attacker: CharacterState | undefined, bonus = 0) {
+        const base = itemResults[itemId];
+        if(!base) return;
+        const result = bonus && base.heart ? { ...base, heart: base.heart - bonus } : base;
 
-            if(!!result.stackId) {
-                addStackToCharacter(result.stackId, 1, monster, null, this);
-
-                this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
-                    score: 1,
-                    type: "stack_e",
-                    stackId: result.stackId,
-                    characterId: monster.id,
-                });
-            }
-
-            this.broadcast(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
-                playerId: moveEntity.playerId,
-                itemResult: result,
-                itemId: moveEntity.itemId
-            });
-            this.state.map.moveItemEntities.deleteAt(idx);
-
-            if(monster.stats.health.current <= 0) {
-                console.log("----reward.. monster")
-                this.clients.forEach(client => {
-                    if(this.sessionIdToPlayerId.get(client.sessionId) == enemy.characterId){
-                        this.RewardFromMonster(enemy, monster, client);
-                    }
-                })
-            }
+        if(!!result.energy) {
+            victim.stats.energy.add(result.energy);
+            this.sendBroadcastStats(result.energy, ADD_EXTRA_TYPE.ENERGY_ENEMY, null, victim.id);
         }
+        if(!!result.heart) {
+            setCharacterHealth(victim, result.heart, this, null, "heart", attacker);
+            this.sendBroadcastStats(result.heart, ADD_EXTRA_TYPE.HEART_ENEMY, null, victim.id);
+        }
+        if(!!result.ultimate) {
+            victim.stats.ultimate.add(result.ultimate);
+            this.sendBroadcastStats(result.ultimate, ADD_EXTRA_TYPE.ULTIMATE_ENEMY, null, victim.id);
+        }
+        if(!!result.stackId) {
+            addStackToCharacter(result.stackId, 1, victim, null, this);
+            this.broadcast(SERVER_TO_CLIENT_MESSAGE.ADD_EXTRA_SCORE, {
+                score: 1,
+                type: "stack_e",
+                stackId: result.stackId,
+                characterId: victim.id,
+            });
+        }
+
+        this.broadcast(SERVER_TO_CLIENT_MESSAGE.GET_BOMB_DAMAGE, {
+            playerId: attacker?.id ?? "",
+            itemResult: result,
+            itemId,
+        });
+
+        if(victim.stats.health.current <= 0 && attacker) {
+            this.clients.forEach(client => {
+                if(this.sessionIdToPlayerId.get(client.sessionId) == attacker.characterId){
+                    this.RewardFromMonster(attacker, victim, client);
+                }
+            })
+        }
+    }
+
+    checkBombPos(idx: any, monster: CharacterState){
+        if(idx == -1) return;
+        const moveEntity: MoveItemEntity = this.state.map.moveItemEntities[idx];
+        const enemy = this.state.characters.get(moveEntity.playerId);
+        this.applyBombTo(moveEntity.itemId, monster, enemy);
+        this.state.map.moveItemEntities.deleteAt(idx);
     }
 
     checkUserTimer() {
